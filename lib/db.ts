@@ -1,24 +1,12 @@
-import { PrismaClient } from "@prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
+// 由於使用 Mock Data，此檔案暫時不使用 Prisma
+// 未來如果需要連接資料庫，可以在此處配置
 
-const connectionString =
-  process.env.POSTGRES_PRISMA_URL ?? process.env.DATABASE_URL;
+export const prisma = null;
 
-const adapter = new PrismaPg({
-  connectionString: connectionString ?? "",
-});
-
-const globalForPrisma = globalThis as unknown as {
-  prisma?: PrismaClient;
+// 模擬資料庫連接函數
+export const getDatabaseStatus = () => {
+  return {
+    connected: false,
+    message: "使用 Mock Data 模式"
+  };
 };
-
-export const prisma =
-  globalForPrisma.prisma ??
-  new PrismaClient({
-    adapter,
-    log: ["error", "warn"],
-  });
-
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = prisma;
-}
