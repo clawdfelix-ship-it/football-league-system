@@ -27,3 +27,13 @@ model Match {
   venue     String?
   status    String   @default("upcoming")
 }
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  username  String   @unique
+  password  String
+  role      String   @default("user") // user, admin
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

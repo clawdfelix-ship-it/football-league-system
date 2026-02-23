@@ -1,0 +1,43 @@
+'use client';
+
+import { useSession, signOut } from 'next-auth/react';
+import Link from 'next/link';
+
+export default function Navbar() {
+  const { data: session } = useSession();
+
+  return (
+    <nav className="bg-gray-800 text-white p-4">
+      <div className="container mx-auto flex justify-between items-center">
+        <Link href="/" className="text-xl font-bold">
+          足球聯賽管理系統
+        </Link>
+        
+        <div className="flex items-center space-x-4">
+          {session?.user ? (
+            <>
+              <span className="text-sm">
+                歡迎, {(session.user as any).username} ({(session.user as any).role})
+              </span>
+              {(session.user as any).role === 'admin' && (
+                <Link href="/admin" className="bg-blue-600 px-3 py-1 rounded text-sm hover:bg-blue-700">
+                  管理員後台
+                </Link>
+              )}
+              <button
+                onClick={() => signOut()}
+                className="bg-red-600 px-3 py-1 rounded text-sm hover:bg-red-700"
+              >
+                登出
+              </button>
+            </>
+          ) : (
+            <Link href="/login" className="bg-green-600 px-4 py-2 rounded hover:bg-green-700">
+              登入
+            </Link>
+          )}
+        </div>
+      </div>
+    </nav>
+  );
+}
