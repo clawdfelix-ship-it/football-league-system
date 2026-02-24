@@ -2,6 +2,8 @@ import React from 'react';
 import { getStandings, getMatches } from '@/lib/actions';
 import HomeLayout from '@/components/HomeLayout';
 
+export const dynamic = 'force-dynamic';
+
 export default async function Home() {
   const standings = await getStandings();
   const upcomingFixtures = await getMatches('scheduled');

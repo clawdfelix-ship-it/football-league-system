@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { revalidatePath } from 'next/cache';
 import { addMatch, getMatches } from '@/lib/actions';
 
+export const dynamic = 'force-dynamic';
+
 async function submitMatch(formData: FormData) {
   'use server';
 
