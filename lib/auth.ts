@@ -24,8 +24,8 @@ export const authOptions: NextAuthOptions = {
         // Static Admin Check
         // Default to a known credential if env vars are missing, 
         // but strongly recommend setting them in production.
-        const adminEmail = process.env.ADMIN_EMAIL || 'admin@zenex.com';
-        const adminPassword = process.env.ADMIN_PASSWORD || 'zenex2026';
+        const adminEmail = process.env.ADMIN_EMAIL || 'info@zenex-sports.com';
+        const adminPassword = process.env.ADMIN_PASSWORD || '98168789!@#';
 
         if (credentials.email === adminEmail && credentials.password === adminPassword) {
           return {
