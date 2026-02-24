@@ -48,9 +48,14 @@ export default function Navbar() {
               </button>
             </>
           ) : (
-            <Link href="/login" className="bg-green-600 px-4 py-2 rounded hover:bg-green-700 transition-colors">
-              登入
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link href="/login" className="bg-green-600 px-4 py-2 rounded hover:bg-green-700 transition-colors">
+                登入
+              </Link>
+              <Link href="/register" className="bg-blue-600 px-4 py-2 rounded hover:bg-blue-700 transition-colors">
+                註冊
+              </Link>
+            </div>
           )}
         </div>
       </div>

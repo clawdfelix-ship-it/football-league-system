@@ -99,7 +99,8 @@ export default function LoginPage() {
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600 mb-4">測試帳號：</p>
+            <a href="/register" className="text-sm text-blue-700 hover:underline">沒有帳號？立即註冊</a>
+            <p className="text-sm text-gray-600 mt-4 mb-4">測試帳號：</p>
             <div className="space-y-2 text-xs text-gray-500">
               <div className="bg-gray-50 p-3 rounded">
                 <p><strong>管理員：</strong> admin@football.com</p>

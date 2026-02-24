@@ -1,8 +1,8 @@
 import bcrypt from 'bcryptjs';
 import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import { getUserByEmail } from '@/lib/users';
 
-// 自定義用戶類型
 interface CustomUser {
   id: string;
   email: string;
@@ -22,26 +22,7 @@ export const authOptions: NextAuthOptions = {
         if (!credentials?.email || !credentials?.password) {
           return null;
         }
-
-        // 模擬用戶資料 - 你可以修改這些資料
-        const mockUsers = [
-          {
-            id: "1",
-            email: "admin@football.com",
-            username: "admin",
-            password: "$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi", // password
-            role: "admin"
-          },
-          {
-            id: "2", 
-            email: "user@football.com",
-            username: "user",
-            password: "$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi", // password
-            role: "user"
-          }
-        ];
-
-        const user = mockUsers.find(u => u.email === credentials.email);
+        const user = getUserByEmail(credentials.email);
         
         if (user && await bcrypt.compare(credentials.password, user.password)) {
           return user as any;
