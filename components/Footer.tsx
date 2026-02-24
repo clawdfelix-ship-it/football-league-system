@@ -3,7 +3,7 @@ export default function Footer() {
     <footer className="bg-slate-900 text-slate-300 py-12 px-6 mt-auto">
       <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12">
         <div>
-          <h3 className="text-white text-xl font-bold mb-4 tracking-tight">ZENEX Brand Philosophy</h3>
+          <h3 className="text-white text-xl font-bold mb-4 tracking-tight">What is Zenex</h3>
           <p className="mb-4 text-sm leading-relaxed">
             Zenex is a brand that fuses Eastern wisdom with modern sportsmanship, deriving its name from two core concepts: "Zen" (禪) and "Ex" (Excellence).
           </p>
