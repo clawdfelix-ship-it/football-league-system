@@ -9,12 +9,12 @@ export default function Navbar() {
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center gap-8">
           <Link href="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
-            <div className="relative h-10 w-10 flex-shrink-0 bg-white rounded-full p-1">
+            <div className="relative h-12 w-12 flex-shrink-0">
               <Image
                 src="/logo.png"
                 alt="ZENEX Logo"
-                width={40}
-                height={40}
+                width={48}
+                height={48}
                 className="h-full w-full object-contain"
               />
             </div>
