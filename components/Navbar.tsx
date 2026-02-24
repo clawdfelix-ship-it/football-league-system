@@ -11,7 +11,7 @@ export default function Navbar() {
           <Link href="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
             <div className="relative h-10 w-10 flex-shrink-0 bg-white rounded-full p-1">
               <Image
-                src="/logo.svg"
+                src="/logo.png"
                 alt="ZENEX Logo"
                 width={40}
                 height={40}
