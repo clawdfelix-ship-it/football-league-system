@@ -1,15 +1,20 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import HomeLayout from '@/components/HomeLayout';
 import { getPlayers, Player, PLAYER_STATUS } from '@/lib/player-actions';
 
 export default function PlayersPage() {
-  const [players, setPlayers] = useState<Player[]>(getPlayers());
+  const [players, setPlayers] = useState<Player[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTeam, setSelectedTeam] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
+
+  // 載入球員資料
+  useEffect(() => {
+    setPlayers(getPlayers());
+  }, []);
 
   const filteredPlayers = players.filter(player => {
     const matchesSearch = player.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -220,20 +225,22 @@ export default function PlayersPage() {
                                 編輯
                               </Link>
                               <button
-                            onClick={async () => {
-                              if (!confirm(`確定要刪除球員 ${player.name} 嗎？`)) return;
-                              try {
-                                const res = await fetch(`/api/players/${player.id}`, { method: 'DELETE' });
-                                if (!res.ok) {
-                                  const data = await res.json();
-                                  alert(`刪除失敗：${data?.message || res.statusText}`);
-                                  return;
-                                }
-                                setPlayers(prev => prev.filter(p => p.id !== player.id));
-                              } catch {
-                                alert('刪除過程中發生錯誤');
-                              }
-                            }}
+                                onClick={async () => {
+                                  if (!confirm(`確定要刪除球員 ${player.name} 嗎？`)) return;
+                                  try {
+                                    const res = await fetch(`/api/players/${player.id}`, { method: 'DELETE' });
+                                    if (!res.ok) {
+                                      const data = await res.json();
+                                      alert(`刪除失敗：${data?.message || res.statusText}`);
+                                      return;
+                                    }
+                                    // 重新載入球員資料
+                                    setPlayers(getPlayers());
+                                    alert('球員已成功刪除');
+                                  } catch {
+                                    alert('刪除過程中發生錯誤');
+                                  }
+                                }}
                                 className="text-red-600 hover:text-red-900"
                               >
                                 刪除
