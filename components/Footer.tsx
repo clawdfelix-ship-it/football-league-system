@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 export default function Footer() {
   return (
     <footer className="bg-slate-900 text-slate-300 py-12 px-6 mt-auto">
@@ -30,6 +32,25 @@ export default function Footer() {
             <p className="text-sm leading-relaxed italic border-l-4 border-blue-500 pl-4 mb-6">
               "Zenex integrates the inner peace of 'Zen' with the outward drive of 'Ex,' conveying that sports is not just a physical challenge but a spiritual journey of internal and external cultivation. The brand encourages users to bravely pursue excellence and break through their limits while maintaining inner peace and focus."
             </p>
+            
+            <div className="flex gap-4 justify-end mt-4">
+              <div className="relative h-24 w-36 bg-slate-800 rounded-lg overflow-hidden border border-slate-700 shadow-lg">
+                <Image 
+                  src="/ref1.jpg" 
+                  alt="Zenex Reference 1" 
+                  fill 
+                  className="object-cover hover:scale-105 transition-transform duration-300" 
+                />
+              </div>
+              <div className="relative h-24 w-36 bg-slate-800 rounded-lg overflow-hidden border border-slate-700 shadow-lg">
+                <Image 
+                  src="/ref2.jpeg" 
+                  alt="Zenex Reference 2" 
+                  fill 
+                  className="object-cover hover:scale-105 transition-transform duration-300" 
+                />
+              </div>
+            </div>
           </div>
           
           <div className="border-t border-slate-800 pt-6 mt-6 text-xs text-slate-500 flex justify-between items-center">
