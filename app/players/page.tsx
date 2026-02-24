@@ -6,7 +6,7 @@ import HomeLayout from '@/components/HomeLayout';
 import { getPlayers, Player, PLAYER_STATUS } from '@/lib/player-actions';
 
 export default function PlayersPage() {
-  const [players] = useState<Player[]>(getPlayers());
+  const [players, setPlayers] = useState<Player[]>(getPlayers());
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTeam, setSelectedTeam] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
@@ -163,9 +163,13 @@ export default function PlayersPage() {
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
                               <div className="flex-shrink-0 h-10 w-10">
-                                <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
-                                  {player.jerseyNumber}
-                                </div>
+                                {player.photoUrl ? (
+                                  <img src={player.photoUrl} alt={player.name} className="h-10 w-10 rounded-full object-cover" />
+                                ) : (
+                                  <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
+                                    {player.jerseyNumber}
+                                  </div>
+                                )}
                               </div>
                               <div className="ml-4">
                                 <div className="text-sm font-medium text-gray-900">
@@ -216,12 +220,20 @@ export default function PlayersPage() {
                                 編輯
                               </Link>
                               <button
-                                onClick={() => {
-                                  if (confirm(`確定要刪除球員 ${player.name} 嗎？`)) {
-                                    // 這裡可以添加刪除邏輯
-                                    alert('刪除功能將在後續版本中實現');
-                                  }
-                                }}
+                            onClick={async () => {
+                              if (!confirm(`確定要刪除球員 ${player.name} 嗎？`)) return;
+                              try {
+                                const res = await fetch(`/api/players/${player.id}`, { method: 'DELETE' });
+                                if (!res.ok) {
+                                  const data = await res.json();
+                                  alert(`刪除失敗：${data?.message || res.statusText}`);
+                                  return;
+                                }
+                                setPlayers(prev => prev.filter(p => p.id !== player.id));
+                              } catch {
+                                alert('刪除過程中發生錯誤');
+                              }
+                            }}
                                 className="text-red-600 hover:text-red-900"
                               >
                                 刪除

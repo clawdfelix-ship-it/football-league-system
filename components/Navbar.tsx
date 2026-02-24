@@ -22,6 +22,9 @@ export default function Navbar() {
               <Link href="/players" className="hover:text-gray-300 transition-colors">
                 球員管理
               </Link>
+              <Link href="/dashboard" className="hover:text-gray-300 transition-colors">
+                統計儀表板
+              </Link>
               {(session.user as any).role === 'admin' && (
                 <Link href="/admin" className="hover:text-gray-300 transition-colors">
                   管理員後台

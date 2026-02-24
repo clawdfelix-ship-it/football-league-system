@@ -8,6 +8,8 @@ import { POSITIONS, TEAMS, PLAYER_STATUS } from '@/lib/player-actions';
 export default function PlayerRegistrationForm() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     jerseyNumber: '',
@@ -40,7 +42,8 @@ export default function PlayerRegistrationForm() {
           height: parseInt(formData.height),
           weight: parseInt(formData.weight),
           joinedDate: new Date().toISOString(),
-          status: 'active'
+          status: 'active',
+          photoUrl: avatarPreview || undefined
         }),
       });
 
@@ -66,6 +69,35 @@ export default function PlayerRegistrationForm() {
     }));
   };
 
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingAvatar(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        alert(`上傳失敗：${data.message}`);
+        return;
+      }
+
+      const data = await res.json();
+      setAvatarPreview(data.url);
+    } catch (error) {
+      alert('上傳過程中發生錯誤');
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
   return (
     <HomeLayout>
       <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans">
@@ -85,6 +117,30 @@ export default function PlayerRegistrationForm() {
             <div className="p-8">
         
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* 頭像上傳 */}
+          <div className="flex items-center gap-4 mb-4">
+            <div className="relative">
+              {avatarPreview ? (
+                <img src={avatarPreview} alt="頭像預覽" className="w-20 h-20 rounded-full object-cover border-2 border-blue-500" />
+              ) : (
+                <div className="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
+                  頭像
+                </div>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">球員頭像</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarUpload}
+                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                disabled={uploadingAvatar}
+              />
+              {uploadingAvatar && <p className="text-xs text-blue-600 mt-1">上傳中...</p>}
+            </div>
+          </div>
+
           {/* 基本資料 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
