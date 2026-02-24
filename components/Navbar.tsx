@@ -8,7 +8,7 @@ export default function Navbar() {
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center gap-8">
           <Link href="/" className="text-xl font-bold tracking-tight">
-            Zenex - League Center
+            ZENEX-SPORTS LeagueCenter
           </Link>
           <div className="hidden md:flex items-center gap-6">
             <Link href="/#standings" className="text-sm font-medium hover:text-gray-300 transition-colors">

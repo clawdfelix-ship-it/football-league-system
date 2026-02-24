@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Zenex - League Center",
+  title: "ZENEX-SPORTS LeagueCenter",
   description: "Professional Football League Management Platform",
 };
 
