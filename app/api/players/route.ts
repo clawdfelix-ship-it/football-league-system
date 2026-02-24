@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { addPlayer } from '@/lib/player-actions';
+import { addPlayer, getPlayers } from '@/lib/player-actions-new';
 
 export async function POST(request: NextRequest) {
   try {
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 創建新球員
-    const newPlayer = addPlayer({
+    const newPlayer = await addPlayer({
       name: body.name.trim(),
       jerseyNumber: body.jerseyNumber,
       position: body.position,
@@ -60,7 +60,8 @@ export async function POST(request: NextRequest) {
       phoneNumber: body.phoneNumber?.trim() || '',
       email: body.email?.trim() || '',
       emergencyContact: body.emergencyContact?.trim() || '',
-      notes: body.notes?.trim() || ''
+      notes: body.notes?.trim() || '',
+      photoUrl: body.photoUrl || ''
     });
 
     return NextResponse.json({
@@ -70,8 +71,9 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('球員登記錯誤:', error);
+    const message = error instanceof Error ? error.message : '球員登記失敗，請稍後再試';
     return NextResponse.json(
-      { message: '球員登記失敗，請稍後再試' },
+      { message },
       { status: 500 }
     );
   }
@@ -79,10 +81,8 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
   try {
-    // 這裡可以添加獲取球員列表的邏輯
-    return NextResponse.json({
-      message: 'API 端點正常運作'
-    });
+    const players = await getPlayers();
+    return NextResponse.json({ players });
   } catch (error) {
     console.error('獲取球員列表錯誤:', error);
     return NextResponse.json(

@@ -3,22 +3,36 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import HomeLayout from '@/components/HomeLayout';
-import { getPlayers, Player, PLAYER_STATUS } from '@/lib/player-actions';
+import { getPlayers, Player, PLAYER_STATUS } from '@/lib/player-actions-new';
 
 export default function PlayersPage() {
   const [players, setPlayers] = useState<Player[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTeam, setSelectedTeam] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
+  const [loading, setLoading] = useState(true);
 
   // 載入球員資料
   useEffect(() => {
-    setPlayers(getPlayers());
+    loadPlayers();
   }, []);
+
+  const loadPlayers = async () => {
+    try {
+      setLoading(true);
+      const data = await getPlayers();
+      setPlayers(data);
+    } catch (error) {
+      console.error('載入球員資料失敗:', error);
+      alert('載入球員資料失敗，請刷新頁面重試');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredPlayers = players.filter(player => {
     const matchesSearch = player.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         player.jerseyNumber.toString().includes(searchTerm);
+                         player.jerseyNumber?.toString().includes(searchTerm);
     const matchesTeam = !selectedTeam || player.team === selectedTeam;
     const matchesStatus = !selectedStatus || player.status === selectedStatus;
     
@@ -37,6 +51,47 @@ export default function PlayersPage() {
       default: return 'bg-gray-100 text-gray-800';
     }
   };
+
+  const handleDeletePlayer = async (playerId: number, playerName: string) => {
+    if (!confirm(`確定要刪除球員 ${playerName} 嗎？`)) return;
+    
+    try {
+      const res = await fetch(`/api/players/${playerId}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const data = await res.json();
+        alert(`刪除失敗：${data?.message || res.statusText}`);
+        return;
+      }
+      // 重新載入球員資料
+      await loadPlayers();
+      alert('球員已成功刪除');
+    } catch (error) {
+      console.error('刪除球員失敗:', error);
+      alert('刪除過程中發生錯誤');
+    }
+  };
+
+  if (loading) {
+    return (
+      <HomeLayout>
+        <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans">
+          <header className="bg-[#1a237e] bg-gradient-to-b from-[#1a237e] to-[#283593] text-white pt-16 pb-24 px-6 text-center">
+            <h2 className="text-6xl font-black italic mb-2 tracking-tight">PLAYER MANAGEMENT</h2>
+            <p className="text-blue-200 text-lg font-light tracking-widest uppercase">Squad Registration & Tracking</p>
+          </header>
+
+          <main className="max-w-6xl mx-auto px-6 -mt-16 pb-20">
+            <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200 p-8">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                <p className="text-gray-500">載入球員資料中...</p>
+              </div>
+            </div>
+          </main>
+        </div>
+      </HomeLayout>
+    );
+  }
 
   return (
     <HomeLayout>
@@ -225,22 +280,7 @@ export default function PlayersPage() {
                                 編輯
                               </Link>
                               <button
-                                onClick={async () => {
-                                  if (!confirm(`確定要刪除球員 ${player.name} 嗎？`)) return;
-                                  try {
-                                    const res = await fetch(`/api/players/${player.id}`, { method: 'DELETE' });
-                                    if (!res.ok) {
-                                      const data = await res.json();
-                                      alert(`刪除失敗：${data?.message || res.statusText}`);
-                                      return;
-                                    }
-                                    // 重新載入球員資料
-                                    setPlayers(getPlayers());
-                                    alert('球員已成功刪除');
-                                  } catch {
-                                    alert('刪除過程中發生錯誤');
-                                  }
-                                }}
+                                onClick={() => handleDeletePlayer(player.id!, player.name)}
                                 className="text-red-600 hover:text-red-900"
                               >
                                 刪除
