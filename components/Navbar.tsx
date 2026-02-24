@@ -1,14 +1,26 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Navbar() {
   return (
     <nav className="bg-gray-900 text-white p-4 shadow-md sticky top-0 z-50">
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center gap-8">
-          <Link href="/" className="text-xl font-bold tracking-tight">
-            ZENEX-SPORTS LeagueCenter
+          <Link href="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
+            <div className="relative h-10 w-10 flex-shrink-0 bg-white rounded-full p-1">
+              <Image
+                src="/logo.svg"
+                alt="ZENEX Logo"
+                width={40}
+                height={40}
+                className="h-full w-full object-contain"
+              />
+            </div>
+            <span className="text-xl font-bold tracking-tight">
+              ZENEX-SPORTS LeagueCenter
+            </span>
           </Link>
           <div className="hidden md:flex items-center gap-6">
             <Link href="/#standings" className="text-sm font-medium hover:text-gray-300 transition-colors">
