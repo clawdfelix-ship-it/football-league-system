@@ -5,9 +5,18 @@ import HomeLayout from '@/components/HomeLayout';
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
-  const standings = await getStandings();
-  const upcomingFixtures = await getMatches('scheduled');
-  const recentResults = await getMatches('finished');
+  let standings: any[] = [];
+  let upcomingFixtures: any[] = [];
+  let recentResults: any[] = [];
+
+  try {
+    standings = await getStandings();
+    upcomingFixtures = await getMatches('scheduled');
+    recentResults = await getMatches('finished');
+  } catch (error) {
+    console.error('Failed to fetch data from database:', error);
+    // Continue rendering with empty data
+  }
 
   return (
     <HomeLayout>
@@ -44,7 +53,9 @@ export default async function Home() {
                     {standings.length === 0 ? (
                       <tr>
                         <td colSpan={10} className="px-6 py-8 text-center text-slate-500">
-                          No standings data available yet.
+                          {standings.length === 0 && upcomingFixtures.length === 0 && recentResults.length === 0 
+                            ? "Database not initialized or connection failed. Please run /api/init-db" 
+                            : "No standings data available yet."}
                         </td>
                       </tr>
                     ) : (

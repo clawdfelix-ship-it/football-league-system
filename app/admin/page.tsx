@@ -37,7 +37,12 @@ async function submitMatch(formData: FormData) {
 }
 
 export default async function AdminPage() {
-  const recentMatches = await getMatches();
+  let recentMatches: any[] = [];
+  try {
+    recentMatches = await getMatches();
+  } catch (error) {
+    console.error("Failed to fetch matches for admin:", error);
+  }
 
   return (
     <div className="min-h-screen bg-zinc-50 font-sans text-zinc-900 dark:bg-black dark:text-zinc-50">
