@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import HomeLayout from '@/components/HomeLayout';
 import { POSITIONS, TEAMS, PLAYER_STATUS } from '@/lib/player-actions';
 
 export default function PlayerRegistrationForm() {
@@ -66,9 +67,22 @@ export default function PlayerRegistrationForm() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6">球員登記</h1>
+    <HomeLayout>
+      <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans">
+        {/* Hero 橫幅 */}
+        <header className="bg-[#1a237e] bg-gradient-to-b from-[#1a237e] to-[#283593] text-white pt-16 pb-24 px-6 text-center">
+          <h2 className="text-6xl font-black italic mb-2 tracking-tight">PLAYER REGISTRATION</h2>
+          <p className="text-blue-200 text-lg font-light tracking-widest uppercase">Official Squad Entry Form</p>
+        </header>
+
+        <main className="max-w-4xl mx-auto px-6 -mt-16 pb-20">
+          <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200">
+            <div className="bg-slate-900 text-white px-8 py-5 flex justify-between items-center">
+              <h3 className="text-xl font-bold tracking-tight">PLAYER REGISTRATION FORM</h3>
+              <span className="text-xs bg-yellow-500 text-black px-2 py-1 rounded font-black">REQUIRED FIELDS *</span>
+            </div>
+            
+            <div className="p-8">
         
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* 基本資料 */}
@@ -292,7 +306,10 @@ export default function PlayerRegistrationForm() {
             </button>
           </div>
         </form>
-      </div>
+          </div>
+        </div>
+      </main>
     </div>
+  </HomeLayout>
   );
 }
