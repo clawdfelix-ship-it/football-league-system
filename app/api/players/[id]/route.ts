@@ -3,10 +3,11 @@ import { deletePlayer } from '@/lib/player-actions-new';
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const playerId = parseInt(params.id);
+    const { id } = await params;
+    const playerId = parseInt(id);
     
     if (isNaN(playerId)) {
       return NextResponse.json(
