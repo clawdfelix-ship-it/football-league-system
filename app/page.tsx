@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import { getStandings, getMatches } from '@/lib/actions';
 import HomeLayout from '@/components/HomeLayout';
 
@@ -21,7 +22,16 @@ export default async function Home() {
   return (
     <HomeLayout>
       <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans">
-        <header className="bg-[#1a237e] bg-gradient-to-b from-[#1a237e] to-[#283593] text-white pt-16 pb-24 px-6 text-center">
+        <header className="bg-[#1a237e] bg-gradient-to-b from-[#1a237e] to-[#283593] text-white pt-16 pb-24 px-6 text-center flex flex-col items-center">
+          <div className="mb-6 relative h-32 w-32">
+            <Image
+              src="/logo.png"
+              alt="ZENEX Logo"
+              fill
+              className="object-contain"
+              priority
+            />
+          </div>
           <h2 className="text-6xl font-black italic mb-2 tracking-tight">ZENEX-SPORTS LeagueCenter</h2>
           <p className="text-blue-200 text-lg font-light tracking-widest uppercase">Official League Information Hub</p>
         </header>
