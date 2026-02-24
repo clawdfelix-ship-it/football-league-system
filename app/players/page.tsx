@@ -3,7 +3,14 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import HomeLayout from '@/components/HomeLayout';
-import { getPlayers, Player, PLAYER_STATUS } from '@/lib/player-actions-new';
+import type { Player } from '@/lib/schema';
+
+const PLAYER_STATUS = {
+  active: '活躍',
+  injured: '受傷',
+  suspended: '停賽',
+  inactive: '非活躍',
+} as const;
 
 export default function PlayersPage() {
   const [players, setPlayers] = useState<Player[]>([]);
@@ -20,8 +27,12 @@ export default function PlayersPage() {
   const loadPlayers = async () => {
     try {
       setLoading(true);
-      const data = await getPlayers();
-      setPlayers(data);
+      const res = await fetch('/api/players');
+      if (!res.ok) {
+        throw new Error('無法載入球員資料');
+      }
+      const data = await res.json();
+      setPlayers(data.players || []);
     } catch (error) {
       console.error('載入球員資料失敗:', error);
       alert('載入球員資料失敗，請刷新頁面重試');
@@ -39,10 +50,16 @@ export default function PlayersPage() {
     return matchesSearch && matchesTeam && matchesStatus;
   });
 
-  const teams = [...new Set(players.map(p => p.team))];
+  const teams = [
+    ...new Set(
+      players
+        .map((p) => p.team)
+        .filter((team): team is string => !!team),
+    ),
+  ];
   const statusOptions = Object.entries(PLAYER_STATUS);
 
-  const getStatusColor = (status: Player['status']) => {
+  const getStatusColor = (status: keyof typeof PLAYER_STATUS) => {
     switch (status) {
       case 'active': return 'bg-green-100 text-green-800';
       case 'injured': return 'bg-red-100 text-red-800';
@@ -251,9 +268,19 @@ export default function PlayersPage() {
                             <div className="text-sm text-gray-900">{player.position}</div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(player.status)}`}>
-                              {PLAYER_STATUS[player.status]}
-                            </span>
+                            {(() => {
+                              const statusKey =
+                                (player.status ?? 'inactive') as keyof typeof PLAYER_STATUS;
+                              return (
+                                <span
+                                  className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(
+                                    statusKey,
+                                  )}`}
+                                >
+                                  {PLAYER_STATUS[statusKey]}
+                                </span>
+                              );
+                            })()}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm text-gray-900">

@@ -1,4 +1,6 @@
-import { prisma } from "@/lib/db";
+import { db } from './db';
+import { matches, type Match } from './schema';
+import { desc, eq, asc } from 'drizzle-orm';
 
 export type TeamStanding = {
   teamName: string;
@@ -13,48 +15,8 @@ export type TeamStanding = {
 };
 
 export async function getStandings(): Promise<TeamStanding[]> {
-  // Mock data for development
-  const mockMatches = [
-    {
-      id: 1,
-      homeTeam: "曼城",
-      awayTeam: "利物浦",
-      homeScore: 2,
-      awayScore: 1,
-      date: "2026-02-20",
-      status: "finished",
-    },
-    {
-      id: 2,
-      homeTeam: "阿森納",
-      awayTeam: "切爾西",
-      homeScore: 1,
-      awayScore: 1,
-      date: "2026-02-21",
-      status: "finished",
-    },
-    {
-      id: 3,
-      homeTeam: "利物浦",
-      awayTeam: "阿森納",
-      homeScore: 3,
-      awayScore: 0,
-      date: "2026-02-22",
-      status: "finished",
-    },
-    {
-      id: 4,
-      homeTeam: "切爾西",
-      awayTeam: "曼城",
-      homeScore: 1,
-      awayScore: 2,
-      date: "2026-02-23",
-      status: "finished",
-    },
-  ];
-
-  const matches = mockMatches;
-
+  const allMatches = await db.select().from(matches);
+  
   const table = new Map<string, TeamStanding>();
 
   function ensureTeam(name: string) {
@@ -74,8 +36,8 @@ export async function getStandings(): Promise<TeamStanding[]> {
     return table.get(name)!;
   }
 
-  for (const match of matches) {
-    if (match.homeScore === null || match.awayScore === null) {
+  for (const match of allMatches) {
+    if (match.status !== 'finished' || match.homeScore === null || match.awayScore === null) {
       continue;
     }
 
@@ -89,6 +51,9 @@ export async function getStandings(): Promise<TeamStanding[]> {
     home.goalsAgainst += match.awayScore;
     away.goalsFor += match.awayScore;
     away.goalsAgainst += match.homeScore;
+    
+    home.goalDifference = home.goalsFor - home.goalsAgainst;
+    away.goalDifference = away.goalsFor - away.goalsAgainst;
 
     if (match.homeScore > match.awayScore) {
       home.wins += 1;
@@ -100,14 +65,10 @@ export async function getStandings(): Promise<TeamStanding[]> {
       home.losses += 1;
     } else {
       home.draws += 1;
-      away.draws += 1;
       home.points += 1;
+      away.draws += 1;
       away.points += 1;
     }
-  }
-
-  for (const team of table.values()) {
-    team.goalDifference = team.goalsFor - team.goalsAgainst;
   }
 
   const standings = Array.from(table.values());
@@ -128,3 +89,21 @@ export async function getStandings(): Promise<TeamStanding[]> {
   return standings;
 }
 
+export async function getMatches(status?: 'scheduled' | 'finished') {
+  if (status) {
+    return await db.select().from(matches).where(eq(matches.status, status)).orderBy(status === 'scheduled' ? asc(matches.date) : desc(matches.date));
+  }
+  return await db.select().from(matches).orderBy(desc(matches.date));
+}
+
+export async function addMatch(data: {
+  homeTeam: string;
+  awayTeam: string;
+  homeScore?: number;
+  awayScore?: number;
+  date: Date;
+  venue?: string;
+  status: 'scheduled' | 'finished';
+}) {
+  return await db.insert(matches).values(data).returning();
+}

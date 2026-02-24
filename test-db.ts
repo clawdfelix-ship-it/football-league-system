@@ -2,6 +2,7 @@
 import { initializeDatabase } from './lib/migrations';
 import { getPlayers, addPlayer } from './lib/player-actions-new';
 import { createUser, getUserByEmail } from './lib/users-new';
+import { addMatch, getMatches, getStandings } from './lib/actions';
 
 async function testDatabase() {
   console.log('開始測試數據庫功能...');
@@ -58,6 +59,28 @@ async function testDatabase() {
       });
       console.log('✅ 添加球員成功:', newPlayer.name);
     }
+
+    // 4. 測試比賽功能
+    console.log('4. 測試比賽功能...');
+    const matches = await getMatches();
+    console.log(`✅ 獲取比賽列表成功，共 ${matches.length} 場比賽`);
+    
+    if (matches.length === 0) {
+      console.log('添加測試比賽...');
+      await addMatch({
+        homeTeam: 'Test Home',
+        awayTeam: 'Test Away',
+        homeScore: 2,
+        awayScore: 1,
+        date: new Date(),
+        status: 'finished',
+        venue: 'Test Venue'
+      });
+      console.log('✅ 添加測試比賽成功');
+    }
+    
+    const standings = await getStandings();
+    console.log(`✅ 獲取積分榜成功，共 ${standings.length} 支球隊`);
     
     console.log('\n🎉 所有測試通過！數據庫功能正常。');
     

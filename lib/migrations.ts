@@ -41,11 +41,29 @@ export async function createUsersTable() {
   `);
 }
 
+// 創建比賽表
+export async function createMatchesTable() {
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS matches (
+      id SERIAL PRIMARY KEY,
+      home_team VARCHAR(100) NOT NULL,
+      away_team VARCHAR(100) NOT NULL,
+      home_score INTEGER,
+      away_score INTEGER,
+      date TIMESTAMP NOT NULL,
+      venue VARCHAR(100),
+      status VARCHAR(20) DEFAULT 'scheduled',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
+}
+
 // 初始化數據庫
 export async function initializeDatabase() {
   try {
     await createPlayersTable();
     await createUsersTable();
+    await createMatchesTable();
     console.log('數據庫初始化成功');
   } catch (error) {
     console.error('數據庫初始化失敗:', error);

@@ -32,8 +32,23 @@ export const users = pgTable('users', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
+// 比賽表
+export const matches = pgTable('matches', {
+  id: serial('id').primaryKey(),
+  homeTeam: varchar('home_team', { length: 100 }).notNull(),
+  awayTeam: varchar('away_team', { length: 100 }).notNull(),
+  homeScore: integer('home_score'),
+  awayScore: integer('away_score'),
+  date: timestamp('date').notNull(),
+  venue: varchar('venue', { length: 100 }),
+  status: varchar('status', { length: 20 }).default('scheduled'), // scheduled, finished
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
 // 數據類型導出
 export type Player = typeof players.$inferSelect;
 export type NewPlayer = typeof players.$inferInsert;
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
+export type Match = typeof matches.$inferSelect;
+export type NewMatch = typeof matches.$inferInsert;
