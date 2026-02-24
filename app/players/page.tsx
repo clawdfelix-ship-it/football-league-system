@@ -1,0 +1,236 @@
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+import { getPlayers, Player, PLAYER_STATUS } from '@/lib/player-actions';
+
+export default function PlayersPage() {
+  const [players] = useState<Player[]>(getPlayers());
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedTeam, setSelectedTeam] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('');
+
+  const filteredPlayers = players.filter(player => {
+    const matchesSearch = player.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         player.jerseyNumber.toString().includes(searchTerm);
+    const matchesTeam = !selectedTeam || player.team === selectedTeam;
+    const matchesStatus = !selectedStatus || player.status === selectedStatus;
+    
+    return matchesSearch && matchesTeam && matchesStatus;
+  });
+
+  const teams = [...new Set(players.map(p => p.team))];
+  const statusOptions = Object.entries(PLAYER_STATUS);
+
+  const getStatusColor = (status: Player['status']) => {
+    switch (status) {
+      case 'active': return 'bg-green-100 text-green-800';
+      case 'injured': return 'bg-red-100 text-red-800';
+      case 'suspended': return 'bg-yellow-100 text-yellow-800';
+      case 'inactive': return 'bg-gray-100 text-gray-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  return (
+    <div className="max-w-7xl mx-auto p-6">
+      <div className="bg-white rounded-lg shadow-md">
+        {/* 頁面標題和操作 */}
+        <div className="p-6 border-b border-gray-200">
+          <div className="flex justify-between items-center">
+            <h1 className="text-2xl font-bold text-gray-800">球員管理</h1>
+            <Link
+              href="/players/register"
+              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+            >
+              + 新增球員
+            </Link>
+          </div>
+        </div>
+
+        {/* 篩選器 */}
+        <div className="p-6 border-b border-gray-200">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                搜尋球員
+              </label>
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="姓名或球衣號碼"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                球隊
+              </label>
+              <select
+                value={selectedTeam}
+                onChange={(e) => setSelectedTeam(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">全部球隊</option>
+                {teams.map(team => (
+                  <option key={team} value={team}>{team}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                狀態
+              </label>
+              <select
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">全部狀態</option>
+                {statusOptions.map(([value, label]) => (
+                  <option key={value} value={value}>{label}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="flex items-end">
+              <button
+                onClick={() => {
+                  setSearchTerm('');
+                  setSelectedTeam('');
+                  setSelectedStatus('');
+                }}
+                className="w-full bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors"
+              >
+                清除篩選
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* 球員列表 */}
+        <div className="p-6">
+          {filteredPlayers.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-gray-500 text-lg">沒有符合條件的球員</p>
+              <Link
+                href="/players/register"
+                className="inline-block mt-4 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+              >
+                新增第一個球員
+              </Link>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      球員資訊
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      球隊
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      位置
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      狀態
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      聯絡方式
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      操作
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {filteredPlayers.map((player) => (
+                    <tr key={player.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="flex-shrink-0 h-10 w-10">
+                            <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
+                              {player.jerseyNumber}
+                            </div>
+                          </div>
+                          <div className="ml-4">
+                            <div className="text-sm font-medium text-gray-900">
+                              {player.name}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {player.age}歲 • {player.nationality}
+                            </div>
+                            <div className="text-xs text-gray-400">
+                              {player.height}cm / {player.weight}kg
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">{player.team}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">{player.position}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(player.status)}`}>
+                          {PLAYER_STATUS[player.status]}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">
+                          {player.phoneNumber && (
+                            <div>📱 {player.phoneNumber}</div>
+                          )}
+                          {player.email && (
+                            <div>📧 {player.email}</div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div className="flex space-x-2">
+                          <Link
+                            href={`/players/${player.id}`}
+                            className="text-blue-600 hover:text-blue-900"
+                          >
+                            查看
+                          </Link>
+                          <Link
+                            href={`/players/${player.id}/edit`}
+                            className="text-green-600 hover:text-green-900"
+                          >
+                            編輯
+                          </Link>
+                          <button
+                            onClick={() => {
+                              if (confirm(`確定要刪除球員 ${player.name} 嗎？`)) {
+                                // 這裡可以添加刪除邏輯
+                                alert('刪除功能將在後續版本中實現');
+                              }
+                            }}
+                            className="text-red-600 hover:text-red-900"
+                          >
+                            刪除
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+          
+          <div className="mt-4 text-sm text-gray-500">
+            共找到 {filteredPlayers.length} 名球員
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
