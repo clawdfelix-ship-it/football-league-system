@@ -12,9 +12,9 @@ export default function LoginPage() {
   const router = useRouter();
   const { data: session } = useSession();
 
-  // 如果用戶已登入，重定向到首頁
+  // If already logged in, redirect to admin
   if (session) {
-    router.push('/');
+    router.push('/admin');
     return null;
   }
 
@@ -31,60 +31,60 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        setError('登入失敗：電郵或密碼錯誤');
+        setError('Invalid email or password');
       } else if (result?.ok) {
-        router.push('/');
+        router.push('/admin');
         router.refresh();
       }
     } catch (error) {
-      setError('登入時發生錯誤，請稍後再試');
+      setError('An error occurred. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-900 to-purple-900 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-zinc-950 flex items-center justify-center px-4">
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">足球聯賽管理系統</h1>
-          <p className="text-gray-300">請登入您的帳號</p>
+          <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">Zenex - League Center</h1>
+          <p className="text-zinc-400">Admin Login</p>
         </div>
 
-        <div className="bg-white rounded-lg shadow-xl p-8">
+        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl shadow-xl p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                電郵地址
+              <label htmlFor="email" className="block text-sm font-medium text-zinc-300 mb-2">
+                Email
               </label>
               <input
                 id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="admin@football.com"
+                className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                placeholder="admin@zenex.com"
                 required
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                密碼
+              <label htmlFor="password" className="block text-sm font-medium text-zinc-300 mb-2">
+                Password
               </label>
               <input
                 id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="password"
+                className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                placeholder="••••••••"
                 required
               />
             </div>
 
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
+              <div className="bg-red-900/30 border border-red-800 text-red-200 px-4 py-3 rounded-xl text-sm">
                 {error}
               </div>
             )}
@@ -92,26 +92,11 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200"
+              className="w-full bg-white text-black font-bold py-3 px-4 rounded-xl hover:bg-zinc-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-zinc-900 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200"
             >
-              {loading ? '登入中...' : '登入'}
+              {loading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
-
-          <div className="mt-6 text-center">
-            <a href="/register" className="text-sm text-blue-700 hover:underline">沒有帳號？立即註冊</a>
-            <p className="text-sm text-gray-600 mt-4 mb-4">測試帳號：</p>
-            <div className="space-y-2 text-xs text-gray-500">
-              <div className="bg-gray-50 p-3 rounded">
-                <p><strong>管理員：</strong> admin@football.com</p>
-                <p><strong>密碼：</strong> password</p>
-              </div>
-              <div className="bg-gray-50 p-3 rounded">
-                <p><strong>用戶：</strong> user@football.com</p>
-                <p><strong>密碼：</strong> password</p>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>

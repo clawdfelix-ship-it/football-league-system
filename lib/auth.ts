@@ -1,7 +1,5 @@
-import bcrypt from 'bcryptjs';
 import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import { getUserByEmail } from '@/lib/users';
 
 interface CustomUser {
   id: string;
@@ -22,10 +20,20 @@ export const authOptions: NextAuthOptions = {
         if (!credentials?.email || !credentials?.password) {
           return null;
         }
-        const user = getUserByEmail(credentials.email);
-        
-        if (user && await bcrypt.compare(credentials.password, user.password)) {
-          return user as any;
+
+        // Static Admin Check
+        // Default to a known credential if env vars are missing, 
+        // but strongly recommend setting them in production.
+        const adminEmail = process.env.ADMIN_EMAIL || 'admin@zenex.com';
+        const adminPassword = process.env.ADMIN_PASSWORD || 'zenex2026';
+
+        if (credentials.email === adminEmail && credentials.password === adminPassword) {
+          return {
+            id: 'admin',
+            email: adminEmail,
+            username: 'Admin',
+            role: 'admin'
+          };
         }
         
         return null;

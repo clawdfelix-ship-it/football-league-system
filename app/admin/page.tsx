@@ -1,11 +1,20 @@
 import Link from 'next/link';
 import { revalidatePath } from 'next/cache';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { redirect } from 'next/navigation';
 import { addMatch, getMatches } from '@/lib/actions';
 
 export const dynamic = 'force-dynamic';
 
 async function submitMatch(formData: FormData) {
   'use server';
+
+  // Check authentication
+  const session = await getServerSession(authOptions);
+  if (!session || (session.user as any)?.role !== 'admin') {
+    throw new Error('Unauthorized');
+  }
 
   const homeTeam = formData.get('homeTeam')?.toString().trim() ?? '';
   const awayTeam = formData.get('awayTeam')?.toString().trim() ?? '';
@@ -37,6 +46,11 @@ async function submitMatch(formData: FormData) {
 }
 
 export default async function AdminPage() {
+  const session = await getServerSession(authOptions);
+  if (!session || (session.user as any)?.role !== 'admin') {
+    redirect('/login');
+  }
+
   let recentMatches: any[] = [];
   try {
     recentMatches = await getMatches();
@@ -48,9 +62,14 @@ export default async function AdminPage() {
     <div className="min-h-screen bg-zinc-50 font-sans text-zinc-900 dark:bg-black dark:text-zinc-50">
       <main className="mx-auto flex max-w-3xl flex-col gap-8 px-4 py-10 sm:px-6 lg:px-8">
         <header className="flex flex-col gap-2">
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            Manage Matches
-          </h1>
+          <div className="flex justify-between items-center">
+            <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+              Manage Matches
+            </h1>
+            <div className="text-sm text-zinc-500">
+              Logged in as {(session.user as any)?.username || 'Admin'}
+            </div>
+          </div>
           <p className="text-sm text-zinc-600 dark:text-zinc-400">
             Add fixtures or results. The league table and homepage will be updated automatically.
           </p>

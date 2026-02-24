@@ -22,7 +22,7 @@ export default async function Home() {
     <HomeLayout>
       <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans">
         <header className="bg-[#1a237e] bg-gradient-to-b from-[#1a237e] to-[#283593] text-white pt-16 pb-24 px-6 text-center">
-          <h2 className="text-6xl font-black italic mb-2 tracking-tight">EXCELLENCE IN MOTION</h2>
+          <h2 className="text-6xl font-black italic mb-2 tracking-tight">ZENEX - LEAGUE CENTER</h2>
           <p className="text-blue-200 text-lg font-light tracking-widest uppercase">Official League Information Hub</p>
         </header>
 
