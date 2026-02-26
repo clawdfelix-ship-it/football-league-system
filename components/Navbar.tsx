@@ -33,9 +33,6 @@ export default function Navbar() {
             <Link href="/teams" className="text-sm font-medium hover:text-gray-300 transition-colors">
               球隊
             </Link>
-            <Link href="/players" className="text-sm font-medium hover:text-gray-300 transition-colors">
-              球員
-            </Link>
           </div>
         </div>
         <div>
