@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { getStandings, getMatches } from '@/lib/actions';
 import HomeLayout from '@/components/HomeLayout';
 import { useLanguage } from '@/context/LanguageContext';
 
@@ -26,7 +25,7 @@ interface Match {
   awayTeam: string;
   homeScore: number | null;
   awayScore: number | null;
-  date: { toLocaleDateString: (locale: string) => string; toLocaleTimeString: (locale: string, options?: object) => string };
+  date: string;
   venue: string | null;
   status: string | null;
 }
@@ -45,14 +44,81 @@ function HomeContent() {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [standingsData, fixturesData, resultsData] = await Promise.all([
-        getStandings(),
-        getMatches('scheduled'),
-        getMatches('finished')
+      const [fixturesRes, resultsRes] = await Promise.all([
+        fetch('/api/matches?status=scheduled'),
+        fetch('/api/matches?status=finished')
       ]);
-      setStandings(standingsData);
-      setUpcomingFixtures(fixturesData);
-      setRecentResults(resultsData);
+      
+      const fixturesData = await fixturesRes.json();
+      const resultsData = await resultsRes.json();
+      
+      const fixtures = fixturesData.matches || [];
+      const results = resultsData.matches || [];
+      
+      // Calculate standings from results
+      const table = new Map<string, TeamStanding>();
+      
+      const ensureTeam = (name: string) => {
+        if (!table.has(name)) {
+          table.set(name, {
+            teamName: name,
+            played: 0,
+            wins: 0,
+            draws: 0,
+            losses: 0,
+            goalsFor: 0,
+            goalsAgainst: 0,
+            goalDifference: 0,
+            points: 0,
+          });
+        }
+        return table.get(name)!;
+      };
+      
+      for (const match of results) {
+        if (match.status !== 'finished') continue;
+        
+        const home = ensureTeam(match.homeTeam);
+        const away = ensureTeam(match.awayTeam);
+        
+        home.played += 1;
+        away.played += 1;
+        
+        home.goalsFor += match.homeScore || 0;
+        home.goalsAgainst += match.awayScore || 0;
+        away.goalsFor += match.awayScore || 0;
+        away.goalsAgainst += match.homeScore || 0;
+        
+        home.goalDifference = home.goalsFor - home.goalsAgainst;
+        away.goalDifference = away.goalsFor - away.goalsAgainst;
+        
+        if (match.homeScore > match.awayScore) {
+          home.wins += 1;
+          home.points += 3;
+          away.losses += 1;
+        } else if (match.homeScore < match.awayScore) {
+          away.wins += 1;
+          away.points += 3;
+          home.losses += 1;
+        } else {
+          home.draws += 1;
+          home.points += 1;
+          away.draws += 1;
+          away.points += 1;
+        }
+      }
+      
+      const standingsArray = Array.from(table.values());
+      standingsArray.sort((a, b) => {
+        if (b.points !== a.points) return b.points - a.points;
+        if (b.goalDifference !== a.goalDifference) return b.goalDifference - a.goalDifference;
+        if (b.goalsFor !== a.goalsFor) return b.goalsFor - a.goalsFor;
+        return a.teamName.localeCompare(b.teamName);
+      });
+      
+      setStandings(standingsArray);
+      setUpcomingFixtures(fixtures);
+      setRecentResults(results);
     } catch (error) {
       console.error('Failed to fetch data:', error);
     } finally {
@@ -195,10 +261,10 @@ function HomeContent() {
                       </div>
                       <div className="text-center w-1/3">
                         <div className="text-sm text-slate-600">
-                          {match.date.toLocaleDateString('en-GB')}
+                          {new Date(match.date).toLocaleDateString('en-GB')}
                         </div>
                          <div className="text-sm text-slate-600">
-                          {match.date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+                          {new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
                         </div>
                         <div className="text-xs text-slate-500">{match.venue}</div>
                       </div>
@@ -227,7 +293,7 @@ function HomeContent() {
                     >
                       <div className="text-left w-1/3">
                         <div className="font-bold text-slate-900">{match.homeTeam}</div>
-                        <div className="text-xs text-slate-500">{match.date.toLocaleDateString('en-GB')}</div>
+                        <div className="text-xs text-slate-500">{new Date(match.date).toLocaleDateString('en-GB')}</div>
                       </div>
                       <div className="text-center w-1/3">
                         <div className="font-black text-lg text-slate-900">{match.homeScore} - {match.awayScore}</div>
