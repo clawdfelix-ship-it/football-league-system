@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import LanguageToggle from './LanguageToggle';
 
 export default function Navbar() {
   return (
@@ -19,22 +20,31 @@ export default function Navbar() {
               />
             </div>
             <span className="text-xl font-bold tracking-tight">
-              ZENEX-SPORTS LeagueCenter
+              Hong Kong Bank League 2026
             </span>
           </Link>
           <div className="hidden md:flex items-center gap-6">
             <Link href="/#standings" className="text-sm font-medium hover:text-gray-300 transition-colors">
-              Standings
+              積分榜
             </Link>
             <Link href="/#matches" className="text-sm font-medium hover:text-gray-300 transition-colors">
-              Fixtures & Results
+              賽程 & 結果
+            </Link>
+            <Link href="/teams" className="text-sm font-medium hover:text-gray-300 transition-colors">
+              球隊
+            </Link>
+            <Link href="/players" className="text-sm font-medium hover:text-gray-300 transition-colors">
+              球員
             </Link>
           </div>
         </div>
         <div>
-          <Link href="/admin" className="text-sm font-medium bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg transition-colors">
-            Admin
-          </Link>
+          <div className="flex items-center gap-3">
+            <LanguageToggle />
+            <Link href="/admin" className="text-sm font-medium bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg transition-colors">
+              Admin
+            </Link>
+          </div>
         </div>
       </div>
     </nav>
