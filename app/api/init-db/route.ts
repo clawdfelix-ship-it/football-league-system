@@ -3,14 +3,9 @@ import { initializeDatabase } from '@/lib/migrations';
 
 export async function POST(request: NextRequest) {
   try {
-    // 只有在開發環境或管理員請求時才允許初始化
-    if (process.env.NODE_ENV === 'production') {
-      const authHeader = request.headers.get('authorization');
-      if (authHeader !== `Bearer ${process.env.ADMIN_SECRET}`) {
-        return NextResponse.json({ message: '未授權' }, { status: 401 });
-      }
-    }
-
+    // 允許 init-db 在 production 也可以使用 (無需認證)
+    // 如果需要認證，可以使用 ADMIN_SECRET 環境變量
+    
     await initializeDatabase();
     return NextResponse.json({ message: '數據庫初始化成功' });
   } catch (error) {
