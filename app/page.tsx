@@ -275,10 +275,10 @@ function HomeContent() {
                       </div>
                       <div className="text-center w-1/3">
                         <div className="text-sm text-slate-600 font-bold">
-                          {new Date(match.date).toLocaleDateString('en-GB')}
+                          {match.date ? new Date(match.date).toLocaleDateString('en-GB') : ''}
                         </div>
                         <div className="text-sm text-slate-600">
-                          {new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+                          {match.date ? new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : ''}
                         </div>
                         <div className="text-xs text-slate-500 mt-1">{match.venue}</div>
                       </div>
