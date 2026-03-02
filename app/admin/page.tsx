@@ -163,6 +163,9 @@ export default function AdminPage() {
     );
   }
 
+  // Use optional chaining for safe access
+  const username = session?.user?.name || 'Admin';
+
   return (
     <div className="min-h-screen bg-zinc-50 font-sans text-zinc-900 dark:bg-black dark:text-zinc-50">
       <main className="mx-auto flex max-w-3xl flex-col gap-8 px-4 py-10 sm:px-6 lg:px-8">
@@ -172,7 +175,7 @@ export default function AdminPage() {
               Manage Matches
             </h1>
             <div className="text-sm text-zinc-500">
-              Logged in as {session.user?.name || 'Admin'}
+              Logged in as {username}
             </div>
           </div>
           <p className="text-sm text-zinc-600 dark:text-zinc-400">
