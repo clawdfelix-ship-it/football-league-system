@@ -41,6 +41,7 @@ async function submitMatch(formData: FormData) {
   const homeScoreRaw = formData.get('homeScore')?.toString();
   const awayScoreRaw = formData.get('awayScore')?.toString();
   const dateRaw = formData.get('date')?.toString();
+  const timeRaw = formData.get('time')?.toString();
   const venueRaw = formData.get('venue')?.toString().trim();
   const status = formData.get('status')?.toString() as 'scheduled' | 'finished';
 
@@ -51,12 +52,18 @@ async function submitMatch(formData: FormData) {
   const homeScore = homeScoreRaw !== '' ? Number(homeScoreRaw) : undefined;
   const awayScore = awayScoreRaw !== '' ? Number(awayScoreRaw) : undefined;
 
+  let matchDate = new Date(dateRaw);
+  if (timeRaw) {
+    const [hours, minutes] = timeRaw.split(':').map(Number);
+    matchDate.setHours(hours, minutes);
+  }
+
   await addMatch({
     homeTeam,
     awayTeam,
     homeScore: Number.isNaN(homeScore) ? undefined : homeScore,
     awayScore: Number.isNaN(awayScore) ? undefined : awayScore,
-    date: new Date(dateRaw),
+    date: matchDate,
     venue: venueRaw || 'Unknown Venue',
     status: status || 'finished',
   });
@@ -155,13 +162,21 @@ export default async function AdminPage() {
                 >
                   Match date
                 </label>
-                <input
-                  id="date"
-                  name="date"
-                  type="date"
-                  required
-                  className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm outline-none ring-0 transition focus:border-zinc-400 focus:ring-2 focus:ring-zinc-200 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:focus:border-zinc-500 dark:focus:ring-zinc-800"
-                />
+                <div className="flex gap-2">
+                  <input
+                    id="date"
+                    name="date"
+                    type="date"
+                    required
+                    className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm outline-none ring-0 transition focus:border-zinc-400 focus:ring-2 focus:ring-zinc-200 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:focus:border-zinc-500 dark:focus:ring-zinc-800"
+                  />
+                  <input
+                    id="time"
+                    name="time"
+                    type="time"
+                    className="w-32 rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm outline-none ring-0 transition focus:border-zinc-400 focus:ring-2 focus:ring-zinc-200 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:focus:border-zinc-500 dark:focus:ring-zinc-800"
+                  />
+                </div>
               </div>
             </div>
 
@@ -201,19 +216,25 @@ export default async function AdminPage() {
             </div>
 
             <div className="space-y-1">
-              <label
-                htmlFor="venue"
-                className="text-sm font-medium text-zinc-800 dark:text-zinc-200"
-              >
-                Venue
-              </label>
-              <input
-                id="venue"
-                name="venue"
-                className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm outline-none ring-0 transition focus:border-zinc-400 focus:ring-2 focus:ring-zinc-200 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:focus:border-zinc-500 dark:focus:ring-zinc-800"
-                placeholder="e.g. Old Trafford"
-              />
-            </div>
+                <label
+                  htmlFor="venue"
+                  className="text-sm font-medium text-zinc-800 dark:text-zinc-200"
+                >
+                  Venue
+                </label>
+                <input
+                  id="venue"
+                  name="venue"
+                  list="venues"
+                  className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm outline-none ring-0 transition focus:border-zinc-400 focus:ring-2 focus:ring-zinc-200 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:focus:border-zinc-500 dark:focus:ring-zinc-800"
+                  placeholder="Select or type venue"
+                />
+                <datalist id="venues">
+                  <option value="中山紀念公園 (Sun Yat Sen Memorial Park)" />
+                  <option value="鰂魚涌公園1號場 (Quarry Bay Park No. 1, near Taikoo Shing)" />
+                  <option value="鰂魚涌公園2號場 (Quarry Bay Park No. 2, near Quarry Bay Station)" />
+                </datalist>
+              </div>
 
             <button
               type="submit"
