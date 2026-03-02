@@ -57,11 +57,12 @@ export default function AdminPage() {
     const homeScore = homeScoreRaw !== '' ? Number(homeScoreRaw) : undefined;
     const awayScore = awayScoreRaw !== '' ? Number(awayScoreRaw) : undefined;
 
-    let matchDate = new Date(dateRaw);
-    if (timeRaw) {
-      const [hours, minutes] = timeRaw.split(':').map(Number);
-      matchDate.setHours(hours, minutes);
-    }
+    // Construct date string explicitly to ensure local time is respected
+    // input type="date" returns YYYY-MM-DD
+    // input type="time" returns HH:MM
+    const timeString = timeRaw || '00:00';
+    const dateTimeString = `${dateRaw}T${timeString}`;
+    const matchDate = new Date(dateTimeString);
 
     await addMatch({
       homeTeam,
@@ -82,14 +83,26 @@ export default function AdminPage() {
     const homeScoreRaw = formData.get('homeScore')?.toString();
     const awayScoreRaw = formData.get('awayScore')?.toString();
     const status = formData.get('status')?.toString() as 'scheduled' | 'finished';
+    const dateRaw = formData.get('date')?.toString();
+    const timeRaw = formData.get('time')?.toString();
+    const venueRaw = formData.get('venue')?.toString().trim();
     
     const homeScore = homeScoreRaw !== '' ? Number(homeScoreRaw) : undefined;
     const awayScore = awayScoreRaw !== '' ? Number(awayScoreRaw) : undefined;
 
+    let matchDate: Date | undefined;
+    if (dateRaw) {
+      const timeString = timeRaw || '00:00';
+      const dateTimeString = `${dateRaw}T${timeString}`;
+      matchDate = new Date(dateTimeString);
+    }
+
     await updateMatch(matchId, {
       homeScore: Number.isNaN(homeScore) ? undefined : homeScore,
       awayScore: Number.isNaN(awayScore) ? undefined : awayScore,
-      status
+      status,
+      date: matchDate,
+      venue: venueRaw || undefined
     });
     
     setEditingMatch(null);
@@ -228,6 +241,16 @@ export default function AdminPage() {
                     <form action={(formData) => handleUpdateMatch(match.id, formData)} className="mt-2 p-3 bg-white rounded border border-blue-200 grid gap-3">
                       <div className="grid grid-cols-2 gap-2">
                         <div>
+                          <label className="text-xs font-medium">Date</label>
+                          <input name="date" type="date" defaultValue={match.date.split('T')[0]} className="w-full border rounded px-2 py-1 text-sm" />
+                        </div>
+                        <div>
+                          <label className="text-xs font-medium">Time</label>
+                          <input name="time" type="time" defaultValue={new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })} className="w-full border rounded px-2 py-1 text-sm" />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
                           <label className="text-xs font-medium">Home Score</label>
                           <input name="homeScore" type="number" defaultValue={match.homeScore ?? ''} className="w-full border rounded px-2 py-1 text-sm" />
                         </div>
@@ -235,6 +258,10 @@ export default function AdminPage() {
                           <label className="text-xs font-medium">Away Score</label>
                           <input name="awayScore" type="number" defaultValue={match.awayScore ?? ''} className="w-full border rounded px-2 py-1 text-sm" />
                         </div>
+                      </div>
+                      <div>
+                        <label className="text-xs font-medium">Venue</label>
+                        <input name="venue" list="venues" defaultValue={match.venue || ''} className="w-full border rounded px-2 py-1 text-sm" />
                       </div>
                       <div>
                         <label className="text-xs font-medium">Status</label>
