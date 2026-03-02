@@ -170,9 +170,26 @@ export default function AdminPage() {
 
   // Handle no session state
   if (!session?.user) {
+    // Only redirect if not already loading or checking auth
+    if (status !== 'loading' && status !== 'authenticated') {
+        return (
+        <div className="min-h-screen bg-zinc-50 dark:bg-black flex items-center justify-center">
+            <div className="text-center space-y-4">
+            <div className="text-zinc-500">You need to sign in to access this page.</div>
+            <Link 
+                href="/login" 
+                className="inline-block bg-slate-900 text-white px-4 py-2 rounded-lg hover:bg-slate-800"
+            >
+                Sign In
+            </Link>
+            </div>
+        </div>
+        );
+    }
+    // Fallback loading while session is being established
     return (
       <div className="min-h-screen bg-zinc-50 dark:bg-black flex items-center justify-center">
-        <div className="text-zinc-500">Redirecting...</div>
+        <div className="text-zinc-500">Authenticating...</div>
       </div>
     );
   }
