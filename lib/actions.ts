@@ -1,3 +1,5 @@
+'use server';
+
 import { db } from './db';
 import { matches, type Match } from './schema';
 import { desc, eq, asc } from 'drizzle-orm';
