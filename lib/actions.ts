@@ -114,6 +114,22 @@ export async function addMatch(data: {
   return await db.insert(matches).values(data).returning();
 }
 
+export async function updateMatch(id: number, data: {
+  homeTeam?: string;
+  awayTeam?: string;
+  homeScore?: number;
+  awayScore?: number;
+  date?: Date;
+  venue?: string;
+  status?: 'scheduled' | 'finished';
+}) {
+  return await db.update(matches).set(data).where(eq(matches.id, id)).returning();
+}
+
+export async function deleteMatch(id: number) {
+  return await db.delete(matches).where(eq(matches.id, id));
+}
+
 export async function resetSeason() {
   await db.delete(matches);
   console.log('Deleted all matches');
