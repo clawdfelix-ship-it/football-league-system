@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import HomeLayout from '@/components/HomeLayout';
 import { useLanguage } from '@/context/LanguageContext';
+import { TEAMS } from '@/lib/constants';
 
 export const dynamic = 'force-dynamic';
 
@@ -74,6 +75,9 @@ function HomeContent() {
         }
         return table.get(name)!;
       };
+      
+      // Initialize all teams
+      TEAMS.forEach(team => ensureTeam(team.name));
       
       for (const match of results) {
         if (match.status !== 'finished') continue;
