@@ -144,10 +144,24 @@ export default function AdminPage() {
   };
 
   if (status === 'loading') {
-    return <div className="p-8 text-center">Loading...</div>;
+    return (
+      <div className="min-h-screen bg-zinc-50 dark:bg-black flex items-center justify-center">
+        <div className="text-zinc-500">Loading admin panel...</div>
+      </div>
+    );
   }
 
-  if (!session) return null;
+  if (status === 'unauthenticated') {
+    return null; // Will redirect in useEffect
+  }
+
+  if (!session) {
+    return (
+      <div className="min-h-screen bg-zinc-50 dark:bg-black flex items-center justify-center">
+        <div className="text-zinc-500">Redirecting...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-zinc-50 font-sans text-zinc-900 dark:bg-black dark:text-zinc-50">
