@@ -135,7 +135,7 @@ export default function AdminPage() {
         window.location.reload();
       } catch (error) {
         console.error('Reset failed:', error);
-        alert('Reset failed. Please try again.');
+        alert('Reset failed. ' + (error instanceof Error ? error.message : 'Unknown error'));
       }
     }
   };
