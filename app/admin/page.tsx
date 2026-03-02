@@ -275,11 +275,11 @@ export default function AdminPage() {
                       <div className="grid grid-cols-2 gap-2">
                         <div>
                           <label className="text-xs font-medium">Date</label>
-                          <input name="date" type="date" defaultValue={match.date.split('T')[0]} className="w-full border rounded px-2 py-1 text-sm" />
+                          <input name="date" type="date" defaultValue={match.date ? match.date.split('T')[0] : ''} className="w-full border rounded px-2 py-1 text-sm" />
                         </div>
                         <div>
                           <label className="text-xs font-medium">Time</label>
-                          <input name="time" type="time" defaultValue={new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })} className="w-full border rounded px-2 py-1 text-sm" />
+                          <input name="time" type="time" defaultValue={match.date ? new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : ''} className="w-full border rounded px-2 py-1 text-sm" />
                         </div>
                       </div>
                       <div className="grid grid-cols-2 gap-2">
@@ -350,11 +350,11 @@ export default function AdminPage() {
                       <div className="grid grid-cols-2 gap-2">
                         <div>
                           <label className="text-xs font-medium">Date</label>
-                          <input name="date" type="date" defaultValue={match.date.split('T')[0]} className="w-full border rounded px-2 py-1 text-sm" />
+                          <input name="date" type="date" defaultValue={match.date ? match.date.split('T')[0] : ''} className="w-full border rounded px-2 py-1 text-sm" />
                         </div>
                         <div>
                           <label className="text-xs font-medium">Time</label>
-                          <input name="time" type="time" defaultValue={new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })} className="w-full border rounded px-2 py-1 text-sm" />
+                          <input name="time" type="time" defaultValue={match.date ? new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : ''} className="w-full border rounded px-2 py-1 text-sm" />
                         </div>
                       </div>
                       <div className="grid grid-cols-2 gap-2">
