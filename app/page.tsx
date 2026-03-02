@@ -310,7 +310,9 @@ function HomeContent() {
                         <div className="text-xs text-slate-500">{new Date(match.date).toLocaleDateString('en-GB')}</div>
                       </div>
                       <div className="text-center w-1/3">
-                        <div className="font-black text-lg text-slate-900">{match.homeScore} - {match.awayScore}</div>
+                        <div className="font-black text-lg text-slate-900">
+                          {match.homeScore !== null ? match.homeScore : 0} - {match.awayScore !== null ? match.awayScore : 0}
+                        </div>
                         <div className="text-xs text-slate-500">{t('完場', 'Final')}</div>
                       </div>
                       <div className="text-right w-1/3">
