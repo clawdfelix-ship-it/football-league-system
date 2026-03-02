@@ -127,9 +127,16 @@ export default function AdminPage() {
 
   const handleResetSeason = async () => {
     if (confirm('Are you sure you want to reset the entire season? This cannot be undone.')) {
-      await resetSeason();
-      loadMatches();
-      alert('Season reset successfully');
+      try {
+        await resetSeason();
+        loadMatches();
+        alert('Season reset successfully. Please refresh the homepage to see changes.');
+        // Force hard reload to clear client caches
+        window.location.reload();
+      } catch (error) {
+        console.error('Reset failed:', error);
+        alert('Reset failed. Please try again.');
+      }
     }
   };
 
