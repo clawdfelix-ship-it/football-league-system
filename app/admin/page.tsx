@@ -25,7 +25,6 @@ export default function AdminPage() {
   const [editingMatch, setEditingMatch] = useState<number | null>(null);
 
   useEffect(() => {
-    // Check if session is explicitly null or status is unauthenticated
     if (status === 'unauthenticated') {
       router.push('/login');
     }
@@ -143,6 +142,7 @@ export default function AdminPage() {
     }
   };
 
+  // Handle loading state separately to avoid hydration mismatch
   if (status === 'loading') {
     return (
       <div className="min-h-screen bg-zinc-50 dark:bg-black flex items-center justify-center">
@@ -151,11 +151,13 @@ export default function AdminPage() {
     );
   }
 
+  // Handle redirecting state
   if (status === 'unauthenticated') {
-    return null; // Will redirect in useEffect
+    return null; 
   }
 
-  if (!session) {
+  // Handle no session state
+  if (!session?.user) {
     return (
       <div className="min-h-screen bg-zinc-50 dark:bg-black flex items-center justify-center">
         <div className="text-zinc-500">Redirecting...</div>
@@ -163,8 +165,7 @@ export default function AdminPage() {
     );
   }
 
-  // Use optional chaining for safe access
-  const username = session?.user?.name || 'Admin';
+  const username = session.user.name || 'Admin';
 
   return (
     <div className="min-h-screen bg-zinc-50 font-sans text-zinc-900 dark:bg-black dark:text-zinc-50">
