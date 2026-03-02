@@ -91,15 +91,15 @@ export default function TeamsPage() {
                   className="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200 hover:shadow-2xl transition-all hover:-translate-y-1"
                 >
                   {/* Team Header with Color */}
-                  <div className={`bg-gradient-to-r ${team.color} p-6 text-center`}>
+                  <div className={`bg-slate-700 p-6 text-center border-b-4 border-slate-500`}>
                     <div className="mb-4">
                       {/* Placeholder for team logo */}
-                      <div className="w-16 h-16 mx-auto bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/30 shadow-inner">
-                        <span className="text-2xl font-black text-white drop-shadow-md">{team.shortName.substring(0, 2)}</span>
+                      <div className="w-16 h-16 mx-auto bg-white rounded-full flex items-center justify-center border-2 border-slate-300 shadow-md">
+                        <span className={`text-2xl font-black bg-gradient-to-br ${team.color} bg-clip-text text-transparent`}>{team.shortName.substring(0, 2)}</span>
                       </div>
                     </div>
-                    <h3 className="text-xl font-bold text-white drop-shadow-md mb-1">{team.name}</h3>
-                    <p className="text-white/90 text-sm font-medium tracking-wide drop-shadow-sm">{team.nameZh}</p>
+                    <h3 className="text-xl font-bold text-white mb-1">{team.name}</h3>
+                    <p className="text-slate-300 text-sm font-medium tracking-wide">{team.nameZh}</p>
                   </div>
                   
                   {/* Team Stats */}
