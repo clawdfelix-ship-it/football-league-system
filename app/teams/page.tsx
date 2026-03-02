@@ -98,8 +98,8 @@ export default function TeamsPage() {
                         <span className="text-2xl font-black">{team.shortName.substring(0, 2)}</span>
                       </div>
                     </div>
-                    <h3 className="text-xl font-bold">{team.name}</h3>
-                    <p className="text-white/80 text-sm">{team.nameZh}</p>
+                    <h3 className="text-xl font-bold text-white">{team.name}</h3>
+                    <p className="text-white/80 text-sm font-medium">{team.nameZh}</p>
                   </div>
                   
                   {/* Team Stats */}

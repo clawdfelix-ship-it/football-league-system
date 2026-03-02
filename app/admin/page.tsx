@@ -20,7 +20,8 @@ interface Match {
 export default function AdminPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [recentMatches, setRecentMatches] = useState<Match[]>([]);
+  const [scheduledMatches, setScheduledMatches] = useState<Match[]>([]);
+  const [finishedMatches, setFinishedMatches] = useState<Match[]>([]);
   const [editingMatch, setEditingMatch] = useState<number | null>(null);
 
   useEffect(() => {
@@ -35,8 +36,16 @@ export default function AdminPage() {
 
   const loadMatches = async () => {
     try {
-      const matches = await getMatches();
-      setRecentMatches(matches as any);
+      const allMatches = await getMatches() as Match[];
+      
+      const scheduled = allMatches.filter(m => m.status === 'scheduled')
+        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        
+      const finished = allMatches.filter(m => m.status === 'finished')
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+      setScheduledMatches(scheduled);
+      setFinishedMatches(finished);
     } catch (error) {
       console.error("Failed to fetch matches:", error);
     }
@@ -207,12 +216,87 @@ export default function AdminPage() {
         </section>
 
         <section className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 sm:p-6">
-          <h2 className="text-lg font-semibold mb-4">Match History</h2>
-          <div className="space-y-3">
-            {recentMatches.length === 0 ? (
-              <p className="text-sm text-zinc-500">No matches found.</p>
+          <h2 className="text-lg font-semibold mb-4">Upcoming Fixtures</h2>
+          <div className="space-y-3 mb-8">
+            {scheduledMatches.length === 0 ? (
+              <p className="text-sm text-zinc-500">No upcoming fixtures.</p>
             ) : (
-              recentMatches.map((match) => (
+              scheduledMatches.map((match) => (
+                <div key={match.id} className="flex flex-col gap-3 rounded-xl border border-zinc-100 bg-blue-50/50 p-3 dark:border-zinc-800 dark:bg-blue-900/10">
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm">
+                      <div className="font-semibold">{match.homeTeam} vs {match.awayTeam}</div>
+                      <div className="text-xs text-zinc-500 dark:text-zinc-400">
+                        {new Date(match.date).toLocaleDateString('en-GB')} {new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })} • {match.venue}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button 
+                        onClick={() => setEditingMatch(editingMatch === match.id ? null : match.id)}
+                        className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded hover:bg-blue-200"
+                      >
+                        {editingMatch === match.id ? 'Cancel' : 'Edit'}
+                      </button>
+                      <button 
+                        onClick={() => handleDeleteMatch(match.id)}
+                        className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded hover:bg-red-200"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {editingMatch === match.id ? (
+                    <form action={(formData) => handleUpdateMatch(match.id, formData)} className="mt-2 p-3 bg-white rounded border border-blue-200 grid gap-3">
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="text-xs font-medium">Date</label>
+                          <input name="date" type="date" defaultValue={match.date.split('T')[0]} className="w-full border rounded px-2 py-1 text-sm" />
+                        </div>
+                        <div>
+                          <label className="text-xs font-medium">Time</label>
+                          <input name="time" type="time" defaultValue={new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })} className="w-full border rounded px-2 py-1 text-sm" />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="text-xs font-medium">Home Score</label>
+                          <input name="homeScore" type="number" defaultValue={match.homeScore ?? ''} className="w-full border rounded px-2 py-1 text-sm" />
+                        </div>
+                        <div>
+                          <label className="text-xs font-medium">Away Score</label>
+                          <input name="awayScore" type="number" defaultValue={match.awayScore ?? ''} className="w-full border rounded px-2 py-1 text-sm" />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="text-xs font-medium">Venue</label>
+                        <input name="venue" list="venues" defaultValue={match.venue || ''} className="w-full border rounded px-2 py-1 text-sm" />
+                      </div>
+                      <div>
+                        <label className="text-xs font-medium">Status</label>
+                        <select name="status" defaultValue={match.status || 'scheduled'} className="w-full border rounded px-2 py-1 text-sm">
+                          <option value="scheduled">Scheduled</option>
+                          <option value="finished">Finished</option>
+                        </select>
+                      </div>
+                      <button type="submit" className="bg-blue-600 text-white text-xs py-1.5 rounded hover:bg-blue-700">Update Result</button>
+                    </form>
+                  ) : (
+                    <div className="text-right font-mono text-sm font-bold text-zinc-400">
+                      VS
+                    </div>
+                  )}
+                </div>
+              ))
+            )}
+          </div>
+
+          <h2 className="text-lg font-semibold mb-4 pt-4 border-t border-zinc-100">Match Results</h2>
+          <div className="space-y-3">
+            {finishedMatches.length === 0 ? (
+              <p className="text-sm text-zinc-500">No finished matches.</p>
+            ) : (
+              finishedMatches.map((match) => (
                 <div key={match.id} className="flex flex-col gap-3 rounded-xl border border-zinc-100 bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900">
                   <div className="flex items-center justify-between">
                     <div className="text-sm">
@@ -274,7 +358,7 @@ export default function AdminPage() {
                     </form>
                   ) : (
                     <div className="text-right font-mono text-sm font-bold">
-                      {match.status === 'finished' ? `${match.homeScore} - ${match.awayScore}` : <span className="text-zinc-400">VS</span>}
+                      {match.homeScore} - {match.awayScore}
                     </div>
                   )}
                 </div>
