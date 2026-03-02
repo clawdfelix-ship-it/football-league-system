@@ -131,6 +131,13 @@ export async function deleteMatch(id: number) {
 }
 
 export async function resetSeason() {
-  await db.delete(matches);
-  console.log('Deleted all matches');
+  try {
+    // Force direct delete
+    const result = await db.delete(matches).returning();
+    console.log(`Deleted ${result.length} matches`);
+    return result;
+  } catch (error) {
+    console.error('Failed to reset season:', error);
+    throw error;
+  }
 }
