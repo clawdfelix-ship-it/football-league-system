@@ -1,6 +1,7 @@
 import { db } from './db';
 import { matches, type Match } from './schema';
 import { desc, eq, asc } from 'drizzle-orm';
+import { TEAMS } from './constants';
 
 export type TeamStanding = {
   teamName: string;
@@ -34,6 +35,11 @@ export async function getStandings(): Promise<TeamStanding[]> {
       });
     }
     return table.get(name)!;
+  }
+
+  // Initialize all teams from constants to ensure they appear even without matches
+  for (const team of TEAMS) {
+    ensureTeam(team.name);
   }
 
   for (const match of allMatches) {
@@ -106,4 +112,8 @@ export async function addMatch(data: {
   status: 'scheduled' | 'finished';
 }) {
   return await db.insert(matches).values(data).returning();
+}
+
+export async function resetSeason() {
+  await db.delete(matches);
 }

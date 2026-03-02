@@ -7,6 +7,8 @@ import HomeLayout from '@/components/HomeLayout';
 import { useLanguage } from '@/context/LanguageContext';
 import type { Player } from '@/lib/schema';
 
+import { TEAMS } from '@/lib/constants';
+
 interface TeamInfo {
   name: string;
   nameZh: string;
@@ -15,16 +17,6 @@ interface TeamInfo {
   playerCount: number;
   players: Player[];
 }
-
-const TEAMS = [
-  { name: 'NOMURA', nameZh: '野村證券', shortName: 'NOMURA', color: 'from-red-600 to-red-800' },
-  { name: 'BBVA', nameZh: '西班牙對外銀行', shortName: 'BBVA', color: 'from-blue-600 to-blue-800' },
-  { name: 'LGT', nameZh: 'LGT 銀行', shortName: 'LGT', color: 'from-purple-600 to-purple-800' },
-  { name: 'CACIB', nameZh: '法興銀行', shortName: 'CACIB', color: 'from-green-600 to-green-800' },
-  { name: 'CITI', nameZh: '花旗銀行', shortName: 'CITI', color: 'from-blue-400 to-blue-600' },
-  { name: 'SCB', nameZh: '渣打銀行', shortName: 'SCB', color: 'from-red-400 to-red-600' },
-  { name: 'UBS', nameZh: '瑞銀集團', shortName: 'UBS', color: 'from-yellow-500 to-orange-600' },
-];
 
 const DEFAULT_TEAMS: TeamInfo[] = TEAMS.map(team => ({
   ...team,

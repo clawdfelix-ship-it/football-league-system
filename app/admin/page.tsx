@@ -3,9 +3,20 @@ import { revalidatePath } from 'next/cache';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import { addMatch, getMatches } from '@/lib/actions';
+import { addMatch, getMatches, resetSeason } from '@/lib/actions';
 
 export const dynamic = 'force-dynamic';
+
+async function handleReset() {
+  'use server';
+  const session = await getServerSession(authOptions);
+  if (!session || (session.user as any)?.role !== 'admin') {
+    throw new Error('Unauthorized');
+  }
+  await resetSeason();
+  revalidatePath('/');
+  revalidatePath('/admin');
+}
 
 async function submitMatch(formData: FormData) {
   'use server';
@@ -249,6 +260,22 @@ export default async function AdminPage() {
               ))
             )}
           </div>
+        </section>
+
+        <section className="rounded-2xl border border-red-200 bg-red-50 p-4 shadow-sm dark:border-red-900 dark:bg-red-950 sm:p-6">
+          <h2 className="text-lg font-semibold text-red-700 dark:text-red-400">Danger Zone</h2>
+          <div className="mt-2 text-sm text-red-600 dark:text-red-300">
+            <p>Resetting the season will delete all matches and scores.</p>
+            <p>This action cannot be undone.</p>
+          </div>
+          <form action={handleReset} className="mt-4">
+            <button
+              type="submit"
+              className="rounded-xl bg-red-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+            >
+              Reset Season Data
+            </button>
+          </form>
         </section>
       </main>
     </div>
