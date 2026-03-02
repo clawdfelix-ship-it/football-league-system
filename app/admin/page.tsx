@@ -25,14 +25,17 @@ export default function AdminPage() {
   const [editingMatch, setEditingMatch] = useState<number | null>(null);
 
   useEffect(() => {
+    // Check if session is explicitly null or status is unauthenticated
     if (status === 'unauthenticated') {
       router.push('/login');
     }
   }, [status, router]);
 
   useEffect(() => {
-    loadMatches();
-  }, []);
+    if (status === 'authenticated') {
+      loadMatches();
+    }
+  }, [status]);
 
   const loadMatches = async () => {
     try {
