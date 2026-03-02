@@ -4,7 +4,20 @@ import { redirect } from 'next/navigation';
 import { getMatches } from '@/lib/actions';
 import { MatchForm, MatchList, ResetButton } from '@/components/AdminClient';
 
-interface Match {
+// Type from Database (Drizzle returns Date object for timestamp)
+interface DbMatch {
+  id: number;
+  homeTeam: string;
+  awayTeam: string;
+  homeScore: number | null;
+  awayScore: number | null;
+  date: Date;
+  venue: string | null;
+  status: string | null;
+}
+
+// Type for Client Component (Props must be serializable)
+interface SerializedMatch {
   id: number;
   homeTeam: string;
   awayTeam: string;
@@ -24,13 +37,28 @@ export default async function AdminPage() {
     redirect('/login');
   }
 
-  const allMatches = await getMatches() as Match[];
+  // Cast to unknown first to avoid type overlap error if types differ significantly
+  const allMatches = (await getMatches()) as unknown as DbMatch[];
   
-  const scheduledMatches = allMatches.filter(m => m.status === 'scheduled')
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  const scheduledMatches: SerializedMatch[] = allMatches
+    .filter(m => m.status === 'scheduled')
+    .sort((a, b) => a.date.getTime() - b.date.getTime())
+    .map(m => ({
+      ...m,
+      date: m.date.toISOString(),
+      venue: m.venue || null, // Ensure null instead of undefined
+      status: m.status || null
+    }));
     
-  const finishedMatches = allMatches.filter(m => m.status === 'finished')
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  const finishedMatches: SerializedMatch[] = allMatches
+    .filter(m => m.status === 'finished')
+    .sort((a, b) => b.date.getTime() - a.date.getTime())
+    .map(m => ({
+      ...m,
+      date: m.date.toISOString(),
+      venue: m.venue || null,
+      status: m.status || null
+    }));
 
   const username = session.user?.name || (session.user as any)?.username || 'Admin';
 
