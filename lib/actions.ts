@@ -116,4 +116,5 @@ export async function addMatch(data: {
 
 export async function resetSeason() {
   await db.delete(matches);
+  console.log('Deleted all matches');
 }

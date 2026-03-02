@@ -9,13 +9,22 @@ export const dynamic = 'force-dynamic';
 
 async function handleReset() {
   'use server';
+  console.log('Resetting season data...');
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any)?.role !== 'admin') {
+    console.error('Unauthorized reset attempt');
     throw new Error('Unauthorized');
   }
-  await resetSeason();
+  try {
+    await resetSeason();
+    console.log('Season data reset successfully');
+  } catch (error) {
+    console.error('Error resetting season:', error);
+    throw error;
+  }
   revalidatePath('/');
   revalidatePath('/admin');
+  redirect('/admin?success=reset');
 }
 
 async function submitMatch(formData: FormData) {
