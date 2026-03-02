@@ -7,6 +7,8 @@ import HomeLayout from '@/components/HomeLayout';
 import { useLanguage } from '@/context/LanguageContext';
 import type { Player } from '@/lib/schema';
 
+export const dynamic = 'force-dynamic';
+
 import { TEAMS } from '@/lib/constants';
 
 interface TeamInfo {
