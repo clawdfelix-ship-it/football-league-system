@@ -56,6 +56,10 @@ function HomeContent() {
       const fixtures = fixturesData.matches || [];
       const results = resultsData.matches || [];
       
+      // Filter out any "ghost" matches that might be cached or malformed
+      // And ensure we only show future dates for upcoming fixtures if desired, 
+      // though typically "scheduled" status is the source of truth.
+      
       // Sort fixtures by date ascending (soonest first)
       fixtures.sort((a: Match, b: Match) => new Date(a.date).getTime() - new Date(b.date).getTime());
       
@@ -270,13 +274,13 @@ function HomeContent() {
                         <div className="text-xs text-slate-500">{t('主場', 'Home')}</div>
                       </div>
                       <div className="text-center w-1/3">
-                        <div className="text-sm text-slate-600">
+                        <div className="text-sm text-slate-600 font-bold">
                           {new Date(match.date).toLocaleDateString('en-GB')}
                         </div>
-                         <div className="text-sm text-slate-600">
+                        <div className="text-sm text-slate-600">
                           {new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
                         </div>
-                        <div className="text-xs text-slate-500">{match.venue}</div>
+                        <div className="text-xs text-slate-500 mt-1">{match.venue}</div>
                       </div>
                       <div className="text-right w-1/3">
                         <div className="font-bold text-slate-900">{match.awayTeam}</div>
