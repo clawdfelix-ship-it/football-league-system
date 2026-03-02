@@ -28,7 +28,7 @@ export default function TeamsPage() {
   const { t } = useLanguage();
   const [teams, setTeams] = useState<TeamInfo[]>(DEFAULT_TEAMS);
   const [players, setPlayers] = useState<Player[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     loadPlayers();
@@ -36,7 +36,8 @@ export default function TeamsPage() {
 
   const loadPlayers = async () => {
     try {
-      setLoading(true);
+      // Don't set loading to true initially to show default content immediately
+      // setLoading(true); 
       const res = await fetch('/api/players');
       if (!res.ok) {
         throw new Error('無法載入球員資料');
