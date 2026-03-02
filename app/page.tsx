@@ -46,8 +46,8 @@ function HomeContent() {
     try {
       setLoading(true);
       const [fixturesRes, resultsRes] = await Promise.all([
-        fetch('/api/matches?status=scheduled'),
-        fetch('/api/matches?status=finished')
+        fetch('/api/matches?status=scheduled', { cache: 'no-store' }),
+        fetch('/api/matches?status=finished', { cache: 'no-store' })
       ]);
       
       const fixturesData = await fixturesRes.json();
@@ -55,6 +55,12 @@ function HomeContent() {
       
       const fixtures = fixturesData.matches || [];
       const results = resultsData.matches || [];
+      
+      // Sort fixtures by date ascending (soonest first)
+      fixtures.sort((a: Match, b: Match) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      
+      // Sort results by date descending (latest first)
+      results.sort((a: Match, b: Match) => new Date(b.date).getTime() - new Date(a.date).getTime());
       
       // Calculate standings from results
       const table = new Map<string, TeamStanding>();
