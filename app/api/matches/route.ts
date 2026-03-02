@@ -4,6 +4,8 @@ import { matches } from '@/lib/schema';
 import { desc, eq, asc } from 'drizzle-orm';
 
 // GET all matches
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
