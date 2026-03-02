@@ -16,7 +16,8 @@ export default async function NukePage() {
     console.log("Nuke page accessed");
     
     // Check if DB is connected
-    const test = await db.execute(sql`SELECT 1`);
+    if (!sql) throw new Error('DB Connection Failed: sql is null');
+    const test = await sql`SELECT 1`;
     if (!test) throw new Error('DB Connection Failed');
 
     // Delete all matches
