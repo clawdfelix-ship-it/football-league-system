@@ -9,8 +9,6 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
   const router = useRouter();
   const [isAdding, setIsAdding] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  // Remove unused ref if not used in this component, or use it properly
-  // const fileInputRef = useRef<HTMLInputElement>(null); 
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -93,72 +91,83 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
       {/* Add Button */}
       <div className="print:hidden flex justify-center w-full">
         {isAdding ? (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
             <form 
               onSubmit={handleSubmit}
-              className="bg-white rounded-xl p-6 shadow-xl max-w-md w-full space-y-4"
+              className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 shadow-2xl max-w-md w-full space-y-5 text-white"
             >
-              <h3 className="text-lg font-bold">Add New Player</h3>
+              <div className="flex justify-between items-center border-b border-zinc-800 pb-4">
+                <h3 className="text-xl font-bold text-white">Add New Player</h3>
+                <button 
+                  type="button" 
+                  onClick={() => setIsAdding(false)}
+                  className="text-zinc-400 hover:text-white"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+              </div>
               
               <div className="space-y-2">
-                <label className="text-sm font-medium">Name</label>
+                <label className="text-sm font-medium text-zinc-300">Name</label>
                 <input 
                   name="name" 
                   required 
-                  className="w-full border rounded-lg px-3 py-2"
+                  className="w-full border border-zinc-700 bg-zinc-800 rounded-lg px-3 py-2 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600"
                   placeholder="Player Name"
                 />
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Jersey Number</label>
-                <input 
-                  name="number" 
-                  type="number" 
-                  required 
-                  min="0"
-                  max="99"
-                  className="w-full border rounded-lg px-3 py-2"
-                  placeholder="0-99"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-zinc-300">Jersey No.</label>
+                  <input 
+                    name="number" 
+                    type="number" 
+                    required 
+                    min="0"
+                    max="99"
+                    className="w-full border border-zinc-700 bg-zinc-800 rounded-lg px-3 py-2 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600"
+                    placeholder="0-99"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-zinc-300">Position</label>
+                  <select 
+                    name="position" 
+                    required 
+                    className="w-full border border-zinc-700 bg-zinc-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-zinc-600 appearance-none"
+                  >
+                    <option value="FW">Forward (FW)</option>
+                    <option value="MF">Midfielder (MF)</option>
+                    <option value="DF">Defender (DF)</option>
+                    <option value="GK">Goalkeeper (GK)</option>
+                  </select>
+                </div>
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">Position</label>
-                <select 
-                  name="position" 
-                  required 
-                  className="w-full border rounded-lg px-3 py-2"
-                >
-                  <option value="FW">Forward (FW)</option>
-                  <option value="MF">Midfielder (MF)</option>
-                  <option value="DF">Defender (DF)</option>
-                  <option value="GK">Goalkeeper (GK)</option>
-                </select>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Photo (Optional)</label>
+                <label className="text-sm font-medium text-zinc-300">Photo (Optional)</label>
                 <input 
                   name="photo"
                   type="file" 
                   accept="image/*"
-                  className="w-full border rounded-lg px-3 py-2 text-sm"
+                  className="w-full border border-zinc-700 bg-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-300 file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-zinc-700 file:text-white hover:file:bg-zinc-600"
                 />
               </div>
 
-              <div className="flex gap-3 pt-2">
+              <div className="flex gap-3 pt-4">
                 <button
                   type="button"
                   onClick={() => setIsAdding(false)}
-                  className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50"
+                  className="flex-1 px-4 py-2.5 border border-zinc-700 bg-transparent text-white rounded-lg hover:bg-zinc-800 font-medium transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                  className="flex-1 px-4 py-2.5 bg-white text-black rounded-lg hover:bg-zinc-200 disabled:opacity-50 font-bold transition-colors"
                 >
                   {isLoading ? 'Adding...' : 'Add Player'}
                 </button>
@@ -168,7 +177,7 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
         ) : (
           <button
             onClick={() => setIsAdding(true)}
-            className="w-full bg-green-600 text-white px-4 py-3 rounded-xl font-bold shadow hover:bg-green-700 flex items-center justify-center gap-2 transition-colors"
+            className="w-full bg-zinc-900 text-white px-4 py-3 rounded-xl font-bold shadow hover:bg-zinc-800 flex items-center justify-center gap-2 transition-colors border border-zinc-800"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 5v14M5 12h14"/>
