@@ -33,8 +33,9 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
         
         {/* Header */}
         <header className="text-center border-b-4 border-black pb-4 mb-4">
-          <h1 className="text-3xl font-black tracking-widest italic">ZENEX CUP 足球聯賽出場表</h1>
-          <h2 className="text-xl font-bold tracking-wider text-gray-600">OFFICIAL MATCH SHEET</h2>
+          <h1 className="text-2xl font-black tracking-widest italic">Hong Kong Bank League 2026</h1>
+          <h2 className="text-sm font-bold tracking-wider text-gray-600 mb-1">Partnered with ZENEX SPORTS | 香港銀行友誼足球聯賽2026</h2>
+          <h3 className="text-lg font-bold tracking-wider text-black border-t-2 border-black pt-1 mt-1 inline-block px-4">OFFICIAL MATCH SHEET</h3>
           <div className="grid grid-cols-3 mt-4 text-left font-bold text-sm">
             <div>隊名 (Team): <span className="underline decoration-dotted text-lg">{team.name}</span></div>
             <div>地點 (Venue): ________________</div>
