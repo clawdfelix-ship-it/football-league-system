@@ -3,6 +3,8 @@ import { authOptions } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { getMatches } from '@/lib/actions';
 import { MatchForm, MatchList, ResetButton } from '@/components/AdminClient';
+import Link from 'next/link';
+import { TEAMS } from '@/lib/constants';
 
 // Type from Database (Drizzle returns Date object for timestamp)
 interface DbMatch {
@@ -78,6 +80,28 @@ export default async function AdminPage() {
             Add fixtures or results. The league table and homepage will be updated automatically.
           </p>
         </header>
+
+        {/* Team Match Sheets Section */}
+        <section className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 sm:p-6">
+          <h2 className="text-lg font-semibold mb-4">Print Match Sheets</h2>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {TEAMS.map((team, index) => (
+              <Link 
+                key={team.name}
+                href={`/admin/match-sheet/${index}`}
+                className="flex flex-col items-center justify-center gap-2 rounded-xl border border-zinc-100 bg-zinc-50 p-4 text-center transition hover:bg-zinc-100 hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+                target="_blank"
+              >
+                <div className={`text-lg font-black bg-gradient-to-br ${team.color} bg-clip-text text-transparent`}>
+                  {team.shortName}
+                </div>
+                <div className="text-xs text-zinc-500 dark:text-zinc-400">
+                  {team.nameZh}
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
 
         <MatchForm />
         
