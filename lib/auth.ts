@@ -41,6 +41,9 @@ const MANAGER_EMAILS: Record<string, number> = {
   
   // 7: HSBC
   'jimmy.k.p.chan@hsbc.com.hk': 7,
+
+  // TEST ACCOUNT (Linked to NOMURA for testing)
+  'test@manager.com': 0,
 };
 
 export const authOptions: NextAuthOptions = {
@@ -81,7 +84,12 @@ export const authOptions: NextAuthOptions = {
           if (teamIndex !== undefined) {
             const team = TEAMS[teamIndex];
             // Extract name from email (e.g. david.pun -> David Pun) for display
-            const namePart = inputEmail.split('@')[0].split('.').map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
+            let namePart = inputEmail.split('@')[0].split('.').map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
+            
+            // Special handling for test account name
+            if (inputEmail === 'test@manager.com') {
+              namePart = 'Test Manager';
+            }
             
             return {
               id: `manager-${teamIndex}-${namePart}`,
