@@ -27,6 +27,9 @@ export default function Navbar() {
             </span>
           </Link>
           <div className="hidden md:flex items-center gap-6">
+            <Link href="/overview" className="text-sm font-medium hover:text-gray-300 transition-colors">
+              {t('賽事簡介', 'Overview')}
+            </Link>
             <Link href="/#standings" className="text-sm font-medium hover:text-gray-300 transition-colors">
               {t('積分榜', 'Standings')}
             </Link>
