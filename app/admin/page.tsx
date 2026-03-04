@@ -63,6 +63,11 @@ export default async function AdminPage() {
     }));
 
   const username = session.user?.name || (session.user as any)?.username || 'Admin';
+  const role = (session.user as any)?.role || 'manager';
+  const teamId = (session.user as any)?.teamId;
+
+  const isAdmin = role === 'admin';
+  const isManager = role === 'manager';
 
   return (
     <div className="min-h-screen bg-zinc-50 font-sans text-zinc-900 dark:bg-black dark:text-zinc-50">
@@ -70,14 +75,16 @@ export default async function AdminPage() {
         <header className="flex flex-col gap-2">
           <div className="flex justify-between items-center">
             <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-              Manage Matches
+              {isAdmin ? 'League Administration' : 'Team Manager Dashboard'}
             </h1>
             <div className="text-sm text-zinc-500">
               Logged in as {username}
             </div>
           </div>
           <p className="text-sm text-zinc-600 dark:text-zinc-400">
-            Add fixtures or results. The league table and homepage will be updated automatically.
+            {isAdmin 
+              ? 'Manage fixtures, results, and league settings.' 
+              : 'Access your team\'s match sheets and resources.'}
           </p>
         </header>
 
@@ -85,32 +92,44 @@ export default async function AdminPage() {
         <section className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 sm:p-6">
           <h2 className="text-lg font-semibold mb-4">Print Match Sheets</h2>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {TEAMS.map((team, index) => (
-              <Link 
-                key={team.name}
-                href={`/admin/match-sheet/${index}`}
-                className="flex flex-col items-center justify-center gap-2 rounded-xl border border-zinc-100 bg-zinc-50 p-4 text-center transition hover:bg-zinc-100 hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800"
-                target="_blank"
-              >
-                <div className={`text-lg font-black bg-gradient-to-br ${team.color} bg-clip-text text-transparent`}>
-                  {team.shortName}
-                </div>
-                <div className="text-xs text-zinc-500 dark:text-zinc-400">
-                  {team.nameZh}
-                </div>
-              </Link>
-            ))}
+            {TEAMS.map((team, index) => {
+              // If manager, only show their own team
+              if (isManager && teamId !== undefined && teamId !== index) {
+                return null;
+              }
+
+              return (
+                <Link 
+                  key={team.name}
+                  href={`/admin/match-sheet/${index}`}
+                  className="flex flex-col items-center justify-center gap-2 rounded-xl border border-zinc-100 bg-zinc-50 p-4 text-center transition hover:bg-zinc-100 hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+                  target="_blank"
+                >
+                  <div className={`text-lg font-black bg-gradient-to-br ${team.color} bg-clip-text text-transparent`}>
+                    {team.shortName}
+                  </div>
+                  <div className="text-xs text-zinc-500 dark:text-zinc-400">
+                    {team.nameZh}
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </section>
 
-        <MatchForm />
-        
-        <MatchList 
-          scheduledMatches={scheduledMatches} 
-          finishedMatches={finishedMatches} 
-        />
+        {/* Admin Only Sections */}
+        {isAdmin && (
+          <>
+            <MatchForm />
+            
+            <MatchList 
+              scheduledMatches={scheduledMatches} 
+              finishedMatches={finishedMatches} 
+            />
 
-        <ResetButton />
+            <ResetButton />
+          </>
+        )}
       </main>
     </div>
   );
