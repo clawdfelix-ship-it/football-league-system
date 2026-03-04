@@ -1,9 +1,10 @@
 'use server';
 
 import { db } from './db';
-import { matches, type Match } from './schema';
+import { matches, type Match, players, type Player } from './schema';
 import { desc, eq, asc } from 'drizzle-orm';
 import { TEAMS } from './constants';
+import { put } from '@vercel/blob';
 
 export type TeamStanding = {
   teamName: string;
@@ -140,6 +141,45 @@ export async function resetSeason() {
     return result;
   } catch (error) {
     console.error('Failed to reset season:', error);
+    throw error;
+  }
+}
+
+export async function getTeamPlayers(teamName: string) {
+  try {
+    const teamPlayers = await db
+      .select()
+      .from(players)
+      .where(eq(players.team, teamName))
+      .orderBy(asc(players.jerseyNumber));
+    return teamPlayers;
+  } catch (error) {
+    console.error('Failed to get team players:', error);
+    return [];
+  }
+}
+
+export async function uploadPlayerPhoto(formData: FormData) {
+  try {
+    const file = formData.get('file') as File;
+    const playerId = formData.get('playerId') as string;
+    
+    if (!file || !playerId) {
+      throw new Error('Missing file or player ID');
+    }
+
+    const blob = await put(file.name, file, {
+      access: 'public',
+    });
+
+    await db
+      .update(players)
+      .set({ photoUrl: blob.url })
+      .where(eq(players.id, parseInt(playerId)));
+
+    return blob;
+  } catch (error) {
+    console.error('Failed to upload player photo:', error);
     throw error;
   }
 }

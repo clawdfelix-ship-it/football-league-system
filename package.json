@@ -14,6 +14,7 @@
     "@types/multer": "^2.0.0",
     "@types/pg": "^8.16.0",
     "@types/uuid": "^10.0.0",
+    "@vercel/blob": "^2.3.0",
     "autoprefixer": "^10.4.24",
     "bcryptjs": "^2.4.3",
     "drizzle-kit": "^0.31.9",
