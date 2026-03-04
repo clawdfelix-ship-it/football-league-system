@@ -34,10 +34,11 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
         {/* Header */}
         <header className="text-center border-b-4 border-black pb-4 mb-4">
           <h1 className="text-3xl font-black tracking-widest italic">ZENEX CUP 足球聯賽出場表</h1>
+          <h2 className="text-xl font-bold tracking-wider text-gray-600">OFFICIAL MATCH SHEET</h2>
           <div className="grid grid-cols-3 mt-4 text-left font-bold text-sm">
-            <div>隊名：<span className="underline decoration-dotted text-lg">{team.name}</span></div>
-            <div>地點：________________</div>
-            <div>日期：________________</div>
+            <div>隊名 (Team): <span className="underline decoration-dotted text-lg">{team.name}</span></div>
+            <div>地點 (Venue): ________________</div>
+            <div>日期 (Date): ________________</div>
           </div>
         </header>
 
@@ -77,9 +78,9 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
             <div className="space-y-1">
               {[1, 2, 3, 4, 5].map(i => (
                 <div key={i} className="grid grid-cols-3 text-[10px] border-b border-gray-200 h-6 items-center">
-                  <span className="font-bold">第 {i} 次</span>
-                  <span className="text-red-500 print:text-black">出: ____</span>
-                  <span className="text-green-600 print:text-black">入: ____</span>
+                  <span className="font-bold">第 {i} 次 (No. {i})</span>
+                  <span className="text-red-500 print:text-black">出 (Out): ____</span>
+                  <span className="text-green-600 print:text-black">入 (In): ____</span>
                 </div>
               ))}
             </div>
@@ -94,12 +95,12 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
             </div>
             <div className="mt-4 pt-2 border-t border-black text-[10px] space-y-4">
               <div className="flex justify-between font-bold">
-                <span>主隊總分: ______</span>
-                <span>客隊總分: ______</span>
+                <span>主隊總分 (Home Score): ______</span>
+                <span>客隊總分 (Away Score): ______</span>
               </div>
               <div className="flex justify-between pt-4">
-                <span className="border-t border-black w-24 text-center py-1">領隊簽署</span>
-                <span className="border-t border-black w-24 text-center py-1">球證簽署</span>
+                <span className="border-t border-black w-24 text-center py-1">領隊簽署<br/>(Manager Sign)</span>
+                <span className="border-t border-black w-24 text-center py-1">球證簽署<br/>(Referee Sign)</span>
               </div>
             </div>
           </div>
