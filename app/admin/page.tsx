@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { TEAMS } from '@/lib/constants';
 import { PlayerManager } from '@/app/admin/match-sheet/[teamId]/PlayerManager';
 import SignOutButton from '@/components/SignOutButton';
+import FixDbButton from '@/components/FixDbButton';
 import type { Player } from '@/lib/schema';
 
 // Type from Database (Drizzle returns Date object for timestamp)
@@ -90,7 +91,10 @@ export default async function AdminPage() {
               <div className="text-sm text-zinc-500">
                 Logged in as {username}
               </div>
-              <SignOutButton />
+              <div className="flex gap-3">
+                <FixDbButton />
+                <SignOutButton />
+              </div>
             </div>
           </div>
           <p className="text-sm text-zinc-600 dark:text-zinc-400">
