@@ -190,9 +190,16 @@ export async function addPlayer(data: {
   }
 }
 
-export async function deletePlayer(id: number) {
+export async function deletePlayer(id: number | string) {
   try {
-    return await db.delete(players).where(eq(players.id, id));
+    // Ensure id is a number
+    const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
+    
+    if (isNaN(numericId)) {
+      throw new Error('Invalid player ID');
+    }
+
+    return await db.delete(players).where(eq(players.id, numericId));
   } catch (error) {
     console.error('Failed to delete player:', error);
     throw error;
