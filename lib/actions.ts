@@ -159,6 +159,43 @@ export async function getTeamPlayers(teamName: string) {
   }
 }
 
+export async function addPlayer(data: {
+  name: string;
+  team: string;
+  number: number;
+  position: string;
+}) {
+  try {
+    // Check if player number already exists for this team
+    const existingPlayer = await db.select().from(players).where(
+      eq(players.team, data.team)
+    );
+    
+    if (existingPlayer.some(p => p.jerseyNumber === data.number)) {
+      throw new Error(`Player with number ${data.number} already exists for team ${data.team}`);
+    }
+
+    return await db.insert(players).values({
+      name: data.name,
+      team: data.team,
+      jerseyNumber: data.number,
+      position: data.position,
+    }).returning();
+  } catch (error) {
+    console.error('Failed to add player:', error);
+    throw error;
+  }
+}
+
+export async function deletePlayer(id: number) {
+  try {
+    return await db.delete(players).where(eq(players.id, id));
+  } catch (error) {
+    console.error('Failed to delete player:', error);
+    throw error;
+  }
+}
+
 export async function uploadPlayerPhoto(formData: FormData) {
   try {
     const file = formData.get('file') as File;

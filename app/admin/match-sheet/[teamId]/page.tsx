@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { getTeamPlayers } from '@/lib/actions';
 import { TEAMS } from '@/lib/constants';
 import { PrintButton } from './PrintButton';
+import { PlayerManager, DeletePlayerButton } from './PlayerManager';
 import type { Player } from '@/lib/schema';
 
 export default async function MatchSheet({ params }: { params: Promise<{ teamId: string }> }) {
@@ -26,6 +27,7 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
       {/* 操作欄 - 列印時隱藏 */}
       <div className="flex justify-center gap-4 mb-6 print:hidden">
         <PrintButton />
+        <PlayerManager teamName={team.name} />
       </div>
 
       {/* A4 出場表容器 */}
@@ -49,7 +51,7 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
           <div className="grid grid-cols-8 border-t border-l border-black">
             {/* 渲染現有球員 */}
             {players.map((p) => (
-              <div key={p.id} className="border-r border-b border-black p-1 text-center h-[115px] flex flex-col items-center justify-between">
+              <div key={p.id} className="group relative border-r border-b border-black p-1 text-center h-[115px] flex flex-col items-center justify-between">
                 <div className="w-16 h-20 border border-gray-200 bg-gray-50 overflow-hidden relative print:bg-white print:border-gray-400">
                   {p.photoUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -60,6 +62,7 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
                 </div>
                 <div className="text-[10px] font-bold truncate w-full">{p.name}</div>
                 <div className="text-[9px] font-mono leading-none">#{p.jerseyNumber}</div>
+                <DeletePlayerButton playerId={p.id} />
               </div>
             ))}
             {/* 渲染空白手寫格 */}
