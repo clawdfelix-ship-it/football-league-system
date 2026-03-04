@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { updateMatch, deleteMatch, resetSeason, addMatch } from '@/lib/actions';
+import { TEAMS } from '@/lib/constants';
 
 interface Match {
   id: number;
@@ -13,6 +14,13 @@ interface Match {
   venue: string | null;
   status: string | null;
 }
+
+const VENUES = [
+  '跑馬地遊樂場 8 號場 (Happy Valley Recreation Ground No. 8)',
+  '中山紀念公園 (Sun Yat Sen Memorial Park)',
+  '鰂魚涌公園 1 號場 (Quarry Bay Park No. 1, near Taikoo Shing)',
+  '鰂魚涌公園 2 號場 (Quarry Bay Park No. 2, near Quarry Bay Station)'
+];
 
 export function MatchList({ 
   scheduledMatches, 
@@ -118,6 +126,9 @@ export function MatchList({
                     <div>
                       <label className="text-xs font-medium">Venue</label>
                       <input name="venue" list="venues" defaultValue={match.venue || ''} className="w-full border rounded px-2 py-1 text-sm" />
+                      <datalist id="venues">
+                        {VENUES.map(v => <option key={v} value={v} />)}
+                      </datalist>
                     </div>
                     <div>
                       <label className="text-xs font-medium">Status</label>
@@ -218,8 +229,6 @@ export function MatchList({
 }
 
 export function MatchForm() {
-  const formRef = useRef<HTMLFormElement>(null);
-
   const handleSubmitMatch = async (formData: FormData) => {
     const homeTeam = formData.get('homeTeam')?.toString().trim() ?? '';
     const awayTeam = formData.get('awayTeam')?.toString().trim() ?? '';
@@ -252,23 +261,31 @@ export function MatchForm() {
       status: status || 'finished',
     });
 
-    formRef.current?.reset();
     window.location.reload();
   };
 
   return (
     <section className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 sm:p-6">
       <h2 className="text-lg font-semibold">Add Match</h2>
-      <form ref={formRef} action={handleSubmitMatch} className="mt-4 space-y-4">
-        {/* Form fields same as before */}
+      <form action={handleSubmitMatch} className="mt-4 space-y-4">
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1">
             <label className="text-sm font-medium text-zinc-800 dark:text-zinc-200">Home team</label>
-            <input name="homeTeam" required className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm" placeholder="e.g. Manchester City" />
+            <select name="homeTeam" required className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm">
+              <option value="">Select Home Team</option>
+              {TEAMS.map(team => (
+                <option key={team.name} value={team.name}>{team.name}</option>
+              ))}
+            </select>
           </div>
           <div className="space-y-1">
             <label className="text-sm font-medium text-zinc-800 dark:text-zinc-200">Away team</label>
-            <input name="awayTeam" required className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm" placeholder="e.g. Liverpool" />
+            <select name="awayTeam" required className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm">
+              <option value="">Select Away Team</option>
+              {TEAMS.map(team => (
+                <option key={team.name} value={team.name}>{team.name}</option>
+              ))}
+            </select>
           </div>
         </div>
 
@@ -304,9 +321,7 @@ export function MatchForm() {
           <label className="text-sm font-medium text-zinc-800 dark:text-zinc-200">Venue</label>
           <input name="venue" list="venues" className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm" placeholder="Select or type venue" />
           <datalist id="venues">
-            <option value="中山紀念公園 (Sun Yat Sen Memorial Park)" />
-            <option value="鰂魚涌公園1號場 (Quarry Bay Park No. 1, near Taikoo Shing)" />
-            <option value="鰂魚涌公園2號場 (Quarry Bay Park No. 2, near Quarry Bay Station)" />
+            {VENUES.map(v => <option key={v} value={v} />)}
           </datalist>
         </div>
 
