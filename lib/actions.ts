@@ -201,10 +201,11 @@ export async function deletePlayer(id: number | string) {
       throw new Error('Invalid player ID');
     }
 
-    return await db.delete(players).where(eq(players.id, numericId));
+    await db.delete(players).where(eq(players.id, numericId));
+    return { success: true };
   } catch (error) {
     console.error('Failed to delete player:', error);
-    throw error;
+    return { success: false, message: error instanceof Error ? error.message : 'Unknown error' };
   }
 }
 

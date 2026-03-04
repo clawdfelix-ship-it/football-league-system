@@ -210,10 +210,14 @@ export function DeletePlayerButton({ playerId }: { playerId: number }) {
   async function handleDelete() {
     if (confirm('Are you sure you want to remove this player?')) {
       try {
-        await deletePlayer(playerId);
-        router.refresh();
+        const result = await deletePlayer(playerId);
+        if (result && !result.success) {
+             alert('Failed to delete player: ' + result.message);
+        } else {
+             router.refresh();
+        }
       } catch (error) {
-        alert('Failed to delete player');
+        alert('Failed to delete player: ' + (error as Error).message);
       }
     }
   }
