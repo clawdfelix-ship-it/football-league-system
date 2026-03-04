@@ -5,6 +5,7 @@ import { getMatches } from '@/lib/actions';
 import { MatchForm, MatchList, ResetButton } from '@/components/AdminClient';
 import Link from 'next/link';
 import { TEAMS } from '@/lib/constants';
+import { PlayerManager } from '@/app/admin/match-sheet/[teamId]/PlayerManager';
 
 // Type from Database (Drizzle returns Date object for timestamp)
 interface DbMatch {
@@ -88,38 +89,57 @@ export default async function AdminPage() {
           </p>
         </header>
 
-        {/* Team Match Sheets Section */}
-        <section className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 sm:p-6">
-          <h2 className="text-lg font-semibold mb-4">Print Match Sheets</h2>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {TEAMS.map((team, index) => {
-              // If manager, only show their own team
-              if (isManager && teamId !== undefined && teamId !== index) {
-                return null;
-              }
-
-              return (
+        {/* Team Manager Section */}
+        {isManager && teamId !== undefined && (
+          <section className="space-y-6">
+            {/* Quick Actions Card */}
+            <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
+              <h2 className="text-lg font-semibold mb-4">Team Management</h2>
+              <div className="space-y-4">
+                <PlayerManager teamName={TEAMS[teamId].name} />
+                
                 <Link 
-                  key={team.name}
-                  href={`/admin/match-sheet/${index}`}
-                  className="flex flex-col items-center justify-center gap-2 rounded-xl border border-zinc-100 bg-zinc-50 p-4 text-center transition hover:bg-zinc-100 hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+                  href={`/admin/match-sheet/${teamId}`}
+                  className="flex items-center justify-center gap-2 w-full rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-slate-800 transition-colors"
                   target="_blank"
                 >
-                  <div className={`text-lg font-black bg-gradient-to-br ${team.color} bg-clip-text text-transparent`}>
-                    {team.shortName}
-                  </div>
-                  <div className="text-xs text-zinc-500 dark:text-zinc-400">
-                    {team.nameZh}
-                  </div>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M6 9V2h12v7"/>
+                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+                    <path d="M6 14h12v8H6z"/>
+                  </svg>
+                  Print Match Sheet
                 </Link>
-              );
-            })}
-          </div>
-        </section>
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* Admin Only Sections */}
         {isAdmin && (
           <>
+            {/* Team Match Sheets Section for Admin */}
+            <section className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 sm:p-6">
+              <h2 className="text-lg font-semibold mb-4">Print Match Sheets</h2>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {TEAMS.map((team, index) => (
+                  <Link 
+                    key={team.name}
+                    href={`/admin/match-sheet/${index}`}
+                    className="flex flex-col items-center justify-center gap-2 rounded-xl border border-zinc-100 bg-zinc-50 p-4 text-center transition hover:bg-zinc-100 hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+                    target="_blank"
+                  >
+                    <div className={`text-lg font-black bg-gradient-to-br ${team.color} bg-clip-text text-transparent`}>
+                      {team.shortName}
+                    </div>
+                    <div className="text-xs text-zinc-500 dark:text-zinc-400">
+                      {team.nameZh}
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </section>
+
             <MatchForm />
             
             <MatchList 
