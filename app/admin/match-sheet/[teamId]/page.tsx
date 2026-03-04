@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import { getTeamPlayers } from '@/lib/actions';
 import { TEAMS } from '@/lib/constants';
 import { PrintButton } from './PrintButton';
-import { PlayerManager, DeletePlayerButton, UploadPhotoButton } from './PlayerManager';
+import { DeletePlayerButton, UploadPhotoButton } from './PlayerManager';
 import type { Player } from '@/lib/schema';
 
 export default async function MatchSheet({ params }: { params: Promise<{ teamId: string }> }) {
@@ -27,7 +27,6 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
       {/* 操作欄 - 列印時隱藏 */}
       <div className="flex justify-center gap-4 mb-6 print:hidden">
         <PrintButton />
-        <PlayerManager teamName={team.name} />
       </div>
 
       {/* A4 出場表容器 */}
