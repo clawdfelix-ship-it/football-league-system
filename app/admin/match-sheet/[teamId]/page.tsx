@@ -58,11 +58,13 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-[8px] text-gray-300">NO PHOTO</div>
                   )}
+                  {/* 只保留照片上傳按鈕，移除刪除按鈕 */}
                   <UploadPhotoButton playerId={p.id} />
                 </div>
                 <div className="text-[10px] font-bold truncate w-full">{p.name}</div>
                 <div className="text-[9px] font-mono leading-none">#{p.jerseyNumber}</div>
-                <DeletePlayerButton playerId={p.id} />
+                {/* 移除刪除按鈕，因為用戶要求這裡只顯示，不進行管理 */}
+                {/* <DeletePlayerButton playerId={p.id} /> */}
               </div>
             ))}
             {/* 渲染空白手寫格 */}
