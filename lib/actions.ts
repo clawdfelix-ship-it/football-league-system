@@ -164,6 +164,7 @@ export async function addPlayer(data: {
   team: string;
   number: number;
   position: string;
+  identityPrefix?: string;
 }) {
   try {
     // Check if player number already exists for this team
@@ -183,6 +184,7 @@ export async function addPlayer(data: {
       team: data.team,
       jerseyNumber: data.number,
       position: data.position,
+      identityPrefix: data.identityPrefix,
     }).returning();
   } catch (error) {
     console.error('Failed to add player:', error);

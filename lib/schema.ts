@@ -18,6 +18,7 @@ export const players = pgTable('players', {
   email: varchar('email', { length: 100 }),
   emergencyContact: text('emergency_contact'),
   notes: text('notes'),
+  identityPrefix: varchar('identity_prefix', { length: 10 }), // New field for first 3 chars of ID
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 });
