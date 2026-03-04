@@ -21,10 +21,20 @@ export async function createPlayersTable() {
       email VARCHAR(100),
       emergency_contact TEXT,
       notes TEXT,
+      identity_prefix VARCHAR(10),
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
   `);
+  
+  // Add column if it doesn't exist (for existing tables)
+  try {
+    await db.execute(sql`
+      ALTER TABLE players ADD COLUMN IF NOT EXISTS identity_prefix VARCHAR(10);
+    `);
+  } catch (e) {
+    console.log('Column identity_prefix might already exist or error adding it', e);
+  }
 }
 
 // 創建用戶表
