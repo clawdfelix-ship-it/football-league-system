@@ -6,6 +6,7 @@ import { MatchForm, MatchList, ResetButton } from '@/components/AdminClient';
 import Link from 'next/link';
 import { TEAMS } from '@/lib/constants';
 import { PlayerManager } from '@/app/admin/match-sheet/[teamId]/PlayerManager';
+import SignOutButton from '@/components/SignOutButton';
 import type { Player } from '@/lib/schema';
 
 // Type from Database (Drizzle returns Date object for timestamp)
@@ -85,8 +86,11 @@ export default async function AdminPage() {
             <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
               {isAdmin ? 'League Administration' : 'Team Manager Dashboard'}
             </h1>
-            <div className="text-sm text-zinc-500">
-              Logged in as {username}
+            <div className="flex flex-col items-end gap-1">
+              <div className="text-sm text-zinc-500">
+                Logged in as {username}
+              </div>
+              <SignOutButton />
             </div>
           </div>
           <p className="text-sm text-zinc-600 dark:text-zinc-400">
