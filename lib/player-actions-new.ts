@@ -103,6 +103,7 @@ export async function addPlayer(playerData: Omit<Player, 'id' | 'createdAt' | 'u
       email: playerData.email,
       emergencyContact: playerData.emergencyContact,
       notes: playerData.notes,
+      identityPrefix: playerData.identityPrefix, // Include identityPrefix
     };
 
     const [newPlayer] = await db.insert(players).values(newPlayerData).returning();
