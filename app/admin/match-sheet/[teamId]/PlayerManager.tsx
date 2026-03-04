@@ -1,13 +1,14 @@
 'use client';
 
-import { useState } from 'react';
-import { addPlayer, deletePlayer } from '@/lib/actions';
+import { useState, useRef } from 'react';
+import { addPlayer, deletePlayer, uploadPlayerPhoto } from '@/lib/actions';
 import { useRouter } from 'next/navigation';
 
 export function PlayerManager({ teamName }: { teamName: string }) {
   const router = useRouter();
   const [isAdding, setIsAdding] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   async function handleSubmit(formData: FormData) {
     setIsLoading(true);
@@ -15,13 +16,25 @@ export function PlayerManager({ teamName }: { teamName: string }) {
       const name = formData.get('name') as string;
       const number = parseInt(formData.get('number') as string);
       const position = formData.get('position') as string;
+      const photoFile = formData.get('photo') as File;
 
-      await addPlayer({
+      // 1. Add player first
+      const newPlayerArray = await addPlayer({
         name,
         team: teamName,
         number,
         position
       });
+
+      const newPlayer = newPlayerArray[0];
+
+      // 2. Upload photo if exists
+      if (photoFile && photoFile.size > 0) {
+        const uploadFormData = new FormData();
+        uploadFormData.append('file', photoFile);
+        uploadFormData.append('playerId', newPlayer.id.toString());
+        await uploadPlayerPhoto(uploadFormData);
+      }
 
       setIsAdding(false);
       router.refresh();
@@ -79,6 +92,16 @@ export function PlayerManager({ teamName }: { teamName: string }) {
               </select>
             </div>
 
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Photo (Optional)</label>
+              <input 
+                name="photo"
+                type="file" 
+                accept="image/*"
+                className="w-full border rounded-lg px-3 py-2 text-sm"
+              />
+            </div>
+
             <div className="flex gap-3 pt-2">
               <button
                 type="button"
@@ -129,12 +152,67 @@ export function DeletePlayerButton({ playerId }: { playerId: number }) {
   return (
     <button
       onClick={handleDelete}
-      className="absolute top-0 right-0 p-1 text-red-500 opacity-0 group-hover:opacity-100 hover:bg-red-50 rounded print:hidden transition-opacity"
+      className="absolute top-0 right-0 p-1 text-red-500 opacity-0 group-hover:opacity-100 hover:bg-red-50 rounded print:hidden transition-opacity z-10 bg-white shadow-sm border border-red-100"
       title="Remove Player"
     >
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M18 6 6 18M6 6l12 12"/>
       </svg>
     </button>
+  );
+}
+
+export function UploadPhotoButton({ playerId }: { playerId: number }) {
+  const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
+
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('playerId', playerId.toString());
+      
+      await uploadPlayerPhoto(formData);
+      router.refresh();
+    } catch (error) {
+      alert('Failed to upload photo');
+    } finally {
+      setIsUploading(false);
+      // Reset input
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  }
+
+  return (
+    <>
+      <button
+        onClick={() => fileInputRef.current?.click()}
+        disabled={isUploading}
+        className="absolute bottom-0 right-0 p-1 text-blue-500 opacity-0 group-hover:opacity-100 hover:bg-blue-50 rounded print:hidden transition-opacity z-10 bg-white shadow-sm border border-blue-100"
+        title="Upload Photo"
+      >
+        {isUploading ? (
+          <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        ) : (
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" x2="12" y1="3" y2="15"/>
+          </svg>
+        )}
+      </button>
+      <input 
+        type="file" 
+        ref={fileInputRef} 
+        onChange={handleFileChange} 
+        accept="image/*" 
+        className="hidden" 
+      />
+    </>
   );
 }
