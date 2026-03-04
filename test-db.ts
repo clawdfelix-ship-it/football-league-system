@@ -55,7 +55,8 @@ async function testDatabase() {
         phoneNumber: '13800138000',
         email: 'testplayer@example.com',
         emergencyContact: '緊急聯繫人',
-        notes: '測試球員備註'
+        notes: '測試球員備註',
+        identityPrefix: 'A12' // 必填欄位
       });
       console.log('✅ 添加球員成功:', newPlayer.name);
     }
