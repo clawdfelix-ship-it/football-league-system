@@ -253,7 +253,7 @@ export function UploadPhotoButton({ playerId, iconOnly = false }: { playerId: nu
       await uploadPlayerPhoto(formData);
       router.refresh();
     } catch (error) {
-      alert('Failed to upload photo');
+      alert('Failed to upload photo: ' + (error as Error).message);
     } finally {
       setIsUploading(false);
       // Reset input
