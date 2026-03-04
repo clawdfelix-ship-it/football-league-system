@@ -56,10 +56,6 @@ function HomeContent() {
       const fixtures = fixturesData.matches || [];
       const results = resultsData.matches || [];
       
-      // Filter out any "ghost" matches that might be cached or malformed
-      // And ensure we only show future dates for upcoming fixtures if desired, 
-      // though typically "scheduled" status is the source of truth.
-      
       // Sort fixtures by date ascending (soonest first)
       fixtures.sort((a: Match, b: Match) => new Date(a.date).getTime() - new Date(b.date).getTime());
       
@@ -196,16 +192,16 @@ function HomeContent() {
                 <table className="w-full">
                   <thead>
                     <tr className="bg-slate-100 text-slate-700 text-sm font-bold uppercase tracking-wider">
-                      <th className="px-6 py-4 text-left">{t('排名', 'Rank')}</th>
+                      <th className="px-6 py-4 text-center w-20">{t('排名', 'Rank')}</th>
                       <th className="px-6 py-4 text-left">{t('球隊', 'Team')}</th>
-                      <th className="px-6 py-4 text-center">{t('踢咗', 'Played')}</th>
-                      <th className="px-6 py-4 text-center">{t('贏', 'Won')}</th>
-                      <th className="px-6 py-4 text-center">{t('和', 'Drawn')}</th>
-                      <th className="px-6 py-4 text-center">{t('輸', 'Lost')}</th>
-                      <th className="px-6 py-4 text-center">{t('入球', 'GF')}</th>
-                      <th className="px-6 py-4 text-center">{t('失球', 'GA')}</th>
-                      <th className="px-6 py-4 text-center">{t('球差', 'GD')}</th>
-                      <th className="px-6 py-4 text-center">{t('分數', 'Points')}</th>
+                      <th className="px-6 py-4 text-center bg-slate-200/50 text-slate-900">{t('分數', 'Points')}</th>
+                      <th className="px-6 py-4 text-center text-slate-500 font-normal">{t('踢咗', 'Played')}</th>
+                      <th className="px-6 py-4 text-center text-slate-500 font-normal">{t('贏', 'Won')}</th>
+                      <th className="px-6 py-4 text-center text-slate-500 font-normal">{t('和', 'Drawn')}</th>
+                      <th className="px-6 py-4 text-center text-slate-500 font-normal">{t('輸', 'Lost')}</th>
+                      <th className="px-6 py-4 text-center text-slate-500 font-normal">{t('入球', 'GF')}</th>
+                      <th className="px-6 py-4 text-center text-slate-500 font-normal">{t('失球', 'GA')}</th>
+                      <th className="px-6 py-4 text-center text-slate-500 font-normal">{t('球差', 'GD')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -223,28 +219,28 @@ function HomeContent() {
                           key={team.teamName}
                           className="border-b border-slate-200 hover:bg-slate-50 transition-colors"
                         >
-                          <td className="px-6 py-4 font-black text-lg text-slate-900">{index + 1}</td>
-                          <td className="px-6 py-4 font-bold text-slate-900">{team.teamName}</td>
-                          <td className="px-6 py-4 text-center text-slate-600">{team.played}</td>
-                          <td className="px-6 py-4 text-center text-green-600 font-bold">{team.wins}</td>
-                          <td className="px-6 py-4 text-center text-yellow-600 font-bold">{team.draws}</td>
-                          <td className="px-6 py-4 text-center text-red-600 font-bold">{team.losses}</td>
-                          <td className="px-6 py-4 text-center text-slate-600">{team.goalsFor}</td>
-                          <td className="px-6 py-4 text-center text-slate-600">{team.goalsAgainst}</td>
+                          <td className="px-6 py-4 font-black text-xl text-center text-slate-900">{index + 1}</td>
+                          <td className="px-6 py-4 font-bold text-slate-900 text-lg">{team.teamName}</td>
+                          <td className="px-6 py-4 text-center bg-slate-50 text-slate-900 font-black text-2xl border-x border-slate-100">
+                            {team.points}
+                          </td>
+                          <td className="px-6 py-4 text-center text-slate-400">{team.played}</td>
+                          <td className="px-6 py-4 text-center text-slate-400">{team.wins}</td>
+                          <td className="px-6 py-4 text-center text-slate-400">{team.draws}</td>
+                          <td className="px-6 py-4 text-center text-slate-400">{team.losses}</td>
+                          <td className="px-6 py-4 text-center text-slate-400">{team.goalsFor}</td>
+                          <td className="px-6 py-4 text-center text-slate-400">{team.goalsAgainst}</td>
                           <td
                             className={`px-6 py-4 text-center font-bold ${
                               team.goalDifference > 0
                                 ? 'text-green-600'
                                 : team.goalDifference < 0
                                 ? 'text-red-600'
-                                : 'text-slate-600'
+                                : 'text-slate-400'
                             }`}
                           >
                             {team.goalDifference > 0 ? '+' : ''}
                             {team.goalDifference}
-                          </td>
-                          <td className="px-6 py-4 text-center bg-slate-900 text-yellow-400 font-black text-lg">
-                            {team.points}
                           </td>
                         </tr>
                       ))
