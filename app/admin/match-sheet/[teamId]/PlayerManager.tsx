@@ -8,11 +8,15 @@ export function PlayerManager({ teamName }: { teamName: string }) {
   const router = useRouter();
   const [isAdding, setIsAdding] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  // Remove unused ref if not used in this component, or use it properly
+  // const fileInputRef = useRef<HTMLInputElement>(null); 
 
-  async function handleSubmit(formData: FormData) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
     setIsLoading(true);
+    
     try {
+      const formData = new FormData(event.currentTarget);
       const name = formData.get('name') as string;
       const number = parseInt(formData.get('number') as string);
       const position = formData.get('position') as string;
@@ -46,11 +50,11 @@ export function PlayerManager({ teamName }: { teamName: string }) {
   }
 
   return (
-    <div className="print:hidden mb-6 flex justify-center">
+    <div className="print:hidden mb-6 flex justify-center w-full">
       {isAdding ? (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <form 
-            action={handleSubmit}
+            onSubmit={handleSubmit}
             className="bg-white rounded-xl p-6 shadow-xl max-w-md w-full space-y-4"
           >
             <h3 className="text-lg font-bold">Add New Player</h3>
@@ -123,7 +127,7 @@ export function PlayerManager({ teamName }: { teamName: string }) {
       ) : (
         <button
           onClick={() => setIsAdding(true)}
-          className="bg-green-600 text-white px-6 py-2 rounded font-bold shadow hover:bg-green-700 flex items-center gap-2"
+          className="w-full bg-green-600 text-white px-4 py-3 rounded-xl font-bold shadow hover:bg-green-700 flex items-center justify-center gap-2 transition-colors"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M12 5v14M5 12h14"/>
