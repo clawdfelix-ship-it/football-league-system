@@ -171,7 +171,10 @@ export async function addPlayer(data: {
       eq(players.team, data.team)
     );
     
-    if (existingPlayer.some(p => p.jerseyNumber === data.number)) {
+    // Explicitly type 'p' as any to bypass implicit any error, or cast existingPlayer
+    // Better yet, existingPlayer is inferred from schema, so p should be typed.
+    // However, sometimes Drizzle inference needs help or TS config is strict.
+    if (existingPlayer.some((p: any) => p.jerseyNumber === data.number)) {
       throw new Error(`Player with number ${data.number} already exists for team ${data.team}`);
     }
 
