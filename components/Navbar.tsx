@@ -3,8 +3,11 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import LanguageToggle from './LanguageToggle';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function Navbar() {
+  const { t } = useLanguage();
+
   return (
     <nav className="bg-gray-900 text-white p-4 shadow-md sticky top-0 z-50">
       <div className="container mx-auto flex justify-between items-center">
@@ -25,13 +28,13 @@ export default function Navbar() {
           </Link>
           <div className="hidden md:flex items-center gap-6">
             <Link href="/#standings" className="text-sm font-medium hover:text-gray-300 transition-colors">
-              積分榜
+              {t('積分榜', 'Standings')}
             </Link>
             <Link href="/#matches" className="text-sm font-medium hover:text-gray-300 transition-colors">
-              賽程 & 結果
+              {t('賽程 & 結果', 'Fixtures & Results')}
             </Link>
             <Link href="/teams" className="text-sm font-medium hover:text-gray-300 transition-colors">
-              球隊
+              {t('球隊', 'Teams')}
             </Link>
           </div>
         </div>
