@@ -61,7 +61,8 @@ export async function POST(request: NextRequest) {
       email: body.email?.trim() || '',
       emergencyContact: body.emergencyContact?.trim() || '',
       notes: body.notes?.trim() || '',
-      photoUrl: body.photoUrl || ''
+      photoUrl: body.photoUrl || '',
+      identityPrefix: body.identityPrefix?.trim() || '' // Add this field
     });
 
     return NextResponse.json({
