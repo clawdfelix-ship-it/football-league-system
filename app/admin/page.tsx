@@ -1,11 +1,12 @@
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import { getMatches } from '@/lib/actions';
+import { getMatches, getTeamPlayers } from '@/lib/actions';
 import { MatchForm, MatchList, ResetButton } from '@/components/AdminClient';
 import Link from 'next/link';
 import { TEAMS } from '@/lib/constants';
 import { PlayerManager } from '@/app/admin/match-sheet/[teamId]/PlayerManager';
+import type { Player } from '@/lib/schema';
 
 // Type from Database (Drizzle returns Date object for timestamp)
 interface DbMatch {
@@ -70,6 +71,12 @@ export default async function AdminPage() {
   const isAdmin = role === 'admin';
   const isManager = role === 'manager';
 
+  // Fetch team players if is manager
+  let teamPlayers: Player[] = [];
+  if (isManager && teamId !== undefined) {
+    teamPlayers = await getTeamPlayers(TEAMS[teamId].name);
+  }
+
   return (
     <div className="min-h-screen bg-zinc-50 font-sans text-zinc-900 dark:bg-black dark:text-zinc-50">
       <main className="mx-auto flex max-w-3xl flex-col gap-8 px-4 py-10 sm:px-6 lg:px-8">
@@ -96,7 +103,7 @@ export default async function AdminPage() {
             <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
               <h2 className="text-lg font-semibold mb-4">Team Management</h2>
               <div className="space-y-4">
-                <PlayerManager teamName={TEAMS[teamId].name} />
+                <PlayerManager teamName={TEAMS[teamId].name} players={teamPlayers} />
                 
                 <Link 
                   href={`/admin/match-sheet/${teamId}`}

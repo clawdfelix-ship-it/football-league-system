@@ -3,8 +3,9 @@
 import { useState, useRef } from 'react';
 import { addPlayer, deletePlayer, uploadPlayerPhoto } from '@/lib/actions';
 import { useRouter } from 'next/navigation';
+import type { Player } from '@/lib/schema';
 
-export function PlayerManager({ teamName }: { teamName: string }) {
+export function PlayerManager({ teamName, players = [] }: { teamName: string, players?: Player[] }) {
   const router = useRouter();
   const [isAdding, setIsAdding] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -50,91 +51,132 @@ export function PlayerManager({ teamName }: { teamName: string }) {
   }
 
   return (
-    <div className="print:hidden mb-6 flex justify-center w-full">
-      {isAdding ? (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <form 
-            onSubmit={handleSubmit}
-            className="bg-white rounded-xl p-6 shadow-xl max-w-md w-full space-y-4"
-          >
-            <h3 className="text-lg font-bold">Add New Player</h3>
-            
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Name</label>
-              <input 
-                name="name" 
-                required 
-                className="w-full border rounded-lg px-3 py-2"
-                placeholder="Player Name"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Jersey Number</label>
-              <input 
-                name="number" 
-                type="number" 
-                required 
-                min="0"
-                max="99"
-                className="w-full border rounded-lg px-3 py-2"
-                placeholder="0-99"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Position</label>
-              <select 
-                name="position" 
-                required 
-                className="w-full border rounded-lg px-3 py-2"
-              >
-                <option value="FW">Forward (FW)</option>
-                <option value="MF">Midfielder (MF)</option>
-                <option value="DF">Defender (DF)</option>
-                <option value="GK">Goalkeeper (GK)</option>
-              </select>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Photo (Optional)</label>
-              <input 
-                name="photo"
-                type="file" 
-                accept="image/*"
-                className="w-full border rounded-lg px-3 py-2 text-sm"
-              />
-            </div>
-
-            <div className="flex gap-3 pt-2">
-              <button
-                type="button"
-                onClick={() => setIsAdding(false)}
-                className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-              >
-                {isLoading ? 'Adding...' : 'Add Player'}
-              </button>
-            </div>
-          </form>
+    <div className="space-y-6">
+      {/* Player List */}
+      {players.length > 0 && (
+        <div className="rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 overflow-hidden">
+          <div className="bg-slate-50 dark:bg-slate-900 px-4 py-3 border-b border-zinc-200 dark:border-zinc-800">
+            <h3 className="font-semibold text-sm">Team Roster ({players.length})</h3>
+          </div>
+          <div className="divide-y divide-zinc-100 dark:divide-zinc-800 max-h-[400px] overflow-y-auto">
+            {players.map((player) => (
+              <div key={player.id} className="flex items-center justify-between p-3 hover:bg-slate-50 dark:hover:bg-slate-900/50">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gray-100 overflow-hidden flex-shrink-0 border border-gray-200 relative group">
+                    {player.photoUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={player.photoUrl} alt={player.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">
+                        {player.name.charAt(0)}
+                      </div>
+                    )}
+                    {/* Small upload overlay on hover */}
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                      <UploadPhotoButton playerId={player.id} iconOnly />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="font-medium text-sm">{player.name}</div>
+                    <div className="text-xs text-gray-500">#{player.jerseyNumber} • {player.position}</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <DeletePlayerButton playerId={player.id} />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-      ) : (
-        <button
-          onClick={() => setIsAdding(true)}
-          className="w-full bg-green-600 text-white px-4 py-3 rounded-xl font-bold shadow hover:bg-green-700 flex items-center justify-center gap-2 transition-colors"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 5v14M5 12h14"/>
-          </svg>
-          Add New Player
-        </button>
       )}
+
+      {/* Add Button */}
+      <div className="print:hidden flex justify-center w-full">
+        {isAdding ? (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <form 
+              onSubmit={handleSubmit}
+              className="bg-white rounded-xl p-6 shadow-xl max-w-md w-full space-y-4"
+            >
+              <h3 className="text-lg font-bold">Add New Player</h3>
+              
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Name</label>
+                <input 
+                  name="name" 
+                  required 
+                  className="w-full border rounded-lg px-3 py-2"
+                  placeholder="Player Name"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Jersey Number</label>
+                <input 
+                  name="number" 
+                  type="number" 
+                  required 
+                  min="0"
+                  max="99"
+                  className="w-full border rounded-lg px-3 py-2"
+                  placeholder="0-99"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Position</label>
+                <select 
+                  name="position" 
+                  required 
+                  className="w-full border rounded-lg px-3 py-2"
+                >
+                  <option value="FW">Forward (FW)</option>
+                  <option value="MF">Midfielder (MF)</option>
+                  <option value="DF">Defender (DF)</option>
+                  <option value="GK">Goalkeeper (GK)</option>
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Photo (Optional)</label>
+                <input 
+                  name="photo"
+                  type="file" 
+                  accept="image/*"
+                  className="w-full border rounded-lg px-3 py-2 text-sm"
+                />
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsAdding(false)}
+                  className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                >
+                  {isLoading ? 'Adding...' : 'Add Player'}
+                </button>
+              </div>
+            </form>
+          </div>
+        ) : (
+          <button
+            onClick={() => setIsAdding(true)}
+            className="w-full bg-green-600 text-white px-4 py-3 rounded-xl font-bold shadow hover:bg-green-700 flex items-center justify-center gap-2 transition-colors"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 5v14M5 12h14"/>
+            </svg>
+            Add New Player
+          </button>
+        )}
+      </div>
     </div>
   );
 }
@@ -156,7 +198,7 @@ export function DeletePlayerButton({ playerId }: { playerId: number }) {
   return (
     <button
       onClick={handleDelete}
-      className="absolute top-0 right-0 p-1 text-red-500 opacity-0 group-hover:opacity-100 hover:bg-red-50 rounded print:hidden transition-opacity z-10 bg-white shadow-sm border border-red-100"
+      className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
       title="Remove Player"
     >
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -166,7 +208,7 @@ export function DeletePlayerButton({ playerId }: { playerId: number }) {
   );
 }
 
-export function UploadPhotoButton({ playerId }: { playerId: number }) {
+export function UploadPhotoButton({ playerId, iconOnly = false }: { playerId: number, iconOnly?: boolean }) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -197,11 +239,14 @@ export function UploadPhotoButton({ playerId }: { playerId: number }) {
       <button
         onClick={() => fileInputRef.current?.click()}
         disabled={isUploading}
-        className="absolute bottom-0 right-0 p-1 text-blue-500 opacity-0 group-hover:opacity-100 hover:bg-blue-50 rounded print:hidden transition-opacity z-10 bg-white shadow-sm border border-blue-100"
+        className={iconOnly 
+          ? "text-white hover:text-blue-200 transition-colors"
+          : "absolute bottom-0 right-0 p-1 text-blue-500 opacity-0 group-hover:opacity-100 hover:bg-blue-50 rounded print:hidden transition-opacity z-10 bg-white shadow-sm border border-blue-100"
+        }
         title="Upload Photo"
       >
         {isUploading ? (
-          <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
         ) : (
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
