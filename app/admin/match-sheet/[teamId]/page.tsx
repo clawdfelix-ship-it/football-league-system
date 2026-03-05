@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import { getTeamPlayers } from '@/lib/actions';
 import { TEAMS } from '@/lib/constants';
 import { PrintButton } from './PrintButton';
-import { DeletePlayerButton, UploadPhotoButton } from './PlayerManager';
+import { UploadPhotoButton } from './PlayerManager';
 import type { Player } from '@/lib/schema';
 
 export default async function MatchSheet({ params }: { params: Promise<{ teamId: string }> }) {
