@@ -29,6 +29,7 @@ interface Match {
   date: string;
   venue: string | null;
   status: string | null;
+  round?: string | null;
 }
 
 function HomeContent() {
@@ -57,10 +58,18 @@ function HomeContent() {
       const results = resultsData.matches || [];
       
       // Sort fixtures by date ascending (soonest first)
-      fixtures.sort((a: Match, b: Match) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      fixtures.sort((a: Match, b: Match) => {
+        if (!a.date) return 1;
+        if (!b.date) return -1;
+        return new Date(a.date).getTime() - new Date(b.date).getTime();
+      });
       
       // Sort results by date descending (latest first)
-      results.sort((a: Match, b: Match) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      results.sort((a: Match, b: Match) => {
+        if (!a.date) return 1;
+        if (!b.date) return -1;
+        return new Date(b.date).getTime() - new Date(a.date).getTime();
+      });
       
       // Calculate standings from results
       const table = new Map<string, TeamStanding>();
@@ -271,12 +280,21 @@ function HomeContent() {
                       </div>
                       <div className="text-center w-1/3">
                         <div className="text-sm text-slate-600 font-bold">
-                          {match.date ? new Date(match.date).toLocaleDateString('en-GB') : ''}
+                          {match.date ? new Date(match.date).toLocaleDateString('en-GB') : 'TBC'}
                         </div>
-                        <div className="text-sm text-slate-600">
-                          {match.date ? new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : ''}
+                        {match.date && (
+                          <div className="text-sm text-slate-600">
+                            {new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+                          </div>
+                        )}
+                        {match.round && (
+                          <div className="text-xs font-bold text-green-600 mt-1 uppercase tracking-wide">
+                            {match.round}
+                          </div>
+                        )}
+                        <div className="text-xs text-slate-500 mt-1">
+                          {match.venue || 'TBC'}
                         </div>
-                        <div className="text-xs text-slate-500 mt-1">{match.venue}</div>
                       </div>
                       <div className="text-right w-1/3">
                         <div className="font-bold text-slate-900">{match.awayTeam}</div>
@@ -303,13 +321,18 @@ function HomeContent() {
                     >
                       <div className="text-left w-1/3">
                         <div className="font-bold text-slate-900">{match.homeTeam}</div>
-                        <div className="text-xs text-slate-500">{new Date(match.date).toLocaleDateString('en-GB')}</div>
+                        <div className="text-xs text-slate-500">{match.date ? new Date(match.date).toLocaleDateString('en-GB') : ''}</div>
                       </div>
                       <div className="text-center w-1/3">
                         <div className="font-black text-lg text-slate-900">
                           {match.homeScore !== null ? match.homeScore : 0} - {match.awayScore !== null ? match.awayScore : 0}
                         </div>
                         <div className="text-xs text-slate-500">{t('完場', 'Final')}</div>
+                        {match.round && (
+                          <div className="text-[10px] text-slate-400 mt-1 uppercase">
+                            {match.round}
+                          </div>
+                        )}
                       </div>
                       <div className="text-right w-1/3">
                         <div className="font-bold text-slate-900">{match.awayTeam}</div>
