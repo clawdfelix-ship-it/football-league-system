@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { matches } from '@/lib/schema';
-import { desc, eq, asc } from 'drizzle-orm';
+import { desc, eq, asc, or } from 'drizzle-orm';
 
 // GET all matches
 export const dynamic = 'force-dynamic';
@@ -14,12 +14,19 @@ export async function GET(request: NextRequest) {
     
     let allMatches;
     
-    if (status) {
+    if (status === 'scheduled') {
+      // For scheduled, we want both 'scheduled' and 'tbc' matches
+      allMatches = await db
+        .select()
+        .from(matches)
+        .where(or(eq(matches.status, 'scheduled'), eq(matches.status, 'tbc')))
+        .orderBy(asc(matches.date));
+    } else if (status) {
       allMatches = await db
         .select()
         .from(matches)
         .where(eq(matches.status, status))
-        .orderBy(status === 'scheduled' ? asc(matches.date) : desc(matches.date));
+        .orderBy(desc(matches.date));
     } else {
       allMatches = await db.select().from(matches).orderBy(desc(matches.date));
     }
