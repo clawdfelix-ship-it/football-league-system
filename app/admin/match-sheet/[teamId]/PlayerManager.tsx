@@ -20,6 +20,7 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
       const number = parseInt(formData.get('number') as string);
       const position = formData.get('position') as string;
       const identityPrefix = formData.get('identityPrefix') as string;
+      const email = formData.get('email') as string;
       const photoFile = formData.get('photo') as File;
 
       // 1. Add player first
@@ -28,7 +29,8 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
         team: teamName,
         number,
         position,
-        identityPrefix
+        identityPrefix,
+        email
       });
 
       if (!result.success || !result.player) {
@@ -166,6 +168,16 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
                   placeholder="e.g. A12"
                 />
                 <p className="text-xs text-zinc-500">Only the first 3 characters are required for verification.</p>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-zinc-300">Email (Optional)</label>
+                <input 
+                  name="email"
+                  type="email"
+                  className="w-full border border-zinc-700 bg-zinc-800 rounded-lg px-3 py-2 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600"
+                  placeholder="player@example.com"
+                />
               </div>
 
               <div className="space-y-2">
