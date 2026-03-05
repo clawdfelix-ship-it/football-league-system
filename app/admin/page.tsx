@@ -30,7 +30,7 @@ interface SerializedMatch {
   awayTeam: string;
   homeScore: number | null;
   awayScore: number | null;
-  date: string | null; // Allow null for TBC
+  date: string; // Changed from string | null to string
   venue: string | null;
   status: string | null;
   round?: string | null;
@@ -64,7 +64,7 @@ export default async function AdminPage() {
       })
       .map(m => ({
         ...m,
-        date: m.date ? m.date.toISOString() : null,
+        date: m.date ? m.date.toISOString() : '', // Convert null to empty string or handle TBC appropriately in frontend
         venue: m.venue || null, // Ensure null instead of undefined
         status: m.status || null,
         round: m.round || null
@@ -79,7 +79,7 @@ export default async function AdminPage() {
       })
       .map(m => ({
         ...m,
-        date: m.date ? m.date.toISOString() : null,
+        date: m.date ? m.date.toISOString() : '', // Convert null to empty string
         venue: m.venue || null,
         status: m.status || null,
         round: m.round || null
