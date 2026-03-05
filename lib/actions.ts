@@ -98,7 +98,7 @@ export async function getStandings(): Promise<TeamStanding[]> {
   return standings;
 }
 
-export async function getMatches(status?: 'scheduled' | 'finished') {
+export async function getMatches(status?: 'scheduled' | 'finished' | 'tbc') {
   if (status) {
     return await db.select().from(matches).where(eq(matches.status, status)).orderBy(status === 'scheduled' ? asc(matches.date) : desc(matches.date));
   }
@@ -110,9 +110,10 @@ export async function addMatch(data: {
   awayTeam: string;
   homeScore?: number;
   awayScore?: number;
-  date: Date;
+  date?: Date;
   venue?: string;
-  status: 'scheduled' | 'finished';
+  status: 'scheduled' | 'finished' | 'tbc';
+  round?: string;
 }) {
   return await db.insert(matches).values(data).returning();
 }
@@ -124,7 +125,8 @@ export async function updateMatch(id: number, data: {
   awayScore?: number;
   date?: Date;
   venue?: string;
-  status?: 'scheduled' | 'finished';
+  status?: 'scheduled' | 'finished' | 'tbc';
+  round?: string;
 }) {
   return await db.update(matches).set(data).where(eq(matches.id, id)).returning();
 }
@@ -176,19 +178,21 @@ export async function addPlayer(data: {
     // Better yet, existingPlayer is inferred from schema, so p should be typed.
     // However, sometimes Drizzle inference needs help or TS config is strict.
     if (existingPlayer.some((p: any) => p.jerseyNumber === data.number)) {
-      throw new Error(`Player with number ${data.number} already exists for team ${data.team}`);
+      return { success: false, message: `Player with number ${data.number} already exists for team ${data.team}` };
     }
 
-    return await db.insert(players).values({
+    const res = await db.insert(players).values({
       name: data.name,
       team: data.team,
       jerseyNumber: data.number,
       position: data.position,
       identityPrefix: data.identityPrefix,
     }).returning();
+    
+    return { success: true, player: res[0] };
   } catch (error) {
     console.error('Failed to add player:', error);
-    throw error;
+    return { success: false, message: error instanceof Error ? error.message : 'Unknown error' };
   }
 }
 
@@ -198,7 +202,7 @@ export async function deletePlayer(id: number | string) {
     const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
     
     if (isNaN(numericId)) {
-      throw new Error('Invalid player ID');
+      return { success: false, message: 'Invalid player ID' };
     }
 
     await db.delete(players).where(eq(players.id, numericId));
@@ -215,7 +219,12 @@ export async function uploadPlayerPhoto(formData: FormData) {
     const playerId = formData.get('playerId') as string;
     
     if (!file || !playerId) {
-      throw new Error('Missing file or player ID');
+      return { success: false, message: 'Missing file or player ID' };
+    }
+    
+    if (!process.env.BLOB_READ_WRITE_TOKEN) {
+      console.error('Missing BLOB_READ_WRITE_TOKEN');
+      return { success: false, message: 'Server configuration error: Missing storage token' };
     }
 
     const blob = await put(file.name, file, {
@@ -227,9 +236,9 @@ export async function uploadPlayerPhoto(formData: FormData) {
       .set({ photoUrl: blob.url })
       .where(eq(players.id, parseInt(playerId)));
 
-    return blob;
+    return { success: true, url: blob.url };
   } catch (error) {
     console.error('Failed to upload player photo:', error);
-    throw error;
+    return { success: false, message: error instanceof Error ? error.message : 'Unknown upload error' };
   }
 }

@@ -13,13 +13,15 @@ interface Match {
   date: string;
   venue: string | null;
   status: string | null;
+  round?: string | null;
 }
 
 const VENUES = [
   '跑馬地遊樂場 8 號場 (Happy Valley Recreation Ground No. 8)',
   '中山紀念公園 (Sun Yat Sen Memorial Park)',
   '鰂魚涌公園 1 號場 (Quarry Bay Park No. 1, near Taikoo Shing)',
-  '鰂魚涌公園 2 號場 (Quarry Bay Park No. 2, near Quarry Bay Station)'
+  '鰂魚涌公園 2 號場 (Quarry Bay Park No. 2, near Quarry Bay Station)',
+  'TBC'
 ];
 
 export function MatchList({ 
@@ -34,16 +36,17 @@ export function MatchList({
   const handleUpdateMatch = async (matchId: number, formData: FormData) => {
     const homeScoreRaw = formData.get('homeScore')?.toString();
     const awayScoreRaw = formData.get('awayScore')?.toString();
-    const status = formData.get('status')?.toString() as 'scheduled' | 'finished';
+    const status = formData.get('status')?.toString() as 'scheduled' | 'finished' | 'tbc';
     const dateRaw = formData.get('date')?.toString();
     const timeRaw = formData.get('time')?.toString();
     const venueRaw = formData.get('venue')?.toString().trim();
+    const roundRaw = formData.get('round')?.toString().trim();
     
     const homeScore = homeScoreRaw !== '' ? Number(homeScoreRaw) : undefined;
     const awayScore = awayScoreRaw !== '' ? Number(awayScoreRaw) : undefined;
 
     let matchDate: Date | undefined;
-    if (dateRaw) {
+    if (dateRaw && dateRaw !== 'TBC') {
       const timeString = timeRaw || '00:00';
       const dateTimeString = `${dateRaw}T${timeString}`;
       matchDate = new Date(dateTimeString);
@@ -54,7 +57,8 @@ export function MatchList({
       awayScore: Number.isNaN(awayScore) ? undefined : awayScore,
       status,
       date: matchDate,
-      venue: venueRaw || undefined
+      venue: venueRaw || undefined,
+      round: roundRaw || undefined
     });
     
     setEditingMatch(null);
@@ -82,7 +86,7 @@ export function MatchList({
                   <div className="text-sm">
                     <div className="font-semibold text-zinc-900 dark:text-zinc-100">{match.homeTeam} vs {match.awayTeam}</div>
                     <div className="text-xs text-zinc-500 dark:text-zinc-400">
-                      {new Date(match.date).toLocaleDateString('en-GB')} {new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })} • {match.venue}
+                      {match.date ? new Date(match.date).toLocaleDateString('en-GB') : 'TBC'} {match.date ? new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : ''} • {match.venue || 'TBC'} {match.round ? `• ${match.round}` : ''}
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -131,9 +135,19 @@ export function MatchList({
                       </datalist>
                     </div>
                     <div>
+                      <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Round</label>
+                      <select name="round" defaultValue={match.round || ''} className="w-full border dark:border-zinc-700 rounded px-2 py-1 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100">
+                        <option value="">Select Round</option>
+                        {Array.from({ length: 14 }, (_, i) => i + 1).map(num => (
+                          <option key={num} value={`Round ${num}`}>Round {num}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
                       <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Status</label>
                       <select name="status" defaultValue={match.status || 'scheduled'} className="w-full border dark:border-zinc-700 rounded px-2 py-1 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100">
                         <option value="scheduled">Scheduled</option>
+                        <option value="tbc">TBC</option>
                         <option value="finished">Finished</option>
                       </select>
                     </div>
@@ -160,7 +174,7 @@ export function MatchList({
                   <div className="text-sm">
                     <div className="font-semibold text-zinc-900 dark:text-zinc-100">{match.homeTeam} vs {match.awayTeam}</div>
                     <div className="text-xs text-zinc-500 dark:text-zinc-400">
-                      {new Date(match.date).toLocaleDateString('en-GB')} {new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })} • {match.venue}
+                      {match.date ? new Date(match.date).toLocaleDateString('en-GB') : 'TBC'} {match.date ? new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : ''} • {match.venue || 'TBC'} {match.round ? `• ${match.round}` : ''}
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -204,11 +218,24 @@ export function MatchList({
                     <div>
                       <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Venue</label>
                       <input name="venue" list="venues" defaultValue={match.venue || ''} className="w-full border dark:border-zinc-700 rounded px-2 py-1 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100" />
+                      <datalist id="venues">
+                        {VENUES.map(v => <option key={v} value={v} />)}
+                      </datalist>
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Round</label>
+                      <select name="round" defaultValue={match.round || ''} className="w-full border dark:border-zinc-700 rounded px-2 py-1 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100">
+                        <option value="">Select Round</option>
+                        {Array.from({ length: 14 }, (_, i) => i + 1).map(num => (
+                          <option key={num} value={`Round ${num}`}>Round {num}</option>
+                        ))}
+                      </select>
                     </div>
                     <div>
                       <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Status</label>
                       <select name="status" defaultValue={match.status || 'scheduled'} className="w-full border dark:border-zinc-700 rounded px-2 py-1 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100">
                         <option value="scheduled">Scheduled</option>
+                        <option value="tbc">TBC</option>
                         <option value="finished">Finished</option>
                       </select>
                     </div>
@@ -237,28 +264,30 @@ export function MatchForm() {
     const dateRaw = formData.get('date')?.toString();
     const timeRaw = formData.get('time')?.toString();
     const venueRaw = formData.get('venue')?.toString().trim();
-    const status = formData.get('status')?.toString() as 'scheduled' | 'finished';
+    const status = formData.get('status')?.toString() as 'scheduled' | 'finished' | 'tbc';
+    const roundRaw = formData.get('round')?.toString().trim();
 
-    if (!homeTeam || !awayTeam || !dateRaw) return;
+    if (!homeTeam || !awayTeam) return;
 
     const homeScore = homeScoreRaw !== '' ? Number(homeScoreRaw) : undefined;
     const awayScore = awayScoreRaw !== '' ? Number(awayScoreRaw) : undefined;
 
-    // Construct date string explicitly to ensure local time is respected
-    // input type="date" returns YYYY-MM-DD
-    // input type="time" returns HH:MM
-    const timeString = timeRaw || '00:00';
-    const dateTimeString = `${dateRaw}T${timeString}`;
-    const matchDate = new Date(dateTimeString);
+    let matchDate: Date | undefined;
+    if (dateRaw && dateRaw !== 'TBC') {
+      const timeString = timeRaw || '00:00';
+      const dateTimeString = `${dateRaw}T${timeString}`;
+      matchDate = new Date(dateTimeString);
+    }
 
     await addMatch({
       homeTeam,
       awayTeam,
       homeScore: Number.isNaN(homeScore) ? undefined : homeScore,
       awayScore: Number.isNaN(awayScore) ? undefined : awayScore,
-      date: matchDate,
-      venue: venueRaw || 'Unknown Venue',
-      status: status || 'finished',
+      date: matchDate, // Can be undefined for TBC
+      venue: venueRaw || 'TBC',
+      status: status || 'scheduled',
+      round: roundRaw || undefined
     });
 
     window.location.reload();
@@ -294,15 +323,35 @@ export function MatchForm() {
             <label className="text-sm font-medium text-zinc-800 dark:text-zinc-200">Status</label>
             <select name="status" className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100">
               <option value="scheduled">Scheduled (Fixture)</option>
+              <option value="tbc">TBC</option>
               <option value="finished">Finished (Result)</option>
             </select>
           </div>
           <div className="space-y-1">
             <label className="text-sm font-medium text-zinc-800 dark:text-zinc-200">Match date</label>
             <div className="flex gap-2">
-              <input name="date" type="date" required className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100" />
+              <input name="date" type="date" className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100" />
               <input name="time" type="time" className="w-32 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100" />
             </div>
+          </div>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-1">
+            <label className="text-sm font-medium text-zinc-800 dark:text-zinc-200">Venue</label>
+            <input name="venue" list="venues" className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100" placeholder="Select or type venue" />
+            <datalist id="venues">
+              {VENUES.map(v => <option key={v} value={v} />)}
+            </datalist>
+          </div>
+          <div className="space-y-1">
+            <label className="text-sm font-medium text-zinc-800 dark:text-zinc-200">Round</label>
+            <select name="round" className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100">
+              <option value="">Select Round</option>
+              {Array.from({ length: 14 }, (_, i) => i + 1).map(num => (
+                <option key={num} value={`Round ${num}`}>Round {num}</option>
+              ))}
+            </select>
           </div>
         </div>
 
@@ -315,14 +364,6 @@ export function MatchForm() {
             <label className="text-sm font-medium text-zinc-800 dark:text-zinc-200">Away score</label>
             <input name="awayScore" type="number" min="0" className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100" />
           </div>
-        </div>
-
-        <div className="space-y-1">
-          <label className="text-sm font-medium text-zinc-800 dark:text-zinc-200">Venue</label>
-          <input name="venue" list="venues" className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100" placeholder="Select or type venue" />
-          <datalist id="venues">
-            {VENUES.map(v => <option key={v} value={v} />)}
-          </datalist>
         </div>
 
         <button type="submit" className="w-full rounded-xl bg-slate-900 dark:bg-slate-800 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-slate-800 dark:hover:bg-slate-700 transition-colors">

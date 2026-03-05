@@ -40,9 +40,10 @@ export const matches = pgTable('matches', {
   awayTeam: varchar('away_team', { length: 100 }).notNull(),
   homeScore: integer('home_score'),
   awayScore: integer('away_score'),
-  date: timestamp('date').notNull(),
+  date: timestamp('date'), // Allow null for TBC
   venue: varchar('venue', { length: 100 }),
-  status: varchar('status', { length: 20 }).default('scheduled'), // scheduled, finished
+  status: varchar('status', { length: 20 }).default('scheduled'), // scheduled, finished, tbc
+  round: varchar('round', { length: 20 }), // New field for Round 1-14
   createdAt: timestamp('created_at').defaultNow(),
 });
 

@@ -60,12 +60,27 @@ export async function createMatchesTable() {
       away_team VARCHAR(100) NOT NULL,
       home_score INTEGER,
       away_score INTEGER,
-      date TIMESTAMP NOT NULL,
+      date TIMESTAMP,
       venue VARCHAR(100),
       status VARCHAR(20) DEFAULT 'scheduled',
+      round VARCHAR(20),
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
   `);
+
+  // Add round column if it doesn't exist (for existing tables)
+  try {
+    await db.execute(sql`
+      ALTER TABLE matches ADD COLUMN IF NOT EXISTS round VARCHAR(20);
+    `);
+    
+    // Modify date column to be nullable
+    await db.execute(sql`
+      ALTER TABLE matches ALTER COLUMN date DROP NOT NULL;
+    `);
+  } catch (e) {
+    console.log('Error migrating matches table', e);
+  }
 }
 
 // 初始化數據庫
