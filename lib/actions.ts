@@ -131,8 +131,17 @@ export async function updateMatch(id: number, data: {
   return await db.update(matches).set(data).where(eq(matches.id, id)).returning();
 }
 
-export async function deleteMatch(id: number) {
-  return await db.delete(matches).where(eq(matches.id, id));
+export async function deleteMatch(id: number | string) {
+  try {
+    const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
+    if (isNaN(numericId)) throw new Error('Invalid match ID');
+    
+    await db.delete(matches).where(eq(matches.id, numericId));
+    return { success: true };
+  } catch (error) {
+    console.error('Failed to delete match:', error);
+    return { success: false, message: error instanceof Error ? error.message : 'Unknown error' };
+  }
 }
 
 export async function resetSeason() {
