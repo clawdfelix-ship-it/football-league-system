@@ -23,7 +23,7 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
       const photoFile = formData.get('photo') as File;
 
       // 1. Add player first
-      const newPlayerArray = await addPlayer({
+      const result = await addPlayer({
         name,
         team: teamName,
         number,
@@ -31,14 +31,22 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
         identityPrefix
       });
 
-      const newPlayer = newPlayerArray[0];
+      if (!result.success || !result.player) {
+        throw new Error(result.message || 'Failed to add player');
+      }
+
+      const newPlayer = result.player;
 
       // 2. Upload photo if exists
       if (photoFile && photoFile.size > 0) {
         const uploadFormData = new FormData();
         uploadFormData.append('file', photoFile);
         uploadFormData.append('playerId', newPlayer.id.toString());
-        await uploadPlayerPhoto(uploadFormData);
+        
+        const uploadResult = await uploadPlayerPhoto(uploadFormData);
+        if (!uploadResult.success) {
+          alert('Player added but photo upload failed: ' + uploadResult.message);
+        }
       }
 
       setIsAdding(false);
@@ -250,7 +258,10 @@ export function UploadPhotoButton({ playerId, iconOnly = false }: { playerId: nu
       formData.append('file', file);
       formData.append('playerId', playerId.toString());
       
-      await uploadPlayerPhoto(formData);
+      const result = await uploadPlayerPhoto(formData);
+      if (!result.success) {
+        throw new Error(result.message || 'Upload failed');
+      }
       router.refresh();
     } catch (error) {
       alert('Failed to upload photo: ' + (error as Error).message);
