@@ -17,9 +17,10 @@ interface DbMatch {
   awayTeam: string;
   homeScore: number | null;
   awayScore: number | null;
-  date: Date;
+  date: Date | null; // Allow null
   venue: string | null;
   status: string | null;
+  round?: string | null;
 }
 
 // Type for Client Component (Props must be serializable)
@@ -29,9 +30,10 @@ interface SerializedMatch {
   awayTeam: string;
   homeScore: number | null;
   awayScore: number | null;
-  date: string;
+  date: string | null; // Allow null for TBC
   venue: string | null;
   status: string | null;
+  round?: string | null;
 }
 
 export const dynamic = 'force-dynamic';
@@ -43,28 +45,49 @@ export default async function AdminPage() {
     redirect('/login');
   }
 
-  // Cast to unknown first to avoid type overlap error if types differ significantly
-  const allMatches = (await getMatches()) as unknown as DbMatch[];
-  
-  const scheduledMatches: SerializedMatch[] = allMatches
-    .filter(m => m.status === 'scheduled')
-    .sort((a, b) => a.date.getTime() - b.date.getTime())
-    .map(m => ({
-      ...m,
-      date: m.date.toISOString(),
-      venue: m.venue || null, // Ensure null instead of undefined
-      status: m.status || null
-    }));
+  let scheduledMatches: SerializedMatch[] = [];
+  let finishedMatches: SerializedMatch[] = [];
+  let teamPlayers: Player[] = [];
+  let dbError = null;
+
+  try {
+    // Cast to unknown first to avoid type overlap error if types differ significantly
+    // Use try-catch to prevent page crash if DB schema is outdated
+    const allMatches = (await getMatches()) as unknown as DbMatch[];
     
-  const finishedMatches: SerializedMatch[] = allMatches
-    .filter(m => m.status === 'finished')
-    .sort((a, b) => b.date.getTime() - a.date.getTime())
-    .map(m => ({
-      ...m,
-      date: m.date.toISOString(),
-      venue: m.venue || null,
-      status: m.status || null
-    }));
+    scheduledMatches = allMatches
+      .filter(m => m.status === 'scheduled' || m.status === 'tbc')
+      .sort((a, b) => {
+        if (!a.date) return 1;
+        if (!b.date) return -1;
+        return a.date.getTime() - b.date.getTime();
+      })
+      .map(m => ({
+        ...m,
+        date: m.date ? m.date.toISOString() : null,
+        venue: m.venue || null, // Ensure null instead of undefined
+        status: m.status || null,
+        round: m.round || null
+      }));
+      
+    finishedMatches = allMatches
+      .filter(m => m.status === 'finished')
+      .sort((a, b) => {
+        if (!a.date) return 1;
+        if (!b.date) return -1;
+        return b.date.getTime() - a.date.getTime();
+      })
+      .map(m => ({
+        ...m,
+        date: m.date ? m.date.toISOString() : null,
+        venue: m.venue || null,
+        status: m.status || null,
+        round: m.round || null
+      }));
+  } catch (e) {
+    console.error("Failed to fetch matches:", e);
+    dbError = "Database schema mismatch. Please click 'Fix Database Schema' button.";
+  }
 
   const username = session.user?.name || (session.user as any)?.username || 'Admin';
   const role = (session.user as any)?.role || 'manager';
@@ -74,9 +97,13 @@ export default async function AdminPage() {
   const isManager = role === 'manager';
 
   // Fetch team players if is manager
-  let teamPlayers: Player[] = [];
   if (isManager && teamId !== undefined) {
-    teamPlayers = await getTeamPlayers(TEAMS[teamId].name);
+    try {
+      teamPlayers = await getTeamPlayers(TEAMS[teamId].name);
+    } catch (e) {
+      console.error("Failed to fetch players:", e);
+      dbError = dbError || "Failed to fetch players. Please fix database schema.";
+    }
   }
 
   return (
@@ -102,6 +129,11 @@ export default async function AdminPage() {
               ? 'Manage fixtures, results, and league settings.' 
               : 'Access your team\'s match sheets and resources.'}
           </p>
+          {dbError && (
+            <div className="mt-2 p-3 bg-red-100 border border-red-200 text-red-700 rounded-lg text-sm font-medium">
+              ⚠️ {dbError}
+            </div>
+          )}
         </header>
 
         {/* Team Manager Section */}
