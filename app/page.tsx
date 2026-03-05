@@ -269,7 +269,7 @@ function HomeContent() {
                 {upcomingFixtures.length === 0 ? (
                   <p className="text-center text-gray-500">{t('沒有近期賽事', 'No upcoming fixtures.')}</p>
                 ) : (
-                  upcomingFixtures.slice(0, 5).map((match) => (
+                  upcomingFixtures.map((match) => (
                     <div
                       key={match.id}
                       className="flex justify-between items-center p-4 bg-slate-50 rounded-lg border border-slate-200"
@@ -314,7 +314,7 @@ function HomeContent() {
                 {recentResults.length === 0 ? (
                   <p className="text-center text-gray-500">{t('沒有最近結果', 'No recent results.')}</p>
                 ) : (
-                  recentResults.slice(0, 5).map((match) => (
+                  recentResults.map((match) => (
                     <div
                       key={match.id}
                       className="flex justify-between items-center p-4 bg-slate-50 rounded-lg border border-slate-200"
