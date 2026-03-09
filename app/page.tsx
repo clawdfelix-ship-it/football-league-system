@@ -5,6 +5,8 @@ import Image from 'next/image';
 import HomeLayout from '@/components/HomeLayout';
 import { useLanguage } from '@/context/LanguageContext';
 import { TEAMS } from '@/lib/constants';
+import { getAnnouncements } from '@/lib/actions';
+import type { Announcement } from '@/lib/schema';
 
 export const dynamic = 'force-dynamic';
 
@@ -37,6 +39,7 @@ function HomeContent() {
   const [standings, setStandings] = useState<TeamStanding[]>([]);
   const [upcomingFixtures, setUpcomingFixtures] = useState<Match[]>([]);
   const [recentResults, setRecentResults] = useState<Match[]>([]);
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -46,9 +49,10 @@ function HomeContent() {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [fixturesRes, resultsRes] = await Promise.all([
+      const [fixturesRes, resultsRes, announcementsData] = await Promise.all([
         fetch('/api/matches?status=scheduled', { cache: 'no-store' }),
-        fetch('/api/matches?status=finished', { cache: 'no-store' })
+        fetch('/api/matches?status=finished', { cache: 'no-store' }),
+        getAnnouncements()
       ]);
       
       const fixturesData = await fixturesRes.json();
@@ -138,6 +142,7 @@ function HomeContent() {
       setStandings(standingsArray);
       setUpcomingFixtures(fixtures);
       setRecentResults(results);
+      setAnnouncements(announcementsData);
     } catch (error) {
       console.error('Failed to fetch data:', error);
     } finally {
@@ -343,6 +348,29 @@ function HomeContent() {
               </div>
             </div>
           </section>
+
+          {announcements.length > 0 && (
+            <section id="announcements" className="mt-12">
+              <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200">
+                <div className="bg-slate-900 text-white px-8 py-5">
+                  <h3 className="text-xl font-bold tracking-tight">{t('場地公告', 'Venue Announcements')}</h3>
+                </div>
+                <div className="p-6 space-y-4">
+                  {announcements.map((item) => (
+                    <div key={item.id} className="p-4 bg-slate-50 rounded-lg border border-slate-200">
+                      <div className="flex justify-between items-start mb-2">
+                        <h4 className="font-bold text-slate-900">{item.title}</h4>
+                        <span className="text-xs font-medium text-slate-500 bg-slate-200 px-2 py-1 rounded">
+                          {new Date(item.date).toLocaleDateString('en-GB')} {new Date(item.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                      </div>
+                      <p className="text-slate-700 whitespace-pre-wrap">{item.content}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
         </main>
       </div>
     </HomeLayout>

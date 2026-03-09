@@ -1,14 +1,15 @@
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import { getMatches, getTeamPlayers } from '@/lib/actions';
+import { getMatches, getTeamPlayers, getAnnouncements } from '@/lib/actions';
 import { MatchForm, MatchList, ResetButton } from '@/components/AdminClient';
 import Link from 'next/link';
 import { TEAMS } from '@/lib/constants';
 import { PlayerManager } from '@/app/admin/match-sheet/[teamId]/PlayerManager';
 import SignOutButton from '@/components/SignOutButton';
 import FixDbButton from '@/components/FixDbButton';
-import type { Player } from '@/lib/schema';
+import type { Player, Announcement } from '@/lib/schema';
+import { AnnouncementManager } from '@/components/AnnouncementManager';
 
 // Type from Database (Drizzle returns Date object for timestamp)
 interface DbMatch {
@@ -48,12 +49,14 @@ export default async function AdminPage() {
   let scheduledMatches: SerializedMatch[] = [];
   let finishedMatches: SerializedMatch[] = [];
   let teamPlayers: Player[] = [];
+  let announcements: Announcement[] = [];
   let dbError = null;
 
   try {
     // Cast to unknown first to avoid type overlap error if types differ significantly
     // Use try-catch to prevent page crash if DB schema is outdated
     const allMatches = (await getMatches()) as unknown as DbMatch[];
+    announcements = await getAnnouncements();
     
     scheduledMatches = allMatches
       .filter(m => m.status === 'scheduled' || m.status === 'tbc')
@@ -186,6 +189,8 @@ export default async function AdminPage() {
                 ))}
               </div>
             </section>
+
+            <AnnouncementManager announcements={announcements} />
 
             <MatchForm />
             

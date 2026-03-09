@@ -47,6 +47,15 @@ export const matches = pgTable('matches', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
+// 場地公告表
+export const announcements = pgTable('announcements', {
+  id: serial('id').primaryKey(),
+  title: varchar('title', { length: 200 }),
+  content: text('content').notNull(), // Venue address or details
+  date: timestamp('date').notNull(), // Date and time of the event
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
 // 數據類型導出
 export type Player = typeof players.$inferSelect;
 export type NewPlayer = typeof players.$inferInsert;
@@ -54,3 +63,5 @@ export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Match = typeof matches.$inferSelect;
 export type NewMatch = typeof matches.$inferInsert;
+export type Announcement = typeof announcements.$inferSelect;
+export type NewAnnouncement = typeof announcements.$inferInsert;

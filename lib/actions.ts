@@ -1,7 +1,7 @@
 'use server';
 
 import { db } from './db';
-import { matches, type Match, players, type Player } from './schema';
+import { matches, type Match, players, type Player, announcements, type Announcement } from './schema';
 import { desc, eq, asc } from 'drizzle-orm';
 import { TEAMS } from './constants';
 import { put } from '@vercel/blob';
@@ -251,5 +251,45 @@ export async function uploadPlayerPhoto(formData: FormData) {
   } catch (error) {
     console.error('Failed to upload player photo:', error);
     return { success: false, message: error instanceof Error ? error.message : 'Unknown upload error' };
+  }
+}
+
+// Announcements Actions
+
+export async function getAnnouncements() {
+  try {
+    return await db.select().from(announcements).orderBy(desc(announcements.date));
+  } catch (error) {
+    console.error('Failed to fetch announcements:', error);
+    return [];
+  }
+}
+
+export async function addAnnouncement(data: {
+  title?: string;
+  content: string;
+  date: Date;
+}) {
+  try {
+    const res = await db.insert(announcements).values({
+      title: data.title,
+      content: data.content,
+      date: data.date,
+    }).returning();
+    
+    return { success: true, announcement: res[0] };
+  } catch (error) {
+    console.error('Failed to add announcement:', error);
+    return { success: false, message: error instanceof Error ? error.message : 'Unknown error' };
+  }
+}
+
+export async function deleteAnnouncement(id: number) {
+  try {
+    await db.delete(announcements).where(eq(announcements.id, id));
+    return { success: true };
+  } catch (error) {
+    console.error('Failed to delete announcement:', error);
+    return { success: false, message: error instanceof Error ? error.message : 'Unknown error' };
   }
 }
