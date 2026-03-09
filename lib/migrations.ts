@@ -83,12 +83,26 @@ export async function createMatchesTable() {
   }
 }
 
+// 創建公告表
+export async function createAnnouncementsTable() {
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS announcements (
+      id SERIAL PRIMARY KEY,
+      title VARCHAR(200),
+      content TEXT NOT NULL,
+      date TIMESTAMP NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
+}
+
 // 初始化數據庫
 export async function initializeDatabase() {
   try {
     await createPlayersTable();
     await createUsersTable();
     await createMatchesTable();
+    await createAnnouncementsTable();
     console.log('數據庫初始化成功');
   } catch (error) {
     console.error('數據庫初始化失敗:', error);
