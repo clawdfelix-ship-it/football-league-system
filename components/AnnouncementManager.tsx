@@ -58,6 +58,14 @@ export function AnnouncementManager({
     }
   };
 
+  const VENUES = [
+    '跑馬地遊樂場 8 號場 (Happy Valley Recreation Ground No. 8)',
+    '中山紀念公園 (Sun Yat Sen Memorial Park)',
+    '鰂魚涌公園 1 號場 (Quarry Bay Park No. 1, near Taikoo Shing)',
+    '鰂魚涌公園 2 號場 (Quarry Bay Park No. 2, near Quarry Bay Station)',
+    'TBC'
+  ];
+
   return (
     <section className="rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 p-4 shadow-sm sm:p-6">
       <div className="flex justify-between items-center mb-4">
@@ -104,13 +112,16 @@ export function AnnouncementManager({
 
           <div>
             <label className="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">Venue Address / Details</label>
-            <textarea 
+            <input 
               name="content" 
+              list="venues"
               required
-              rows={3}
-              placeholder="e.g. Happy Valley Recreation Ground No. 8"
+              placeholder="Select or type venue"
               className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100"
             />
+            <datalist id="venues">
+              {VENUES.map(v => <option key={v} value={v} />)}
+            </datalist>
           </div>
 
           <button 
