@@ -165,7 +165,7 @@ function HomeContent() {
             />
           </div>
           <h2 className="text-6xl font-black italic mb-2 tracking-tight">Hong Kong Bank League 2026</h2>
-          <p className="text-blue-200 text-lg font-light tracking-widest uppercase">Partnered with ZENEX SPORTS | 香港銀行友誼足球聯賽2026</p>
+          <p className="text-blue-200 text-lg font-light tracking-widest uppercase">Partnered with ZENEX SPORTS | 香港銀行足球聯賽2026</p>
         </header>
         <main className="max-w-6xl mx-auto px-6 -mt-16 pb-20">
           <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200 p-8">
@@ -193,7 +193,7 @@ function HomeContent() {
             />
           </div>
           <h2 className="text-6xl font-black italic mb-2 tracking-tight">Hong Kong Bank League 2026</h2>
-          <p className="text-blue-200 text-lg font-light tracking-widest uppercase">Partnered with ZENEX SPORTS | 香港銀行友誼足球聯賽2026</p>
+          <p className="text-blue-200 text-lg font-light tracking-widest uppercase">Partnered with ZENEX SPORTS | 香港銀行足球聯賽2026</p>
         </header>
 
         <main className="max-w-6xl mx-auto px-6 -mt-16 pb-20">

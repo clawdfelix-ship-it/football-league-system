@@ -7,9 +7,9 @@ import LanguageToggle from './LanguageToggle';
 import { useLanguage } from '@/context/LanguageContext';
 
 export default function Navbar() {
-  const { t, language } = useLanguage();
-  const isZh = language === 'zh';
+  const { t } = useLanguage();
   const [isAdminMenuOpen, setIsAdminMenuOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
     <nav className="bg-gray-900 text-white p-4 shadow-md sticky top-0 z-50">
@@ -46,6 +46,18 @@ export default function Navbar() {
         </div>
         <div>
           <div className="flex items-center gap-3">
+            <button
+              onClick={() => setIsMobileMenuOpen((v) => !v)}
+              className="md:hidden p-2 rounded hover:bg-gray-800 transition-colors"
+              aria-label="Toggle menu"
+              aria-expanded={isMobileMenuOpen}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
+            </button>
             <LanguageToggle />
             
             {/* Admin Dropdown */}
@@ -84,6 +96,38 @@ export default function Navbar() {
           </div>
         </div>
       </div>
+      {isMobileMenuOpen && (
+        <div className="container mx-auto mt-3 md:hidden space-y-2">
+          <Link
+            href="/overview"
+            className="block px-2 py-2 rounded hover:bg-gray-800 text-sm font-medium transition-colors"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            {t('賽事簡介', 'Overview')}
+          </Link>
+          <Link
+            href="/#standings"
+            className="block px-2 py-2 rounded hover:bg-gray-800 text-sm font-medium transition-colors"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            {t('積分榜', 'Standings')}
+          </Link>
+          <Link
+            href="/#matches"
+            className="block px-2 py-2 rounded hover:bg-gray-800 text-sm font-medium transition-colors"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            {t('賽程 & 結果', 'Fixtures & Results')}
+          </Link>
+          <Link
+            href="/teams"
+            className="block px-2 py-2 rounded hover:bg-gray-800 text-sm font-medium transition-colors"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            {t('球隊', 'Teams')}
+          </Link>
+        </div>
+      )}
     </nav>
   );
 }

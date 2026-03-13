@@ -20,8 +20,8 @@ const notoSansTC = Noto_Sans_TC({
 });
 
 export const metadata: Metadata = {
-  title: "Hong Kong Bank League 2026 | 香港銀行友誼足球聯賽",
-  description: "ZENEX SPORTS 合作夥伴 - 香港銀行友誼足球聯賽2026官方資訊平台",
+  title: "Hong Kong Bank League 2026 | 香港銀行足球聯賽",
+  description: "ZENEX SPORTS 合作夥伴 - 香港銀行足球聯賽2026官方資訊平台",
 };
 
 export default function RootLayout({

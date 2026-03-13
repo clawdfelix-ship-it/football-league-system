@@ -70,7 +70,7 @@ export default function TeamsPage() {
         <header className="bg-[#1a237e] bg-gradient-to-b from-[#1a237e] to-[#283593] text-white pt-16 pb-24 px-6 text-center">
           <h2 className="text-6xl font-black italic mb-2 tracking-tight">{t('球隊', 'TEAMS')}</h2>
           <p className="text-blue-200 text-lg font-light tracking-widest uppercase">
-            Hong Kong Bank League 2026 | {t('香港銀行友誼足球聯賽', 'Hong Kong Bank Football League')}
+            Hong Kong Bank League 2026 | {t('香港銀行足球聯賽', 'Hong Kong Bank Football League')}
           </p>
           <p className="text-yellow-400 text-lg font-bold mt-2">
             ZENEX SPORTS

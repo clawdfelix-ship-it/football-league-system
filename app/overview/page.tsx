@@ -14,7 +14,7 @@ export default function OverviewPage() {
           <h1 className="text-4xl md:text-5xl font-black italic mb-4">Hong Kong Bank League 2026</h1>
           <p className="text-xl md:text-2xl text-blue-200 font-light tracking-wide uppercase">Partnered with ZENEX SPORTS</p>
           <p className="mt-2 text-lg text-gray-400">
-            {isZh ? '香港銀行友誼足球聯賽 2026（ZENEX SPORTS 合作夥伴）' : 'Hong Kong Bank Friendly Football League 2026'}
+            {isZh ? '香港銀行足球聯賽 2026（ZENEX SPORTS 合作夥伴）' : 'Hong Kong Bank Football League 2026'}
           </p>
         </header>
 
