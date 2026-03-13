@@ -63,6 +63,7 @@ function HomeContent() {
       
       // Sort fixtures by date ascending (soonest first)
       fixtures.sort((a: Match, b: Match) => {
+        // TBC dates (null) should be at the bottom
         if (!a.date) return 1;
         if (!b.date) return -1;
         return new Date(a.date).getTime() - new Date(b.date).getTime();

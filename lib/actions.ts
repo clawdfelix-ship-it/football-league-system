@@ -258,7 +258,7 @@ export async function uploadPlayerPhoto(formData: FormData) {
 
 export async function getAnnouncements() {
   try {
-    return await db.select().from(announcements).orderBy(desc(announcements.date));
+    return await db.select().from(announcements).orderBy(asc(announcements.date));
   } catch (error) {
     console.error('Failed to fetch announcements:', error);
     return [];
