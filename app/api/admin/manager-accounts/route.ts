@@ -19,76 +19,83 @@ function makeUsername(team: string, email: string) {
 }
 
 export async function POST(request: Request) {
-  const session = await getServerSession(authOptions);
-
-  if (!session) {
-    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
-  }
-
-  const role = (session.user as any)?.role;
-  if (role !== 'admin') {
-    return NextResponse.json({ message: 'Forbidden' }, { status: 403 });
-  }
-
-  let regenerate = false;
   try {
-    const body = await request.json();
-    regenerate = Boolean(body?.regenerate);
-  } catch {
-    regenerate = false;
-  }
+    const session = await getServerSession(authOptions);
 
-  const created: Array<{ team: string; name: string; email: string; password: string }> = [];
-  const skipped: Array<{ team: string; name: string; email: string }> = [];
+    if (!session) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
 
-  for (const teamBlock of TEAM_CONTACTS) {
-    for (const captain of teamBlock.captains) {
-      if (!captain.email) continue;
-      const email = captain.email.toLowerCase().trim();
-      const team = teamBlock.team;
-      const name = captain.name;
+    const role = (session.user as any)?.role;
+    if (role !== 'admin') {
+      return NextResponse.json({ message: 'Forbidden' }, { status: 403 });
+    }
 
-      const [existing] = await db.select().from(users).where(eq(users.email, email));
+    let regenerate = false;
+    try {
+      const body = await request.json();
+      regenerate = Boolean(body?.regenerate);
+    } catch {
+      regenerate = false;
+    }
 
-      if (existing) {
-        if (!regenerate) {
-          skipped.push({ team, name, email });
+    const created: Array<{ team: string; name: string; email: string; password: string }> = [];
+    const skipped: Array<{ team: string; name: string; email: string }> = [];
+
+    for (const teamBlock of TEAM_CONTACTS) {
+      for (const captain of teamBlock.captains) {
+        if (!captain.email) continue;
+        const email = captain.email.toLowerCase().trim();
+        const team = teamBlock.team;
+        const name = captain.name;
+
+        const [existing] = await db.select().from(users).where(eq(users.email, email));
+
+        if (existing) {
+          if (!regenerate) {
+            skipped.push({ team, name, email });
+            continue;
+          }
+          const password = `${team}${sixDigits()}`;
+          const passwordHash = await bcrypt.hash(password, 10);
+          await db
+            .update(users)
+            .set({
+              passwordHash,
+              role: 'manager',
+              teamCode: team,
+              username: existing.username || makeUsername(team, email),
+            })
+            .where(eq(users.email, email));
+          created.push({ team, name, email, password });
           continue;
         }
+
         const password = `${team}${sixDigits()}`;
         const passwordHash = await bcrypt.hash(password, 10);
-        await db
-          .update(users)
-          .set({
-            passwordHash,
-            role: 'manager',
-            teamCode: team,
-            username: existing.username || makeUsername(team, email),
-          })
-          .where(eq(users.email, email));
+
+        await db.insert(users).values({
+          email,
+          username: makeUsername(team, email),
+          passwordHash,
+          role: 'manager',
+          teamCode: team,
+        });
+
         created.push({ team, name, email, password });
-        continue;
       }
-
-      const password = `${team}${sixDigits()}`;
-      const passwordHash = await bcrypt.hash(password, 10);
-
-      await db.insert(users).values({
-        email,
-        username: makeUsername(team, email),
-        passwordHash,
-        role: 'manager',
-        teamCode: team,
-      });
-
-      created.push({ team, name, email, password });
     }
+
+    return NextResponse.json({
+      message: 'Manager accounts processed',
+      created,
+      skipped,
+    });
+  } catch (e) {
+    console.error('Failed to process manager accounts:', e);
+    return NextResponse.json(
+      { message: e instanceof Error ? e.message : 'Failed to process manager accounts' },
+      { status: 500 }
+    );
   }
-
-  return NextResponse.json({
-    message: 'Manager accounts processed',
-    created,
-    skipped,
-  });
 }
-

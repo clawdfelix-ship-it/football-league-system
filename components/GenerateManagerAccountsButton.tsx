@@ -28,11 +28,12 @@ export default function GenerateManagerAccountsButton() {
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ regenerate }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Failed');
+      const raw = await res.text();
+      const data = raw ? (() => { try { return JSON.parse(raw); } catch { return {}; } })() : {};
+      if (!res.ok) throw new Error((data as any).message || raw || 'Failed');
 
-      setCreated(data.created || []);
-      setSkipped(data.skipped || []);
+      setCreated((data as any).created || []);
+      setSkipped((data as any).skipped || []);
       setStatus('success');
       setMessage('Done. Copy passwords now (they are shown only once here).');
     } catch (e) {
@@ -89,4 +90,3 @@ export default function GenerateManagerAccountsButton() {
     </div>
   );
 }
-

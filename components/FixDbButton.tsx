@@ -12,9 +12,9 @@ export default function FixDbButton() {
     setStatus('loading');
     try {
       const res = await fetch('/api/init-db', { method: 'POST' });
-      const data = await res.json();
-      
-      if (!res.ok) throw new Error(data.message || 'Failed to update DB');
+      const raw = await res.text();
+      const data = raw ? (() => { try { return JSON.parse(raw); } catch { return {}; } })() : {};
+      if (!res.ok) throw new Error((data as any).message || raw || 'Failed to update DB');
       
       setStatus('success');
       setMessage('Database updated successfully! Please try adding a player now.');
