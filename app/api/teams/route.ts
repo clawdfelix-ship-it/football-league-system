@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { matches } from '@/lib/schema';
-
-const TEAM_NAMES = ['NOMURA', 'BBVA', 'LGT', 'CACIB', 'CITI', 'SCB', 'UBS'];
+import { TEAMS } from '@/lib/constants';
 
 // GET - Get all teams
 export async function GET() {
   try {
     return NextResponse.json({ 
-      teams: TEAM_NAMES
+      teams: TEAMS.map(t => t.name)
     });
   } catch (error) {
     console.error('Failed:', error);
