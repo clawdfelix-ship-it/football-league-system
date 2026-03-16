@@ -19,16 +19,6 @@ export async function POST(request: NextRequest) {
       console.log('identity_prefix 欄位檢查異常 (可能已存在)', e);
     }
 
-    // 2.1 確保 users team_code 欄位存在
-    try {
-      await db.execute(sql`
-        ALTER TABLE users ADD COLUMN IF NOT EXISTS team_code VARCHAR(20);
-      `);
-      console.log('2.1 檢查/添加 users.team_code 欄位完成');
-    } catch (e) {
-      console.log('users.team_code 欄位檢查異常 (可能已存在)', e);
-    }
-
     // 3. 確保 announcements 表存在 (initializeDatabase 已包含，但為確保舊代碼相容性再次確認)
     try {
       await db.execute(sql`
