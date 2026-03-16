@@ -80,35 +80,28 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
 
         {/* 下方紀錄區：換人與事件 */}
         <div className="grid grid-cols-2 gap-4 mt-6">
-          {/* 換人區 */}
-          <div className="border border-black p-2">
-            <h3 className="text-center font-bold text-xs border-b border-black pb-1 mb-2">換人紀錄 (SUBSTITUTIONS)</h3>
-            <div className="space-y-1">
-              {[1, 2, 3, 4, 5].map(i => (
-                <div key={i} className="grid grid-cols-3 text-[10px] border-b border-gray-200 h-6 items-center">
-                  <span className="font-bold">第 {i} 次 (No. {i})</span>
-                  <span className="text-red-500 print:text-black">出 (Out): ____</span>
-                  <span className="text-green-600 print:text-black">入 (In): ____</span>
-                </div>
-              ))}
+          <div className="border border-black p-2 flex flex-col">
+            <h3 className="text-center font-bold text-xs border-b border-black pb-1 mb-2">REMARKS</h3>
+            <div className="flex-grow border border-gray-300 p-2 text-[10px] italic h-40">REMARKS:</div>
+            <div className="mt-3 pt-3 border-t border-black text-[10px]">
+              <div className="flex justify-between pt-2">
+                <span className="border-t border-black w-24 text-center py-1">領隊簽署<br/>(Manager Sign)</span>
+                <span className="border-t border-black w-24 text-center py-1">球證簽署<br/>(Referee Sign)</span>
+              </div>
             </div>
           </div>
 
           {/* 事件區 */}
           <div className="border border-black p-2 flex flex-col">
             <h3 className="text-center font-bold text-xs border-b border-black pb-1 mb-2">賽事統計 (MATCH EVENTS)</h3>
-            <div className="grid grid-cols-2 gap-2 text-[9px] flex-grow">
-               <div className="border border-gray-300 p-1 italic h-24">入球球員 (SCORERS):</div>
-               <div className="border border-gray-300 p-1 italic h-24">紅黃牌 (CARDS):</div>
+            <div className="grid grid-cols-2 gap-2 text-[10px] flex-grow">
+               <div className="border border-gray-300 p-2 italic h-40">入球球員 (SCORERS):</div>
+               <div className="border border-gray-300 p-2 italic h-40">紅黃牌 (CARDS):</div>
             </div>
-            <div className="mt-4 pt-2 border-t border-black text-[10px] space-y-4">
+            <div className="mt-3 pt-2 border-t border-black text-[10px] space-y-3">
               <div className="flex justify-between font-bold">
                 <span>主隊總分 (Home Score): ______</span>
                 <span>客隊總分 (Away Score): ______</span>
-              </div>
-              <div className="flex justify-between pt-4">
-                <span className="border-t border-black w-24 text-center py-1">領隊簽署<br/>(Manager Sign)</span>
-                <span className="border-t border-black w-24 text-center py-1">球證簽署<br/>(Referee Sign)</span>
               </div>
             </div>
           </div>
