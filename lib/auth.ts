@@ -87,21 +87,32 @@ export const authOptions: NextAuthOptions = {
         const TEAM_PASSWORD = 'zenex2026';
 
         try {
-          const [dbUser] = await db.select().from(users).where(eq(users.email, inputEmail));
+          const [dbUser] = await db
+            .select({
+              id: users.id,
+              email: users.email,
+              username: users.username,
+              role: users.role,
+              passwordHash: users.passwordHash,
+            })
+            .from(users)
+            .where(eq(users.email, inputEmail));
+
           if (dbUser && dbUser.role === 'manager') {
             const ok = await bcrypt.compare(credentials.password, dbUser.passwordHash);
-            if (ok) {
-              const teamCode = (dbUser as any).teamCode as string | undefined;
-              const teamIndex = teamCode ? TEAMS.findIndex(t => t.shortName === teamCode || t.name === teamCode) : -1;
-              return {
-                id: `manager-${dbUser.id}`,
-                email: dbUser.email,
-                username: dbUser.username,
-                role: 'manager',
-                teamId: teamIndex !== -1 ? teamIndex : undefined
-              };
-            }
-            return null;
+            if (!ok) return null;
+
+            const mappedTeamIndex = MANAGER_EMAILS[inputEmail];
+            const emailPrefixIndex = TEAMS.findIndex(t => t.shortName === inputEmail.split('@')[0].toUpperCase());
+            const teamIndex = mappedTeamIndex ?? emailPrefixIndex;
+
+            return {
+              id: `manager-${dbUser.id}`,
+              email: dbUser.email,
+              username: dbUser.username,
+              role: 'manager',
+              teamId: teamIndex !== -1 ? teamIndex : undefined
+            };
           }
         } catch (e) {
           console.error('Manager DB auth check failed:', e);

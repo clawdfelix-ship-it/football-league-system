@@ -49,7 +49,10 @@ export async function POST(request: Request) {
         const team = teamBlock.team;
         const name = captain.name;
 
-        const [existing] = await db.select().from(users).where(eq(users.email, email));
+      const [existing] = await db
+        .select({ email: users.email, username: users.username })
+        .from(users)
+        .where(eq(users.email, email));
 
         if (existing) {
           if (!regenerate) {
@@ -63,7 +66,6 @@ export async function POST(request: Request) {
             .set({
               passwordHash,
               role: 'manager',
-              teamCode: team,
               username: existing.username || makeUsername(team, email),
             })
             .where(eq(users.email, email));
@@ -79,7 +81,6 @@ export async function POST(request: Request) {
           username: makeUsername(team, email),
           passwordHash,
           role: 'manager',
-          teamCode: team,
         });
 
         created.push({ team, name, email, password });

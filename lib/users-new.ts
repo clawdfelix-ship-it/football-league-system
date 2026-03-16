@@ -6,7 +6,17 @@ import bcrypt from 'bcryptjs';
 // 根據郵箱獲取用戶
 export async function getUserByEmail(email: string): Promise<User | undefined> {
   try {
-    const [user] = await db.select().from(users).where(eq(users.email, email));
+    const [user] = await db
+      .select({
+        id: users.id,
+        email: users.email,
+        username: users.username,
+        passwordHash: users.passwordHash,
+        role: users.role,
+        createdAt: users.createdAt,
+      })
+      .from(users)
+      .where(eq(users.email, email));
     return user;
   } catch (error) {
     console.error(`獲取用戶 ${email} 失敗:`, error);
@@ -17,7 +27,17 @@ export async function getUserByEmail(email: string): Promise<User | undefined> {
 // 根據ID獲取用戶
 export async function getUserById(id: number): Promise<User | undefined> {
   try {
-    const [user] = await db.select().from(users).where(eq(users.id, id));
+    const [user] = await db
+      .select({
+        id: users.id,
+        email: users.email,
+        username: users.username,
+        passwordHash: users.passwordHash,
+        role: users.role,
+        createdAt: users.createdAt,
+      })
+      .from(users)
+      .where(eq(users.id, id));
     return user;
   } catch (error) {
     console.error(`獲取用戶 ${id} 失敗:`, error);
@@ -119,7 +139,14 @@ export async function verifyPassword(plainPassword: string, hashedPassword: stri
 // 獲取所有用戶（管理員功能）
 export async function getAllUsers(): Promise<User[]> {
   try {
-    const allUsers = await db.select().from(users);
+    const allUsers = await db.select({
+      id: users.id,
+      email: users.email,
+      username: users.username,
+      passwordHash: users.passwordHash,
+      role: users.role,
+      createdAt: users.createdAt,
+    }).from(users);
     return allUsers;
   } catch (error) {
     console.error('獲取用戶列表失敗:', error);
