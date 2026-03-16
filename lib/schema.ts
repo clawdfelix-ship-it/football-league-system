@@ -45,6 +45,7 @@ export const matches = pgTable('matches', {
   status: varchar('status', { length: 20 }).default('scheduled'), // scheduled, finished, tbc
   round: varchar('round', { length: 20 }), // New field for Round 1-14
   createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
 });
 
 // 場地公告表
@@ -54,6 +55,7 @@ export const announcements = pgTable('announcements', {
   content: text('content').notNull(), // Venue address or details
   date: timestamp('date').notNull(), // Date and time of the event
   createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
 });
 
 // 數據類型導出

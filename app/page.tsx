@@ -32,6 +32,8 @@ interface Match {
   venue: string | null;
   status: string | null;
   round?: string | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
 }
 
 function HomeContent() {
@@ -40,7 +42,8 @@ function HomeContent() {
   const [upcomingFixtures, setUpcomingFixtures] = useState<Match[]>([]);
   const [recentResults, setRecentResults] = useState<Match[]>([]);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
-  const [lastUpdatedAt, setLastUpdatedAt] = useState<Date | null>(null);
+  const [fixturesLastUpdatedAt, setFixturesLastUpdatedAt] = useState<Date | null>(null);
+  const [announcementsLastUpdatedAt, setAnnouncementsLastUpdatedAt] = useState<Date | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -61,6 +64,7 @@ function HomeContent() {
       
       const fixtures = fixturesData.matches || [];
       const results = resultsData.matches || [];
+      const announcementsList = announcementsData || [];
       
       // Sort fixtures by date ascending (soonest first)
       fixtures.sort((a: Match, b: Match) => {
@@ -140,12 +144,32 @@ function HomeContent() {
         if (b.goalsFor !== a.goalsFor) return b.goalsFor - a.goalsFor;
         return a.teamName.localeCompare(b.teamName);
       });
+
+      const nextValidDate = (value: unknown) => {
+        if (!value) return null;
+        const d = new Date(value as any);
+        if (Number.isNaN(d.getTime())) return null;
+        return d;
+      };
+
+      const maxDate = (items: any[], keys: string[]) => {
+        let max: Date | null = null;
+        for (const item of items) {
+          for (const key of keys) {
+            const d = nextValidDate(item?.[key]);
+            if (!d) continue;
+            if (!max || d.getTime() > max.getTime()) max = d;
+          }
+        }
+        return max;
+      };
       
       setStandings(standingsArray);
       setUpcomingFixtures(fixtures);
       setRecentResults(results);
-      setAnnouncements(announcementsData);
-      setLastUpdatedAt(new Date());
+      setAnnouncements(announcementsList);
+      setFixturesLastUpdatedAt(maxDate(fixtures, ['updatedAt', 'createdAt']));
+      setAnnouncementsLastUpdatedAt(maxDate(announcementsList, ['updatedAt', 'createdAt']));
     } catch (error) {
       console.error('Failed to fetch data:', error);
     } finally {
@@ -272,9 +296,9 @@ function HomeContent() {
             <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200">
               <div className="bg-green-600 text-white px-8 py-5 flex items-center justify-between">
                 <h3 className="text-xl font-bold tracking-tight">{t('近期賽事', 'Upcoming Fixtures')}</h3>
-                {lastUpdatedAt && (
+                {fixturesLastUpdatedAt && (
                   <span className="text-xs text-green-100">
-                    {t('最後更新', 'Last update')}: {lastUpdatedAt.toLocaleString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                    {t('最後更新', 'Last update')}: {fixturesLastUpdatedAt.toLocaleString('en-GB', { timeZone: 'Asia/Hong_Kong', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}
                   </span>
                 )}
               </div>
@@ -362,9 +386,9 @@ function HomeContent() {
               <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200">
                 <div className="bg-slate-900 text-white px-8 py-5 flex items-center justify-between">
                   <h3 className="text-xl font-bold tracking-tight">{t('場地公告', 'Venue Announcements')}</h3>
-                  {lastUpdatedAt && (
+                  {announcementsLastUpdatedAt && (
                     <span className="text-xs text-slate-300">
-                      {t('最後更新', 'Last update')}: {lastUpdatedAt.toLocaleString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                      {t('最後更新', 'Last update')}: {announcementsLastUpdatedAt.toLocaleString('en-GB', { timeZone: 'Asia/Hong_Kong', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}
                     </span>
                   )}
                 </div>

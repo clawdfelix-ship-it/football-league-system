@@ -115,7 +115,7 @@ export async function addMatch(data: {
   status: 'scheduled' | 'finished' | 'tbc';
   round?: string;
 }) {
-  return await db.insert(matches).values(data).returning();
+  return await db.insert(matches).values({ ...data, updatedAt: new Date() }).returning();
 }
 
 export async function updateMatch(id: number, data: {
@@ -128,7 +128,7 @@ export async function updateMatch(id: number, data: {
   status?: 'scheduled' | 'finished' | 'tbc';
   round?: string;
 }) {
-  return await db.update(matches).set(data).where(eq(matches.id, id)).returning();
+  return await db.update(matches).set({ ...data, updatedAt: new Date() }).where(eq(matches.id, id)).returning();
 }
 
 export async function deleteMatch(id: number | string) {
@@ -275,6 +275,7 @@ export async function addAnnouncement(data: {
       title: data.title,
       content: data.content,
       date: data.date,
+      updatedAt: new Date(),
     }).returning();
     
     return { success: true, announcement: res[0] };

@@ -27,12 +27,32 @@ export async function POST(request: NextRequest) {
           title VARCHAR(200),
           content TEXT NOT NULL,
           date TIMESTAMP NOT NULL,
-          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
+      `);
+      await db.execute(sql`
+        ALTER TABLE announcements ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+      `);
+      await db.execute(sql`
+        UPDATE announcements SET updated_at = created_at WHERE updated_at IS NULL;
       `);
       console.log('3. 檢查/創建 announcements 表完成');
     } catch (e) {
       console.log('announcements 表創建異常', e);
+    }
+
+    // 4. 確保 matches updated_at 欄位存在
+    try {
+      await db.execute(sql`
+        ALTER TABLE matches ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+      `);
+      await db.execute(sql`
+        UPDATE matches SET updated_at = created_at WHERE updated_at IS NULL;
+      `);
+      console.log('4. 檢查/添加 matches.updated_at 欄位完成');
+    } catch (e) {
+      console.log('matches.updated_at 欄位檢查異常 (可能已存在)', e);
     }
     
     return NextResponse.json({ message: '數據庫初始化成功' });

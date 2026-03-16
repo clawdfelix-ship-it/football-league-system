@@ -64,7 +64,8 @@ export async function createMatchesTable() {
       venue VARCHAR(100),
       status VARCHAR(20) DEFAULT 'scheduled',
       round VARCHAR(20),
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
   `);
 
@@ -73,10 +74,18 @@ export async function createMatchesTable() {
     await db.execute(sql`
       ALTER TABLE matches ADD COLUMN IF NOT EXISTS round VARCHAR(20);
     `);
+
+    await db.execute(sql`
+      ALTER TABLE matches ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+    `);
     
     // Modify date column to be nullable
     await db.execute(sql`
       ALTER TABLE matches ALTER COLUMN date DROP NOT NULL;
+    `);
+
+    await db.execute(sql`
+      UPDATE matches SET updated_at = created_at WHERE updated_at IS NULL;
     `);
   } catch (e) {
     console.log('Error migrating matches table', e);
@@ -91,9 +100,22 @@ export async function createAnnouncementsTable() {
       title VARCHAR(200),
       content TEXT NOT NULL,
       date TIMESTAMP NOT NULL,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
   `);
+
+  try {
+    await db.execute(sql`
+      ALTER TABLE announcements ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+    `);
+
+    await db.execute(sql`
+      UPDATE announcements SET updated_at = created_at WHERE updated_at IS NULL;
+    `);
+  } catch (e) {
+    console.log('Error migrating announcements table', e);
+  }
 }
 
 // 初始化數據庫
