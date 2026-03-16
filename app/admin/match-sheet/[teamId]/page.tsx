@@ -51,6 +51,7 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
             {/* 渲染現有球員 */}
             {players.map((p) => (
               <div key={p.id} className="group relative border-r border-b border-black p-1 text-center h-[115px] flex flex-col items-center justify-between">
+                <div className="absolute bottom-1 left-1 w-3 h-3 border border-black"></div>
                 <div className="w-16 h-20 border border-gray-200 bg-gray-50 overflow-hidden relative print:bg-white print:border-gray-400 group/photo">
                   {p.photoUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -69,7 +70,8 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
             ))}
             {/* 渲染空白手寫格 */}
             {emptySlots.map((_, i) => (
-              <div key={`empty-${i}`} className="border-r border-b border-black h-[115px] p-1 flex items-start justify-center">
+              <div key={`empty-${i}`} className="relative border-r border-b border-black h-[115px] p-1 flex items-start justify-center">
+                <div className="absolute bottom-1 left-1 w-3 h-3 border border-black"></div>
                 <div className="w-16 h-20 border border-dashed border-gray-200 print:border-gray-300"></div>
               </div>
             ))}
