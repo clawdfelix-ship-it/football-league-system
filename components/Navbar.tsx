@@ -42,6 +42,9 @@ export default function Navbar() {
             <Link href="/teams" className="text-sm font-medium hover:text-gray-300 transition-colors">
               {t('球隊', 'Teams')}
             </Link>
+            <Link href="/pdf" className="text-sm font-medium hover:text-gray-300 transition-colors">
+              {t('PDF', 'PDF')}
+            </Link>
           </div>
         </div>
         <div>
@@ -125,6 +128,13 @@ export default function Navbar() {
             onClick={() => setIsMobileMenuOpen(false)}
           >
             {t('球隊', 'Teams')}
+          </Link>
+          <Link
+            href="/pdf"
+            className="block px-2 py-2 rounded hover:bg-gray-800 text-sm font-medium transition-colors"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            {t('PDF', 'PDF')}
           </Link>
         </div>
       )}
