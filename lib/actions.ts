@@ -170,6 +170,18 @@ export async function getTeamPlayers(teamName: string) {
   }
 }
 
+export async function getAllPlayers() {
+  try {
+    return await db
+      .select()
+      .from(players)
+      .orderBy(asc(players.team), asc(players.jerseyNumber), asc(players.name));
+  } catch (error) {
+    console.error('Failed to get all players:', error);
+    return [];
+  }
+}
+
 export async function addPlayer(data: {
   name: string;
   team: string;

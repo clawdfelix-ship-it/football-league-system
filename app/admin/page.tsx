@@ -1,7 +1,7 @@
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import { getMatches, getTeamPlayers, getAnnouncements } from '@/lib/actions';
+import { getMatches, getTeamPlayers, getAnnouncements, getAllPlayers } from '@/lib/actions';
 import { MatchForm, MatchList, ResetButton } from '@/components/AdminClient';
 import Link from 'next/link';
 import { TEAMS } from '@/lib/constants';
@@ -49,6 +49,7 @@ export default async function AdminPage() {
   let scheduledMatches: SerializedMatch[] = [];
   let finishedMatches: SerializedMatch[] = [];
   let teamPlayers: Player[] = [];
+  let allPlayers: Player[] = [];
   let announcements: Announcement[] = [];
   let dbError = null;
 
@@ -105,6 +106,15 @@ export default async function AdminPage() {
       teamPlayers = await getTeamPlayers(TEAMS[teamId].name);
     } catch (e) {
       console.error("Failed to fetch players:", e);
+      dbError = dbError || "Failed to fetch players. Please fix database schema.";
+    }
+  }
+
+  if (isAdmin) {
+    try {
+      allPlayers = await getAllPlayers();
+    } catch (e) {
+      console.error("Failed to fetch all players:", e);
       dbError = dbError || "Failed to fetch players. Please fix database schema.";
     }
   }
@@ -187,6 +197,73 @@ export default async function AdminPage() {
                     </div>
                   </Link>
                 ))}
+              </div>
+            </section>
+
+            <section className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 sm:p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold">Player Contacts</h2>
+                <div className="text-xs text-zinc-500 dark:text-zinc-400">
+                  {allPlayers.length} players
+                </div>
+              </div>
+              <div className="space-y-4">
+                {TEAMS.map((team) => {
+                  const teamList = allPlayers
+                    .filter((p) => p.team === team.name)
+                    .sort((a, b) => (a.jerseyNumber ?? 999) - (b.jerseyNumber ?? 999));
+
+                  return (
+                    <div
+                      key={team.name}
+                      className="rounded-xl border border-zinc-100 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-900"
+                    >
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <div className={`text-sm font-black bg-gradient-to-br ${team.color} bg-clip-text text-transparent`}>
+                            {team.shortName}
+                          </div>
+                          <div className="text-xs text-zinc-500 dark:text-zinc-400">{team.nameZh}</div>
+                        </div>
+                        <div className="text-xs text-zinc-500 dark:text-zinc-400">
+                          {teamList.length}
+                        </div>
+                      </div>
+
+                      {teamList.length === 0 ? (
+                        <div className="text-sm text-zinc-500 dark:text-zinc-400">No players.</div>
+                      ) : (
+                        <div className="space-y-2">
+                          {teamList.map((p) => (
+                            <div
+                              key={p.id}
+                              className="grid grid-cols-12 gap-2 items-center rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-800 dark:bg-zinc-950"
+                            >
+                              <div className="col-span-2 font-mono text-zinc-500 dark:text-zinc-400">#{p.jerseyNumber ?? '—'}</div>
+                              <div className="col-span-4 font-semibold text-zinc-900 dark:text-zinc-100">{p.name}</div>
+                              <div className="col-span-6 text-right">
+                                <div className="flex flex-col items-end gap-0.5">
+                                  {p.email ? (
+                                    <a className="text-blue-600 hover:underline break-all" href={`mailto:${p.email}`}>
+                                      {p.email}
+                                    </a>
+                                  ) : (
+                                    <div className="text-zinc-400">—</div>
+                                  )}
+                                  {p.phoneNumber ? (
+                                    <a className="text-zinc-600 dark:text-zinc-300 hover:underline" href={`tel:${p.phoneNumber}`}>
+                                      {p.phoneNumber}
+                                    </a>
+                                  ) : null}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </section>
 
