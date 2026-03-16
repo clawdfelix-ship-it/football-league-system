@@ -50,9 +50,9 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
           <div className="grid grid-cols-8 border-t border-l border-black">
             {/* 渲染現有球員 */}
             {players.map((p) => (
-              <div key={p.id} className="group relative border-r border-b border-black p-1 text-center h-[115px] flex flex-col items-center justify-between">
+              <div key={p.id} className="group relative border-r border-b border-black p-1 text-center h-[115px] grid grid-rows-[minmax(44px,80px)_auto_auto] justify-items-center gap-1">
                 <div className="absolute bottom-1 left-1 w-3 h-3 border border-black"></div>
-                <div className="w-16 h-20 border border-gray-200 bg-gray-50 overflow-hidden relative print:bg-white print:border-gray-400 group/photo">
+                <div className="w-16 h-full max-h-20 border border-gray-200 bg-gray-50 overflow-hidden relative print:bg-white print:border-gray-400 group/photo">
                   {p.photoUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={p.photoUrl} alt={p.name} className="object-cover w-full h-full" />
@@ -62,7 +62,7 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
                   {/* 只保留照片上傳按鈕，移除刪除按鈕 */}
                   <UploadPhotoButton playerId={p.id} />
                 </div>
-                <div className="text-[10px] font-bold truncate w-full">{p.name}</div>
+                <div className="text-[9px] font-bold leading-tight whitespace-normal break-words w-full px-0.5">{p.name}</div>
                 <div className="text-[9px] font-mono leading-none">#{p.jerseyNumber}</div>
                 {/* 移除刪除按鈕，因為用戶要求這裡只顯示，不進行管理 */}
                 {/* <DeletePlayerButton playerId={p.id} /> */}
@@ -72,7 +72,7 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
             {emptySlots.map((_, i) => (
               <div key={`empty-${i}`} className="relative border-r border-b border-black h-[115px] p-1 flex items-start justify-center">
                 <div className="absolute bottom-1 left-1 w-3 h-3 border border-black"></div>
-                <div className="w-16 h-20 border border-dashed border-gray-200 print:border-gray-300"></div>
+                <div className="w-16 h-16 border border-dashed border-gray-200 print:border-gray-300"></div>
               </div>
             ))}
           </div>
