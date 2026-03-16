@@ -40,6 +40,7 @@ function HomeContent() {
   const [upcomingFixtures, setUpcomingFixtures] = useState<Match[]>([]);
   const [recentResults, setRecentResults] = useState<Match[]>([]);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [lastUpdatedAt, setLastUpdatedAt] = useState<Date | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -144,6 +145,7 @@ function HomeContent() {
       setUpcomingFixtures(fixtures);
       setRecentResults(results);
       setAnnouncements(announcementsData);
+      setLastUpdatedAt(new Date());
     } catch (error) {
       console.error('Failed to fetch data:', error);
     } finally {
@@ -268,8 +270,13 @@ function HomeContent() {
 
           <section id="matches" className="grid md:grid-cols-2 gap-8">
             <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200">
-              <div className="bg-green-600 text-white px-8 py-5">
+              <div className="bg-green-600 text-white px-8 py-5 flex items-center justify-between">
                 <h3 className="text-xl font-bold tracking-tight">{t('近期賽事', 'Upcoming Fixtures')}</h3>
+                {lastUpdatedAt && (
+                  <span className="text-xs text-green-100">
+                    {t('最後更新', 'Last update')}: {lastUpdatedAt.toLocaleString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                )}
               </div>
               <div className="p-6 space-y-4">
                 {upcomingFixtures.length === 0 ? (
@@ -353,8 +360,13 @@ function HomeContent() {
           {announcements.length > 0 && (
             <section id="announcements" className="mt-12">
               <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200">
-                <div className="bg-slate-900 text-white px-8 py-5">
+                <div className="bg-slate-900 text-white px-8 py-5 flex items-center justify-between">
                   <h3 className="text-xl font-bold tracking-tight">{t('場地公告', 'Venue Announcements')}</h3>
+                  {lastUpdatedAt && (
+                    <span className="text-xs text-slate-300">
+                      {t('最後更新', 'Last update')}: {lastUpdatedAt.toLocaleString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  )}
                 </div>
                 <div className="p-6 space-y-4">
                   {announcements.map((item) => (
