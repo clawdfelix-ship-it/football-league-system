@@ -14,6 +14,7 @@ interface CustomUser {
 const MANAGER_EMAILS: Record<string, number> = {
   // 0: NOMURA
   'terrence.tan@nomura.com': 0,
+  'kenneth.miranda@nomura.com': 0,
   
   // 1: BBVA
   'ibai.garatea1@bbva.com': 1,
@@ -41,6 +42,10 @@ const MANAGER_EMAILS: Record<string, number> = {
   
   // 7: HSBC
   'jimmy.k.p.chan@hsbc.com.hk': 7,
+
+  // 8: KPMG
+  'terrence.chan@kpmg.com': 8,
+  'andrew.chan@kpmg.com': 8,
 
   // TEST ACCOUNT (Linked to NOMURA for testing)
   'test@manager.com': 0,
