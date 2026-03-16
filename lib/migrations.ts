@@ -46,9 +46,18 @@ export async function createUsersTable() {
       username VARCHAR(50) UNIQUE NOT NULL,
       password_hash TEXT NOT NULL,
       role VARCHAR(20) DEFAULT 'user',
+      team_code VARCHAR(20),
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
   `);
+
+  try {
+    await db.execute(sql`
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS team_code VARCHAR(20);
+    `);
+  } catch (e) {
+    console.log('Error migrating users table', e);
+  }
 }
 
 // 創建比賽表

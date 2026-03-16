@@ -1,6 +1,10 @@
 import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { TEAMS } from '@/lib/constants';
+import { db } from '@/lib/db';
+import { users } from '@/lib/schema';
+import { eq } from 'drizzle-orm';
+import bcrypt from 'bcryptjs';
 
 interface CustomUser {
   id: string;
@@ -81,6 +85,27 @@ export const authOptions: NextAuthOptions = {
         
         // 2. Team Manager Check
         const TEAM_PASSWORD = 'zenex2026';
+
+        try {
+          const [dbUser] = await db.select().from(users).where(eq(users.email, inputEmail));
+          if (dbUser && dbUser.role === 'manager') {
+            const ok = await bcrypt.compare(credentials.password, dbUser.passwordHash);
+            if (ok) {
+              const teamCode = (dbUser as any).teamCode as string | undefined;
+              const teamIndex = teamCode ? TEAMS.findIndex(t => t.shortName === teamCode || t.name === teamCode) : -1;
+              return {
+                id: `manager-${dbUser.id}`,
+                email: dbUser.email,
+                username: dbUser.username,
+                role: 'manager',
+                teamId: teamIndex !== -1 ? teamIndex : undefined
+              };
+            }
+            return null;
+          }
+        } catch (e) {
+          console.error('Manager DB auth check failed:', e);
+        }
         
         if (credentials.password === TEAM_PASSWORD) {
           // Check if email is in our allowed list

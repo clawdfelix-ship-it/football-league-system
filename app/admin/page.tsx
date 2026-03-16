@@ -8,6 +8,7 @@ import { TEAMS } from '@/lib/constants';
 import { PlayerManager } from '@/app/admin/match-sheet/[teamId]/PlayerManager';
 import SignOutButton from '@/components/SignOutButton';
 import FixDbButton from '@/components/FixDbButton';
+import GenerateManagerAccountsButton from '@/components/GenerateManagerAccountsButton';
 import type { Player, Announcement } from '@/lib/schema';
 import { AnnouncementManager } from '@/components/AnnouncementManager';
 import { TEAM_CONTACTS } from '@/lib/team-contacts';
@@ -132,7 +133,8 @@ export default async function AdminPage() {
               <div className="text-sm text-zinc-500">
                 Logged in as {username}
               </div>
-              <div className="flex gap-3">
+              <div className="flex items-center gap-3">
+                {isAdmin && <GenerateManagerAccountsButton />}
                 <FixDbButton />
                 <SignOutButton />
               </div>
