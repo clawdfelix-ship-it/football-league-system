@@ -43,6 +43,8 @@ const MANAGER_EMAILS: Record<string, number> = {
   // 6: UBS
   'mortadha.lagha@ubs.com': 6,
   'fu-bong.chan@ubs.com': 6,
+  'keith.kwok@ubs.com': 6,
+  'eugene.lam@ubs.com': 6,
   
   // 7: HSBC
   'jimmy.k.p.chan@hsbc.com.hk': 7,

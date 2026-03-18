@@ -56,6 +56,8 @@ export const TEAM_CONTACTS: TeamContact[] = [
     captains: [
       { name: 'Mo', email: 'mortadha.lagha@ubs.com' },
       { name: 'Fu Bong', email: 'fu-bong.chan@ubs.com' },
+      { name: 'Keith Kwok', email: 'keith.kwok@ubs.com' },
+      { name: 'Eugene Lam', email: 'eugene.lam@ubs.com' },
     ],
   },
   {
@@ -70,4 +72,3 @@ export const TEAM_CONTACTS: TeamContact[] = [
     ],
   },
 ];
-
