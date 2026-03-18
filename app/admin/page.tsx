@@ -200,6 +200,14 @@ export default async function AdminPage() {
                     </div>
                   </Link>
                 ))}
+                <Link
+                  href="/admin/match-sheet/demo"
+                  className="flex flex-col items-center justify-center gap-2 rounded-xl border border-zinc-100 bg-zinc-50 p-4 text-center transition hover:bg-zinc-100 hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+                  target="_blank"
+                >
+                  <div className="text-lg font-black text-zinc-900 dark:text-zinc-100">DEMO</div>
+                  <div className="text-xs text-zinc-500 dark:text-zinc-400">Sample</div>
+                </Link>
               </div>
             </section>
 

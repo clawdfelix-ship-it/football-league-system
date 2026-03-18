@@ -1,0 +1,115 @@
+import { PrintButton } from '../[teamId]/PrintButton';
+
+type DemoPlayer = {
+  id: number;
+  name: string;
+  jerseyNumber: number | null;
+  photoUrl: string | null;
+};
+
+const DEMO_TEAM = {
+  name: 'DEMO TEAM',
+};
+
+const DEMO_PLAYERS: DemoPlayer[] = [
+  { id: 1, name: 'Alexandria Catherine Elizabeth Montgomery', jerseyNumber: 7, photoUrl: null },
+  { id: 2, name: 'Mohamed Abdullahi Al-Hassan', jerseyNumber: 10, photoUrl: null },
+  { id: 3, name: 'Christopher Jonathan Michael Robertson', jerseyNumber: 9, photoUrl: null },
+  { id: 4, name: 'Samantha Victoria Alexandra Thompson', jerseyNumber: 11, photoUrl: null },
+  { id: 5, name: 'Terrence Chan', jerseyNumber: 1, photoUrl: null },
+  { id: 6, name: 'Andrew Chan', jerseyNumber: 2, photoUrl: null },
+  { id: 7, name: 'David Oliveira', jerseyNumber: 3, photoUrl: null },
+  { id: 8, name: 'Ibai Garatea', jerseyNumber: 4, photoUrl: null },
+  { id: 9, name: 'Yassine Ayadi', jerseyNumber: 5, photoUrl: null },
+  { id: 10, name: 'Maxime Bonte', jerseyNumber: 6, photoUrl: null },
+  { id: 11, name: 'Victor Romier', jerseyNumber: 8, photoUrl: null },
+  { id: 12, name: 'Michael Mak', jerseyNumber: 12, photoUrl: null },
+  { id: 13, name: 'Toan Nguyen', jerseyNumber: 13, photoUrl: null },
+  { id: 14, name: 'Alvin Li', jerseyNumber: 14, photoUrl: null },
+  { id: 15, name: 'David Pun', jerseyNumber: 15, photoUrl: null },
+  { id: 16, name: 'Kenneth Miranda', jerseyNumber: 16, photoUrl: null },
+];
+
+export default async function DemoMatchSheet() {
+  const players = DEMO_PLAYERS;
+  const totalGridSlots = 40;
+  const emptySlots = Array(Math.max(0, totalGridSlots - players.length)).fill(null);
+
+  return (
+    <div className="min-h-screen bg-white text-black p-4 print:p-0">
+      <div className="flex justify-center gap-4 mb-6 print:hidden">
+        <PrintButton />
+      </div>
+
+      <div className="w-[210mm] min-h-[297mm] mx-auto border-2 border-black p-6 flex flex-col bg-white">
+        <header className="text-center border-b-4 border-black pb-4 mb-4">
+          <h1 className="text-2xl font-black tracking-widest italic">Hong Kong Bank League 2026</h1>
+          <h2 className="text-sm font-bold tracking-wider text-gray-600 mb-1">Partnered with ZENEX SPORTS | 香港銀行足球聯賽2026</h2>
+          <h3 className="text-lg font-bold tracking-wider text-black border-t-2 border-black pt-1 mt-1 inline-block px-4">SQUAD LIST</h3>
+          <div className="grid grid-cols-3 mt-4 text-left font-bold text-sm">
+            <div>隊名 (Team): <span className="underline decoration-dotted text-lg">{DEMO_TEAM.name}</span></div>
+            <div>地點 (Venue): ________________</div>
+            <div>日期 (Date): ________________</div>
+          </div>
+        </header>
+
+        <section className="flex-grow">
+          <h2 className="bg-slate-200 text-center font-bold border-y border-black py-1 text-xs mb-2 italic print:bg-gray-200 print:text-black">常規球員 (REGULAR PLAYERS)</h2>
+          <div className="grid grid-cols-8 border-t border-l border-black">
+            {players.map((p) => (
+              <div key={p.id} className="group relative border-r border-b border-black p-1 text-center h-[115px] grid grid-rows-[minmax(44px,80px)_auto_auto] justify-items-center gap-1">
+                <div className="absolute bottom-1 left-1 w-3 h-3 border border-black"></div>
+                <div className="w-16 h-full max-h-20 border border-gray-200 bg-gray-50 overflow-hidden relative print:bg-white print:border-gray-400">
+                  {p.photoUrl ? (
+                    <img src={p.photoUrl} alt={p.name} className="object-cover w-full h-full" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-[8px] text-gray-300">NO PHOTO</div>
+                  )}
+                </div>
+                <div className="text-[9px] font-bold leading-tight whitespace-normal break-words w-full px-0.5">{p.name}</div>
+                <div className="text-[9px] font-mono leading-none">#{p.jerseyNumber ?? '—'}</div>
+              </div>
+            ))}
+            {emptySlots.map((_, i) => (
+              <div key={`empty-${i}`} className="relative border-r border-b border-black h-[115px] p-1 flex items-start justify-center">
+                <div className="absolute bottom-1 left-1 w-3 h-3 border border-black"></div>
+                <div className="w-16 h-16 border border-dashed border-gray-200 print:border-gray-300"></div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <div className="grid grid-cols-2 gap-4 mt-6">
+          <div className="border border-black p-2 flex flex-col">
+            <h3 className="text-center font-bold text-xs border-b border-black pb-1 mb-2">REMARKS</h3>
+            <div className="flex-grow border border-gray-300 p-2 text-[10px] italic h-40">REMARKS:</div>
+            <div className="mt-3 pt-3 border-t border-black text-[10px]">
+              <div className="flex justify-between pt-2">
+                <span className="border-t border-black w-24 text-center py-1">領隊簽署<br/>(Manager Sign)</span>
+                <span className="border-t border-black w-24 text-center py-1">球證簽署<br/>(Referee Sign)</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="border border-black p-2 flex flex-col">
+            <h3 className="text-center font-bold text-xs border-b border-black pb-1 mb-2">賽事統計 (MATCH EVENTS)</h3>
+            <div className="grid grid-cols-2 gap-2 text-[10px] flex-grow">
+              <div className="border border-gray-300 p-2 italic h-40">入球球員 (SCORERS):</div>
+              <div className="border border-gray-300 p-2 italic h-40">紅黃牌 (CARDS):</div>
+            </div>
+            <div className="mt-3 pt-2 border-t border-black text-[10px] space-y-3">
+              <div className="flex justify-between font-bold">
+                <span>主隊總分 (Home Score): ______</span>
+                <span>客隊總分 (Away Score): ______</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="text-center text-[8px] mt-4 text-gray-400 uppercase">
+          Zenex Cup official match sheet • Do not duplicate
+        </div>
+      </div>
+    </div>
+  );
+}
