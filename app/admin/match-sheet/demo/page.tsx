@@ -1,3 +1,6 @@
+'use client';
+
+import { useEffect, useMemo, useState } from 'react';
 import { PrintButton } from '../[teamId]/PrintButton';
 
 type DemoPlayer = {
@@ -8,32 +11,60 @@ type DemoPlayer = {
 };
 
 const DEMO_TEAM = {
-  name: 'DEMO TEAM',
+  name: 'REAL MADRID (DEMO)',
 };
 
-const DEMO_PLAYERS: DemoPlayer[] = [
-  { id: 1, name: 'Alexandria Catherine Elizabeth Montgomery', jerseyNumber: 7, photoUrl: null },
-  { id: 2, name: 'Mohamed Abdullahi Al-Hassan', jerseyNumber: 10, photoUrl: null },
-  { id: 3, name: 'Christopher Jonathan Michael Robertson', jerseyNumber: 9, photoUrl: null },
-  { id: 4, name: 'Samantha Victoria Alexandra Thompson', jerseyNumber: 11, photoUrl: null },
-  { id: 5, name: 'Terrence Chan', jerseyNumber: 1, photoUrl: null },
-  { id: 6, name: 'Andrew Chan', jerseyNumber: 2, photoUrl: null },
-  { id: 7, name: 'David Oliveira', jerseyNumber: 3, photoUrl: null },
-  { id: 8, name: 'Ibai Garatea', jerseyNumber: 4, photoUrl: null },
-  { id: 9, name: 'Yassine Ayadi', jerseyNumber: 5, photoUrl: null },
-  { id: 10, name: 'Maxime Bonte', jerseyNumber: 6, photoUrl: null },
-  { id: 11, name: 'Victor Romier', jerseyNumber: 8, photoUrl: null },
-  { id: 12, name: 'Michael Mak', jerseyNumber: 12, photoUrl: null },
-  { id: 13, name: 'Toan Nguyen', jerseyNumber: 13, photoUrl: null },
-  { id: 14, name: 'Alvin Li', jerseyNumber: 14, photoUrl: null },
-  { id: 15, name: 'David Pun', jerseyNumber: 15, photoUrl: null },
-  { id: 16, name: 'Kenneth Miranda', jerseyNumber: 16, photoUrl: null },
+const DEMO_PLAYERS_BASE: DemoPlayer[] = [
+  { id: 1, name: 'Thibaut Courtois', jerseyNumber: 1, photoUrl: null },
+  { id: 2, name: 'Andriy Lunin', jerseyNumber: 13, photoUrl: null },
+  { id: 3, name: 'Dani Carvajal', jerseyNumber: 2, photoUrl: null },
+  { id: 4, name: 'Eder Militao', jerseyNumber: 3, photoUrl: null },
+  { id: 5, name: 'David Alaba', jerseyNumber: 4, photoUrl: null },
+  { id: 6, name: 'Trent Alexander-Arnold', jerseyNumber: 12, photoUrl: null },
+  { id: 7, name: 'Antonio Rudiger', jerseyNumber: 22, photoUrl: null },
+  { id: 8, name: 'Ferland Mendy', jerseyNumber: 23, photoUrl: null },
+  { id: 9, name: 'Jude Bellingham', jerseyNumber: 5, photoUrl: null },
+  { id: 10, name: 'Eduardo Camavinga', jerseyNumber: 6, photoUrl: null },
+  { id: 11, name: 'Federico Valverde', jerseyNumber: 19, photoUrl: null },
+  { id: 12, name: 'Aurelien Tchouameni', jerseyNumber: 14, photoUrl: null },
+  { id: 13, name: 'Vinicius Junior', jerseyNumber: 7, photoUrl: null },
+  { id: 14, name: 'Kylian Mbappe', jerseyNumber: 10, photoUrl: null },
+  { id: 15, name: 'Rodrygo', jerseyNumber: 11, photoUrl: null },
+  { id: 16, name: 'Brahim Diaz', jerseyNumber: 21, photoUrl: null },
 ];
 
-export default async function DemoMatchSheet() {
-  const players = DEMO_PLAYERS;
+function storageKey(id: number) {
+  return `demo_rm_photo_${id}`;
+}
+
+export default function DemoMatchSheet() {
+  const [players, setPlayers] = useState<DemoPlayer[]>(DEMO_PLAYERS_BASE);
   const totalGridSlots = 40;
-  const emptySlots = Array(Math.max(0, totalGridSlots - players.length)).fill(null);
+  const emptySlots = useMemo(() => Array(Math.max(0, totalGridSlots - players.length)).fill(null), [players.length]);
+
+  useEffect(() => {
+    setPlayers((prev) =>
+      prev.map((p) => {
+        const stored = typeof window !== 'undefined' ? window.localStorage.getItem(storageKey(p.id)) : null;
+        return { ...p, photoUrl: stored || null };
+      })
+    );
+  }, []);
+
+  const setPhoto = async (playerId: number, file: File) => {
+    const reader = new FileReader();
+    const dataUrl: string = await new Promise((resolve, reject) => {
+      reader.onerror = () => reject(new Error('Failed to read file'));
+      reader.onload = () => resolve(String(reader.result || ''));
+      reader.readAsDataURL(file);
+    });
+
+    try {
+      window.localStorage.setItem(storageKey(playerId), dataUrl);
+    } catch {}
+
+    setPlayers((prev) => prev.map((p) => (p.id === playerId ? { ...p, photoUrl: dataUrl } : p)));
+  };
 
   return (
     <div className="min-h-screen bg-white text-black p-4 print:p-0">
@@ -65,6 +96,20 @@ export default async function DemoMatchSheet() {
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-[8px] text-gray-300">NO PHOTO</div>
                   )}
+                  <label className="absolute top-0 right-0 bg-black/60 text-white text-[9px] px-1 py-0.5 cursor-pointer print:hidden">
+                    Edit
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        void setPhoto(p.id, file);
+                        e.currentTarget.value = '';
+                      }}
+                    />
+                  </label>
                 </div>
                 <div className="text-[9px] font-bold leading-tight whitespace-normal break-words w-full px-0.5">{p.name}</div>
                 <div className="text-[9px] font-mono leading-none">#{p.jerseyNumber ?? '—'}</div>

@@ -206,7 +206,7 @@ export default async function AdminPage() {
                   target="_blank"
                 >
                   <div className="text-lg font-black text-zinc-900 dark:text-zinc-100">DEMO</div>
-                  <div className="text-xs text-zinc-500 dark:text-zinc-400">Sample</div>
+                  <div className="text-xs text-zinc-500 dark:text-zinc-400">Real Madrid</div>
                 </Link>
               </div>
             </section>
