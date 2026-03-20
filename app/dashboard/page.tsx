@@ -1,40 +1,45 @@
 import HomeLayout from '@/components/HomeLayout';
-import { getPlayers, TEAMS, PLAYER_STATUS } from '@/lib/player-actions';
+import { getAllPlayers } from '@/lib/actions';
+import { TEAMS } from '@/lib/constants';
+import type { Player } from '@/lib/schema';
 
-export default function DashboardPage() {
-  const players = getPlayers();
+export const dynamic = 'force-dynamic';
+
+export default async function DashboardPage() {
+  const players: Player[] = (await getAllPlayers()) as Player[];
 
   // 統計數據
   const totalPlayers = players.length;
-  const activePlayers = players.filter(p => p.status === 'active').length;
-  const injuredPlayers = players.filter(p => p.status === 'injured').length;
-  const suspendedPlayers = players.filter(p => p.status === 'suspended').length;
-  const inactivePlayers = players.filter(p => p.status === 'inactive').length;
+  const activePlayers = players.filter((p: Player) => p.status === 'active').length;
+  const injuredPlayers = players.filter((p: Player) => p.status === 'injured').length;
+  const suspendedPlayers = players.filter((p: Player) => p.status === 'suspended').length;
+  const inactivePlayers = players.filter((p: Player) => p.status === 'inactive').length;
 
   // 按球隊統計
   const teamStats = TEAMS.map(team => {
-    const teamPlayers = players.filter(p => p.team === team);
+    const teamPlayers = players.filter((p: Player) => p.team === team.name);
     return {
-      team,
+      team: team.name,
       count: teamPlayers.length,
-      active: teamPlayers.filter(p => p.status === 'active').length,
-      avgAge: teamPlayers.length > 0 ? Math.round(teamPlayers.reduce((sum, p) => sum + p.age, 0) / teamPlayers.length) : 0
+      active: teamPlayers.filter((p: Player) => p.status === 'active').length,
+      avgAge: teamPlayers.length > 0 ? Math.round(teamPlayers.reduce((sum: number, p: Player) => sum + (p.age || 0), 0) / teamPlayers.length) : 0
     };
   }).filter(t => t.count > 0);
 
   // 按位置統計
-  const positionStats = players.reduce((acc, player) => {
-    acc[player.position] = (acc[player.position] || 0) + 1;
+  const positionStats = players.reduce((acc: Record<string, number>, player: Player) => {
+    const pos = player.position || '未知';
+    acc[pos] = (acc[pos] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
 
   // 年齡分布
   const ageGroups = {
-    '16-20': players.filter(p => p.age >= 16 && p.age <= 20).length,
-    '21-25': players.filter(p => p.age >= 21 && p.age <= 25).length,
-    '26-30': players.filter(p => p.age >= 26 && p.age <= 30).length,
-    '31-35': players.filter(p => p.age >= 31 && p.age <= 35).length,
-    '36+': players.filter(p => p.age >= 36).length
+    '16-20': players.filter(p => { const a = p.age ?? 0; return a >= 16 && a <= 20; }).length,
+    '21-25': players.filter(p => { const a = p.age ?? 0; return a >= 21 && a <= 25; }).length,
+    '26-30': players.filter(p => { const a = p.age ?? 0; return a >= 26 && a <= 30; }).length,
+    '31-35': players.filter(p => { const a = p.age ?? 0; return a >= 31 && a <= 35; }).length,
+    '36+': players.filter(p => { const a = p.age ?? 0; return a >= 36; }).length
   };
 
   return (

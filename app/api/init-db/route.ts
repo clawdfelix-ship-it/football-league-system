@@ -5,6 +5,20 @@ import { sql } from 'drizzle-orm';
 
 export async function POST(request: NextRequest) {
   try {
+    // Protect with ADMIN_SECRET
+    const adminSecret = process.env.ADMIN_SECRET;
+    if (!adminSecret) {
+      return NextResponse.json(
+        { message: 'ADMIN_SECRET is not configured on the server' },
+        { status: 500 }
+      );
+    }
+
+    const authHeader = request.headers.get('authorization');
+    const providedSecret = authHeader?.replace(/^Bearer\s+/i, '').trim();
+    if (!providedSecret || providedSecret !== adminSecret) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
     // 1. 初始化資料庫表結構
     console.log('1. 開始初始化資料庫...');
     await initializeDatabase();

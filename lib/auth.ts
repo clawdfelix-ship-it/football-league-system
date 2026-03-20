@@ -73,10 +73,10 @@ export const authOptions: NextAuthOptions = {
         const inputEmail = credentials.email.toLowerCase();
 
         // 1. Super Admin Check
-        const adminEmail = process.env.ADMIN_EMAIL || 'info@zenex-sports.com';
-        const adminPassword = process.env.ADMIN_PASSWORD || '98168789!@#';
+        const adminEmail = process.env.ADMIN_EMAIL;
+        const adminPassword = process.env.ADMIN_PASSWORD;
 
-        if (inputEmail === adminEmail && credentials.password === adminPassword) {
+        if (adminEmail && adminPassword && inputEmail === adminEmail && credentials.password === adminPassword) {
           return {
             id: 'admin',
             email: adminEmail,
@@ -86,7 +86,7 @@ export const authOptions: NextAuthOptions = {
         }
         
         // 2. Team Manager Check
-        const TEAM_PASSWORD = 'zenex2026';
+        const TEAM_PASSWORD = process.env.MANAGER_PASSWORD;
 
         try {
           const [dbUser] = await db
