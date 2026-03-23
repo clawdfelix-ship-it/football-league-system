@@ -37,7 +37,7 @@ const MANAGER_EMAILS: Record<string, number> = {
   'toan.dc.nguyen@citi.com': 4,
   
   // 5: SCB
-  'david.oliveira@sc.com': 5,
+  'david.oliviera@sc.com': 5,
   'andyty.wan@sc.com': 5,
   
   // 6: UBS
