@@ -8,4 +8,5 @@ export const TEAMS = [
   { name: 'UBS', nameZh: '瑞銀集團', shortName: 'UBS', color: 'from-yellow-500 to-orange-600' },
   { name: 'HSBC', nameZh: '匯豐銀行', shortName: 'HSBC', color: 'from-red-500 to-red-700' },
   { name: 'KPMG', nameZh: '畢馬威', shortName: 'KPMG', color: 'from-indigo-600 to-indigo-800' },
+  { name: 'DEMO', nameZh: '示範隊', shortName: 'DEMO', color: 'from-slate-600 to-slate-800' },
 ];

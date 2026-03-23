@@ -71,4 +71,8 @@ export const TEAM_CONTACTS: TeamContact[] = [
       { name: 'Andrew Chan', email: 'andrew.chan@kpmg.com' },
     ],
   },
+  {
+    team: 'DEMO',
+    captains: [{ name: 'Demo Manager', email: 'hello@zenex-sports.com' }],
+  },
 ];

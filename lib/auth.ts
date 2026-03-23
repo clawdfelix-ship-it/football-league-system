@@ -53,6 +53,9 @@ const MANAGER_EMAILS: Record<string, number> = {
   'terrence.chan@kpmg.com': 8,
   'andrew.chan@kpmg.com': 8,
 
+  // 9: DEMO
+  'hello@zenex-sports.com': 9,
+
   // TEST ACCOUNT (Linked to NOMURA for testing)
   'test@manager.com': 0,
 };
