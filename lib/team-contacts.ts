@@ -47,7 +47,7 @@ export const TEAM_CONTACTS: TeamContact[] = [
   {
     team: 'SCB',
     captains: [
-      { name: 'David Oliveira', email: 'david.oliviera@sc.com' },
+      { name: 'David Oliveira', email: 'david.oliveira@sc.com' },
       { name: 'Andy Wan', email: 'andyty.wan@sc.com' },
     ],
   },
