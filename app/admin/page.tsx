@@ -9,6 +9,7 @@ import { PlayerManager } from '@/app/admin/match-sheet/[teamId]/PlayerManager';
 import SignOutButton from '@/components/SignOutButton';
 import FixDbButton from '@/components/FixDbButton';
 import GenerateManagerAccountsButton from '@/components/GenerateManagerAccountsButton';
+import ChangeManagerPasswordForm from '@/components/ChangeManagerPasswordForm';
 import type { Player, Announcement } from '@/lib/schema';
 import { AnnouncementManager } from '@/components/AnnouncementManager';
 import { TEAM_CONTACTS } from '@/lib/team-contacts';
@@ -175,6 +176,7 @@ export default async function AdminPage() {
                 </Link>
               </div>
             </div>
+            <ChangeManagerPasswordForm />
           </section>
         )}
 

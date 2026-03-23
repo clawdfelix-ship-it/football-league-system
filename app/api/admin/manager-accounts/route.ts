@@ -32,11 +32,64 @@ export async function POST(request: Request) {
     }
 
     let regenerate = false;
+    let mode: 'random' | 'shared' = 'random';
     try {
       const body = await request.json();
       regenerate = Boolean(body?.regenerate);
+      mode = body?.mode === 'shared' ? 'shared' : 'random';
     } catch {
       regenerate = false;
+    }
+
+    if (mode === 'shared') {
+      const sharedPassword = process.env.MANAGER_PASSWORD;
+      if (!sharedPassword) {
+        return NextResponse.json({ message: 'MANAGER_PASSWORD is not configured on the server' }, { status: 500 });
+      }
+
+      const passwordHash = await bcrypt.hash(sharedPassword, 10);
+      const updatedEmails: string[] = [];
+      const createdEmails: string[] = [];
+
+      for (const teamBlock of TEAM_CONTACTS) {
+        for (const captain of teamBlock.captains) {
+          if (!captain.email) continue;
+          const email = captain.email.toLowerCase().trim();
+          const team = teamBlock.team;
+
+          const [existing] = await db
+            .select({ email: users.email, username: users.username })
+            .from(users)
+            .where(eq(users.email, email));
+
+          if (existing) {
+            await db
+              .update(users)
+              .set({
+                passwordHash,
+                role: 'manager',
+                username: existing.username || makeUsername(team, email),
+              })
+              .where(eq(users.email, email));
+            updatedEmails.push(email);
+            continue;
+          }
+
+          await db.insert(users).values({
+            email,
+            username: makeUsername(team, email),
+            passwordHash,
+            role: 'manager',
+          });
+          createdEmails.push(email);
+        }
+      }
+
+      return NextResponse.json({
+        message: 'Shared manager password applied',
+        createdEmails,
+        updatedEmails,
+      });
     }
 
     const created: Array<{ team: string; name: string; email: string; password: string }> = [];
