@@ -27,7 +27,7 @@ export default function ContactsPage() {
               <div className="font-bold">{t('官方聯絡電郵', 'Official Emails')}</div>
             </div>
             <div className="p-6 grid gap-4">
-              {TEAM_CONTACTS.map((block) => (
+              {TEAM_CONTACTS.filter((block) => block.team !== 'DEMO').map((block) => (
                 <div key={block.team} className="p-4 bg-slate-50 rounded-lg border border-slate-200">
                   <div className="font-black text-slate-900 mb-2">{block.team}</div>
                   <div className="grid md:grid-cols-2 gap-2">

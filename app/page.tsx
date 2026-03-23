@@ -102,7 +102,7 @@ function HomeContent() {
       };
       
       // Initialize all teams
-      TEAMS.forEach(team => ensureTeam(team.name));
+      TEAMS.filter(team => team.name !== 'DEMO').forEach(team => ensureTeam(team.name));
       
       for (const match of results) {
         if (match.status !== 'finished') continue;

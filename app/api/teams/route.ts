@@ -9,7 +9,7 @@ import { TEAMS } from '@/lib/constants';
 export async function GET() {
   try {
     return NextResponse.json({ 
-      teams: TEAMS.map(t => t.name)
+      teams: TEAMS.filter(t => t.name !== 'DEMO').map(t => t.name)
     });
   } catch (error) {
     console.error('Failed:', error);

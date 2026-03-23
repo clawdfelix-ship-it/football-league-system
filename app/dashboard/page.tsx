@@ -16,7 +16,7 @@ export default async function DashboardPage() {
   const inactivePlayers = players.filter((p: Player) => p.status === 'inactive').length;
 
   // 按球隊統計
-  const teamStats = TEAMS.map(team => {
+  const teamStats = TEAMS.filter(team => team.name !== 'DEMO').map(team => {
     const teamPlayers = players.filter((p: Player) => p.team === team.name);
     return {
       team: team.name,

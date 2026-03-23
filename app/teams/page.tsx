@@ -20,7 +20,7 @@ interface TeamInfo {
   players: Player[];
 }
 
-const DEFAULT_TEAMS: TeamInfo[] = TEAMS.map(team => ({
+const DEFAULT_TEAMS: TeamInfo[] = TEAMS.filter(team => team.name !== 'DEMO').map(team => ({
   ...team,
   playerCount: 0,
   players: [],
@@ -49,7 +49,7 @@ export default function TeamsPage() {
       setPlayers(playerList);
       
       // Map players to teams
-      const teamsWithPlayers = TEAMS.map(team => ({
+      const teamsWithPlayers = TEAMS.filter(team => team.name !== 'DEMO').map(team => ({
         ...team,
         playerCount: playerList.filter((p: Player) => p.team === team.name).length,
         players: playerList.filter((p: Player) => p.team === team.name),
