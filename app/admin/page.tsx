@@ -229,7 +229,7 @@ export default async function AdminPage() {
               ))}
             </section>
 
-            <CollapsibleSection title="Player Contacts" badge={allPlayers.length}>
+            <CollapsibleSection title="Player Contacts" badge={allPlayers.length} defaultExpanded={false}>
               <div className="p-4 sm:p-6">
                 <PlayerContactList players={allPlayers} showTeamFilter />
               </div>
@@ -239,13 +239,13 @@ export default async function AdminPage() {
 
             <MatchForm />
             
-            <CollapsibleSection title="Upcoming Fixtures" badge={scheduledMatches.length}>
+            <CollapsibleSection title="Upcoming Fixtures" badge={scheduledMatches.length} defaultExpanded={false}>
               <div className="p-4 sm:p-6">
                 <UpcomingFixtures matches={scheduledMatches} />
               </div>
             </CollapsibleSection>
 
-            <CollapsibleSection title="Match Results" badge={finishedMatches.length}>
+            <CollapsibleSection title="Match Results" badge={finishedMatches.length} defaultExpanded={false}>
               <div className="p-4 sm:p-6">
                 <MatchResults matches={finishedMatches} />
               </div>
