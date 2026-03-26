@@ -79,44 +79,9 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
           </div>
         </section>
 
-        {/* 下方紀錄區：換人與事件 */}
+        {/* 下方紀錄區：換人與事件 — 簽名區移到 Column B（中間位） */}
         <div className="grid grid-cols-2 gap-4 mt-6">
-          <div className="border border-black p-2 flex flex-col">
-            <h3 className="text-center font-bold text-xs border-b border-black pb-1 mb-2">REMARKS</h3>
-            {/* 3 column × 5 row table: Row1=headers, Rows2-5=fillable */}
-            <div className="flex-grow border border-gray-300 h-40 overflow-hidden">
-              <div className="grid grid-cols-3 h-full auto-rows-fr">
-                {/* Row 1: headers */}
-                <div className="border-r border-b border-black bg-slate-100 p-1 text-center text-[10px] font-bold">主隊 Home</div>
-                <div className="border-r border-b border-black bg-slate-100 p-1 text-center text-[10px] font-bold">賽果 Results</div>
-                <div className="border-b border-black bg-slate-100 p-1 text-center text-[10px] font-bold">客隊 Away</div>
-                {/* Row 2: 比數 Score */}
-                <div className="border-r border-b border-gray-300 text-[9px] font-bold text-zinc-500 flex items-center pl-1">比數 Score</div>
-                <div className="border-r border-b border-gray-300"></div>
-                <div className="border-b border-gray-300"></div>
-                {/* Row 3: 入球球員 Scorers */}
-                <div className="border-r border-b border-gray-300 text-[9px] font-bold text-zinc-500 flex items-center pl-1">入球球員 Scorers</div>
-                <div className="border-r border-b border-gray-300"></div>
-                <div className="border-b border-gray-300"></div>
-                {/* Row 4: 黃牌 Yellow Cards */}
-                <div className="border-r border-b border-gray-300 text-[9px] font-bold text-zinc-500 flex items-center pl-1">黃牌 Yellow Cards</div>
-                <div className="border-r border-b border-gray-300"></div>
-                <div className="border-b border-gray-300"></div>
-                {/* Row 5: 紅牌 Red Cards */}
-                <div className="border-r border-gray-300 text-[9px] font-bold text-zinc-500 flex items-center pl-1">紅牌 Red Cards</div>
-                <div className="border-r border-gray-300"></div>
-                <div></div>
-              </div>
-            </div>
-            <div className="mt-3 pt-3 border-t border-black text-[10px]">
-              <div className="flex justify-between pt-2">
-                <span className="border-t border-black w-24 text-center py-1">領隊簽署<br/>(Manager Sign)</span>
-                <span className="border-t border-black w-24 text-center py-1">球證簽署<br/>(Referee Sign)</span>
-              </div>
-            </div>
-          </div>
-
-          {/* 簽名區 */}
+          {/* 簽名區 — Column A（左） */}
           <div className="border border-black p-2 flex flex-col">
             <h3 className="text-center font-bold text-xs border-b border-black pb-1 mb-2">簽名區 (SIGNATURES)</h3>
             <div className="flex flex-col gap-4 text-[10px] flex-grow pt-2">
@@ -161,6 +126,42 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
                     <div className="text-[9px] text-gray-500 mt-1">日期 (Date)</div>
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+
+          {/* REMARKS — Column B（中） */}
+          <div className="border border-black p-2 flex flex-col">
+            <h3 className="text-center font-bold text-xs border-b border-black pb-1 mb-2">REMARKS</h3>
+            {/* 3 column × 5 row table: Row1=headers, Rows2-5=fillable */}
+            <div className="flex-grow border border-gray-300 h-40 overflow-hidden">
+              <div className="grid grid-cols-3 h-full auto-rows-fr">
+                {/* Row 1: headers */}
+                <div className="border-r border-b border-black bg-slate-100 p-1 text-center text-[10px] font-bold">主隊 Home</div>
+                <div className="border-r border-b border-black bg-slate-100 p-1 text-center text-[10px] font-bold">賽果 Results</div>
+                <div className="border-b border-black bg-slate-100 p-1 text-center text-[10px] font-bold">客隊 Away</div>
+                {/* Row 2: 比數 Score */}
+                <div className="border-r border-b border-gray-300 text-[9px] font-bold text-zinc-500 flex items-center pl-1">比數 Score</div>
+                <div className="border-r border-b border-gray-300"></div>
+                <div className="border-b border-gray-300"></div>
+                {/* Row 3: 入球球員 Scorers */}
+                <div className="border-r border-b border-gray-300 text-[9px] font-bold text-zinc-500 flex items-center pl-1">入球球員 Scorers</div>
+                <div className="border-r border-b border-gray-300"></div>
+                <div className="border-b border-gray-300"></div>
+                {/* Row 4: 黃牌 Yellow Cards */}
+                <div className="border-r border-b border-gray-300 text-[9px] font-bold text-zinc-500 flex items-center pl-1">黃牌 Yellow Cards</div>
+                <div className="border-r border-b border-gray-300"></div>
+                <div className="border-b border-gray-300"></div>
+                {/* Row 5: 紅牌 Red Cards */}
+                <div className="border-r border-gray-300 text-[9px] font-bold text-zinc-500 flex items-center pl-1">紅牌 Red Cards</div>
+                <div className="border-r border-gray-300"></div>
+                <div></div>
+              </div>
+            </div>
+            <div className="mt-3 pt-3 border-t border-black text-[10px]">
+              <div className="flex justify-between pt-2">
+                <span className="border-t border-black w-24 text-center py-1">領隊簽署<br/>(Manager Sign)</span>
+                <span className="border-t border-black w-24 text-center py-1">球證簽署<br/>(Referee Sign)</span>
               </div>
             </div>
           </div>
