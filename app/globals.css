@@ -10,7 +10,7 @@
 
 @page {
   size: A4 portrait;
-  margin: 8mm;
+  margin: 0;
 }
 
 /* Force screen to show full A4 width for preview */
