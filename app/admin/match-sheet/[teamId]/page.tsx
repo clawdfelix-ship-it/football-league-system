@@ -81,9 +81,9 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
 
         {/* 下方紀錄區：換人與事件 — 簽名區移到 Column B（中間位） */}
         <div className="grid grid-cols-2 gap-4 mt-6">
-          {/* 簽名區 — Column A（左） */}
+          {/* REMARKS — Column A（左） */}
           <div className="border border-black p-2 flex flex-col">
-            <h3 className="text-center font-bold text-xs border-b border-black pb-1 mb-2">簽名區 (SIGNATURES)</h3>
+            <h3 className="text-center font-bold text-xs border-b border-black pb-1 mb-2">REMARKS</h3>
             <div className="flex flex-col gap-4 text-[10px] flex-grow pt-2">
               {/* 主隊領隊 */}
               <div className="border border-gray-300 p-2">
@@ -130,9 +130,9 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
             </div>
           </div>
 
-          {/* REMARKS — Column B（中） */}
+          {/* 簽名區 — Column B（右） */}
           <div className="border border-black p-2 flex flex-col">
-            <h3 className="text-center font-bold text-xs border-b border-black pb-1 mb-2">REMARKS</h3>
+            <h3 className="text-center font-bold text-xs border-b border-black pb-1 mb-2">簽名區 (SIGNATURES)</h3>
             {/* 3 column × 5 row table: Row1=headers, Rows2-5=fillable */}
             <div className="flex-grow border border-gray-300 h-40 overflow-hidden">
               <div className="grid grid-cols-3 h-full auto-rows-fr">

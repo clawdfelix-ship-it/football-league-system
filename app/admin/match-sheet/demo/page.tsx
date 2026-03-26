@@ -125,6 +125,7 @@ export default function DemoMatchSheet() {
         </section>
 
         <div className="grid grid-cols-2 gap-4 mt-6">
+          {/* REMARKS — Column A（左） */}
           <div className="border border-black p-2 flex flex-col">
             <h3 className="text-center font-bold text-xs border-b border-black pb-1 mb-2">REMARKS</h3>
             {/* 3 column × 5 row table: Row1=headers, Rows2-5=fillable */}
@@ -153,7 +154,10 @@ export default function DemoMatchSheet() {
               </div>
             </div>
           </div>
-        </div>
+
+          {/* 簽名區 — Column B（右） */}
+          <div className="border border-black p-2 flex flex-col">
+            <h3 className="text-center font-bold text-xs border-b border-black pb-1 mb-2">簽名區 (SIGNATURES)</h3>
             <div className="flex flex-col gap-4 text-[10px] flex-grow pt-2">
               <div className="border border-gray-300 p-2">
                 <div className="font-bold text-center mb-2">主隊領隊 / Home Team Manager</div>
@@ -198,7 +202,7 @@ export default function DemoMatchSheet() {
           </div>
         </div>
 
-        <div className="text-center text-[8px] mt-4 text-gray-400 uppercase">
+        <div className="text-center text-xs mt-4 text-gray-400 uppercase">
           Zenex Cup official match sheet • Do not duplicate
         </div>
       </div>
