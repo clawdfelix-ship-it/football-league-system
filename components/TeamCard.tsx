@@ -67,10 +67,10 @@ function PlayerRow({ player }: { player: Player }) {
       </div>
       <div className="flex items-center gap-1 flex-shrink-0">
         {hasPhone ? (
-          <a href={`tel:${player.phoneNumber}`} onClick={e => e.stopPropagation()} className="text-xs" title={player.phoneNumber}>📞</a>
+          <a href={`tel:${player.phoneNumber!}`} onClick={e => e.stopPropagation()} className="text-xs" title={player.phoneNumber!}>📞</a>
         ) : null}
         {hasEmail ? (
-          <a href={`mailto:${player.email}`} onClick={e => e.stopPropagation()} className="text-xs" title={`📧 ${player.email}`}>📧</a>
+          <a href={`mailto:${player.email!}`} onClick={e => e.stopPropagation()} className="text-xs" title={`📧 ${player.email!}`}>📧</a>
         ) : null}
       </div>
     </div>
