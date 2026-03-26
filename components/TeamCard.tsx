@@ -68,16 +68,10 @@ function PlayerRow({ player }: { player: Player }) {
       <div className="flex items-center gap-1 flex-shrink-0">
         {hasPhone ? (
           <a href={`tel:${player.phoneNumber}`} onClick={e => e.stopPropagation()} className="text-xs" title={`📞 ${player.phoneNumber}`}>📞</a>
-        ) : (
-          <span className="text-xs" title="缺電話">📞</span>
-        )}
-        <span className={`text-[10px] font-black ${hasPhone ? 'text-green-500' : 'text-zinc-300 dark:text-zinc-600'}`}>✅</span>
-        <span className={`text-[10px] font-black ${hasEmail ? 'text-green-500' : 'text-zinc-300 dark:text-zinc-600'}`}>✅</span>
+        ) : null}
         {hasEmail ? (
           <a href={`mailto:${player.email}`} onClick={e => e.stopPropagation()} className="text-xs" title={`📧 ${player.email}`}>📧</a>
-        ) : (
-          <span className="text-xs" title="缺電郵">📧</span>
-        )}
+        ) : null}
       </div>
     </div>
   );
@@ -251,10 +245,6 @@ export function TeamCard({ team, players }: TeamCardProps) {
                   {teamPlayers.slice().sort((a, b) => (a.jerseyNumber ?? 999) - (b.jerseyNumber ?? 999)).map(player => (
                     <PlayerRow key={player.id} player={player} />
                   ))}
-                  <div className="flex items-center gap-4 py-1.5 px-2 border-t border-zinc-200 dark:border-zinc-700 bg-zinc-100/50 dark:bg-zinc-800/50">
-                    <div className="flex items-center gap-1"><span className="text-[9px] font-black text-green-500">✅</span><span className="text-[9px] text-zinc-400">= 有</span></div>
-                    <div className="flex items-center gap-1"><span className="text-[9px] font-black text-zinc-300 dark:text-zinc-600">❌</span><span className="text-[9px] text-zinc-400">= 缺</span></div>
-                  </div>
                 </div>
               )}
             </div>
