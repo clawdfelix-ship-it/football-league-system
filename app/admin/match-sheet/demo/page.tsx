@@ -39,6 +39,7 @@ function storageKey(id: number) {
 
 export default function DemoMatchSheet() {
   const [players, setPlayers] = useState<DemoPlayer[]>(DEMO_PLAYERS_BASE);
+  // 5 cols × 6 rows = 30 cells
   const totalGridSlots = 30;
   const emptySlots = useMemo(() => Array(Math.max(0, totalGridSlots - players.length)).fill(null), [players.length]);
 
@@ -72,7 +73,7 @@ export default function DemoMatchSheet() {
         <PrintButton />
       </div>
 
-      <div className="w-[210mm] min-h-[297mm] mx-auto border-2 border-black p-6 flex flex-col bg-white">
+      <div className="w-[210mm] min-h-[297mm] mx-auto border-2 border-black p-5 flex flex-col bg-white">
         <header className="text-center border-b-4 border-black pb-4 mb-4">
           <h1 className="text-2xl font-black tracking-widest italic">Hong Kong Bank League 2026</h1>
           <h2 className="text-sm font-bold tracking-wider text-gray-600 mb-1">Partnered with ZENEX SPORTS | 香港銀行足球聯賽2026</h2>
@@ -86,15 +87,15 @@ export default function DemoMatchSheet() {
 
         <section className="flex-grow">
           <h2 className="bg-slate-200 text-center font-bold border-y border-black py-1 text-xs mb-2 italic print:bg-gray-200 print:text-black">常規球員 (REGULAR PLAYERS)</h2>
-          <div className="grid grid-cols-6 border-t border-l border-black">
+          <div className="grid grid-cols-5 border-t border-l border-black">
             {players.map((p) => (
-              <div key={p.id} className="group relative border-r border-b border-black p-1 text-center h-[115px] grid grid-rows-[minmax(44px,80px)_auto_auto] justify-items-center gap-1">
+              <div key={p.id} className="group relative border-r border-b border-black p-2 text-center h-[160px] grid grid-rows-[minmax(90px,110px)_auto_auto] justify-items-center gap-1">
                 <div className="absolute bottom-1 left-1 w-3 h-3 border border-black"></div>
-                <div className="w-16 h-full max-h-20 border border-gray-200 bg-gray-50 overflow-hidden relative print:bg-white print:border-gray-400">
+                <div className="w-24 h-24 border border-gray-200 bg-gray-50 overflow-hidden relative print:bg-white print:border-gray-400">
                   {p.photoUrl ? (
                     <img src={p.photoUrl} alt={p.name} className="object-cover w-full h-full" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-[8px] text-gray-300">NO PHOTO</div>
+                    <div className="w-full h-full flex items-center justify-center text-[9px] text-gray-300">NO PHOTO</div>
                   )}
                   <label className="absolute top-0 right-0 bg-black/60 text-white text-[9px] px-1 py-0.5 cursor-pointer print:hidden">
                     Edit
@@ -111,14 +112,14 @@ export default function DemoMatchSheet() {
                     />
                   </label>
                 </div>
-                <div className="text-[9px] font-bold leading-tight whitespace-normal break-words w-full px-0.5">{p.name}</div>
-                <div className="text-[9px] font-mono leading-none">#{p.jerseyNumber ?? '—'}</div>
+                <div className="text-[10px] font-bold leading-tight whitespace-normal break-words w-full px-0.5">{p.name}</div>
+                <div className="text-[10px] font-mono leading-none">#{p.jerseyNumber ?? '—'}</div>
               </div>
             ))}
             {emptySlots.map((_, i) => (
-              <div key={`empty-${i}`} className="relative border-r border-b border-black h-[115px] p-1 flex items-start justify-center">
+              <div key={`empty-${i}`} className="relative border-r border-b border-black h-[160px] p-2 flex items-start justify-center">
                 <div className="absolute bottom-1 left-1 w-3 h-3 border border-black"></div>
-                <div className="w-16 h-16 border border-dashed border-gray-200 print:border-gray-300"></div>
+                <div className="w-24 h-24 border border-dashed border-gray-200 print:border-gray-300"></div>
               </div>
             ))}
           </div>
