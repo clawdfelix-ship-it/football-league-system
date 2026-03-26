@@ -158,12 +158,6 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
                 <div></div>
               </div>
             </div>
-            <div className="mt-3 pt-3 border-t border-black text-[10px]">
-              <div className="flex justify-between pt-2">
-                <span className="border-t border-black w-24 text-center py-1">領隊簽署<br/>(Manager Sign)</span>
-                <span className="border-t border-black w-24 text-center py-1">球證簽署<br/>(Referee Sign)</span>
-              </div>
-            </div>
           </div>
         </div>
         <div className="text-center text-[8px] mt-4 text-gray-400 uppercase">

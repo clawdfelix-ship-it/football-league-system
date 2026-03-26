@@ -152,16 +152,8 @@ export default function DemoMatchSheet() {
                 <div></div>
               </div>
             </div>
-            <div className="mt-3 pt-3 border-t border-black text-[10px]">
-              <div className="flex justify-between pt-2">
-                <span className="border-t border-black w-24 text-center py-1">領隊簽署<br/>(Manager Sign)</span>
-                <span className="border-t border-black w-24 text-center py-1">球證簽署<br/>(Referee Sign)</span>
-              </div>
-            </div>
           </div>
-
-          <div className="border border-black p-2 flex flex-col">
-            <h3 className="text-center font-bold text-xs border-b border-black pb-1 mb-2">簽名區 (SIGNATURES)</h3>
+        </div>
             <div className="flex flex-col gap-4 text-[10px] flex-grow pt-2">
               <div className="border border-gray-300 p-2">
                 <div className="font-bold text-center mb-2">主隊領隊 / Home Team Manager</div>
