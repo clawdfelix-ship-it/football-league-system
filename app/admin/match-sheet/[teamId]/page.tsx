@@ -193,22 +193,32 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
             </div>
             {/* 3-col × 5-row table */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', flex: 1, border: '1px solid #999', minHeight: '52mm' }}>
-              {/* Row 1: headers */}
-              {['主隊 Home', '賽果 Results', '客隊 Away'].map((h, i) => (
-                <div key={i} style={{ borderRight: i < 2 ? '1px solid black' : 'none', borderBottom: '1px solid black', background: '#dcdcdc', padding: '1mm 1.5mm', fontSize: '6.5pt', fontWeight: 700, textAlign: 'center', color: 'black' }}>
-                  {h}
+              {/* Row 1: 主隊 + 賽果 + 客隊 */}
+              {[
+                { label: '主隊 Home', span: 1 },
+                { label: '賽果 Results', span: 1 },
+                { label: '客隊 Away', span: 1 },
+              ].map(({ label }, i) => (
+                <div key={i} style={{
+                  borderRight: i < 2 ? '1px solid black' : 'none',
+                  borderBottom: '1px solid black',
+                  background: '#dcdcdc',
+                  padding: '1mm 1.5mm',
+                  fontSize: '6.5pt',
+                  fontWeight: 700,
+                  textAlign: 'center',
+                  color: 'black',
+                }}>
+                  {label}
                 </div>
               ))}
-              {/* Row 2-5: labels + fillable */}
+              {/* Row 2–5: 比數 / 入球球員 / 黃牌 / 紅牌 */}
               {['比數 Score', '入球球員 Scorers', '黃牌 Yellow Cards', '紅牌 Red Cards'].map((label, ri) => (
                 <React.Fragment key={ri}>
-                  {/* Left label */}
                   <div style={{ borderRight: '1px solid #999', borderBottom: '1px solid #999', fontSize: '6pt', fontWeight: 700, color: '#666', display: 'flex', alignItems: 'center', paddingLeft: '1mm' }}>
                     {label}
                   </div>
-                  {/* Center (home team fill area) */}
                   <div style={{ borderRight: '1px solid #999', borderBottom: '1px solid #999' }} />
-                  {/* Right (away team fill area) */}
                   <div style={{ borderBottom: '1px solid #999' }} />
                 </React.Fragment>
               ))}
