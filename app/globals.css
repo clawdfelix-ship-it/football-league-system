@@ -13,7 +13,6 @@
   margin: 0;
 }
 
-/* Force screen to show full A4 width for preview */
 @media screen {
   body {
     background: #e5e5e5;
@@ -23,6 +22,45 @@
 * {
   -webkit-print-color-adjust: exact !important;
   print-color-adjust: exact !important;
+}
+
+/* =============================================
+   Print: Remove shadows, enforce 1 page
+   ============================================= */
+@media print {
+  /* Remove all shadows */
+  .shadow,
+  .shadow-2xl,
+  .shadow-lg,
+  .shadow-md,
+  .shadow-xl {
+    box-shadow: none !important;
+  }
+
+  /* Remove gradient backgrounds, use solid colors */
+  .bg-gradient-to-b {
+    background-image: none !important;
+  }
+
+  /* Remove decorative images */
+  img {
+    display: none !important;
+  }
+
+  /* Force page to fit in A4 single page */
+  html, body {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  /* Prevent breaks inside key elements */
+  table {
+    page-break-inside: avoid;
+  }
+
+  section {
+    page-break-inside: avoid;
+  }
 }
 
 :root {
