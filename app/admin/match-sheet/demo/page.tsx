@@ -129,19 +129,27 @@ export default function DemoMatchSheet() {
             <h3 className="text-center font-bold text-xs border-b border-black pb-1 mb-2">REMARKS</h3>
             {/* 3 column × 5 row table: Row1=headers, Rows2-5=fillable */}
             <div className="flex-grow border border-gray-300 h-40 overflow-hidden">
-              <div className="grid grid-cols-3 h-full">
-                {/* Header row */}
+              <div className="grid grid-cols-3 h-full auto-rows-fr">
+                {/* Row 1: headers */}
                 <div className="border-r border-b border-black bg-slate-100 p-1 text-center text-[10px] font-bold">主隊 Home</div>
                 <div className="border-r border-b border-black bg-slate-100 p-1 text-center text-[10px] font-bold">賽果 Results</div>
                 <div className="border-b border-black bg-slate-100 p-1 text-center text-[10px] font-bold">客隊 Away</div>
-                {/* Data rows 2-5 */}
-                {[...Array(4)].map((_, i) => (
-                  <React.Fragment key={i}>
-                    <div className="border-r border-b border-gray-300 h-[calc(100%/4)] min-h-0"></div>
-                    <div className="border-r border-b border-gray-300 h-[calc(100%/4)] min-h-0"></div>
-                    <div className="border-b border-gray-300 h-[calc(100%/4)] min-h-0"></div>
-                  </React.Fragment>
-                ))}
+                {/* Row 2: 比數 Score */}
+                <div className="border-r border-b border-gray-300 text-[9px] font-bold text-zinc-500 flex items-center pl-1">比數 Score</div>
+                <div className="border-r border-b border-gray-300"></div>
+                <div className="border-b border-gray-300"></div>
+                {/* Row 3: 入球球員 Scorers */}
+                <div className="border-r border-b border-gray-300 text-[9px] font-bold text-zinc-500 flex items-center pl-1">入球球員 Scorers</div>
+                <div className="border-r border-b border-gray-300"></div>
+                <div className="border-b border-gray-300"></div>
+                {/* Row 4: 黃牌 Yellow Cards */}
+                <div className="border-r border-b border-gray-300 text-[9px] font-bold text-zinc-500 flex items-center pl-1">黃牌 Yellow Cards</div>
+                <div className="border-r border-b border-gray-300"></div>
+                <div className="border-b border-gray-300"></div>
+                {/* Row 5: 紅牌 Red Cards */}
+                <div className="border-r border-gray-300 text-[9px] font-bold text-zinc-500 flex items-center pl-1">紅牌 Red Cards</div>
+                <div className="border-r border-gray-300"></div>
+                <div></div>
               </div>
             </div>
             <div className="mt-3 pt-3 border-t border-black text-[10px]">
