@@ -2,6 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
+/* =============================================
+   A4 Print Optimization
+   A4: 210mm × 297mm
+   Target: exactly 1 page, black & white friendly
+   ============================================= */
+
+@page {
+  size: A4 portrait;
+  margin: 8mm;
+}
+
+/* Force screen to show full A4 width for preview */
+@media screen {
+  body {
+    background: #e5e5e5;
+  }
+}
+
+* {
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
