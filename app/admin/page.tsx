@@ -174,7 +174,7 @@ export default async function AdminPage() {
                     <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
                     <path d="M6 14h12v8H6z"/>
                   </svg>
-                  Print Match Sheet
+                  Squad List
                 </Link>
               </div>
             </div>
@@ -187,7 +187,7 @@ export default async function AdminPage() {
           <>
             {/* Team Match Sheets Section for Admin */}
             <section className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 sm:p-6">
-              <h2 className="text-lg font-semibold mb-4">Print Match Sheets</h2>
+              <h2 className="text-lg font-semibold mb-4">Squad List</h2>
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 {TEAMS.map((team, index) => (
                   <Link 
@@ -252,3 +252,4 @@ export default async function AdminPage() {
     </div>
   );
 }
+
