@@ -42,15 +42,9 @@
     background-image: none !important;
   }
 
-  /* Remove decorative images */
-  img {
+  /* Remove decorative images outside match-sheet; keep player photos */
+  body:not(.match-sheet) img {
     display: none !important;
-  }
-
-  /* Force page to fit in A4 single page */
-  html, body {
-    height: 100%;
-    overflow: hidden;
   }
 
   /* Prevent breaks inside key elements */
