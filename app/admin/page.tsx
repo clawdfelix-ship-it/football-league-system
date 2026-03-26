@@ -2,8 +2,11 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { getMatches, getTeamPlayers, getAnnouncements, getAllPlayers } from '@/lib/actions';
-import { MatchForm, MatchList, ResetButton } from '@/components/AdminClient';
+import { MatchForm, ResetButton } from '@/components/AdminClient';
 import { PlayerContactList } from '@/components/PlayerContactList';
+import { CollapsibleSection } from '@/components/CollapsibleSection';
+import { UpcomingFixtures } from '@/components/UpcomingFixtures';
+import { MatchResults } from '@/components/MatchResults';
 import Link from 'next/link';
 import { TEAMS } from '@/lib/constants';
 import { PlayerManager } from '@/app/admin/match-sheet/[teamId]/PlayerManager';
@@ -226,24 +229,27 @@ export default async function AdminPage() {
               ))}
             </section>
 
-            <section className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 sm:p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold">Player Contacts</h2>
-                <div className="text-xs text-zinc-500 dark:text-zinc-400">
-                  {allPlayers.length} players
-                </div>
+            <CollapsibleSection title="Player Contacts" badge={allPlayers.length}>
+              <div className="p-4 sm:p-6">
+                <PlayerContactList players={allPlayers} showTeamFilter />
               </div>
-              <PlayerContactList players={allPlayers} showTeamFilter />
-            </section>
+            </CollapsibleSection>
 
             <AnnouncementManager announcements={announcements} />
 
             <MatchForm />
             
-            <MatchList 
-              scheduledMatches={scheduledMatches} 
-              finishedMatches={finishedMatches} 
-            />
+            <CollapsibleSection title="Upcoming Fixtures" badge={scheduledMatches.length}>
+              <div className="p-4 sm:p-6">
+                <UpcomingFixtures matches={scheduledMatches} />
+              </div>
+            </CollapsibleSection>
+
+            <CollapsibleSection title="Match Results" badge={finishedMatches.length}>
+              <div className="p-4 sm:p-6">
+                <MatchResults matches={finishedMatches} />
+              </div>
+            </CollapsibleSection>
 
             <ResetButton />
           </>
