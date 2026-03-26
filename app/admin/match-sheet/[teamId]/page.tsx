@@ -15,8 +15,8 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
 
   const players: Player[] = await getTeamPlayers(team.name);
 
-  // Always show 40 slots (5 rows × 8 cols)
-  const totalSlots = 40;
+  // Always show 30 slots (5 rows × 6 cols)
+  const totalSlots = 30;
   const emptySlots = Array(Math.max(0, totalSlots - players.length)).fill(null);
 
   return (
@@ -115,7 +115,7 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
         */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(8, 1fr)',
+          gridTemplateColumns: 'repeat(6, 1fr)',
           borderTop: '1px solid black',
           borderLeft: '1px solid black',
           flexShrink: 0,

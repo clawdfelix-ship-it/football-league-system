@@ -39,7 +39,7 @@ function storageKey(id: number) {
 
 export default function DemoMatchSheet() {
   const [players, setPlayers] = useState<DemoPlayer[]>(DEMO_PLAYERS_BASE);
-  const totalGridSlots = 40;
+  const totalGridSlots = 30;
   const emptySlots = useMemo(() => Array(Math.max(0, totalGridSlots - players.length)).fill(null), [players.length]);
 
   useEffect(() => {
@@ -86,7 +86,7 @@ export default function DemoMatchSheet() {
 
         <section className="flex-grow">
           <h2 className="bg-slate-200 text-center font-bold border-y border-black py-1 text-xs mb-2 italic print:bg-gray-200 print:text-black">常規球員 (REGULAR PLAYERS)</h2>
-          <div className="grid grid-cols-8 border-t border-l border-black">
+          <div className="grid grid-cols-6 border-t border-l border-black">
             {players.map((p) => (
               <div key={p.id} className="group relative border-r border-b border-black p-1 text-center h-[115px] grid grid-rows-[minmax(44px,80px)_auto_auto] justify-items-center gap-1">
                 <div className="absolute bottom-1 left-1 w-3 h-3 border border-black"></div>
