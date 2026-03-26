@@ -37,8 +37,8 @@ export const TEAM_CONTACTS: TeamContact[] = [
     coach: { name: 'Terrence Tan', phone: '+852 9123 4567', email: 'terrence.tan@nomura.com' },
     manager: { name: 'Kenneth Miranda', phone: '+852 9123 4568', email: 'kenneth.miranda@nomura.com' },
     captains: [
-      { name: 'Terrence Tan', email: 'terrence.tan@nomura.com', phone: '+852 9123 4567' },
-      { name: 'Kenneth Miranda', email: 'kenneth.miranda@nomura.com', phone: '+852 9123 4568' },
+      { name: 'Terrence Tan', email: 'terrence.tan@nomura.com' },
+      { name: 'Kenneth Miranda', email: 'kenneth.miranda@nomura.com' },
     ],
   },
   {
@@ -50,8 +50,8 @@ export const TEAM_CONTACTS: TeamContact[] = [
     coach: { name: 'Ibai Garatea', phone: '+852 9222 1111', email: 'ibai.garatea1@bbva.com' },
     manager: { name: 'Yassine Ayadi', phone: '+852 9222 2222', email: 'yassine.ayadi@bbva.com' },
     captains: [
-      { name: 'Ibai Garatea', email: 'ibai.garatea1@bbva.com', phone: '+852 9222 1111' },
-      { name: 'Yassine Ayadi', email: 'yassine.ayadi@bbva.com', phone: '+852 9222 2222' },
+      { name: 'Ibai Garatea', email: 'ibai.garatea1@bbva.com' },
+      { name: 'Yassine Ayadi', email: 'yassine.ayadi@bbva.com' },
     ],
   },
   {
@@ -63,8 +63,8 @@ export const TEAM_CONTACTS: TeamContact[] = [
     coach: { name: 'David Pun', phone: '+852 9333 1111', email: 'david.pun@lgt.com' },
     manager: { name: 'Alvin Li', phone: '+852 9333 2222', email: 'alvin.li@lgt.com' },
     captains: [
-      { name: 'David Pun', email: 'david.pun@lgt.com', phone: '+852 9333 1111' },
-      { name: 'Alvin Li', email: 'alvin.li@lgt.com', phone: '+852 9333 2222' },
+      { name: 'David Pun', email: 'david.pun@lgt.com' },
+      { name: 'Alvin Li', email: 'alvin.li@lgt.com' },
     ],
   },
   {
@@ -76,8 +76,8 @@ export const TEAM_CONTACTS: TeamContact[] = [
     coach: { name: 'Maxime Bonte', phone: '+852 9444 1111', email: 'maxime.bonte@ca-cib.com' },
     manager: { name: 'Victor Romier', phone: '+852 9444 2222', email: 'victor.romier@ca-cib.com' },
     captains: [
-      { name: 'Maxime Bonte', email: 'maxime.bonte@ca-cib.com', phone: '+852 9444 1111' },
-      { name: 'Victor Romier', email: 'victor.romier@ca-cib.com', phone: '+852 9444 2222' },
+      { name: 'Maxime Bonte', email: 'maxime.bonte@ca-cib.com' },
+      { name: 'Victor Romier', email: 'victor.romier@ca-cib.com' },
     ],
   },
   {
@@ -89,8 +89,8 @@ export const TEAM_CONTACTS: TeamContact[] = [
     coach: { name: 'Michael Mak', phone: '+852 9555 1111', email: 'michael.mak@citi.com' },
     manager: { name: 'Toan Nguyen', phone: '+852 9555 2222', email: 'toan.dc.nguyen@citi.com' },
     captains: [
-      { name: 'Michael Mak', email: 'michael.mak@citi.com', phone: '+852 9555 1111' },
-      { name: 'Toan Nguyen', email: 'toan.dc.nguyen@citi.com', phone: '+852 9555 2222' },
+      { name: 'Michael Mak', email: 'michael.mak@citi.com' },
+      { name: 'Toan Nguyen', email: 'toan.dc.nguyen@citi.com' },
     ],
   },
   {
@@ -102,8 +102,8 @@ export const TEAM_CONTACTS: TeamContact[] = [
     coach: { name: 'David Oliveira', phone: '+852 9666 1111', email: 'david.oliveira@sc.com' },
     manager: { name: 'Andy Wan', phone: '+852 9666 2222', email: 'andyty.wan@sc.com' },
     captains: [
-      { name: 'David Oliveira', email: 'david.oliveira@sc.com', phone: '+852 9666 1111' },
-      { name: 'Andy Wan', email: 'andyty.wan@sc.com', phone: '+852 9666 2222' },
+      { name: 'David Oliveira', email: 'david.oliveira@sc.com' },
+      { name: 'Andy Wan', email: 'andyty.wan@sc.com' },
     ],
   },
   {
@@ -113,12 +113,10 @@ export const TEAM_CONTACTS: TeamContact[] = [
     color: 'from-yellow-500 to-orange-600',
     venue: '九龍仔公園',
     coach: { name: 'Mo', phone: '+852 9777 1111', email: 'mortadha.lagha@ubs.com' },
-    manager: { name: 'Keith Kwok', phone: '+852 9777 2222', email: 'keith.kwok@ubs.com' },
+    manager: { name: 'Fu Bong', phone: '+852 9777 3333', email: 'fu-bong.chan@ubs.com' },
     captains: [
-      { name: 'Mo', email: 'mortadha.lagha@ubs.com', phone: '+852 9777 1111' },
-      { name: 'Fu Bong', email: 'fu-bong.chan@ubs.com', phone: '+852 9777 3333' },
-      { name: 'Keith Kwok', email: 'keith.kwok@ubs.com', phone: '+852 9777 2222' },
-      { name: 'Eugene Lam', email: 'eugene.lam@ubs.com', phone: '+852 9777 4444' },
+      { name: 'Mo', email: 'mortadha.lagha@ubs.com' },
+      { name: 'Fu Bong', email: 'fu-bong.chan@ubs.com' },
     ],
   },
   {
@@ -130,7 +128,7 @@ export const TEAM_CONTACTS: TeamContact[] = [
     coach: { name: 'Jimmy Chan', phone: '+852 9888 1111', email: 'jimmy.k.p.chan@hsbc.com.hk' },
     manager: { name: 'Jimmy Chan', phone: '+852 9888 1111', email: 'jimmy.k.p.chan@hsbc.com.hk' },
     captains: [
-      { name: 'Jimmy Chan', email: 'jimmy.k.p.chan@hsbc.com.hk', phone: '+852 9888 1111' },
+      { name: 'Jimmy Chan', email: 'jimmy.k.p.chan@hsbc.com.hk' },
     ],
   },
   {
@@ -139,11 +137,11 @@ export const TEAM_CONTACTS: TeamContact[] = [
     shortName: 'KPMG',
     color: 'from-indigo-600 to-indigo-800',
     venue: '將軍澳運動場',
-    coach: { name: 'Terrence Chan', phone: '+852 9999 1111', email: 'terrence.chan@kpmg.com' },
-    manager: { name: 'Andrew Chan', phone: '+852 9999 2222', email: 'andrew.chan@kpmg.com' },
+    coach: { name: 'Terrence', phone: '+852 9999 1111', email: 'Terrence.chan@kpmg.com' },
+    manager: { name: 'Andrew', phone: '+852 9999 2222', email: 'Andrew.chan@kpmg.com' },
     captains: [
-      { name: 'Terrence Chan', email: 'terrence.chan@kpmg.com', phone: '+852 9999 1111' },
-      { name: 'Andrew Chan', email: 'andrew.chan@kpmg.com', phone: '+852 9999 2222' },
+      { name: 'Terrence', email: 'Terrence.chan@kpmg.com' },
+      { name: 'Andrew', email: 'Andrew.chan@kpmg.com' },
     ],
   },
   {
