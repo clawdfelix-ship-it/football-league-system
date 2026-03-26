@@ -215,10 +215,10 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
               {/* Row 2–5: 比數 / 入球球員 / 黃牌 / 紅牌 */}
               {['比數 Score', '入球球員 Scorers', '黃牌 Yellow Cards', '紅牌 Red Cards'].map((label, ri) => (
                 <React.Fragment key={ri}>
+                  <div style={{ borderRight: '1px solid #999', borderBottom: '1px solid #999' }} />
                   <div style={{ borderRight: '1px solid #999', borderBottom: '1px solid #999', fontSize: '6pt', fontWeight: 700, color: '#666', display: 'flex', alignItems: 'center', paddingLeft: '1mm' }}>
                     {label}
                   </div>
-                  <div style={{ borderRight: '1px solid #999', borderBottom: '1px solid #999' }} />
                   <div style={{ borderBottom: '1px solid #999' }} />
                 </React.Fragment>
               ))}

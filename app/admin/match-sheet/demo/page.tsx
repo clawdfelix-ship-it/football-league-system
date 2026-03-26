@@ -136,16 +136,16 @@ export default function DemoMatchSheet() {
                 <div className="border-r border-b border-black bg-slate-100 p-1 text-center text-[10px] font-bold">賽果 Results</div>
                 <div className="border-b border-black bg-slate-100 p-1 text-center text-[10px] font-bold">客隊 Away</div>
                 {/* Row 2: 比數 Score */}
-                <div className="border-r border-b border-gray-300 text-[9px] font-bold text-zinc-500 flex items-center pl-1">比數 Score</div>
                 <div className="border-r border-b border-gray-300"></div>
+                <div className="border-r border-b border-gray-300 text-[9px] font-bold text-zinc-500 flex items-center pl-1">比數 Score</div>
                 <div className="border-b border-gray-300"></div>
                 {/* Row 3: 入球球員 Scorers */}
-                <div className="border-r border-b border-gray-300 text-[9px] font-bold text-zinc-500 flex items-center pl-1">入球球員 Scorers</div>
                 <div className="border-r border-b border-gray-300"></div>
+                <div className="border-r border-b border-gray-300 text-[9px] font-bold text-zinc-500 flex items-center pl-1">入球球員 Scorers</div>
                 <div className="border-b border-gray-300"></div>
                 {/* Row 4: 黃牌 Yellow Cards */}
-                <div className="border-r border-b border-gray-300 text-[9px] font-bold text-zinc-500 flex items-center pl-1">黃牌 Yellow Cards</div>
                 <div className="border-r border-b border-gray-300"></div>
+                <div className="border-r border-b border-gray-300 text-[9px] font-bold text-zinc-500 flex items-center pl-1">黃牌 Yellow Cards</div>
                 <div className="border-b border-gray-300"></div>
                 {/* Row 5: 紅牌 Red Cards */}
                 <div className="border-r border-b border-gray-300"></div>
