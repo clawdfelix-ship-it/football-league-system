@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { PrintButton } from '../[teamId]/PrintButton';
 
 type DemoPlayer = {
@@ -127,7 +127,23 @@ export default function DemoMatchSheet() {
         <div className="grid grid-cols-2 gap-4 mt-6">
           <div className="border border-black p-2 flex flex-col">
             <h3 className="text-center font-bold text-xs border-b border-black pb-1 mb-2">REMARKS</h3>
-            <div className="flex-grow border border-gray-300 p-2 text-[10px] italic h-40">REMARKS:</div>
+            {/* 3 column × 5 row table: Row1=headers, Rows2-5=fillable */}
+            <div className="flex-grow border border-gray-300 h-40 overflow-hidden">
+              <div className="grid grid-cols-3 h-full">
+                {/* Header row */}
+                <div className="border-r border-b border-black bg-slate-100 p-1 text-center text-[10px] font-bold">主隊 Home</div>
+                <div className="border-r border-b border-black bg-slate-100 p-1 text-center text-[10px] font-bold">賽果 Results</div>
+                <div className="border-b border-black bg-slate-100 p-1 text-center text-[10px] font-bold">客隊 Away</div>
+                {/* Data rows 2-5 */}
+                {[...Array(4)].map((_, i) => (
+                  <React.Fragment key={i}>
+                    <div className="border-r border-b border-gray-300 h-[calc(100%/4)] min-h-0"></div>
+                    <div className="border-r border-b border-gray-300 h-[calc(100%/4)] min-h-0"></div>
+                    <div className="border-b border-gray-300 h-[calc(100%/4)] min-h-0"></div>
+                  </React.Fragment>
+                ))}
+              </div>
+            </div>
             <div className="mt-3 pt-3 border-t border-black text-[10px]">
               <div className="flex justify-between pt-2">
                 <span className="border-t border-black w-24 text-center py-1">領隊簽署<br/>(Manager Sign)</span>
