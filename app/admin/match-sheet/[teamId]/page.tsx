@@ -104,8 +104,8 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
                 <div className="border-r border-b border-gray-300"></div>
                 <div className="border-b border-gray-300"></div>
                 {/* Row 5: 紅牌 Red Cards */}
+                <div className="border-r border-b border-gray-300"></div>
                 <div className="border-r border-gray-300 text-[9px] font-bold text-zinc-500 flex items-center pl-1">紅牌 Red Cards</div>
-                <div className="border-r border-gray-300"></div>
                 <div></div>
               </div>
             </div>
