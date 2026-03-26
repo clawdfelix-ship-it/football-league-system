@@ -115,45 +115,44 @@ export function TeamCard({ team, players }: TeamCardProps) {
           {/* 1. 基本資料 */}
           <div className="mt-4">
             <div className="flex items-center gap-1.5 mb-2">
-              <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">📋 基本資料</span>
+              <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">📋 領隊</span>
             </div>
-            <div className="bg-zinc-50 dark:bg-zinc-900 rounded-xl p-3 space-y-1">
-              <div className="flex items-center gap-2 text-sm">
-                <span className="text-zinc-400 w-10 flex-shrink-0 text-xs">領隊</span>
-                <span className="font-medium text-zinc-800 dark:text-zinc-100">{team.manager?.name ?? '—'}</span>
-              </div>
+            <div className="bg-zinc-50 dark:bg-zinc-900 rounded-xl p-3 space-y-2">
+              {team.captains.map((captain, index) => (
+                <div key={index} className="flex items-center gap-2 text-sm">
+                  <span className="text-zinc-400 w-10 flex-shrink-0 text-xs">{index + 1}.</span>
+                  <span className="font-medium text-zinc-800 dark:text-zinc-100">{captain.name}</span>
+                  <span className="text-zinc-400 text-xs">({captain.email ?? '—'})</span>
+                </div>
+              ))}
             </div>
           </div>
 
           {/* 2. 領隊聯絡 */}
-          {team.manager && (
+          {team.captains.length > 0 && (
             <div>
               <div className="flex items-center gap-1.5 mb-2">
                 <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">👔 領隊</span>
               </div>
               <div className="bg-zinc-50 dark:bg-zinc-900 rounded-xl p-3 space-y-2">
-                {team.manager.phone && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-zinc-400 flex-shrink-0">📞</span>
-                    <a href={`tel:${team.manager.phone}`} onClick={e => e.stopPropagation()} className="text-xs text-blue-600 hover:underline truncate">{team.manager.phone}</a>
-                    <CopyButton value={team.manager.phone} label="領隊電話" />
+                {team.captains.map((captain, index) => (
+                  <div key={index}>
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="text-zinc-400 flex-shrink-0">{index + 1}.</span>
+                      <span className="font-medium text-zinc-800 dark:text-zinc-100">{captain.name}</span>
+                    </div>
+                    {captain.email && (
+                      <div className="flex items-center gap-2 ml-5">
+                        <span className="text-zinc-400 flex-shrink-0">📧</span>
+                        <a href={`mailto:${captain.email}`} onClick={e => e.stopPropagation()} className="text-xs text-blue-600 hover:underline truncate">{captain.email}</a>
+                        <CopyButton value={captain.email} label="領隊電郵" />
+                      </div>
+                    )}
                   </div>
-                )}
-                {team.manager.email && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-zinc-400 flex-shrink-0">📧</span>
-                    <a href={`mailto:${team.manager.email}`} onClick={e => e.stopPropagation()} className="text-xs text-blue-600 hover:underline truncate">{team.manager.email}</a>
-                    <CopyButton value={team.manager.email} label="領隊電郵" />
-                  </div>
-                )}
+                ))}
                 <div className="flex items-center gap-2 pt-1 border-t border-zinc-200 dark:border-zinc-700">
-                  {team.manager.phone && (
-                    <a href={`tel:${team.manager.phone}`} onClick={e => e.stopPropagation()} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-100 hover:bg-green-200 dark:bg-green-900/30 dark:hover:bg-green-900/50 text-green-700 dark:text-green-300 text-xs font-medium transition-colors">
-                      📞 致電領隊
-                    </a>
-                  )}
-                  {team.manager.email && (
-                    <a href={`mailto:${team.manager.email}`} onClick={e => e.stopPropagation()} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-xs font-medium transition-colors">
+                  {team.captains[0]?.email && (
+                    <a href={`mailto:${team.captains[0].email}`} onClick={e => e.stopPropagation()} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-xs font-medium transition-colors">
                       📧 發郵件領隊
                     </a>
                   )}
