@@ -67,7 +67,7 @@ function PlayerRow({ player }: { player: Player }) {
       </div>
       <div className="flex items-center gap-1 flex-shrink-0">
         {hasPhone ? (
-          <a href={`tel:${player.phoneNumber}`} onClick={e => e.stopPropagation()} className="text-xs" title={`📞 ${player.phoneNumber}`}>📞</a>
+          <a href={`tel:${player.phoneNumber}`} onClick={e => e.stopPropagation()} className="text-xs" title={player.phoneNumber}>📞</a>
         ) : null}
         {hasEmail ? (
           <a href={`mailto:${player.email}`} onClick={e => e.stopPropagation()} className="text-xs" title={`📧 ${player.email}`}>📧</a>
@@ -98,7 +98,7 @@ export function TeamCard({ team, players }: TeamCardProps) {
               <span className="text-xs text-zinc-400">({team.teamZh})</span>
             </div>
             <div className="text-xs text-zinc-400 mt-0.5">
-              <span>👥 {teamPlayers.length} 人</span>
+              <span>{teamPlayers.length} 人</span>
             </div>
           </div>
         </div>
@@ -115,7 +115,7 @@ export function TeamCard({ team, players }: TeamCardProps) {
           {/* 1. 基本資料 */}
           <div className="mt-4">
             <div className="flex items-center gap-1.5 mb-2">
-              <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">📋 領隊</span>
+              <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">領隊</span>
             </div>
             <div className="bg-zinc-50 dark:bg-zinc-900 rounded-xl p-3 space-y-2">
               {team.captains.map((captain, index) => (
@@ -132,7 +132,7 @@ export function TeamCard({ team, players }: TeamCardProps) {
           {team.captains.length > 0 && (
             <div>
               <div className="flex items-center gap-1.5 mb-2">
-                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">👔 領隊</span>
+                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">教練</span>
               </div>
               <div className="bg-zinc-50 dark:bg-zinc-900 rounded-xl p-3 space-y-2">
                 {team.captains.map((captain, index) => (
@@ -168,7 +168,7 @@ export function TeamCard({ team, players }: TeamCardProps) {
               className="w-full flex items-center justify-between p-3 bg-zinc-50 dark:bg-zinc-900 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
             >
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">👥 球員列表</span>
+                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">球員列表</span>
                 <span className="text-[10px] bg-slate-900 text-white dark:bg-white dark:text-slate-900 px-1.5 py-0.5 rounded-full font-bold">{teamPlayers.length}</span>
               </div>
               <div className={`flex items-center gap-1 text-[10px] text-zinc-500 transition-transform duration-200 ${playersExpanded ? 'rotate-180' : ''}`}>
@@ -190,7 +190,7 @@ export function TeamCard({ team, players }: TeamCardProps) {
                       <span className="text-[9px] font-bold text-zinc-400 uppercase">球員</span>
                     </div>
                     <div className="flex items-center gap-1.5 text-[9px] font-bold text-zinc-400 uppercase flex-shrink-0">
-                      <span className="w-3.5 text-center">📞</span>
+                      <span className="w-3.5 text-center">電</span>
                       <span className="w-3.5 text-center">電</span>
                       <span className="w-3.5 text-center">郵</span>
                     </div>
