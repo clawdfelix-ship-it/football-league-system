@@ -98,8 +98,7 @@ export function TeamCard({ team, players }: TeamCardProps) {
               <span className="text-xs text-zinc-400">({team.teamZh})</span>
             </div>
             <div className="text-xs text-zinc-400 mt-0.5">
-              {team.venue && <span>📍 {team.venue}</span>}
-              <span className="ml-2">👥 {teamPlayers.length} 人</span>
+              <span>👥 {teamPlayers.length} 人</span>
             </div>
           </div>
         </div>
@@ -120,58 +119,13 @@ export function TeamCard({ team, players }: TeamCardProps) {
             </div>
             <div className="bg-zinc-50 dark:bg-zinc-900 rounded-xl p-3 space-y-1">
               <div className="flex items-center gap-2 text-sm">
-                <span className="text-zinc-400 w-10 flex-shrink-0 text-xs">教練</span>
-                <span className="font-medium text-zinc-800 dark:text-zinc-100">{team.coach?.name ?? '—'}</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
                 <span className="text-zinc-400 w-10 flex-shrink-0 text-xs">領隊</span>
                 <span className="font-medium text-zinc-800 dark:text-zinc-100">{team.manager?.name ?? '—'}</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <span className="text-zinc-400 w-10 flex-shrink-0 text-xs">場地</span>
-                <span className="font-medium text-zinc-800 dark:text-zinc-100">{team.venue ?? '—'}</span>
               </div>
             </div>
           </div>
 
-          {/* 2. 教練聯絡 */}
-          {team.coach && (
-            <div>
-              <div className="flex items-center gap-1.5 mb-2">
-                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">👨‍🏫 教練</span>
-              </div>
-              <div className="bg-zinc-50 dark:bg-zinc-900 rounded-xl p-3 space-y-2">
-                {team.coach.phone && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-zinc-400 flex-shrink-0">📞</span>
-                    <a href={`tel:${team.coach.phone}`} onClick={e => e.stopPropagation()} className="text-xs text-blue-600 hover:underline truncate">{team.coach.phone}</a>
-                    <CopyButton value={team.coach.phone} label="教練電話" />
-                  </div>
-                )}
-                {team.coach.email && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-zinc-400 flex-shrink-0">📧</span>
-                    <a href={`mailto:${team.coach.email}`} onClick={e => e.stopPropagation()} className="text-xs text-blue-600 hover:underline truncate">{team.coach.email}</a>
-                    <CopyButton value={team.coach.email} label="教練電郵" />
-                  </div>
-                )}
-                <div className="flex items-center gap-2 pt-1 border-t border-zinc-200 dark:border-zinc-700">
-                  {team.coach.phone && (
-                    <a href={`tel:${team.coach.phone}`} onClick={e => e.stopPropagation()} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-100 hover:bg-green-200 dark:bg-green-900/30 dark:hover:bg-green-900/50 text-green-700 dark:text-green-300 text-xs font-medium transition-colors">
-                      📞 致電教練
-                    </a>
-                  )}
-                  {team.coach.email && (
-                    <a href={`mailto:${team.coach.email}`} onClick={e => e.stopPropagation()} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-xs font-medium transition-colors">
-                      📧 發郵件教練
-                    </a>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* 3. 領隊聯絡 */}
+          {/* 2. 領隊聯絡 */}
           {team.manager && (
             <div>
               <div className="flex items-center gap-1.5 mb-2">
@@ -208,7 +162,7 @@ export function TeamCard({ team, players }: TeamCardProps) {
             </div>
           )}
 
-          {/* 4. 球員列表 */}
+          {/* 3. 球員列表 */}
           <div>
             <button
               onClick={(e) => { e.stopPropagation(); setPlayersExpanded(!playersExpanded); }}
