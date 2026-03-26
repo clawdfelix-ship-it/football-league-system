@@ -116,17 +116,51 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
             </div>
           </div>
 
-          {/* 事件區 */}
+          {/* 簽名區 */}
           <div className="border border-black p-2 flex flex-col">
-            <h3 className="text-center font-bold text-xs border-b border-black pb-1 mb-2">賽事統計 (MATCH EVENTS)</h3>
-            <div className="grid grid-cols-2 gap-2 text-[10px] flex-grow">
-               <div className="border border-gray-300 p-2 italic h-40">入球球員 (SCORERS):</div>
-               <div className="border border-gray-300 p-2 italic h-40">紅黃牌 (CARDS):</div>
-            </div>
-            <div className="mt-3 pt-2 border-t border-black text-[10px] space-y-3">
-              <div className="flex justify-between font-bold">
-                <span>主隊總分 (Home Score): ______</span>
-                <span>客隊總分 (Away Score): ______</span>
+            <h3 className="text-center font-bold text-xs border-b border-black pb-1 mb-2">簽名區 (SIGNATURES)</h3>
+            <div className="flex flex-col gap-4 text-[10px] flex-grow pt-2">
+              {/* 主隊領隊 */}
+              <div className="border border-gray-300 p-2">
+                <div className="font-bold text-center mb-2">主隊領隊 / Home Team Manager</div>
+                <div className="flex items-end justify-between mt-4">
+                  <div className="flex flex-col items-center">
+                    <div className="w-32 border-b border-black text-center py-1"></div>
+                    <div className="text-[9px] text-gray-500 mt-1">簽名 (Signature)</div>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <div className="w-24 border-b border-black text-center py-1"></div>
+                    <div className="text-[9px] text-gray-500 mt-1">日期 (Date)</div>
+                  </div>
+                </div>
+              </div>
+              {/* 客隊領隊 */}
+              <div className="border border-gray-300 p-2">
+                <div className="font-bold text-center mb-2">客隊領隊 / Away Team Manager</div>
+                <div className="flex items-end justify-between mt-4">
+                  <div className="flex flex-col items-center">
+                    <div className="w-32 border-b border-black text-center py-1"></div>
+                    <div className="text-[9px] text-gray-500 mt-1">簽名 (Signature)</div>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <div className="w-24 border-b border-black text-center py-1"></div>
+                    <div className="text-[9px] text-gray-500 mt-1">日期 (Date)</div>
+                  </div>
+                </div>
+              </div>
+              {/* 球證 */}
+              <div className="border border-gray-300 p-2">
+                <div className="font-bold text-center mb-2">球證 / Referee</div>
+                <div className="flex items-end justify-between mt-4">
+                  <div className="flex flex-col items-center">
+                    <div className="w-32 border-b border-black text-center py-1"></div>
+                    <div className="text-[9px] text-gray-500 mt-1">簽名 (Signature)</div>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <div className="w-24 border-b border-black text-center py-1"></div>
+                    <div className="text-[9px] text-gray-500 mt-1">日期 (Date)</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
