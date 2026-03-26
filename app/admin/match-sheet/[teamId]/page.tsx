@@ -28,7 +28,7 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
 
       {/* ══════════════════════════════════════════════
           A4 container — 210mm × 297mm
-          5 columns for player grid (40mm each)
+          5 columns for player grid (40mm each = 200mm wide)
           ══════════════════════════════════════════════ */}
       <div
         className="mx-auto bg-white shadow-2xl"
@@ -39,7 +39,7 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
           boxSizing: 'border-box',
           display: 'flex',
           flexDirection: 'column',
-          gap: '2mm',
+          gap: '1.5mm',
           fontFamily: 'Arial, Helvetica, sans-serif',
           overflow: 'hidden',
           breakInside: 'avoid',
@@ -50,34 +50,34 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
           style={{
             textAlign: 'center',
             border: '2px solid black',
-            padding: '1.5mm 3mm',
+            padding: '1mm 3mm',
             display: 'flex',
             flexDirection: 'column',
-            gap: '0.3mm',
+            gap: '0.15mm',
             flexShrink: 0,
           }}
         >
-          <div style={{ fontSize: '12pt', fontWeight: 900, letterSpacing: '0.1em', fontStyle: 'italic', lineHeight: 1.1, color: 'black' }}>
+          <div style={{ fontSize: '11pt', fontWeight: 900, letterSpacing: '0.1em', fontStyle: 'italic', lineHeight: 1.1, color: 'black' }}>
             Hong Kong Bank League 2026
           </div>
-          <div style={{ fontSize: '6pt', fontWeight: 700, letterSpacing: '0.05em', color: '#555', lineHeight: 1.2 }}>
+          <div style={{ fontSize: '5.5pt', fontWeight: 700, letterSpacing: '0.05em', color: '#555', lineHeight: 1.2 }}>
             Partnered with ZENEX SPORTS | 香港銀行足球聯賽2026
           </div>
           <div style={{
             display: 'inline-block',
             borderTop: '1px solid black',
             borderBottom: '1px solid black',
-            fontSize: '9pt',
+            fontSize: '8pt',
             fontWeight: 900,
             letterSpacing: '0.16em',
-            padding: '0.2mm 5mm',
-            margin: '0.4mm auto 0.8mm',
-            lineHeight: 1.5,
+            padding: '0.15mm 5mm',
+            margin: '0.25mm auto 0.5mm',
+            lineHeight: 1.4,
             color: 'black',
           }}>
             SQUAD LIST
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1mm', fontSize: '7pt', fontWeight: 700, lineHeight: 1.3 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1mm', fontSize: '6.5pt', fontWeight: 700, lineHeight: 1.3 }}>
             <div style={{ textAlign: 'left' }}>
               隊名 (Team):{' '}
               <span style={{ textDecoration: 'underline dotted black', fontSize: '8pt' }}>{team.name}</span>
@@ -96,10 +96,10 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
           background: '#dcdcdc',
           border: '1px solid black',
           textAlign: 'center',
-          fontSize: '6pt',
+          fontSize: '5.5pt',
           fontWeight: 700,
           letterSpacing: '0.1em',
-          padding: '0.8mm 2mm',
+          padding: '0.5mm 2mm',
           flexShrink: 0,
           color: 'black',
         }}>
@@ -110,7 +110,7 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
         {/*
           A4 width: 210mm, padding: 5mm each side = 200mm usable
           5 cols × 40mm = 200mm exactly
-          Cell: 18mm photo + name + number ≈ 40mm tall per row
+          Cell: 24mm photo + name + number ≈ 35mm tall per row
         */}
         <div style={{
           display: 'grid',
@@ -127,25 +127,25 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
               style={{
                 borderRight: '1.5px solid black',
                 borderBottom: '1.5px solid black',
-                padding: '1.2mm 1mm 1mm',
+                padding: '0.8mm 1mm 0.6mm',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                gap: '0.6mm',
-                minHeight: '40mm',
+                gap: '0.4mm',
+                minHeight: '35mm',
                 position: 'relative',
               }}
             >
               {/* Checkbox corner */}
-              <div style={{ position: 'absolute', bottom: '0.5mm', left: '0.5mm', width: '3mm', height: '3mm', border: '1.5px solid black' }} />
+              <div style={{ position: 'absolute', bottom: '0.4mm', left: '0.4mm', width: '2.5mm', height: '2.5mm', border: '1.5px solid black' }} />
 
-              {/* Photo — much larger */}
-              <div style={{ width: '28mm', height: '28mm', border: '1px solid #999', background: '#f0f0f0', overflow: 'hidden', flexShrink: 0, position: 'relative' }}>
+              {/* Photo */}
+              <div style={{ width: '24mm', height: '24mm', border: '1px solid #999', background: '#f0f0f0', overflow: 'hidden', flexShrink: 0, position: 'relative' }}>
                 {p.photoUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={p.photoUrl} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 ) : (
-                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '7pt', color: '#bbb' }}>
+                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '6pt', color: '#bbb' }}>
                     NO PHOTO
                   </div>
                 )}
@@ -153,12 +153,12 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
               </div>
 
               {/* Name */}
-              <div style={{ fontSize: '7.5pt', fontWeight: 700, textAlign: 'center', lineHeight: 1.2, wordBreak: 'break-word', width: '100%', color: 'black' }}>
+              <div style={{ fontSize: '7pt', fontWeight: 700, textAlign: 'center', lineHeight: 1.15, wordBreak: 'break-word', width: '100%', color: 'black' }}>
                 {p.name}
               </div>
 
               {/* Jersey number */}
-              <div style={{ fontSize: '7pt', fontFamily: 'Courier New, monospace', lineHeight: 1, color: 'black' }}>
+              <div style={{ fontSize: '6.5pt', fontFamily: 'Courier New, monospace', lineHeight: 1, color: 'black' }}>
                 #{p.jerseyNumber}
               </div>
             </div>
@@ -171,17 +171,17 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
               style={{
                 borderRight: '1.5px solid black',
                 borderBottom: '1.5px solid black',
-                padding: '1.2mm 1mm 1mm',
+                padding: '0.8mm 1mm 0.6mm',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'flex-start',
-                minHeight: '40mm',
+                minHeight: '35mm',
                 position: 'relative',
               }}
             >
-              <div style={{ position: 'absolute', bottom: '0.5mm', left: '0.5mm', width: '3mm', height: '3mm', border: '1.5px solid black' }} />
-              <div style={{ width: '28mm', height: '28mm', border: '1.5px dashed #aaa', flexShrink: 0 }} />
+              <div style={{ position: 'absolute', bottom: '0.4mm', left: '0.4mm', width: '2.5mm', height: '2.5mm', border: '1.5px solid black' }} />
+              <div style={{ width: '24mm', height: '24mm', border: '1.5px dashed #aaa', flexShrink: 0 }} />
             </div>
           ))}
         </div>
@@ -194,7 +194,7 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
               REMARKS
             </div>
             {/* 3-col × 5-row table */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', flex: 1, border: '1px solid #999', minHeight: '38mm' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', flex: 1, border: '1px solid #999', minHeight: '28mm' }}>
               {/* Row 1: 主隊 + 賽果 + 客隊 */}
               {[
                 { label: '主隊 Home', span: 1 },
@@ -228,27 +228,27 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
           </div>
 
           {/* ── ④B SIGNATURES ──────────────────────── */}
-          <div style={{ border: '1px solid black', padding: '1mm', display: 'flex', flexDirection: 'column', gap: '1mm' }}>
+          <div style={{ border: '1px solid black', padding: '1mm', display: 'flex', flexDirection: 'column', gap: '0.5mm' }}>
             <div style={{ textAlign: 'center', fontSize: '6pt', fontWeight: 700, borderBottom: '1px solid black', paddingBottom: '0.5mm', color: 'black', letterSpacing: '0.08em' }}>
               簽名區 (SIGNATURES)
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1mm', flex: 1 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75mm', flex: 1 }}>
               {/* Each signature row: label + 2 signature lines */}
               {[
                 '主隊領隊 / Home Team Manager',
                 '客隊領隊 / Away Team Manager',
                 '球證 / Referee',
               ].map((label, i) => (
-                <div key={i} style={{ border: '1px solid #bbb', padding: '0.75mm', display: 'flex', flexDirection: 'column', gap: '0.5mm' }}>
+                <div key={i} style={{ border: '1px solid #bbb', padding: '0.5mm', display: 'flex', flexDirection: 'column', gap: '0.3mm' }}>
                   <div style={{ fontSize: '5.5pt', fontWeight: 700, textAlign: 'center', color: 'black' }}>{label}</div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: '0.4mm' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: '0.3mm' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                      <div style={{ width: '26mm', borderBottom: '1px solid black', height: '4.5mm', display: 'flex', alignItems: 'center', justifyContent: 'center' }} />
-                      <div style={{ fontSize: '4.5pt', color: '#777', marginTop: '0.25mm' }}>簽名 Signature</div>
+                      <div style={{ width: '26mm', borderBottom: '1px solid black', height: '4mm', display: 'flex', alignItems: 'center', justifyContent: 'center' }} />
+                      <div style={{ fontSize: '4.5pt', color: '#777', marginTop: '0.2mm' }}>簽名 Signature</div>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                      <div style={{ width: '18mm', borderBottom: '1px solid black', height: '4.5mm', display: 'flex', alignItems: 'center', justifyContent: 'center' }} />
-                      <div style={{ fontSize: '4.5pt', color: '#777', marginTop: '0.25mm' }}>日期 Date</div>
+                      <div style={{ width: '18mm', borderBottom: '1px solid black', height: '4mm', display: 'flex', alignItems: 'center', justifyContent: 'center' }} />
+                      <div style={{ fontSize: '4.5pt', color: '#777', marginTop: '0.2mm' }}>日期 Date</div>
                     </div>
                   </div>
                 </div>

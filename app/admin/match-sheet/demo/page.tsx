@@ -89,8 +89,8 @@ export default function DemoMatchSheet() {
           <h2 className="bg-slate-200 text-center font-bold border-y border-black py-1 text-xs mb-2 italic print:bg-gray-200 print:text-black">常規球員 (REGULAR PLAYERS)</h2>
           <div className="grid grid-cols-5 border-t border-l border-black">
             {players.map((p) => (
-              <div key={p.id} className="group relative border-r border-b border-black p-2 text-center h-[160px] grid grid-rows-[minmax(90px,110px)_auto_auto] justify-items-center gap-1">
-                <div className="absolute bottom-1 left-1 w-3 h-3 border border-black"></div>
+              <div key={p.id} className="group relative border-r border-b border-black p-2 text-center h-[140px] grid grid-rows-[minmax(80px,100px)_auto_auto] justify-items-center gap-0.5">
+                <div className="absolute bottom-0.5 left-0.5 w-3 h-3 border border-black"></div>
                 <div className="w-24 h-24 border border-gray-200 bg-gray-50 overflow-hidden relative print:bg-white print:border-gray-400">
                   {p.photoUrl ? (
                     <img src={p.photoUrl} alt={p.name} className="object-cover w-full h-full" />
@@ -117,8 +117,8 @@ export default function DemoMatchSheet() {
               </div>
             ))}
             {emptySlots.map((_, i) => (
-              <div key={`empty-${i}`} className="relative border-r border-b border-black h-[160px] p-2 flex items-start justify-center">
-                <div className="absolute bottom-1 left-1 w-3 h-3 border border-black"></div>
+              <div key={`empty-${i}`} className="relative border-r border-b border-black h-[140px] p-2 flex items-start justify-center">
+                <div className="absolute bottom-0.5 left-0.5 w-3 h-3 border border-black"></div>
                 <div className="w-24 h-24 border border-dashed border-gray-200 print:border-gray-300"></div>
               </div>
             ))}
