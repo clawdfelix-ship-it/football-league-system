@@ -81,6 +81,7 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
             <div style={{ textAlign: 'left' }}>
               隊名 (Team):{' '}
               <span style={{ textDecoration: 'underline dotted black', fontSize: '8pt', fontWeight: 800 }}>{team.name}</span>
+              <span style={{ fontSize: '5.5pt', fontWeight: 700, color: '#555', marginLeft: '1mm' }}>（主 Home / 客 Away）</span>
             </div>
             <div style={{ textAlign: 'center' }}>
               地點：__________
