@@ -32,7 +32,16 @@
     margin: 0 !important;
     padding: 0 !important;
     width: 210mm !important;
+    height: 297mm !important;
     overflow: hidden !important;
+  }
+
+  /* Scale content slightly to ensure it fits on one page */
+  .match-sheet > div:last-child {
+    transform: scale(0.97) !important;
+    transform-origin: top center !important;
+    width: 216mm !important;
+    height: 306mm !important;
   }
 
   /* Remove all shadows */
