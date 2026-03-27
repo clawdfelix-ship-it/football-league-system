@@ -36,12 +36,13 @@
     overflow: hidden !important;
   }
 
-  /* Scale content to fit printer margins (10% reduction) */
+  /* Scale content to fit printer margins (8% reduction) */
   .match-sheet > div:last-child {
-    transform: scale(0.90);
-    transform-origin: top center;
-    width: 233mm !important;
-    height: 330mm !important;
+    transform: scale(0.92);
+    transform-origin: top left;
+    width: 228mm !important;
+    height: 323mm !important;
+    margin-left: 0 !important;
   }
 
   /* Remove all shadows */
@@ -80,12 +81,6 @@
     width: 210mm !important;
     margin: 0 !important;
     padding: 0 !important;
-  }
-
-  .match-sheet > div:last-child {
-    width: 200mm !important;
-    margin: 0 auto !important;
-    page-break-inside: avoid !important;
   }
 }
 
