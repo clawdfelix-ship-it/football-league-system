@@ -18,6 +18,7 @@ import type { Player, Announcement } from '@/lib/schema';
 import { AnnouncementManager } from '@/components/AnnouncementManager';
 import { TEAM_CONTACTS } from '@/lib/team-contacts';
 import { TeamCard } from '@/components/TeamCard';
+import { KitColorManager } from '@/components/KitColorManager';
 
 // Type from Database (Drizzle returns Date object for timestamp)
 interface DbMatch {
@@ -181,6 +182,13 @@ export default async function AdminPage() {
                 </Link>
               </div>
             </div>
+
+            {/* Kit Color Settings */}
+            <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
+              <h2 className="text-lg font-semibold mb-4">Kit Colors</h2>
+              <KitColorManager teamName={TEAMS[teamId].name} />
+            </div>
+
             <ChangeManagerPasswordForm />
           </section>
         )}
