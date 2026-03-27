@@ -233,26 +233,26 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
           </div>
 
           {/* ── ④B SIGNATURES ──────────────────────── */}
-          <div style={{ border: '1px solid black', padding: '0.7mm', display: 'flex', flexDirection: 'column', gap: '0.4mm', height: '100%', boxSizing: 'border-box' }}>
+          <div style={{ border: '1px solid black', padding: '0.7mm', display: 'flex', flexDirection: 'column', gap: '0.5mm', height: '100%', boxSizing: 'border-box' }}>
             <div style={{ textAlign: 'center', fontSize: '6.5pt', fontWeight: 800, borderBottom: '1px solid black', paddingBottom: '0.3mm', color: 'black', letterSpacing: '0.08em' }}>
               簽名區 (SIGNATURES)
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4mm', flex: 1 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1mm', flex: 1 }}>
               {[
                 '主隊領隊 / Home Manager',
                 '客隊領隊 / Away Manager',
                 '球證 / Referee',
               ].map((label, i) => (
-                <div key={i} style={{ border: '1px solid #aaa', padding: '0.35mm', display: 'flex', flexDirection: 'column', gap: '0.1mm' }}>
-                  <div style={{ fontSize: '5.5pt', fontWeight: 700, textAlign: 'center', color: 'black' }}>{label}</div>
+                <div key={i} style={{ border: '1px solid #aaa', padding: '0.5mm', display: 'flex', flexDirection: 'column', gap: '0.2mm', flex: 1 }}>
+                  <div style={{ fontSize: '6pt', fontWeight: 700, textAlign: 'center', color: 'black' }}>{label}</div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                      <div style={{ width: '26mm', borderBottom: '1px solid black', height: '3mm' }} />
-                      <div style={{ fontSize: '4pt', color: '#666', marginTop: '0.05mm' }}>簽名</div>
+                      <div style={{ width: '28mm', borderBottom: '1px solid black', height: '4mm' }} />
+                      <div style={{ fontSize: '4.5pt', color: '#666', marginTop: '0.1mm' }}>簽名</div>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                      <div style={{ width: '14mm', borderBottom: '1px solid black', height: '3mm' }} />
-                      <div style={{ fontSize: '4pt', color: '#666', marginTop: '0.05mm' }}>日期</div>
+                      <div style={{ width: '16mm', borderBottom: '1px solid black', height: '4mm' }} />
+                      <div style={{ fontSize: '4.5pt', color: '#666', marginTop: '0.1mm' }}>日期</div>
                     </div>
                   </div>
                 </div>
