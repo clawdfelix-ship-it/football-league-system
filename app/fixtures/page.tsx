@@ -14,10 +14,12 @@ interface Match {
   id: number;
   homeTeam: string;
   awayTeam: string;
-  date: string;
-  venue: string;
+  date: string | null;
+  venue: string | null;
   round: string;
   status: string;
+  homeScore?: number | null;
+  awayScore?: number | null;
 }
 
 export default function FixturesPage() {
@@ -127,14 +129,14 @@ export default function FixturesPage() {
                     <div className="flex flex-col items-center px-6">
                       {match.status === 'finished' ? (
                         <div className="text-3xl font-black text-slate-900">
-                          {match.homeScore} - {match.awayScore}
+                          {match.homeScore ?? 0} - {match.awayScore ?? 0}
                         </div>
                       ) : (
                         <div className="text-2xl font-bold text-gray-400">VS</div>
                       )}
                       <div className="text-sm text-gray-500 mt-2 text-center">
-                        <div>{new Date(match.date).toLocaleDateString('zh-HK')}</div>
-                        <div>{match.venue}</div>
+                        <div>{match.date ? new Date(match.date).toLocaleDateString('zh-HK') : 'TBC'}</div>
+                        <div>{match.venue || 'TBC'}</div>
                       </div>
                     </div>
 
