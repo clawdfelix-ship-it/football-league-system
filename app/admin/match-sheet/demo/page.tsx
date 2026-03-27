@@ -39,7 +39,6 @@ function storageKey(id: number) {
 
 export default function DemoMatchSheet() {
   const [players, setPlayers] = useState<DemoPlayer[]>(DEMO_PLAYERS_BASE);
-  // 5 cols × 6 rows = 30 cells
   const totalGridSlots = 30;
   const emptySlots = useMemo(() => Array(Math.max(0, totalGridSlots - players.length)).fill(null), [players.length]);
 
@@ -59,153 +58,241 @@ export default function DemoMatchSheet() {
       reader.onload = () => resolve(String(reader.result || ''));
       reader.readAsDataURL(file);
     });
-
-    try {
-      window.localStorage.setItem(storageKey(playerId), dataUrl);
-    } catch {}
-
+    try { window.localStorage.setItem(storageKey(playerId), dataUrl); } catch {}
     setPlayers((prev) => prev.map((p) => (p.id === playerId ? { ...p, photoUrl: dataUrl } : p)));
   };
 
   return (
-    <div className="min-h-screen bg-white text-black p-4 print:p-0">
-      <div className="flex justify-center gap-4 mb-6 print:hidden">
+    <div className="min-h-screen bg-slate-100 p-4 print:p-0 print:bg-white">
+      {/* Print button (hidden when printing) */}
+      <div className="flex justify-center mb-4 print:hidden">
         <PrintButton />
       </div>
 
-      <div className="w-[210mm] min-h-[297mm] mx-auto border-2 border-black p-5 flex flex-col bg-white">
-        <header className="text-center border-b-4 border-black pb-4 mb-4">
-          <h1 className="text-2xl font-black tracking-widest italic">Hong Kong Bank League 2026</h1>
-          <h2 className="text-sm font-bold tracking-wider text-gray-600 mb-1">Partnered with ZENEX SPORTS | 香港銀行足球聯賽2026</h2>
-          <h3 className="text-lg font-bold tracking-wider text-black border-t-2 border-black pt-1 mt-1 inline-block px-4">SQUAD LIST</h3>
-          <div className="grid grid-cols-3 mt-4 text-left font-bold text-sm">
-            <div>隊名 (Team): <span className="underline decoration-dotted text-lg">{DEMO_TEAM.name}</span></div>
-            <div>地點 (Venue): ________________</div>
-            <div>日期 (Date): ________________</div>
+      {/* A4 container — matches teamId page layout */}
+      <div
+        className="mx-auto bg-white shadow-2xl"
+        style={{
+          width: '210mm',
+          minHeight: '297mm',
+          padding: '4mm',
+          boxSizing: 'border-box',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1mm',
+          fontFamily: 'Arial, Helvetica, sans-serif',
+          overflow: 'hidden',
+          breakInside: 'avoid',
+        }}
+      >
+        {/* ── ① HEADER ─────────────────────────────── */}
+        <header
+          style={{
+            textAlign: 'center',
+            border: '2px solid black',
+            padding: '1mm 3mm',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.15mm',
+            flexShrink: 0,
+          }}
+        >
+          <div style={{ fontSize: '11pt', fontWeight: 900, letterSpacing: '0.1em', fontStyle: 'italic', lineHeight: 1.1, color: 'black' }}>
+            Hong Kong Bank League 2026
+          </div>
+          <div style={{ fontSize: '5.5pt', fontWeight: 700, letterSpacing: '0.05em', color: '#555', lineHeight: 1.2 }}>
+            Partnered with ZENEX SPORTS | 香港銀行足球聯賽2026
+          </div>
+          <div style={{
+            display: 'inline-block',
+            borderTop: '1px solid black',
+            borderBottom: '1px solid black',
+            fontSize: '8pt',
+            fontWeight: 900,
+            letterSpacing: '0.16em',
+            padding: '0.15mm 5mm',
+            margin: '0.25mm auto 0.5mm',
+            lineHeight: 1.4,
+            color: 'black',
+          }}>
+            SQUAD LIST
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1mm', fontSize: '6.5pt', fontWeight: 700, lineHeight: 1.3 }}>
+            <div style={{ textAlign: 'left' }}>
+              隊名 (Team):{' '}
+              <span style={{ textDecoration: 'underline dotted black', fontSize: '8pt' }}>{DEMO_TEAM.name}</span>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              地點 (Venue): ___________________
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              日期 (Date): ___________________
+            </div>
           </div>
         </header>
 
-        <section className="flex-grow">
-          <h2 className="bg-slate-200 text-center font-bold border-y border-black py-1 text-xs mb-2 italic print:bg-gray-200 print:text-black">常規球員 (REGULAR PLAYERS)</h2>
-          <div className="grid grid-cols-5 border-t border-l border-black">
-            {players.map((p) => (
-              <div key={p.id} className="group relative border-r border-b border-black p-2 text-center h-[140px] grid grid-rows-[minmax(80px,100px)_auto_auto] justify-items-center gap-0.5">
-                <div className="absolute bottom-0.5 left-0.5 w-3 h-3 border border-black"></div>
-                <div className="w-24 h-24 border border-gray-200 bg-gray-50 overflow-hidden relative print:bg-white print:border-gray-400">
-                  {p.photoUrl ? (
-                    <img src={p.photoUrl} alt={p.name} className="object-cover w-full h-full" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-[9px] text-gray-300">NO PHOTO</div>
-                  )}
-                  <label className="absolute top-0 right-0 bg-black/60 text-white text-[9px] px-1 py-0.5 cursor-pointer print:hidden">
-                    Edit
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (!file) return;
-                        void setPhoto(p.id, file);
-                        e.currentTarget.value = '';
-                      }}
-                    />
-                  </label>
-                </div>
-                <div className="text-[10px] font-bold leading-tight whitespace-normal break-words w-full px-0.5">{p.name}</div>
-                <div className="text-[10px] font-mono leading-none">#{p.jerseyNumber ?? '—'}</div>
-              </div>
-            ))}
-            {emptySlots.map((_, i) => (
-              <div key={`empty-${i}`} className="relative border-r border-b border-black h-[140px] p-2 flex items-start justify-center">
-                <div className="absolute bottom-0.5 left-0.5 w-3 h-3 border border-black"></div>
-                <div className="w-24 h-24 border border-dashed border-gray-200 print:border-gray-300"></div>
-              </div>
-            ))}
-          </div>
-        </section>
+        {/* ── ② SECTION LABEL ─────────────────────── */}
+        <div style={{
+          background: '#dcdcdc',
+          border: '1px solid black',
+          textAlign: 'center',
+          fontSize: '5.5pt',
+          fontWeight: 700,
+          letterSpacing: '0.1em',
+          padding: '0.5mm 2mm',
+          flexShrink: 0,
+          color: 'black',
+        }}>
+          常規球員 (REGULAR PLAYERS)
+        </div>
 
-        <div className="grid grid-cols-2 gap-4 mt-6">
-          {/* REMARKS — Column A（左） */}
-          <div className="border border-black p-2 flex flex-col">
-            <h3 className="text-center font-bold text-xs border-b border-black pb-1 mb-2">REMARKS</h3>
-            {/* 3 column × 5 row table: Row1=headers, Rows2-5=fillable */}
-            <div className="flex-grow border border-gray-300 h-40 overflow-hidden">
-              <div className="grid grid-cols-3 h-full auto-rows-fr">
-                {/* Row 1: headers */}
-                <div className="border-r border-b border-black bg-slate-100 p-1 text-center text-[10px] font-bold">主隊 Home</div>
-                <div className="border-r border-b border-black bg-slate-100 p-1 text-center text-[10px] font-bold">賽果 Results</div>
-                <div className="border-b border-black bg-slate-100 p-1 text-center text-[10px] font-bold">客隊 Away</div>
-                {/* Row 2: 比數 Score */}
-                <div className="border-r border-b border-gray-300"></div>
-                <div className="border-r border-b border-gray-300 text-[9px] font-bold text-zinc-500 flex items-center justify-center">比數 Score</div>
-                <div className="border-b border-gray-300"></div>
-                {/* Row 3: 入球球員 Scorers */}
-                <div className="border-r border-b border-gray-300"></div>
-                <div className="border-r border-b border-gray-300 text-[9px] font-bold text-zinc-500 flex items-center justify-center">入球球員 Scorers</div>
-                <div className="border-b border-gray-300"></div>
-                {/* Row 4: 黃牌 Yellow Cards */}
-                <div className="border-r border-b border-gray-300"></div>
-                <div className="border-r border-b border-gray-300 text-[9px] font-bold text-zinc-500 flex items-center justify-center">黃牌 Yellow Cards</div>
-                <div className="border-b border-gray-300"></div>
-                {/* Row 5: 紅牌 Red Cards */}
-                <div className="border-r border-b border-gray-300"></div>
-                <div className="border-r border-gray-300 text-[9px] font-bold text-zinc-500 flex items-center justify-center">紅牌 Red Cards</div>
-                <div></div>
+        {/* ── ③ PLAYER GRID ────────────────────────── */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(5, 40mm)',
+          borderTop: '1.5px solid black',
+          borderLeft: '1.5px solid black',
+          flexShrink: 0,
+        }}>
+          {players.map((p) => (
+            <div
+              key={p.id}
+              style={{
+                borderRight: '1.5px solid black',
+                borderBottom: '1.5px solid black',
+                padding: '0.5mm 0.8mm 0.4mm',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '0.2mm',
+                minHeight: '28mm',
+                height: '28mm',
+                position: 'relative',
+              }}
+            >
+              <div style={{ position: 'absolute', bottom: '0.2mm', left: '0.2mm', width: '2mm', height: '2mm', border: '1px solid black' }} />
+              <div style={{ width: '20mm', height: '20mm', border: '1px solid #999', background: '#f0f0f0', overflow: 'hidden', flexShrink: 0, position: 'relative' }}>
+                {p.photoUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={p.photoUrl} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : (
+                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '5pt', color: '#bbb' }}>
+                    NO PHOTO
+                  </div>
+                )}
+                {/* Upload button (hidden in print) */}
+                <label style={{ position: 'absolute', top: 0, right: 0, background: 'rgba(0,0,0,0.6)', color: 'white', fontSize: '5pt', padding: '0.5mm 1mm', cursor: 'pointer', display: 'none' }} className="print:hidden group-hover:display-block">
+                  Edit
+                  <input
+                    type="file"
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      void setPhoto(p.id, file);
+                      e.currentTarget.value = '';
+                    }}
+                  />
+                </label>
               </div>
+              <div style={{ fontSize: '6pt', fontWeight: 700, textAlign: 'center', lineHeight: 1.1, wordBreak: 'break-word', width: '100%', color: 'black' }}>
+                {p.name}
+              </div>
+              <div style={{ fontSize: '5.5pt', fontFamily: 'Courier New, monospace', lineHeight: 1, color: 'black' }}>
+                #{p.jerseyNumber ?? '—'}
+              </div>
+            </div>
+          ))}
+          {emptySlots.map((_, i) => (
+            <div
+              key={`empty-${i}`}
+              style={{
+                borderRight: '1.5px solid black',
+                borderBottom: '1.5px solid black',
+                padding: '0.5mm 0.8mm 0.4mm',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                minHeight: '28mm',
+                height: '28mm',
+                position: 'relative',
+              }}
+            >
+              <div style={{ position: 'absolute', bottom: '0.2mm', left: '0.2mm', width: '2mm', height: '2mm', border: '1px solid black' }} />
+              <div style={{ width: '20mm', height: '20mm', border: '1px dashed #aaa', flexShrink: 0 }} />
+            </div>
+          ))}
+        </div>
+
+        {/* ── ④ REMARKS + SIGNATURES ─────────────── */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1mm', flexShrink: 0 }}>
+          {/* ④A REMARKS */}
+          <div style={{ border: '1px solid black', padding: '1mm', display: 'flex', flexDirection: 'column', gap: '0.5mm' }}>
+            <div style={{ textAlign: 'center', fontSize: '6pt', fontWeight: 700, borderBottom: '1px solid black', paddingBottom: '0.5mm', color: 'black', letterSpacing: '0.08em' }}>
+              REMARKS
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', flex: 1, border: '1px solid #999', minHeight: '20mm' }}>
+              {[
+                { label: '主隊 Home', span: 1 },
+                { label: '賽果 Results', span: 1 },
+                { label: '客隊 Away', span: 1 },
+              ].map(({ label }, i) => (
+                <div key={i} style={{
+                  borderRight: i < 2 ? '1px solid black' : 'none',
+                  borderBottom: '1px solid black',
+                  background: '#dcdcdc',
+                  padding: '0.5mm 1mm',
+                  fontSize: '5.5pt',
+                  fontWeight: 700,
+                  textAlign: 'center',
+                  color: 'black',
+                }}>
+                  {label}
+                </div>
+              ))}
+              {['比數 Score', '入球球員 Scorers', '黃牌 Yellow Cards', '紅牌 Red Cards'].map((label, ri) => (
+                <React.Fragment key={ri}>
+                  <div style={{ borderRight: '1px solid #999', borderBottom: '1px solid #999' }} />
+                  <div style={{ borderRight: '1px solid #999', borderBottom: '1px solid #999', fontSize: '5pt', fontWeight: 700, color: '#666', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {label}
+                  </div>
+                  <div style={{ borderBottom: '1px solid #999' }} />
+                </React.Fragment>
+              ))}
             </div>
           </div>
 
-          {/* 簽名區 — Column B（右） */}
-          <div className="border border-black p-2 flex flex-col">
-            <h3 className="text-center font-bold text-xs border-b border-black pb-1 mb-2">簽名區 (SIGNATURES)</h3>
-            <div className="flex flex-col gap-4 text-[10px] flex-grow pt-2">
-              <div className="border border-gray-300 p-2">
-                <div className="font-bold text-center mb-2">主隊領隊 / Home Team Manager</div>
-                <div className="flex items-end justify-between mt-4">
-                  <div className="flex flex-col items-center">
-                    <div className="w-32 border-b border-black text-center py-1"></div>
-                    <div className="text-[9px] text-gray-500 mt-1">簽名 (Signature)</div>
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <div className="w-24 border-b border-black text-center py-1"></div>
-                    <div className="text-[9px] text-gray-500 mt-1">日期 (Date)</div>
-                  </div>
-                </div>
-              </div>
-              <div className="border border-gray-300 p-2">
-                <div className="font-bold text-center mb-2">客隊領隊 / Away Team Manager</div>
-                <div className="flex items-end justify-between mt-4">
-                  <div className="flex flex-col items-center">
-                    <div className="w-32 border-b border-black text-center py-1"></div>
-                    <div className="text-[9px] text-gray-500 mt-1">簽名 (Signature)</div>
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <div className="w-24 border-b border-black text-center py-1"></div>
-                    <div className="text-[9px] text-gray-500 mt-1">日期 (Date)</div>
+          {/* ④B SIGNATURES */}
+          <div style={{ border: '1px solid black', padding: '1mm', display: 'flex', flexDirection: 'column', gap: '0.5mm' }}>
+            <div style={{ textAlign: 'center', fontSize: '6pt', fontWeight: 700, borderBottom: '1px solid black', paddingBottom: '0.5mm', color: 'black', letterSpacing: '0.08em' }}>
+              簽名區 (SIGNATURES)
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75mm', flex: 1 }}>
+              {[
+                '主隊領隊 / Home Team Manager',
+                '客隊領隊 / Away Team Manager',
+                '球證 / Referee',
+              ].map((label, i) => (
+                <div key={i} style={{ border: '1px solid #bbb', padding: '0.5mm', display: 'flex', flexDirection: 'column', gap: '0.3mm' }}>
+                  <div style={{ fontSize: '5.5pt', fontWeight: 700, textAlign: 'center', color: 'black' }}>{label}</div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: '0.3mm' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                      <div style={{ width: '26mm', borderBottom: '1px solid black', height: '4mm', display: 'flex', alignItems: 'center', justifyContent: 'center' }} />
+                      <div style={{ fontSize: '4.5pt', color: '#777', marginTop: '0.2mm' }}>簽名 Signature</div>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                      <div style={{ width: '18mm', borderBottom: '1px solid black', height: '4mm', display: 'flex', alignItems: 'center', justifyContent: 'center' }} />
+                      <div style={{ fontSize: '4.5pt', color: '#777', marginTop: '0.2mm' }}>日期 Date</div>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="border border-gray-300 p-2">
-                <div className="font-bold text-center mb-2">球證 / Referee</div>
-                <div className="flex items-end justify-between mt-4">
-                  <div className="flex flex-col items-center">
-                    <div className="w-32 border-b border-black text-center py-1"></div>
-                    <div className="text-[9px] text-gray-500 mt-1">簽名 (Signature)</div>
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <div className="w-24 border-b border-black text-center py-1"></div>
-                    <div className="text-[9px] text-gray-500 mt-1">日期 (Date)</div>
-                  </div>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
 
-        <div className="text-center text-xs mt-4 text-gray-400 uppercase">
-          Zenex Cup official match sheet • Do not duplicate
-        </div>
       </div>
     </div>
   );

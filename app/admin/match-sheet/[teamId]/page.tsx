@@ -108,9 +108,11 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
 
         {/* ── ③ PLAYER GRID ─────────────────────────── */}
         {/*
-          A4 width: 210mm, padding: 5mm each side = 200mm usable
-          5 cols × 40mm = 200mm exactly
-          Cell: 24mm photo + name + number ≈ 35mm tall per row
+          A4 width: 210mm, padding: 4mm each side = 202mm usable
+          5 cols × 40mm = 200mm + 1.5mm gap = 201.5mm
+          Cell height: 28mm per row × 6 rows = 168mm total
+          Header ~14mm + Section label ~2.5mm = 16.5mm
+          Remarks ~38mm = 222.5mm total < 297mm ✓
         */}
         <div style={{
           display: 'grid',
@@ -127,25 +129,26 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
               style={{
                 borderRight: '1.5px solid black',
                 borderBottom: '1.5px solid black',
-                padding: '0.8mm 1mm 0.6mm',
+                padding: '0.5mm 0.8mm 0.4mm',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                gap: '0.4mm',
-                minHeight: '32mm',
+                gap: '0.2mm',
+                minHeight: '28mm',
+                height: '28mm',
                 position: 'relative',
               }}
             >
               {/* Checkbox corner */}
-              <div style={{ position: 'absolute', bottom: '0.3mm', left: '0.3mm', width: '2.5mm', height: '2.5mm', border: '1.5px solid black' }} />
+              <div style={{ position: 'absolute', bottom: '0.2mm', left: '0.2mm', width: '2mm', height: '2mm', border: '1px solid black' }} />
 
               {/* Photo */}
-              <div style={{ width: '22mm', height: '22mm', border: '1px solid #999', background: '#f0f0f0', overflow: 'hidden', flexShrink: 0, position: 'relative' }}>
+              <div style={{ width: '20mm', height: '20mm', border: '1px solid #999', background: '#f0f0f0', overflow: 'hidden', flexShrink: 0, position: 'relative' }}>
                 {p.photoUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={p.photoUrl} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 ) : (
-                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '6pt', color: '#bbb' }}>
+                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '5pt', color: '#bbb' }}>
                     NO PHOTO
                   </div>
                 )}
@@ -153,12 +156,12 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
               </div>
 
               {/* Name */}
-              <div style={{ fontSize: '7pt', fontWeight: 700, textAlign: 'center', lineHeight: 1.15, wordBreak: 'break-word', width: '100%', color: 'black' }}>
+              <div style={{ fontSize: '6pt', fontWeight: 700, textAlign: 'center', lineHeight: 1.1, wordBreak: 'break-word', width: '100%', color: 'black' }}>
                 {p.name}
               </div>
 
               {/* Jersey number */}
-              <div style={{ fontSize: '6.5pt', fontFamily: 'Courier New, monospace', lineHeight: 1, color: 'black' }}>
+              <div style={{ fontSize: '5.5pt', fontFamily: 'Courier New, monospace', lineHeight: 1, color: 'black' }}>
                 #{p.jerseyNumber}
               </div>
             </div>
@@ -171,30 +174,31 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
               style={{
                 borderRight: '1.5px solid black',
                 borderBottom: '1.5px solid black',
-                padding: '0.8mm 1mm 0.6mm',
+                padding: '0.5mm 0.8mm 0.4mm',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'flex-start',
-                minHeight: '32mm',
+                minHeight: '28mm',
+                height: '28mm',
                 position: 'relative',
               }}
             >
-              <div style={{ position: 'absolute', bottom: '0.3mm', left: '0.3mm', width: '2.5mm', height: '2.5mm', border: '1.5px solid black' }} />
-              <div style={{ width: '22mm', height: '22mm', border: '1.5px dashed #aaa', flexShrink: 0 }} />
+              <div style={{ position: 'absolute', bottom: '0.2mm', left: '0.2mm', width: '2mm', height: '2mm', border: '1px solid black' }} />
+              <div style={{ width: '20mm', height: '20mm', border: '1px dashed #aaa', flexShrink: 0 }} />
             </div>
           ))}
         </div>
 
         {/* ── ④ REMARKS + SIGNATURES ───────────────── */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5mm', flexShrink: 0 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1mm', flexShrink: 0 }}>
           {/* ── ④A REMARKS ─────────────────────────── */}
           <div style={{ border: '1px solid black', padding: '1mm', display: 'flex', flexDirection: 'column', gap: '0.5mm' }}>
             <div style={{ textAlign: 'center', fontSize: '6pt', fontWeight: 700, borderBottom: '1px solid black', paddingBottom: '0.5mm', color: 'black', letterSpacing: '0.08em' }}>
               REMARKS
             </div>
             {/* 3-col × 5-row table */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', flex: 1, border: '1px solid #999', minHeight: '25mm' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', flex: 1, border: '1px solid #999', minHeight: '20mm' }}>
               {/* Row 1: 主隊 + 賽果 + 客隊 */}
               {[
                 { label: '主隊 Home', span: 1 },
