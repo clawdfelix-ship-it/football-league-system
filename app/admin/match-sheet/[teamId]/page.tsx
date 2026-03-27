@@ -28,7 +28,7 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
 
       {/* ══════════════════════════════════════════════
           A4 container — 210mm × 297mm (FULL SIZE)
-          Will scale down slightly for print
+          Inner content: 200mm wide (fits within print margins)
           ══════════════════════════════════════════════ */}
       <div
         className="mx-auto bg-white shadow-2xl print:shadow-none"
@@ -43,6 +43,14 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
           fontFamily: 'Arial, Helvetica, sans-serif',
         }}
       >
+        {/* Inner container - 200mm wide for perfect print alignment */}
+        <div style={{
+          width: '200mm',
+          margin: '0 auto',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1mm',
+        }}>
         {/* ── ① HEADER (20mm) ───────────────────────── */}
         <header
           style={{
@@ -263,6 +271,7 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
           </div>
         </div>
 
+        </div>
       </div>
     </div>
   );
