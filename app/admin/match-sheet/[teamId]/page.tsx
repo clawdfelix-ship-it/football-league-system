@@ -27,82 +27,82 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
       </div>
 
       {/* ══════════════════════════════════════════════
-          A4 container — 210mm × 280mm (FIT PRINTER)
-          Leaves 17mm margin for printer hardware
+          A4 container — 210mm × 270mm (ULTRA SAFE)
+          Leaves 27mm margin for printer hardware
           ══════════════════════════════════════════════ */}
       <div
         className="mx-auto bg-white shadow-2xl print:shadow-none"
         style={{
           width: '210mm',
-          height: '280mm',
+          height: '270mm',
           padding: '5mm',
           boxSizing: 'border-box',
           display: 'flex',
           flexDirection: 'column',
-          gap: '0.8mm',
+          gap: '0.6mm',
           fontFamily: 'Arial, Helvetica, sans-serif',
         }}
       >
-        {/* ── ① HEADER (12mm) ───────────────────────── */}
+        {/* ── ① HEADER (11mm) ───────────────────────── */}
         <header
           style={{
             textAlign: 'center',
             border: '2px solid black',
-            padding: '0.5mm 3mm',
+            padding: '0.4mm 3mm',
             display: 'flex',
             flexDirection: 'column',
-            gap: '0.1mm',
+            gap: '0.08mm',
             flexShrink: 0,
-            height: '12mm',
+            height: '11mm',
             boxSizing: 'border-box',
           }}
         >
-          <div style={{ fontSize: '9pt', fontWeight: 900, letterSpacing: '0.08em', fontStyle: 'italic', lineHeight: 1.0, color: 'black' }}>
+          <div style={{ fontSize: '8.5pt', fontWeight: 900, letterSpacing: '0.07em', fontStyle: 'italic', lineHeight: 0.95, color: 'black' }}>
             HONG KONG BANK LEAGUE 2026
           </div>
-          <div style={{ fontSize: '4pt', fontWeight: 700, letterSpacing: '0.03em', color: '#555', lineHeight: 1.0 }}>
+          <div style={{ fontSize: '3.5pt', fontWeight: 700, letterSpacing: '0.02em', color: '#555', lineHeight: 0.95 }}>
             PARTNERED WITH ZENEX SPORTS | 香港銀行足球聯賽 2026
           </div>
           <div style={{
             display: 'inline-block',
             borderTop: '1px solid black',
             borderBottom: '1px solid black',
-            fontSize: '7pt',
+            fontSize: '6.5pt',
             fontWeight: 900,
-            letterSpacing: '0.14em',
-            padding: '0.1mm 3mm',
-            margin: '0.1mm auto 0.15mm',
-            lineHeight: 1.1,
+            letterSpacing: '0.12em',
+            padding: '0.08mm 2.5mm',
+            margin: '0.08mm auto 0.12mm',
+            lineHeight: 1.0,
             color: 'black',
           }}>
             SQUAD LIST
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.5mm', fontSize: '5pt', fontWeight: 700, lineHeight: 1.0 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.4mm', fontSize: '4.5pt', fontWeight: 700, lineHeight: 0.95 }}>
             <div style={{ textAlign: 'left' }}>
               隊名 (Team):{' '}
-              <span style={{ textDecoration: 'underline dotted black', fontSize: '6.5pt', fontWeight: 800 }}>{team.name}</span>
+              <span style={{ textDecoration: 'underline dotted black', fontSize: '6pt', fontWeight: 800 }}>{team.name}</span>
             </div>
             <div style={{ textAlign: 'center' }}>
-              地點：_______
+              地點：_____
             </div>
             <div style={{ textAlign: 'right' }}>
-              日期：_______
+              日期：_____
             </div>
           </div>
         </header>
 
-        {/* ── ② SECTION LABEL (2.5mm) ───────────────── */}
+        {/* ── ② SECTION LABEL (2.3mm) ───────────────── */}
         <div style={{
           background: '#dcdcdc',
           border: '1px solid black',
           textAlign: 'center',
-          fontSize: '4.5pt',
+          fontSize: '4pt',
           fontWeight: 800,
-          letterSpacing: '0.08em',
-          padding: '0.3mm 2mm',
+          letterSpacing: '0.07em',
+          padding: '0.25mm 2mm',
           flexShrink: 0,
           color: 'black',
-          height: '2.5mm',
+          height: '2.3mm',
           boxSizing: 'border-box',
           display: 'flex',
           alignItems: 'center',
@@ -111,7 +111,7 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
           常規球員 (REGULAR PLAYERS)
         </div>
 
-        {/* ── ③ PLAYER GRID (192mm = 32mm × 6 rows) ─── */}
+        {/* ── ③ PLAYER GRID (186mm = 31mm × 6 rows) ─── */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(5, 40mm)',
@@ -127,26 +127,26 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
               style={{
                 borderRight: '1.5px solid black',
                 borderBottom: '1.5px solid black',
-                padding: '0.3mm 0.6mm 0.2mm',
+                padding: '0.25mm 0.5mm 0.15mm',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                gap: '0.15mm',
-                height: '32mm',
+                gap: '0.12mm',
+                height: '31mm',
                 position: 'relative',
                 boxSizing: 'border-box',
               }}
             >
               {/* Checkbox corner */}
-              <div style={{ position: 'absolute', bottom: '0.15mm', left: '0.15mm', width: '1.8mm', height: '1.8mm', border: '1px solid black' }} />
+              <div style={{ position: 'absolute', bottom: '0.12mm', left: '0.12mm', width: '1.7mm', height: '1.7mm', border: '1px solid black' }} />
 
               {/* Photo */}
-              <div style={{ width: '20mm', height: '20mm', border: '1px solid #666', background: '#f5f5f5', overflow: 'hidden', flexShrink: 0, position: 'relative' }}>
+              <div style={{ width: '19mm', height: '19mm', border: '1px solid #666', background: '#f5f5f5', overflow: 'hidden', flexShrink: 0, position: 'relative' }}>
                 {p.photoUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={p.photoUrl} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 ) : (
-                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '4pt', color: '#999', fontWeight: 600 }}>
+                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3.5pt', color: '#999', fontWeight: 600 }}>
                     NO PHOTO
                   </div>
                 )}
@@ -154,12 +154,12 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
               </div>
 
               {/* Name */}
-              <div style={{ fontSize: '5.5pt', fontWeight: 800, textAlign: 'center', lineHeight: 1.0, wordBreak: 'break-word', width: '100%', color: 'black' }}>
+              <div style={{ fontSize: '5pt', fontWeight: 800, textAlign: 'center', lineHeight: 0.95, wordBreak: 'break-word', width: '100%', color: 'black' }}>
                 {p.name}
               </div>
 
               {/* Jersey number */}
-              <div style={{ fontSize: '5pt', fontFamily: 'Courier New, monospace', fontWeight: 700, lineHeight: 1, color: 'black' }}>
+              <div style={{ fontSize: '4.5pt', fontFamily: 'Courier New, monospace', fontWeight: 700, lineHeight: 1, color: 'black' }}>
                 #{p.jerseyNumber}
               </div>
             </div>
@@ -172,27 +172,27 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
               style={{
                 borderRight: '1.5px solid black',
                 borderBottom: '1.5px solid black',
-                padding: '0.3mm 0.6mm 0.2mm',
+                padding: '0.25mm 0.5mm 0.15mm',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'flex-start',
-                height: '32mm',
+                height: '31mm',
                 position: 'relative',
                 boxSizing: 'border-box',
               }}
             >
-              <div style={{ position: 'absolute', bottom: '0.15mm', left: '0.15mm', width: '1.8mm', height: '1.8mm', border: '1px solid black' }} />
-              <div style={{ width: '20mm', height: '20mm', border: '1.5px dashed #888', flexShrink: 0, background: '#fafafa' }} />
+              <div style={{ position: 'absolute', bottom: '0.12mm', left: '0.12mm', width: '1.7mm', height: '1.7mm', border: '1px solid black' }} />
+              <div style={{ width: '19mm', height: '19mm', border: '1.5px dashed #888', flexShrink: 0, background: '#fafafa' }} />
             </div>
           ))}
         </div>
 
-        {/* ── ④ REMARKS + SIGNATURES (50mm) ────────── */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.8mm', flexShrink: 0, height: '50mm' }}>
+        {/* ── ④ REMARKS + SIGNATURES (47mm) ────────── */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.6mm', flexShrink: 0, height: '47mm' }}>
           {/* ── ④A REMARKS ─────────────────────────── */}
-          <div style={{ border: '1px solid black', padding: '0.5mm', display: 'flex', flexDirection: 'column', gap: '0.2mm', height: '100%', boxSizing: 'border-box' }}>
-            <div style={{ textAlign: 'center', fontSize: '5pt', fontWeight: 800, borderBottom: '1px solid black', paddingBottom: '0.2mm', color: 'black', letterSpacing: '0.07em' }}>
+          <div style={{ border: '1px solid black', padding: '0.4mm', display: 'flex', flexDirection: 'column', gap: '0.15mm', height: '100%', boxSizing: 'border-box' }}>
+            <div style={{ textAlign: 'center', fontSize: '4.5pt', fontWeight: 800, borderBottom: '1px solid black', paddingBottom: '0.15mm', color: 'black', letterSpacing: '0.06em' }}>
               REMARKS
             </div>
             {/* 3-col × 5-row table */}
@@ -207,8 +207,8 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
                   borderRight: i < 2 ? '1px solid black' : 'none',
                   borderBottom: '1px solid black',
                   background: '#dcdcdc',
-                  padding: '0.2mm 0.3mm',
-                  fontSize: '4.5pt',
+                  padding: '0.18mm 0.25mm',
+                  fontSize: '4pt',
                   fontWeight: 700,
                   textAlign: 'center',
                   color: 'black',
@@ -223,7 +223,7 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
               {['比數', '入球', '黃牌', '紅牌'].map((label, ri) => (
                 <React.Fragment key={ri}>
                   <div style={{ borderRight: '1px solid #666', borderBottom: '1px solid #666', background: '#fafafa' }} />
-                  <div style={{ borderRight: '1px solid #666', borderBottom: '1px solid #666', fontSize: '4pt', fontWeight: 700, color: '#555', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
+                  <div style={{ borderRight: '1px solid #666', borderBottom: '1px solid #666', fontSize: '3.5pt', fontWeight: 700, color: '#555', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
                     {label}
                   </div>
                   <div style={{ borderBottom: '1px solid #666', background: '#fafafa' }} />
@@ -233,26 +233,26 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
           </div>
 
           {/* ── ④B SIGNATURES ──────────────────────── */}
-          <div style={{ border: '1px solid black', padding: '0.5mm', display: 'flex', flexDirection: 'column', gap: '0.3mm', height: '100%', boxSizing: 'border-box' }}>
-            <div style={{ textAlign: 'center', fontSize: '5pt', fontWeight: 800, borderBottom: '1px solid black', paddingBottom: '0.2mm', color: 'black', letterSpacing: '0.07em' }}>
+          <div style={{ border: '1px solid black', padding: '0.4mm', display: 'flex', flexDirection: 'column', gap: '0.25mm', height: '100%', boxSizing: 'border-box' }}>
+            <div style={{ textAlign: 'center', fontSize: '4.5pt', fontWeight: 800, borderBottom: '1px solid black', paddingBottom: '0.15mm', color: 'black', letterSpacing: '0.06em' }}>
               簽名區
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3mm', flex: 1 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25mm', flex: 1 }}>
               {[
                 '主隊領隊',
                 '客隊領隊',
                 '球證',
               ].map((label, i) => (
-                <div key={i} style={{ border: '1px solid #aaa', padding: '0.2mm', display: 'flex', flexDirection: 'column', gap: '0.05mm' }}>
-                  <div style={{ fontSize: '4.5pt', fontWeight: 700, textAlign: 'center', color: 'black' }}>{label}</div>
+                <div key={i} style={{ border: '1px solid #aaa', padding: '0.18mm', display: 'flex', flexDirection: 'column', gap: '0.03mm' }}>
+                  <div style={{ fontSize: '4pt', fontWeight: 700, textAlign: 'center', color: 'black' }}>{label}</div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                      <div style={{ width: '24mm', borderBottom: '1px solid black', height: '2.5mm' }} />
-                      <div style={{ fontSize: '3pt', color: '#666', marginTop: '0.05mm' }}>簽名</div>
+                      <div style={{ width: '23mm', borderBottom: '1px solid black', height: '2.3mm' }} />
+                      <div style={{ fontSize: '2.8pt', color: '#666', marginTop: '0.03mm' }}>簽名</div>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                      <div style={{ width: '12mm', borderBottom: '1px solid black', height: '2.5mm' }} />
-                      <div style={{ fontSize: '3pt', color: '#666', marginTop: '0.05mm' }}>日期</div>
+                      <div style={{ width: '11mm', borderBottom: '1px solid black', height: '2.3mm' }} />
+                      <div style={{ fontSize: '2.8pt', color: '#666', marginTop: '0.03mm' }}>日期</div>
                     </div>
                   </div>
                 </div>
