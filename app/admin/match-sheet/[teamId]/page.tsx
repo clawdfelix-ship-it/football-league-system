@@ -35,11 +35,11 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
         style={{
           width: '210mm',
           minHeight: '297mm',
-          padding: '5mm',
+          padding: '4mm',
           boxSizing: 'border-box',
           display: 'flex',
           flexDirection: 'column',
-          gap: '1.5mm',
+          gap: '1mm',
           fontFamily: 'Arial, Helvetica, sans-serif',
           overflow: 'hidden',
           breakInside: 'avoid',
@@ -132,15 +132,15 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
                 flexDirection: 'column',
                 alignItems: 'center',
                 gap: '0.4mm',
-                minHeight: '35mm',
+                minHeight: '32mm',
                 position: 'relative',
               }}
             >
               {/* Checkbox corner */}
-              <div style={{ position: 'absolute', bottom: '0.4mm', left: '0.4mm', width: '2.5mm', height: '2.5mm', border: '1.5px solid black' }} />
+              <div style={{ position: 'absolute', bottom: '0.3mm', left: '0.3mm', width: '2.5mm', height: '2.5mm', border: '1.5px solid black' }} />
 
               {/* Photo */}
-              <div style={{ width: '24mm', height: '24mm', border: '1px solid #999', background: '#f0f0f0', overflow: 'hidden', flexShrink: 0, position: 'relative' }}>
+              <div style={{ width: '22mm', height: '22mm', border: '1px solid #999', background: '#f0f0f0', overflow: 'hidden', flexShrink: 0, position: 'relative' }}>
                 {p.photoUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={p.photoUrl} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -176,12 +176,12 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'flex-start',
-                minHeight: '35mm',
+                minHeight: '32mm',
                 position: 'relative',
               }}
             >
-              <div style={{ position: 'absolute', bottom: '0.4mm', left: '0.4mm', width: '2.5mm', height: '2.5mm', border: '1.5px solid black' }} />
-              <div style={{ width: '24mm', height: '24mm', border: '1.5px dashed #aaa', flexShrink: 0 }} />
+              <div style={{ position: 'absolute', bottom: '0.3mm', left: '0.3mm', width: '2.5mm', height: '2.5mm', border: '1.5px solid black' }} />
+              <div style={{ width: '22mm', height: '22mm', border: '1.5px dashed #aaa', flexShrink: 0 }} />
             </div>
           ))}
         </div>
@@ -194,7 +194,7 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
               REMARKS
             </div>
             {/* 3-col × 5-row table */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', flex: 1, border: '1px solid #999', minHeight: '28mm' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', flex: 1, border: '1px solid #999', minHeight: '25mm' }}>
               {/* Row 1: 主隊 + 賽果 + 客隊 */}
               {[
                 { label: '主隊 Home', span: 1 },
@@ -257,10 +257,6 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
           </div>
         </div>
 
-        {/* ── ⑤ FOOTER ────────────────────────────── */}
-        <div style={{ textAlign: 'center', fontSize: '5pt', color: '#aaa', letterSpacing: '0.08em', flexShrink: 0, paddingTop: '0.5mm' }}>
-          Zenex Cup official match sheet • Do not duplicate
-        </div>
       </div>
     </div>
   );

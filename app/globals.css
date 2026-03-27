@@ -11,6 +11,7 @@
 @page {
   size: A4 portrait;
   margin: 0;
+  fit-to-page: always;
 }
 
 @media screen {
@@ -54,6 +55,21 @@
 
   section {
     page-break-inside: avoid;
+  }
+
+  /* Force entire match sheet onto a single page */
+  .match-sheet {
+    overflow: hidden !important;
+    height: 100vh !important;
+  }
+
+  .match-sheet > div:last-child {
+    width: 210mm !important;
+    min-height: 297mm !important;
+    max-height: 297mm !important;
+    overflow: hidden !important;
+    /* Scale down if content slightly exceeds page */
+    transform-origin: top center;
   }
 }
 
