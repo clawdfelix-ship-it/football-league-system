@@ -19,17 +19,17 @@ export async function POST() {
 
     console.log('✓ teams table created');
 
-    // Insert initial teams
+    // Insert initial teams with specific colors
     const initialTeams = [
-      { name: 'NOMURA', homeKitColor: 'red', awayKitColor: 'white' },
-      { name: 'BBVA', homeKitColor: 'blue', awayKitColor: 'white' },
-      { name: 'LGT', homeKitColor: 'purple', awayKitColor: 'white' },
-      { name: 'CACIB', homeKitColor: 'green', awayKitColor: 'white' },
-      { name: 'CITI', homeKitColor: 'blue', awayKitColor: 'white' },
-      { name: 'SCB', homeKitColor: 'red', awayKitColor: 'white' },
-      { name: 'UBS', homeKitColor: 'yellow', awayKitColor: 'black' },
-      { name: 'HSBC', homeKitColor: 'red', awayKitColor: 'white' },
-      { name: 'KPMG', homeKitColor: 'indigo', awayKitColor: 'white' },
+      { name: 'NOMURA', homeKitColor: 'red', awayKitColor: 'grey' },     // Home: Red, Away: Grey
+      { name: 'BBVA', homeKitColor: 'blue', awayKitColor: 'white' },       // Home: Blue, Away: White
+      { name: 'LGT', homeKitColor: 'red', awayKitColor: 'white' },         // Home: Red+Blue (red), Away: White
+      { name: 'CACIB', homeKitColor: 'white', awayKitColor: 'grey' },      // Home: White&Green (white), Away: Grey
+      { name: 'CITI', homeKitColor: 'blue', awayKitColor: 'white' },       // Default: Blue, White
+      { name: 'SCB', homeKitColor: 'navy', awayKitColor: 'white' },        // Home: Navy, Away: White
+      { name: 'UBS', homeKitColor: 'white', awayKitColor: 'black' },       // Home: White, Away: Black
+      { name: 'HSBC', homeKitColor: 'red', awayKitColor: 'white' },        // Default: Red, White
+      { name: 'KPMG', homeKitColor: 'blue', awayKitColor: 'white' },       // Home: Blue, Away: White
     ];
 
     let inserted = 0;

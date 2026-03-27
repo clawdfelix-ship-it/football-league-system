@@ -9,6 +9,8 @@ export const KIT_COLORS = [
   { value: 'purple', label: '紫色', hex: '#9333EA', text: 'text-white' },
   { value: 'orange', label: '橙色', hex: '#EA580C', text: 'text-white' },
   { value: 'indigo', label: '靛藍色', hex: '#4F46E5', text: 'text-white' },
+  { value: 'navy', label: '深藍色', hex: '#1e3a5f', text: 'text-white' },
+  { value: 'grey', label: '灰色', hex: '#6b7280', text: 'text-white' },
 ] as const;
 
 export type KitColor = typeof KIT_COLORS[number]['value'];
