@@ -31,10 +31,11 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
           5 columns for player grid (40mm each = 200mm wide)
           ══════════════════════════════════════════════ */}
       <div
-        className="mx-auto bg-white shadow-2xl"
+        className="mx-auto bg-white shadow-2xl print:shadow-none"
         style={{
           width: '210mm',
           minHeight: '297mm',
+          maxHeight: '297mm',
           padding: '4mm',
           boxSizing: 'border-box',
           display: 'flex',

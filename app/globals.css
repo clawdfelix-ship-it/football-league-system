@@ -29,6 +29,16 @@
    Print: Remove shadows, enforce 1 page
    ============================================= */
 @media print {
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
   /* Remove all shadows */
   .shadow,
   .shadow-2xl,
@@ -59,8 +69,8 @@
 
   /* Force entire match sheet onto a single page */
   .match-sheet {
-    overflow: hidden !important;
-    height: 100vh !important;
+    overflow: visible !important;
+    height: auto !important;
   }
 
   .match-sheet > div:last-child {
@@ -68,8 +78,22 @@
     min-height: 297mm !important;
     max-height: 297mm !important;
     overflow: hidden !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
     /* Scale down if content slightly exceeds page */
     transform-origin: top center;
+  }
+
+  /* Ensure player grid stays together */
+  .match-sheet > div:last-child > div:nth-child(3) {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Ensure remarks + signatures stay together */
+  .match-sheet > div:last-child > div:nth-child(4) {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
 }
 
