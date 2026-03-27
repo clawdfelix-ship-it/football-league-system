@@ -25,15 +25,13 @@
 @media print {
   @page {
     size: A4 portrait;
-    margin: 0;
-    padding: 0;
+    margin: 5mm;
   }
 
   html, body {
     margin: 0 !important;
     padding: 0 !important;
     width: 210mm !important;
-    height: 297mm !important;
     overflow: hidden !important;
   }
 
@@ -72,8 +70,6 @@
   /* Force entire match sheet onto a single page */
   .match-sheet {
     overflow: hidden !important;
-    height: 297mm !important;
-    width: 210mm !important;
     page-break-inside: avoid !important;
     page-break-before: avoid !important;
     page-break-after: avoid !important;
@@ -86,7 +82,6 @@
     overflow: hidden !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
-    transform-origin: top center !important;
   }
 
   /* Ensure player grid stays together */

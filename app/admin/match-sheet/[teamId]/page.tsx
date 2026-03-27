@@ -27,22 +27,22 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
       </div>
 
       {/* ══════════════════════════════════════════════
-          A4 container — 210mm × 297mm (FIT TO 1 PAGE)
+          A4 container — 210mm × 297mm (EXACT FIT)
           5 columns for player grid (40mm each = 200mm wide)
           
-          Layout breakdown (total: 285mm, leaves 12mm margin for printer):
+          Layout breakdown (total: 297mm):
           - Padding: 4mm × 2 = 8mm
-          - Header: 16mm
+          - Header: 17mm
           - Section label: 3mm
           - Gaps: 1mm × 6 = 6mm
-          - Player grid: 34mm × 6 rows = 204mm
-          - Remarks + Signatures: 48mm
+          - Player grid: 35mm × 6 rows = 210mm
+          - Remarks + Signatures: 53mm
           ══════════════════════════════════════════════ */}
       <div
         className="mx-auto bg-white shadow-2xl print:shadow-none print:w-[210mm] print:h-[297mm]"
         style={{
           width: '210mm',
-          height: '285mm',
+          height: '297mm',
           padding: '4mm',
           boxSizing: 'border-box',
           display: 'flex',
@@ -53,17 +53,17 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
           breakInside: 'avoid',
         }}
       >
-        {/* ── ① HEADER (16mm) ───────────────────────── */}
+        {/* ── ① HEADER (17mm) ───────────────────────── */}
         <header
           style={{
             textAlign: 'center',
             border: '2px solid black',
-            padding: '1.2mm 3mm',
+            padding: '1.3mm 3mm',
             display: 'flex',
             flexDirection: 'column',
-            gap: '0.2mm',
+            gap: '0.25mm',
             flexShrink: 0,
-            height: '16mm',
+            height: '17mm',
             boxSizing: 'border-box',
           }}
         >
@@ -121,15 +121,15 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
           常規球員 (REGULAR PLAYERS)
         </div>
 
-        {/* ── ③ PLAYER GRID (204mm = 34mm × 6 rows) ─── */}
+        {/* ── ③ PLAYER GRID (210mm = 35mm × 6 rows) ─── */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(5, 40mm)',
-          gridTemplateRows: 'repeat(6, 34mm)',
+          gridTemplateRows: 'repeat(6, 35mm)',
           borderTop: '1.5px solid black',
           borderLeft: '1.5px solid black',
           flexShrink: 0,
-          height: '204mm',
+          height: '210mm',
         }}>
           {/* Real players */}
           {players.map((p) => (
@@ -144,7 +144,7 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
                 flexDirection: 'column',
                 alignItems: 'center',
                 gap: '0.25mm',
-                height: '34mm',
+                height: '35mm',
                 position: 'relative',
                 boxSizing: 'border-box',
               }}
@@ -189,7 +189,7 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'flex-start',
-                height: '34mm',
+                height: '35mm',
                 position: 'relative',
                 boxSizing: 'border-box',
               }}
@@ -200,8 +200,8 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
           ))}
         </div>
 
-        {/* ── ④ REMARKS + SIGNATURES (48mm) ────────── */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1mm', flexShrink: 0, height: '48mm' }}>
+        {/* ── ④ REMARKS + SIGNATURES (53mm) ────────── */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1mm', flexShrink: 0, height: '53mm' }}>
           {/* ── ④A REMARKS ─────────────────────────── */}
           <div style={{ border: '1px solid black', padding: '0.7mm', display: 'flex', flexDirection: 'column', gap: '0.4mm', height: '100%', boxSizing: 'border-box' }}>
             <div style={{ textAlign: 'center', fontSize: '6.5pt', fontWeight: 800, borderBottom: '1px solid black', paddingBottom: '0.4mm', color: 'black', letterSpacing: '0.09em' }}>
