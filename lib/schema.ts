@@ -58,6 +58,16 @@ export const announcements = pgTable('announcements', {
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 
+// 球隊表（球衣顏色）
+export const teams = pgTable('teams', {
+  id: serial('id').primaryKey(),
+  name: varchar('name', { length: 100 }).notNull().unique(),
+  homeKitColor: varchar('home_kit_color', { length: 20 }).default('white'),
+  awayKitColor: varchar('away_kit_color', { length: 20 }).default('black'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
 // 數據類型導出
 export type Player = typeof players.$inferSelect;
 export type NewPlayer = typeof players.$inferInsert;
@@ -67,3 +77,5 @@ export type Match = typeof matches.$inferSelect;
 export type NewMatch = typeof matches.$inferInsert;
 export type Announcement = typeof announcements.$inferSelect;
 export type NewAnnouncement = typeof announcements.$inferInsert;
+export type Team = typeof teams.$inferSelect;
+export type NewTeam = typeof teams.$inferInsert;

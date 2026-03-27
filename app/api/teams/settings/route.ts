@@ -1,21 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { sql } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { db } from '@/lib/db';
+import { teams } from '@/lib/schema';
 
 // GET /api/teams/settings - Get all team settings
 export async function GET() {
   try {
-    const teams = await db.execute(sql`
-      SELECT id, name, home_kit_color, away_kit_color 
-      FROM teams 
-      ORDER BY name
-    `);
+    const allTeams = await db.select().from(teams).orderBy(teams.name);
     
-    return NextResponse.json({ teams: teams.rows || [] });
+    return NextResponse.json({ teams: allTeams });
   } catch (error) {
     console.error('Failed to fetch team settings:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch team settings' },
+      { error: 'Failed to fetch team settings', details: String(error) },
       { status: 500 }
     );
   }
@@ -34,13 +31,21 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    await db.execute(sql`
-      INSERT INTO teams (name, home_kit_color, away_kit_color)
-      VALUES (${teamName}, ${homeKitColor}, ${awayKitColor})
-      ON CONFLICT (name) DO UPDATE SET
-        home_kit_color = EXCLUDED.home_kit_color,
-        away_kit_color = EXCLUDED.away_kit_color
-    `);
+    // Try to update existing team
+    const updated = await db
+      .update(teams)
+      .set({ homeKitColor, awayKitColor })
+      .where(eq(teams.name, teamName))
+      .returning();
+
+    // If no rows updated, insert new team
+    if (updated.length === 0) {
+      await db.insert(teams).values({
+        name: teamName,
+        homeKitColor,
+        awayKitColor,
+      });
+    }
 
     return NextResponse.json({ 
       success: true, 
@@ -49,7 +54,7 @@ export async function PUT(request: NextRequest) {
   } catch (error) {
     console.error('Failed to update team settings:', error);
     return NextResponse.json(
-      { error: 'Failed to update team settings' },
+      { error: 'Failed to update team settings', details: String(error) },
       { status: 500 }
     );
   }
