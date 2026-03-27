@@ -1,0 +1,39 @@
+{
+  "id": "0004_snapshot",
+  "prevId": "0003_snapshot",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.teams": {
+      "name": "teams",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "homeKitColor": {
+          "name": "home_kit_color",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'white'"
+        },
+        "awayKitColor": {
+          "name": "away_kit_color",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'black'"
+        }
+      }
+    }
+  }
+}
