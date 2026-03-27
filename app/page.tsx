@@ -6,6 +6,7 @@ import HomeLayout from '@/components/HomeLayout';
 import { useLanguage } from '@/context/LanguageContext';
 import { TEAMS } from '@/lib/constants';
 import { getAnnouncements } from '@/lib/actions';
+import { KIT_COLORS } from '@/lib/kitColors';
 import type { Announcement } from '@/lib/schema';
 
 export const dynamic = 'force-dynamic';
@@ -45,14 +46,45 @@ function HomeContent() {
   const [fixturesLastUpdatedAt, setFixturesLastUpdatedAt] = useState<Date | null>(null);
   const [announcementsLastUpdatedAt, setAnnouncementsLastUpdatedAt] = useState<Date | null>(null);
   const [loading, setLoading] = useState(true);
+  const [teams, setTeams] = useState<Record<string, { homeKitColor: string; awayKitColor: string }>>({});
 
   useEffect(() => {
     loadData();
   }, []);
 
+  const loadTeams = async () => {
+    try {
+      const res = await fetch('/api/teams/settings');
+      const data = await res.json();
+      const teamMap: Record<string, { homeKitColor: string; awayKitColor: string }> = {};
+      (data.teams || []).forEach((t: any) => {
+        const normalizedName = t.name?.trim().toUpperCase();
+        if (normalizedName) {
+          teamMap[normalizedName] = {
+            homeKitColor: t.home_kit_color || 'white',
+            awayKitColor: t.away_kit_color || 'black',
+          };
+        }
+      });
+      setTeams(teamMap);
+    } catch (error) {
+      console.error('Failed to load teams:', error);
+    }
+  };
+
+  const getKitColor = (teamName: string, isHome: boolean) => {
+    const normalizedName = teamName?.trim().toUpperCase();
+    const team = teams[normalizedName || ''];
+    const colorValue = isHome ? team?.homeKitColor : team?.awayKitColor;
+    const color = KIT_COLORS.find(c => c.value === colorValue);
+    return color || KIT_COLORS[0]; // Default white
+  };
+
   const loadData = async () => {
     try {
       setLoading(true);
+      // Load teams colors and match data in parallel
+      await loadTeams();
       const [fixturesRes, resultsRes, announcementsData] = await Promise.all([
         fetch('/api/matches?status=scheduled', { cache: 'no-store' }),
         fetch('/api/matches?status=finished', { cache: 'no-store' }),
@@ -311,9 +343,16 @@ function HomeContent() {
                       key={match.id}
                       className="flex justify-between items-center p-4 bg-slate-50 rounded-lg border border-slate-200"
                     >
-                      <div className="text-left w-1/3">
-                        <div className="font-bold text-slate-900">{match.homeTeam}</div>
-                        <div className="text-xs text-slate-500">{t('主場', 'Home')}</div>
+                      <div className="text-left w-1/3 flex items-center gap-2">
+                        <div
+                          className="w-6 h-6 rounded-full border border-slate-300 shadow-sm flex-shrink-0"
+                          style={{ backgroundColor: getKitColor(match.homeTeam, true).hex }}
+                          title={getKitColor(match.homeTeam, true).label}
+                        />
+                        <div>
+                          <div className="font-bold text-slate-900">{match.homeTeam}</div>
+                          <div className="text-xs text-slate-500">{t('主場', 'Home')}</div>
+                        </div>
                       </div>
                       <div className="text-center w-1/3">
                         <div className="text-sm text-slate-600 font-bold">
@@ -333,9 +372,16 @@ function HomeContent() {
                           {match.venue || 'TBC'}
                         </div>
                       </div>
-                      <div className="text-right w-1/3">
-                        <div className="font-bold text-slate-900">{match.awayTeam}</div>
-                        <div className="text-xs text-slate-500">{t('作客', 'Away')}</div>
+                      <div className="text-right w-1/3 flex items-center gap-2 justify-end">
+                        <div>
+                          <div className="font-bold text-slate-900">{match.awayTeam}</div>
+                          <div className="text-xs text-slate-500">{t('作客', 'Away')}</div>
+                        </div>
+                        <div
+                          className="w-6 h-6 rounded-full border border-slate-300 shadow-sm flex-shrink-0"
+                          style={{ backgroundColor: getKitColor(match.awayTeam, false).hex }}
+                          title={getKitColor(match.awayTeam, false).label}
+                        />
                       </div>
                     </div>
                   ))
