@@ -12,6 +12,7 @@ export function KitColorManager({ teamName }: KitColorManagerProps) {
   const [awayKitColor, setAwayKitColor] = useState<string>('black');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [debugInfo, setDebugInfo] = useState<string>('');
 
   useEffect(() => {
     loadTeamColors();
@@ -19,16 +20,36 @@ export function KitColorManager({ teamName }: KitColorManagerProps) {
 
   const loadTeamColors = async () => {
     try {
+      setDebugInfo('載入中...');
       const res = await fetch('/api/teams/settings');
       const data = await res.json();
       
-      const team = (data.teams || []).find((t: any) => t.name === teamName);
+      console.log('📦 API 返回數據:', data);
+      console.log('🔍 尋找球隊:', teamName);
+      
+      // 嘗試多種匹配方式
+      const team = (data.teams || []).find((t: any) => {
+        const match = t.name === teamName || 
+                     t.name?.toUpperCase() === teamName?.toUpperCase() ||
+                     t.name?.trim().toUpperCase() === teamName?.trim().toUpperCase();
+        if (match) {
+          console.log('✅ 找到球隊:', t);
+        }
+        return match;
+      });
+      
       if (team) {
+        console.log('🎨 設置顏色:', team.home_kit_color, team.away_kit_color);
         setHomeKitColor(team.home_kit_color || 'white');
         setAwayKitColor(team.away_kit_color || 'black');
+        setDebugInfo(`已載入：${team.name} - 主場：${team.home_kit_color}, 客場：${team.away_kit_color}`);
+      } else {
+        console.log('❌ 找不到球隊，可用球隊:', data.teams?.map((t: any) => t.name));
+        setDebugInfo(`未找到球隊 "${teamName}"，可用球隊：${data.teams?.map((t: any) => t.name).join(', ')}`);
       }
     } catch (error) {
       console.error('Failed to load team colors:', error);
+      setDebugInfo(`錯誤：${String(error)}`);
     } finally {
       setLoading(false);
     }
@@ -36,8 +57,11 @@ export function KitColorManager({ teamName }: KitColorManagerProps) {
 
   const handleSave = async () => {
     setSaving(true);
+    setDebugInfo('儲存中...');
     try {
-      await fetch('/api/teams/settings', {
+      console.log('💾 儲存顏色:', { teamName, homeKitColor, awayKitColor });
+      
+      const res = await fetch('/api/teams/settings', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -46,10 +70,20 @@ export function KitColorManager({ teamName }: KitColorManagerProps) {
           awayKitColor,
         }),
       });
-      alert('球衣顏色已更新！');
+      
+      const result = await res.json();
+      console.log('📥 儲存結果:', result);
+      
+      if (res.ok) {
+        alert('球衣顏色已更新！');
+        setDebugInfo('✅ 儲存成功！');
+      } else {
+        throw new Error(result.error || '儲存失敗');
+      }
     } catch (error) {
       console.error('Failed to save settings:', error);
       alert('儲存失敗，請再試一次');
+      setDebugInfo(`❌ 儲存失敗：${String(error)}`);
     } finally {
       setSaving(false);
     }
@@ -75,6 +109,12 @@ export function KitColorManager({ teamName }: KitColorManagerProps) {
         </svg>
         球衣顏色設置
       </h3>
+
+      {debugInfo && (
+        <div className="mb-4 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs text-yellow-800 font-mono">
+          {debugInfo}
+        </div>
+      )}
 
       <div className="space-y-4">
         {/* Home Kit */}

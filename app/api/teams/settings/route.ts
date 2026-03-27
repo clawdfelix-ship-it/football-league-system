@@ -1,16 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { eq } from 'drizzle-orm';
+import { sql } from 'drizzle-orm';
 import { db } from '@/lib/db';
-import { teams } from '@/lib/schema';
 
 // GET /api/teams/settings - Get all team settings
 export async function GET() {
   try {
-    const allTeams = await db.select().from(teams).orderBy(teams.name);
+    const result = await db.execute(sql`
+      SELECT id, name, home_kit_color, away_kit_color, created_at, updated_at 
+      FROM teams 
+      ORDER BY name
+    `);
     
-    return NextResponse.json({ teams: allTeams });
+    console.log('📦 GET /api/teams/settings - 返回:', result.rows.length, '支球隊');
+    
+    return NextResponse.json({ teams: result.rows });
   } catch (error) {
-    console.error('Failed to fetch team settings:', error);
+    console.error('❌ Failed to fetch team settings:', error);
     return NextResponse.json(
       { error: 'Failed to fetch team settings', details: String(error) },
       { status: 500 }
@@ -22,7 +27,9 @@ export async function GET() {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { teamName, homeKitColor, awayKitColor } = body;
+    let { teamName, homeKitColor, awayKitColor } = body;
+
+    console.log('💾 PUT /api/teams/settings - 接收:', { teamName, homeKitColor, awayKitColor });
 
     if (!teamName || !homeKitColor || !awayKitColor) {
       return NextResponse.json(
@@ -31,28 +38,29 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // Try to update existing team
-    const updated = await db
-      .update(teams)
-      .set({ homeKitColor, awayKitColor })
-      .where(eq(teams.name, teamName))
-      .returning();
+    // Normalize team name
+    teamName = teamName.trim().toUpperCase();
 
-    // If no rows updated, insert new team
-    if (updated.length === 0) {
-      await db.insert(teams).values({
-        name: teamName,
-        homeKitColor,
-        awayKitColor,
-      });
-    }
+    // Update or insert team
+    const result = await db.execute(sql`
+      INSERT INTO teams (name, home_kit_color, away_kit_color, created_at, updated_at)
+      VALUES (${teamName}, ${homeKitColor}, ${awayKitColor}, NOW(), NOW())
+      ON CONFLICT (name) DO UPDATE SET
+        home_kit_color = EXCLUDED.home_kit_color,
+        away_kit_color = EXCLUDED.away_kit_color,
+        updated_at = NOW()
+      RETURNING *
+    `);
+
+    console.log('✅ 儲存成功:', result.rows[0]);
 
     return NextResponse.json({ 
       success: true, 
-      message: 'Team kit colors updated successfully' 
+      message: 'Team kit colors updated successfully',
+      team: result.rows[0]
     });
   } catch (error) {
-    console.error('Failed to update team settings:', error);
+    console.error('❌ Failed to update team settings:', error);
     return NextResponse.json(
       { error: 'Failed to update team settings', details: String(error) },
       { status: 500 }
