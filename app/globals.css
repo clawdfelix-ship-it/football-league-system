@@ -25,7 +25,7 @@
 @media print {
   @page {
     size: A4 portrait;
-    margin: 13.5mm;
+    margin: 5mm;
   }
 
   html, body {
@@ -34,6 +34,14 @@
     width: 210mm !important;
     height: 297mm !important;
     overflow: hidden !important;
+  }
+
+  /* Scale content to fit printer margins (8% reduction) */
+  .match-sheet > div:last-child {
+    transform: scale(0.92);
+    transform-origin: top center;
+    width: 228mm !important;
+    height: 323mm !important;
   }
 
   /* Remove all shadows */
