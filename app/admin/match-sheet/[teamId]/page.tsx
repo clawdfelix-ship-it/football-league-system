@@ -116,8 +116,9 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(5, 40mm)',
-          borderTop: '1.5px solid black',
-          borderLeft: '1.5px solid black',
+          borderTop: '2px solid black',
+          borderLeft: '2px solid black',
+          borderRight: '2px solid black',
           flexShrink: 0,
         }}>
           {/* Real players */}
@@ -126,8 +127,8 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
               key={p.id}
               className="group"
               style={{
-                borderRight: '1.5px solid black',
-                borderBottom: '1.5px solid black',
+                borderRight: '2px solid black',
+                borderBottom: '2px solid black',
                 padding: '0.4mm 0.7mm 0.3mm',
                 display: 'flex',
                 flexDirection: 'column',
@@ -171,8 +172,8 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
             <div
               key={`empty-${i}`}
               style={{
-                borderRight: '1.5px solid black',
-                borderBottom: '1.5px solid black',
+                borderRight: '2px solid black',
+                borderBottom: '2px solid black',
                 padding: '0.4mm 0.7mm 0.3mm',
                 display: 'flex',
                 flexDirection: 'column',
