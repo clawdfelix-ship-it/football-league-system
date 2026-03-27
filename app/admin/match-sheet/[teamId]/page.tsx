@@ -147,8 +147,8 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
                 boxSizing: 'border-box',
               }}
             >
-              {/* Checkbox corner */}
-              <div style={{ position: 'absolute', bottom: '0.1mm', left: '0.1mm', width: '1.5mm', height: '1.5mm', border: '1px solid black' }} />
+              {/* Checkbox corner - bigger */}
+              <div style={{ position: 'absolute', bottom: '0.3mm', left: '0.3mm', width: '2.5mm', height: '2.5mm', border: '1.5px solid black' }} />
 
               {/* Photo - bigger */}
               <div style={{ width: '24mm', height: '24mm', border: '1px solid #666', background: '#f5f5f5', overflow: 'hidden', flexShrink: 0, position: 'relative' }}>
@@ -168,8 +168,8 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
                 {p.name}
               </div>
 
-              {/* Jersey number - bigger */}
-              <div style={{ fontSize: '6.5pt', fontFamily: 'Courier New, monospace', fontWeight: 700, lineHeight: 1, color: 'black' }}>
+              {/* Jersey number - 9pt */}
+              <div style={{ fontSize: '9pt', fontFamily: 'Courier New, monospace', fontWeight: 700, lineHeight: 1, color: 'black' }}>
                 #{p.jerseyNumber}
               </div>
             </div>
@@ -192,7 +192,7 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
                 boxSizing: 'border-box',
               }}
             >
-              <div style={{ position: 'absolute', bottom: '0.1mm', left: '0.1mm', width: '1.5mm', height: '1.5mm', border: '1px solid black' }} />
+              <div style={{ position: 'absolute', bottom: '0.3mm', left: '0.3mm', width: '2.5mm', height: '2.5mm', border: '1.5px solid black' }} />
               <div style={{ width: '24mm', height: '24mm', border: '1.5px dashed #888', flexShrink: 0, background: '#fafafa' }} />
             </div>
           ))}
