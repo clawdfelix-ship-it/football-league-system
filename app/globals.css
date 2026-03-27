@@ -8,12 +8,6 @@
    Target: exactly 1 page, black & white friendly
    ============================================= */
 
-@page {
-  size: A4 portrait;
-  margin: 0;
-  fit-to-page: always;
-}
-
 @media screen {
   body {
     background: #e5e5e5;
@@ -32,11 +26,15 @@
   @page {
     size: A4 portrait;
     margin: 0;
+    padding: 0;
   }
 
-  body {
-    margin: 0;
-    padding: 0;
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 210mm !important;
+    height: 297mm !important;
+    overflow: hidden !important;
   }
 
   /* Remove all shadows */
@@ -60,28 +58,35 @@
 
   /* Prevent breaks inside key elements */
   table {
-    page-break-inside: avoid;
+    page-break-inside: avoid !important;
+    page-break-before: avoid !important;
+    page-break-after: avoid !important;
   }
 
   section {
-    page-break-inside: avoid;
+    page-break-inside: avoid !important;
+    page-break-before: avoid !important;
+    page-break-after: avoid !important;
   }
 
   /* Force entire match sheet onto a single page */
   .match-sheet {
-    overflow: visible !important;
-    height: auto !important;
+    overflow: hidden !important;
+    height: 297mm !important;
+    width: 210mm !important;
+    page-break-inside: avoid !important;
+    page-break-before: avoid !important;
+    page-break-after: avoid !important;
   }
 
   .match-sheet > div:last-child {
     width: 210mm !important;
-    min-height: 297mm !important;
+    height: 297mm !important;
     max-height: 297mm !important;
     overflow: hidden !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
-    /* Scale down if content slightly exceeds page */
-    transform-origin: top center;
+    transform-origin: top center !important;
   }
 
   /* Ensure player grid stays together */
@@ -94,6 +99,11 @@
   .match-sheet > div:last-child > div:nth-child(4) {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
+  }
+
+  /* Remove any hidden elements that might affect layout */
+  .print\:hidden {
+    display: none !important;
   }
 }
 

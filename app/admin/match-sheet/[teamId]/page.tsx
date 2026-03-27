@@ -20,7 +20,7 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
   const emptySlots = Array(Math.max(0, totalSlots - players.length)).fill(null);
 
   return (
-    <div className="min-h-screen bg-slate-100 p-4 print:p-0 print:bg-white match-sheet">
+    <div className="min-h-screen bg-slate-100 p-4 print:p-0 print:bg-white print:h-screen match-sheet">
       {/* ── Print button (hidden when printing) ── */}
       <div className="flex justify-center mb-4 print:hidden">
         <PrintButton />
@@ -39,7 +39,7 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
           - Remarks + Signatures: 48mm
           ══════════════════════════════════════════════ */}
       <div
-        className="mx-auto bg-white shadow-2xl print:shadow-none"
+        className="mx-auto bg-white shadow-2xl print:shadow-none print:w-[210mm] print:h-[297mm]"
         style={{
           width: '210mm',
           height: '285mm',
