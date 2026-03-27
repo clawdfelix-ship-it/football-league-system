@@ -43,17 +43,17 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
           fontFamily: 'Arial, Helvetica, sans-serif',
         }}
       >
-        {/* ── ① HEADER (16mm) ───────────────────────── */}
+        {/* ── ① HEADER (20mm) ───────────────────────── */}
         <header
           style={{
             textAlign: 'center',
             border: '2px solid black',
-            padding: '1mm 3mm',
+            padding: '1.5mm 3mm',
             display: 'flex',
             flexDirection: 'column',
-            gap: '0.2mm',
+            gap: '0.3mm',
             flexShrink: 0,
-            height: '16mm',
+            height: '20mm',
             boxSizing: 'border-box',
           }}
         >
@@ -70,14 +70,14 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
             fontSize: '9pt',
             fontWeight: 900,
             letterSpacing: '0.16em',
-            padding: '0.2mm 5mm',
-            margin: '0.2mm auto 0.3mm',
+            padding: '0.3mm 6mm',
+            margin: '0.3mm auto 0.4mm',
             lineHeight: 1.2,
             color: 'black',
           }}>
             SQUAD LIST
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1mm', fontSize: '6.5pt', fontWeight: 700, lineHeight: 1.1 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1.2mm', fontSize: '6.5pt', fontWeight: 700, lineHeight: 1.2 }}>
             <div style={{ textAlign: 'left' }}>
               隊名 (Team):{' '}
               <span style={{ textDecoration: 'underline dotted black', fontSize: '8pt', fontWeight: 800 }}>{team.name}</span>
@@ -111,7 +111,7 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
           常規球員 (REGULAR PLAYERS)
         </div>
 
-        {/* ── ③ PLAYER GRID (210mm = 35mm × 6 rows) ─── */}
+        {/* ── ③ PLAYER GRID (204mm = 34mm × 6 rows) ─── */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(5, 40mm)',
@@ -132,7 +132,7 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
                 flexDirection: 'column',
                 alignItems: 'center',
                 gap: '0.2mm',
-                height: '35mm',
+                height: '34mm',
                 position: 'relative',
                 boxSizing: 'border-box',
               }}
@@ -188,8 +188,8 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
           ))}
         </div>
 
-        {/* ── ④ REMARKS + SIGNATURES (55mm) ────────── */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1mm', flexShrink: 0, height: '55mm' }}>
+        {/* ── ④ REMARKS + SIGNATURES (51mm) ────────── */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1mm', flexShrink: 0, height: '51mm' }}>
           {/* ── ④A REMARKS ─────────────────────────── */}
           <div style={{ border: '1px solid black', padding: '0.7mm', display: 'flex', flexDirection: 'column', gap: '0.3mm', height: '100%', boxSizing: 'border-box' }}>
             <div style={{ textAlign: 'center', fontSize: '6.5pt', fontWeight: 800, borderBottom: '1px solid black', paddingBottom: '0.3mm', color: 'black', letterSpacing: '0.08em' }}>
