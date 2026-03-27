@@ -44,12 +44,15 @@ export function UpcomingFixtures({ matches }: { matches: Match[] }) {
       const data = await res.json();
       const teamMap: Record<string, Team> = {};
       (data.teams || []).forEach((t: any) => {
-        teamMap[t.name] = {
+        // Normalize team name for matching
+        const normalizedName = t.name.trim().toUpperCase();
+        teamMap[normalizedName] = {
           name: t.name,
           homeKitColor: t.home_kit_color || 'white',
           awayKitColor: t.away_kit_color || 'black',
         };
       });
+      console.log('Loaded teams:', teamMap);
       setTeams(teamMap);
     } catch (error) {
       console.error('Failed to load teams:', error);
@@ -57,10 +60,24 @@ export function UpcomingFixtures({ matches }: { matches: Match[] }) {
   };
 
   const getKitColor = (teamName: string, isHome: boolean) => {
-    const team = teams[teamName];
-    if (!team) return KIT_COLORS[0]; // Default white
+    // Normalize team name for matching
+    const normalizedName = teamName.trim().toUpperCase();
+    const team = teams[normalizedName];
+    
+    if (!team) {
+      console.log('Team not found, using default:', teamName);
+      return KIT_COLORS[0]; // Default white
+    }
+    
     const colorValue = isHome ? team.homeKitColor : team.awayKitColor;
-    return KIT_COLORS.find(c => c.value === colorValue) || KIT_COLORS[0];
+    const color = KIT_COLORS.find(c => c.value === colorValue);
+    
+    if (!color) {
+      console.log('Color not found, using default:', colorValue);
+      return KIT_COLORS[0]; // Default white
+    }
+    
+    return color;
   };
 
   const handleUpdateMatch = async (matchId: number, formData: FormData) => {
@@ -113,17 +130,22 @@ export function UpcomingFixtures({ matches }: { matches: Match[] }) {
               {/* Teams with kit colors */}
               <div className="flex items-center justify-between gap-3">
                 {/* Home Team */}
-                <div className="flex-1 text-right">
+                <div className="flex-1 text-right flex flex-col items-end">
                   <div className="font-semibold text-zinc-900 dark:text-zinc-100 text-sm">{match.homeTeam}</div>
-                  <div
-                    className="w-8 h-8 rounded-full border-2 border-gray-300 shadow-sm ml-auto mt-1"
-                    style={{ backgroundColor: getKitColor(match.homeTeam, true).hex }}
-                    title={`Home Kit: ${getKitColor(match.homeTeam, true).label}`}
-                  />
+                  {(() => {
+                    const homeColor = getKitColor(match.homeTeam, true);
+                    return (
+                      <div
+                        className="w-8 h-8 rounded-full border-2 border-gray-300 shadow-sm mt-1"
+                        style={{ backgroundColor: homeColor.hex }}
+                        title={`Home Kit: ${homeColor.label}`}
+                      />
+                    );
+                  })()}
                 </div>
 
                 {/* VS / Score */}
-                <div className="flex flex-col items-center px-2">
+                <div className="flex flex-col items-center px-2 min-w-[60px]">
                   {match.status === 'finished' ? (
                     <div className="text-lg font-black text-zinc-900 dark:text-zinc-100">
                       {match.homeScore ?? 0} - {match.awayScore ?? 0}
@@ -134,13 +156,18 @@ export function UpcomingFixtures({ matches }: { matches: Match[] }) {
                 </div>
 
                 {/* Away Team */}
-                <div className="flex-1 text-left">
+                <div className="flex-1 text-left flex flex-col items-start">
                   <div className="font-semibold text-zinc-900 dark:text-zinc-100 text-sm">{match.awayTeam}</div>
-                  <div
-                    className="w-8 h-8 rounded-full border-2 border-gray-300 shadow-sm mr-auto mt-1"
-                    style={{ backgroundColor: getKitColor(match.awayTeam, false).hex }}
-                    title={`Away Kit: ${getKitColor(match.awayTeam, false).label}`}
-                  />
+                  {(() => {
+                    const awayColor = getKitColor(match.awayTeam, false);
+                    return (
+                      <div
+                        className="w-8 h-8 rounded-full border-2 border-gray-300 shadow-sm mt-1"
+                        style={{ backgroundColor: awayColor.hex }}
+                        title={`Away Kit: ${awayColor.label}`}
+                      />
+                    );
+                  })()}
                 </div>
               </div>
 
