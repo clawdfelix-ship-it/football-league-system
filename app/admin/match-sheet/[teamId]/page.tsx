@@ -112,7 +112,7 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
           常規球員 (REGULAR PLAYERS)
         </div>
 
-        {/* ── ③ PLAYER GRID (204mm = 34mm × 6 rows) ─── */}
+        {/* ── ③ PLAYER GRID (198mm = 33mm × 6 rows) ─── */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(5, 40mm)',
@@ -128,26 +128,26 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
               style={{
                 borderRight: '1.5px solid black',
                 borderBottom: '1.5px solid black',
-                padding: '0.5mm 0.8mm 0.4mm',
+                padding: '0.4mm 0.7mm 0.3mm',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                gap: '0.2mm',
-                height: '34mm',
+                gap: '0.15mm',
+                height: '33mm',
                 position: 'relative',
                 boxSizing: 'border-box',
               }}
             >
               {/* Checkbox corner */}
-              <div style={{ position: 'absolute', bottom: '0.2mm', left: '0.2mm', width: '2mm', height: '2mm', border: '1px solid black' }} />
+              <div style={{ position: 'absolute', bottom: '0.15mm', left: '0.15mm', width: '1.8mm', height: '1.8mm', border: '1px solid black' }} />
 
               {/* Photo */}
-              <div style={{ width: '23mm', height: '23mm', border: '1px solid #666', background: '#f5f5f5', overflow: 'hidden', flexShrink: 0, position: 'relative' }}>
+              <div style={{ width: '22mm', height: '22mm', border: '1px solid #666', background: '#f5f5f5', overflow: 'hidden', flexShrink: 0, position: 'relative' }}>
                 {p.photoUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={p.photoUrl} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 ) : (
-                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '5pt', color: '#999', fontWeight: 600 }}>
+                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '4.5pt', color: '#999', fontWeight: 600 }}>
                     NO PHOTO
                   </div>
                 )}
@@ -155,12 +155,12 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
               </div>
 
               {/* Name */}
-              <div style={{ fontSize: '6.5pt', fontWeight: 800, textAlign: 'center', lineHeight: 1.1, wordBreak: 'break-word', width: '100%', color: 'black' }}>
+              <div style={{ fontSize: '6pt', fontWeight: 800, textAlign: 'center', lineHeight: 1.05, wordBreak: 'break-word', width: '100%', color: 'black' }}>
                 {p.name}
               </div>
 
               {/* Jersey number */}
-              <div style={{ fontSize: '6pt', fontFamily: 'Courier New, monospace', fontWeight: 700, lineHeight: 1, color: 'black' }}>
+              <div style={{ fontSize: '5.5pt', fontFamily: 'Courier New, monospace', fontWeight: 700, lineHeight: 1, color: 'black' }}>
                 #{p.jerseyNumber}
               </div>
             </div>
@@ -173,18 +173,18 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
               style={{
                 borderRight: '1.5px solid black',
                 borderBottom: '1.5px solid black',
-                padding: '0.5mm 0.8mm 0.4mm',
+                padding: '0.4mm 0.7mm 0.3mm',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'flex-start',
-                height: '35mm',
+                height: '33mm',
                 position: 'relative',
                 boxSizing: 'border-box',
               }}
             >
-              <div style={{ position: 'absolute', bottom: '0.2mm', left: '0.2mm', width: '2mm', height: '2mm', border: '1px solid black' }} />
-              <div style={{ width: '23mm', height: '23mm', border: '1.5px dashed #888', flexShrink: 0, background: '#fafafa' }} />
+              <div style={{ position: 'absolute', bottom: '0.15mm', left: '0.15mm', width: '1.8mm', height: '1.8mm', border: '1px solid black' }} />
+              <div style={{ width: '22mm', height: '22mm', border: '1.5px dashed #888', flexShrink: 0, background: '#fafafa' }} />
             </div>
           ))}
         </div>

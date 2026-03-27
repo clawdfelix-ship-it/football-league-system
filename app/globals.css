@@ -36,12 +36,12 @@
     overflow: hidden !important;
   }
 
-  /* Scale content to fit printer margins (8% reduction) */
+  /* Scale content to fit printer margins (10% reduction) */
   .match-sheet > div:last-child {
-    transform: scale(0.92);
+    transform: scale(0.90);
     transform-origin: top center;
-    width: 228mm !important;
-    height: 323mm !important;
+    width: 233mm !important;
+    height: 330mm !important;
   }
 
   /* Remove all shadows */
