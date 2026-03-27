@@ -20,34 +20,19 @@
 }
 
 /* =============================================
-   Print: Remove shadows, enforce 1 page
+   Print Settings
    ============================================= */
 @media print {
   @page {
     size: A4 portrait;
-    margin: 0;
+    margin: 5mm;
   }
 
   html, body {
     margin: 0 !important;
     padding: 0 !important;
     width: 210mm !important;
-    height: 297mm !important;
-    overflow: hidden !important;
-  }
-
-  /* Ensure match sheet fits exactly */
-  .match-sheet {
-    width: 210mm !important;
-    height: 297mm !important;
-    overflow: hidden !important;
-  }
-
-  .match-sheet > div:last-child {
-    width: 210mm !important;
-    height: 297mm !important;
-    overflow: hidden !important;
-    page-break-inside: avoid !important;
+    overflow: visible !important;
   }
 
   /* Remove all shadows */
@@ -59,61 +44,39 @@
     box-shadow: none !important;
   }
 
-  /* Remove gradient backgrounds, use solid colors */
+  /* Remove gradient backgrounds */
   .bg-gradient-to-b {
     background-image: none !important;
   }
 
-  /* Remove decorative images outside match-sheet; keep player photos */
+  /* Hide non-essential elements */
+  .print\:hidden {
+    display: none !important;
+  }
+
+  /* Remove decorative images, keep player photos */
   body:not(.match-sheet) img {
     display: none !important;
   }
 
-  /* Prevent breaks inside key elements */
-  table {
+  /* Prevent page breaks inside elements */
+  table, section, div {
     page-break-inside: avoid !important;
     page-break-before: avoid !important;
     page-break-after: avoid !important;
   }
 
-  section {
-    page-break-inside: avoid !important;
-    page-break-before: avoid !important;
-    page-break-after: avoid !important;
-  }
-
-  /* Force entire match sheet onto a single page */
+  /* Match sheet container */
   .match-sheet {
-    overflow: hidden !important;
-    page-break-inside: avoid !important;
-    page-break-before: avoid !important;
-    page-break-after: avoid !important;
+    width: 210mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   .match-sheet > div:last-child {
-    width: 210mm !important;
-    height: 297mm !important;
-    max-height: 297mm !important;
-    overflow: hidden !important;
+    width: 200mm !important;
+    margin: 0 auto !important;
     page-break-inside: avoid !important;
-    break-inside: avoid !important;
-  }
-
-  /* Ensure player grid stays together */
-  .match-sheet > div:last-child > div:nth-child(3) {
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
-  }
-
-  /* Ensure remarks + signatures stay together */
-  .match-sheet > div:last-child > div:nth-child(4) {
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
-  }
-
-  /* Remove any hidden elements that might affect layout */
-  .print\:hidden {
-    display: none !important;
   }
 }
 

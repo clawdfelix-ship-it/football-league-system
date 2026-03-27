@@ -20,40 +20,30 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
   const emptySlots = Array(Math.max(0, totalSlots - players.length)).fill(null);
 
   return (
-    <div className="min-h-screen bg-slate-100 p-4 print:p-0 print:bg-white print:h-screen match-sheet">
+    <div className="min-h-screen bg-slate-100 p-4 print:p-0 print:bg-white match-sheet">
       {/* ── Print button (hidden when printing) ── */}
       <div className="flex justify-center mb-4 print:hidden">
         <PrintButton />
       </div>
 
       {/* ══════════════════════════════════════════════
-          A4 container — 210mm × 297mm (FULL HEIGHT)
-          5 columns for player grid (40mm each = 200mm wide)
-          
-          Layout breakdown (total: 297mm):
-          - Padding: 4mm × 2 = 8mm
-          - Header: 15mm
-          - Section label: 3mm
-          - Gaps: 1mm × 6 = 6mm
-          - Player grid: 35mm × 6 rows = 210mm
-          - Remarks + Signatures: 55mm
+          A4 container — 210mm × 297mm
+          Content will scale to fit printer margins
           ══════════════════════════════════════════════ */}
       <div
-        className="mx-auto bg-white shadow-2xl print:shadow-none print:w-[210mm] print:h-[297mm]"
+        className="mx-auto bg-white shadow-2xl print:shadow-none"
         style={{
           width: '210mm',
-          height: '297mm',
-          padding: '4mm',
+          minHeight: '297mm',
+          padding: '5mm',
           boxSizing: 'border-box',
           display: 'flex',
           flexDirection: 'column',
           gap: '1mm',
           fontFamily: 'Arial, Helvetica, sans-serif',
-          overflow: 'hidden',
-          breakInside: 'avoid',
         }}
       >
-        {/* ── ① HEADER (15mm) ───────────────────────── */}
+        {/* ── ① HEADER ───────────────────────────────── */}
         <header
           style={{
             textAlign: 'center',
@@ -63,34 +53,32 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
             flexDirection: 'column',
             gap: '0.2mm',
             flexShrink: 0,
-            height: '15mm',
-            boxSizing: 'border-box',
           }}
         >
-          <div style={{ fontSize: '10.5pt', fontWeight: 900, letterSpacing: '0.09em', fontStyle: 'italic', lineHeight: 1.0, color: 'black' }}>
+          <div style={{ fontSize: '11pt', fontWeight: 900, letterSpacing: '0.1em', fontStyle: 'italic', lineHeight: 1.1, color: 'black' }}>
             HONG KONG BANK LEAGUE 2026
           </div>
-          <div style={{ fontSize: '4.5pt', fontWeight: 700, letterSpacing: '0.04em', color: '#555', lineHeight: 1.1 }}>
+          <div style={{ fontSize: '5pt', fontWeight: 700, letterSpacing: '0.04em', color: '#555', lineHeight: 1.1 }}>
             PARTNERED WITH ZENEX SPORTS | 香港銀行足球聯賽 2026
           </div>
           <div style={{
             display: 'inline-block',
             borderTop: '1px solid black',
             borderBottom: '1px solid black',
-            fontSize: '8pt',
+            fontSize: '8.5pt',
             fontWeight: 900,
-            letterSpacing: '0.15em',
-            padding: '0.15mm 4mm',
-            margin: '0.15mm auto 0.2mm',
+            letterSpacing: '0.16em',
+            padding: '0.2mm 5mm',
+            margin: '0.2mm auto 0.3mm',
             lineHeight: 1.2,
             color: 'black',
           }}>
             SQUAD LIST
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.8mm', fontSize: '5.5pt', fontWeight: 700, lineHeight: 1.1 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1mm', fontSize: '6pt', fontWeight: 700, lineHeight: 1.1 }}>
             <div style={{ textAlign: 'left' }}>
               隊名 (Team):{' '}
-              <span style={{ textDecoration: 'underline dotted black', fontSize: '7pt', fontWeight: 800 }}>{team.name}</span>
+              <span style={{ textDecoration: 'underline dotted black', fontSize: '7.5pt', fontWeight: 800 }}>{team.name}</span>
             </div>
             <div style={{ textAlign: 'center' }}>
               地點：__________
@@ -101,35 +89,28 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
           </div>
         </header>
 
-        {/* ── ② SECTION LABEL (3mm) ─────────────────── */}
+        {/* ── ② SECTION LABEL ───────────────────────── */}
         <div style={{
           background: '#dcdcdc',
           border: '1px solid black',
           textAlign: 'center',
-          fontSize: '5pt',
+          fontSize: '5.5pt',
           fontWeight: 800,
-          letterSpacing: '0.09em',
-          padding: '0.4mm 2mm',
+          letterSpacing: '0.1em',
+          padding: '0.5mm 2mm',
           flexShrink: 0,
           color: 'black',
-          height: '3mm',
-          boxSizing: 'border-box',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
         }}>
           常規球員 (REGULAR PLAYERS)
         </div>
 
-        {/* ── ③ PLAYER GRID (210mm = 35mm × 6 rows) ─── */}
+        {/* ── ③ PLAYER GRID ─────────────────────────── */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(5, 40mm)',
-          gridTemplateRows: 'repeat(6, 35mm)',
           borderTop: '1.5px solid black',
           borderLeft: '1.5px solid black',
           flexShrink: 0,
-          height: '210mm',
         }}>
           {/* Real players */}
           {players.map((p) => (
@@ -139,12 +120,12 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
               style={{
                 borderRight: '1.5px solid black',
                 borderBottom: '1.5px solid black',
-                padding: '0.4mm 0.8mm 0.3mm',
+                padding: '0.5mm 0.8mm 0.4mm',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 gap: '0.2mm',
-                height: '35mm',
+                height: '34mm',
                 position: 'relative',
                 boxSizing: 'border-box',
               }}
@@ -158,7 +139,7 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={p.photoUrl} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 ) : (
-                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '4.5pt', color: '#999', fontWeight: 600 }}>
+                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '5pt', color: '#999', fontWeight: 600 }}>
                     NO PHOTO
                   </div>
                 )}
@@ -184,12 +165,12 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
               style={{
                 borderRight: '1.5px solid black',
                 borderBottom: '1.5px solid black',
-                padding: '0.4mm 0.8mm 0.3mm',
+                padding: '0.5mm 0.8mm 0.4mm',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'flex-start',
-                height: '35mm',
+                height: '34mm',
                 position: 'relative',
                 boxSizing: 'border-box',
               }}
@@ -200,10 +181,10 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
           ))}
         </div>
 
-        {/* ── ④ REMARKS + SIGNATURES (55mm) ────────── */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1mm', flexShrink: 0, height: '55mm' }}>
+        {/* ── ④ REMARKS + SIGNATURES ───────────────── */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1mm', flexShrink: 0 }}>
           {/* ── ④A REMARKS ─────────────────────────── */}
-          <div style={{ border: '1px solid black', padding: '0.6mm', display: 'flex', flexDirection: 'column', gap: '0.3mm', height: '100%', boxSizing: 'border-box' }}>
+          <div style={{ border: '1px solid black', padding: '0.7mm', display: 'flex', flexDirection: 'column', gap: '0.3mm', height: '100%', boxSizing: 'border-box' }}>
             <div style={{ textAlign: 'center', fontSize: '6pt', fontWeight: 800, borderBottom: '1px solid black', paddingBottom: '0.3mm', color: 'black', letterSpacing: '0.08em' }}>
               REMARKS
             </div>
@@ -245,7 +226,7 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
           </div>
 
           {/* ── ④B SIGNATURES ──────────────────────── */}
-          <div style={{ border: '1px solid black', padding: '0.6mm', display: 'flex', flexDirection: 'column', gap: '0.4mm', height: '100%', boxSizing: 'border-box' }}>
+          <div style={{ border: '1px solid black', padding: '0.7mm', display: 'flex', flexDirection: 'column', gap: '0.4mm', height: '100%', boxSizing: 'border-box' }}>
             <div style={{ textAlign: 'center', fontSize: '6pt', fontWeight: 800, borderBottom: '1px solid black', paddingBottom: '0.3mm', color: 'black', letterSpacing: '0.08em' }}>
               簽名區 (SIGNATURES)
             </div>
