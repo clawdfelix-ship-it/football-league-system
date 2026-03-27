@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { updateMatch, deleteMatch } from '@/lib/actions';
+import { KIT_COLORS } from '@/lib/kitColors';
 
 interface Match {
   id: number;
@@ -15,6 +16,12 @@ interface Match {
   round?: string | null;
 }
 
+interface Team {
+  name: string;
+  homeKitColor: string;
+  awayKitColor: string;
+}
+
 const VENUES = [
   '跑馬地遊樂場 8 號場 (Happy Valley Recreation Ground No. 8)',
   '中山紀念公園 (Sun Yat Sen Memorial Park)',
@@ -25,6 +32,36 @@ const VENUES = [
 
 export function UpcomingFixtures({ matches }: { matches: Match[] }) {
   const [editingMatch, setEditingMatch] = useState<number | null>(null);
+  const [teams, setTeams] = useState<Record<string, Team>>({});
+
+  useEffect(() => {
+    loadTeams();
+  }, []);
+
+  const loadTeams = async () => {
+    try {
+      const res = await fetch('/api/teams/settings');
+      const data = await res.json();
+      const teamMap: Record<string, Team> = {};
+      (data.teams || []).forEach((t: any) => {
+        teamMap[t.name] = {
+          name: t.name,
+          homeKitColor: t.home_kit_color || 'white',
+          awayKitColor: t.away_kit_color || 'black',
+        };
+      });
+      setTeams(teamMap);
+    } catch (error) {
+      console.error('Failed to load teams:', error);
+    }
+  };
+
+  const getKitColor = (teamName: string, isHome: boolean) => {
+    const team = teams[teamName];
+    if (!team) return KIT_COLORS[0]; // Default white
+    const colorValue = isHome ? team.homeKitColor : team.awayKitColor;
+    return KIT_COLORS.find(c => c.value === colorValue) || KIT_COLORS[0];
+  };
 
   const handleUpdateMatch = async (matchId: number, formData: FormData) => {
     const homeScoreRaw = formData.get('homeScore')?.toString();
@@ -72,14 +109,51 @@ export function UpcomingFixtures({ matches }: { matches: Match[] }) {
       ) : (
         matches.map((match) => (
           <div key={match.id} className="flex flex-col gap-3 rounded-xl border border-zinc-100 dark:border-zinc-800 bg-blue-50/50 dark:bg-zinc-900 p-3">
-            <div className="flex items-center justify-between">
-              <div className="text-sm">
-                <div className="font-semibold text-zinc-900 dark:text-zinc-100">{match.homeTeam} vs {match.awayTeam}</div>
-                <div className="text-xs text-zinc-500 dark:text-zinc-400">
-                  {match.date ? new Date(match.date).toLocaleDateString('en-GB') : 'TBC'} {match.date ? new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : ''} • {match.venue || 'TBC'} {match.round ? `• ${match.round}` : ''}
+            <div className="space-y-2">
+              {/* Teams with kit colors */}
+              <div className="flex items-center justify-between gap-3">
+                {/* Home Team */}
+                <div className="flex-1 text-right">
+                  <div className="font-semibold text-zinc-900 dark:text-zinc-100 text-sm">{match.homeTeam}</div>
+                  <div
+                    className="w-8 h-8 rounded-full border-2 border-gray-300 shadow-sm ml-auto mt-1"
+                    style={{ backgroundColor: getKitColor(match.homeTeam, true).hex }}
+                    title={`Home Kit: ${getKitColor(match.homeTeam, true).label}`}
+                  />
+                </div>
+
+                {/* VS / Score */}
+                <div className="flex flex-col items-center px-2">
+                  {match.status === 'finished' ? (
+                    <div className="text-lg font-black text-zinc-900 dark:text-zinc-100">
+                      {match.homeScore ?? 0} - {match.awayScore ?? 0}
+                    </div>
+                  ) : (
+                    <div className="text-sm font-bold text-zinc-400">VS</div>
+                  )}
+                </div>
+
+                {/* Away Team */}
+                <div className="flex-1 text-left">
+                  <div className="font-semibold text-zinc-900 dark:text-zinc-100 text-sm">{match.awayTeam}</div>
+                  <div
+                    className="w-8 h-8 rounded-full border-2 border-gray-300 shadow-sm mr-auto mt-1"
+                    style={{ backgroundColor: getKitColor(match.awayTeam, false).hex }}
+                    title={`Away Kit: ${getKitColor(match.awayTeam, false).label}`}
+                  />
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+
+              {/* Match details */}
+              <div className="text-xs text-zinc-500 dark:text-zinc-400 text-center">
+                {match.date ? new Date(match.date).toLocaleDateString('en-GB') : 'TBC'} 
+                {match.date && ` • ${new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}`}
+                {match.venue && ` • ${match.venue}`}
+                {match.round && ` • ${match.round}`}
+              </div>
+
+              {/* Action buttons */}
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-zinc-100 dark:border-zinc-800">
                 <button
                   onClick={() => setEditingMatch(editingMatch === match.id ? null : match.id)}
                   className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-1 rounded hover:bg-blue-200 dark:hover:bg-blue-900/50"
