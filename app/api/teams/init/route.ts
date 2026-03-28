@@ -23,13 +23,13 @@ export async function POST() {
     const initialTeams = [
       { name: 'NOMURA', homeKitColor: 'red', awayKitColor: 'grey' },     // Home: Red, Away: Grey
       { name: 'BBVA', homeKitColor: 'blue', awayKitColor: 'white' },       // Home: Blue, Away: White
-      { name: 'LGT', homeKitColor: 'red', awayKitColor: 'white' },         // Home: Red+Blue (red), Away: White
-      { name: 'CACIB', homeKitColor: 'white', awayKitColor: 'grey' },      // Home: White&Green (white), Away: Grey
+      { name: 'LGT', homeKitColor: 'red-blue', awayKitColor: 'white' },    // Home: Red+Blue (split), Away: White
+      { name: 'CACIB', homeKitColor: 'white-green', awayKitColor: 'grey' }, // Home: White+Green (split), Away: Grey
       { name: 'CITI', homeKitColor: 'blue', awayKitColor: 'white' },       // Default: Blue, White
-      { name: 'SCB', homeKitColor: 'navy', awayKitColor: 'white' },        // Home: Navy, Away: White
-      { name: 'UBS', homeKitColor: 'white', awayKitColor: 'black' },       // Home: White, Away: Black
-      { name: 'HSBC', homeKitColor: 'red', awayKitColor: 'white' },        // Default: Red, White
-      { name: 'KPMG', homeKitColor: 'blue', awayKitColor: 'white' },       // Home: Blue, Away: White
+      { name: 'SCB', homeKitColor: 'navy', awayKitColor: 'white' },          // Home: Navy, Away: White
+      { name: 'UBS', homeKitColor: 'white', awayKitColor: 'black' },         // Home: White, Away: Black
+      { name: 'HSBC', homeKitColor: 'red', awayKitColor: 'white' },          // Default: Red, White
+      { name: 'KPMG', homeKitColor: 'blue', awayKitColor: 'white' },         // Home: Blue, Away: White
     ];
 
     let inserted = 0;

@@ -6,7 +6,7 @@ import HomeLayout from '@/components/HomeLayout';
 import { useLanguage } from '@/context/LanguageContext';
 import { TEAMS } from '@/lib/constants';
 import { getAnnouncements } from '@/lib/actions';
-import { KIT_COLORS } from '@/lib/kitColors';
+import { KIT_COLORS, getKitColorInfo } from '@/lib/kitColors';
 import type { Announcement } from '@/lib/schema';
 
 export const dynamic = 'force-dynamic';
@@ -76,8 +76,8 @@ function HomeContent() {
     const normalizedName = teamName?.trim().toUpperCase();
     const team = teams[normalizedName || ''];
     const colorValue = isHome ? team?.homeKitColor : team?.awayKitColor;
-    const color = KIT_COLORS.find(c => c.value === colorValue);
-    return color || KIT_COLORS[0]; // Default white
+    // Use the getKitColorInfo helper which handles both solid and split colors
+    return getKitColorInfo(colorValue || 'white');
   };
 
   const loadData = async () => {
@@ -354,11 +354,21 @@ function HomeContent() {
                       className="flex justify-between items-center p-4 bg-slate-50 rounded-lg border border-slate-200"
                     >
                       <div className="text-left w-1/3 flex items-center gap-2">
-                        <div
-                          className="w-6 h-6 rounded-full border border-slate-300 shadow-sm flex-shrink-0"
-                          style={{ backgroundColor: getKitColor(match.homeTeam, true).hex }}
-                          title={getKitColor(match.homeTeam, true).label}
-                        />
+                        {(() => {
+                          const homeColor = getKitColor(match.homeTeam, true);
+                          const isSplit = homeColor.type === 'split' && homeColor.hex2;
+                          return (
+                            <div
+                              className="w-6 h-6 rounded-full border border-slate-300 shadow-sm flex-shrink-0"
+                              style={isSplit ? {
+                                background: `linear-gradient(135deg, ${homeColor.hex} 50%, ${homeColor.hex2} 50%)`,
+                              } : {
+                                backgroundColor: homeColor.hex,
+                              }}
+                              title={homeColor.label}
+                            />
+                          );
+                        })()}
                         <div>
                           <div className="font-bold text-slate-900">{match.homeTeam}</div>
                           <div className="text-xs text-slate-500">{t('主場', 'Home')}</div>
@@ -387,11 +397,21 @@ function HomeContent() {
                           <div className="font-bold text-slate-900">{match.awayTeam}</div>
                           <div className="text-xs text-slate-500">{t('作客', 'Away')}</div>
                         </div>
-                        <div
-                          className="w-6 h-6 rounded-full border border-slate-300 shadow-sm flex-shrink-0"
-                          style={{ backgroundColor: getKitColor(match.awayTeam, false).hex }}
-                          title={getKitColor(match.awayTeam, false).label}
-                        />
+                        {(() => {
+                          const awayColor = getKitColor(match.awayTeam, false);
+                          const isSplit = awayColor.type === 'split' && awayColor.hex2;
+                          return (
+                            <div
+                              className="w-6 h-6 rounded-full border border-slate-300 shadow-sm flex-shrink-0"
+                              style={isSplit ? {
+                                background: `linear-gradient(135deg, ${awayColor.hex} 50%, ${awayColor.hex2} 50%)`,
+                              } : {
+                                backgroundColor: awayColor.hex,
+                              }}
+                              title={awayColor.label}
+                            />
+                          );
+                        })()}
                       </div>
                     </div>
                   ))
