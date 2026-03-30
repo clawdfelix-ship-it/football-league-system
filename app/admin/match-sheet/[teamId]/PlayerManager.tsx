@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { addPlayer, deletePlayer, uploadPlayerPhoto } from '@/lib/actions';
+import { addPlayer, deletePlayer, updatePlayer, uploadPlayerPhoto } from '@/lib/actions';
 import { useRouter } from 'next/navigation';
 import type { Player } from '@/lib/schema';
 
@@ -9,6 +9,7 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
   const router = useRouter();
   const [isAdding, setIsAdding] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [editingPlayer, setEditingPlayer] = useState<Player | null>(null);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -60,6 +61,43 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
     }
   }
 
+  async function handleEditSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!editingPlayer) return;
+    setIsLoading(true);
+
+    try {
+      const formData = new FormData(event.currentTarget);
+      const name = formData.get('name') as string;
+      const number = parseInt(formData.get('number') as string);
+      const position = formData.get('position') as string;
+      const identityPrefix = formData.get('identityPrefix') as string;
+      const email = formData.get('email') as string;
+      const phoneNumber = formData.get('phoneNumber') as string;
+
+      const result = await updatePlayer({
+        id: editingPlayer.id,
+        name,
+        number,
+        position,
+        identityPrefix,
+        email,
+        phoneNumber,
+      });
+
+      if (!result.success) {
+        throw new Error(result.message || 'Failed to update player');
+      }
+
+      setEditingPlayer(null);
+      router.refresh();
+    } catch (error) {
+      alert('Failed to update player: ' + (error instanceof Error ? error.message : 'Unknown error'));
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   return (
     <div className="space-y-6">
       {/* Player List */}
@@ -92,6 +130,16 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setEditingPlayer(player)}
+                    className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
+                    title="Edit Player"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                  </button>
                   <DeletePlayerButton playerId={player.id} />
                 </div>
               </div>
@@ -220,6 +268,121 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
           </button>
         )}
       </div>
+
+      {/* Edit Player Modal */}
+      {editingPlayer && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+          <form
+            onSubmit={handleEditSubmit}
+            className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 shadow-2xl max-w-md w-full space-y-5 text-white"
+          >
+            <div className="flex justify-between items-center border-b border-zinc-800 pb-4">
+              <h3 className="text-xl font-bold text-white">Edit Player</h3>
+              <button
+                type="button"
+                onClick={() => setEditingPlayer(null)}
+                className="text-zinc-400 hover:text-white"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </button>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-zinc-300">Name</label>
+              <input
+                name="name"
+                required
+                defaultValue={editingPlayer.name}
+                className="w-full border border-zinc-700 bg-zinc-800 rounded-lg px-3 py-2 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600"
+                placeholder="Player Name"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-zinc-300">Jersey No.</label>
+                <input
+                  name="number"
+                  type="number"
+                  required
+                  min="0"
+                  max="99"
+                  defaultValue={editingPlayer.jerseyNumber}
+                  className="w-full border border-zinc-700 bg-zinc-800 rounded-lg px-3 py-2 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600"
+                  placeholder="0-99"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-zinc-300">Position</label>
+                <select
+                  name="position"
+                  required
+                  defaultValue={editingPlayer.position}
+                  className="w-full border border-zinc-700 bg-zinc-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-zinc-600 appearance-none"
+                >
+                  <option value="FW">Forward (FW)</option>
+                  <option value="MF">Midfielder (MF)</option>
+                  <option value="DF">Defender (DF)</option>
+                  <option value="GK">Goalkeeper (GK)</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-zinc-300">HKID (First 3 chars)</label>
+              <input
+                name="identityPrefix"
+                required
+                maxLength={3}
+                defaultValue={editingPlayer.identityPrefix || ''}
+                className="w-full border border-zinc-700 bg-zinc-800 rounded-lg px-3 py-2 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 uppercase"
+                placeholder="e.g. A12"
+              />
+              <p className="text-xs text-zinc-500">Only the first 3 characters are required for verification.</p>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-zinc-300">Email (Optional)</label>
+              <input
+                name="email"
+                type="email"
+                defaultValue={editingPlayer.email || ''}
+                className="w-full border border-zinc-700 bg-zinc-800 rounded-lg px-3 py-2 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600"
+                placeholder="player@example.com"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-zinc-300">Phone (Optional)</label>
+              <input
+                name="phoneNumber"
+                type="tel"
+                defaultValue={editingPlayer.phoneNumber || ''}
+                className="w-full border border-zinc-700 bg-zinc-800 rounded-lg px-3 py-2 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600"
+                placeholder="+852 XXXX XXXX"
+              />
+            </div>
+
+            <div className="flex gap-3 pt-4">
+              <button
+                type="button"
+                onClick={() => setEditingPlayer(null)}
+                className="flex-1 px-4 py-2.5 border border-zinc-700 bg-transparent text-white rounded-lg hover:bg-zinc-800 font-medium transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="flex-1 px-4 py-2.5 bg-white text-black rounded-lg hover:bg-zinc-200 disabled:opacity-50 font-bold transition-colors"
+              >
+                {isLoading ? 'Saving...' : 'Save Changes'}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   );
 }
