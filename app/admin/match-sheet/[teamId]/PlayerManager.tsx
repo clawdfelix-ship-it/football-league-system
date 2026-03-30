@@ -75,8 +75,7 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
       const email = formData.get('email') as string;
       const phoneNumber = formData.get('phoneNumber') as string;
 
-      const result = await updatePlayer({
-        id: editingPlayer.id,
+      const result = await updatePlayer(editingPlayer.id, {
         name,
         number,
         position,
@@ -307,7 +306,7 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
                   required
                   min="0"
                   max="99"
-                  defaultValue={editingPlayer.jerseyNumber}
+                  defaultValue={editingPlayer.jerseyNumber ?? undefined}
                   className="w-full border border-zinc-700 bg-zinc-800 rounded-lg px-3 py-2 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600"
                   placeholder="0-99"
                 />
@@ -318,7 +317,7 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
                 <select
                   name="position"
                   required
-                  defaultValue={editingPlayer.position}
+                  defaultValue={editingPlayer.position ?? 'FW'}
                   className="w-full border border-zinc-700 bg-zinc-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-zinc-600 appearance-none"
                 >
                   <option value="FW">Forward (FW)</option>
