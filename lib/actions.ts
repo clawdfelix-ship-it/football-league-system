@@ -236,6 +236,38 @@ export async function deletePlayer(id: number | string) {
   }
 }
 
+export async function updatePlayer(id: number | string, data: {
+  name?: string;
+  number?: number;
+  position?: string;
+  phoneNumber?: string;
+  email?: string;
+  identityPrefix?: string;
+}) {
+  try {
+    const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
+
+    if (isNaN(numericId)) {
+      return { success: false, message: 'Invalid player ID' };
+    }
+
+    const updateData: Record<string, unknown> = { updatedAt: new Date() };
+    if (data.name !== undefined) updateData.name = data.name;
+    if (data.number !== undefined) updateData.jerseyNumber = data.number;
+    if (data.position !== undefined) updateData.position = data.position;
+    if (data.phoneNumber !== undefined) updateData.phoneNumber = data.phoneNumber;
+    if (data.email !== undefined) updateData.email = data.email;
+    if (data.identityPrefix !== undefined) updateData.identityPrefix = data.identityPrefix;
+
+    const res = await db.update(players).set(updateData).where(eq(players.id, numericId)).returning();
+
+    return { success: true, player: res[0] };
+  } catch (error) {
+    console.error('Failed to update player:', error);
+    return { success: false, message: error instanceof Error ? error.message : 'Unknown error' };
+  }
+}
+
 export async function uploadPlayerPhoto(formData: FormData) {
   try {
     const file = formData.get('file') as File;

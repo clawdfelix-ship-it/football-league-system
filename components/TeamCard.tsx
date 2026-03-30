@@ -1,8 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import type { TeamContact } from '@/lib/team-contacts';
 import type { Player } from '@/lib/schema';
+import { updatePlayer } from '@/lib/actions';
 
 interface TeamCardProps {
   team: TeamContact;
@@ -53,7 +55,7 @@ function CopyButton({ value, label }: { value: string; label: string }) {
   );
 }
 
-function PlayerRow({ player }: { player: Player }) {
+function PlayerRow({ player, onEdit }: { player: Player; onEdit: (player: Player) => void }) {
   const hasPhone = !!player.phoneNumber;
   const hasEmail = !!player.email;
 
@@ -72,14 +74,163 @@ function PlayerRow({ player }: { player: Player }) {
         {hasEmail ? (
           <a href={`mailto:${player.email!}`} onClick={e => e.stopPropagation()} className="text-xs" title={`📧 ${player.email!}`}>📧</a>
         ) : null}
+        <button
+          onClick={(e) => { e.stopPropagation(); onEdit(player); }}
+          className="text-xs p-1 rounded hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors"
+          title="編輯球員"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>
+        </button>
       </div>
     </div>
   );
 }
 
+function EditPlayerModal({ player, onClose, onSaved }: { player: Player; onClose: () => void; onSaved: () => void }) {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setIsLoading(true);
+    try {
+      const formData = new FormData(event.currentTarget);
+      const result = await updatePlayer(player.id, {
+        name: formData.get('name') as string,
+        number: parseInt(formData.get('number') as string),
+        position: formData.get('position') as string,
+        phoneNumber: formData.get('phoneNumber') as string,
+        email: formData.get('email') as string,
+        identityPrefix: formData.get('identityPrefix') as string,
+      });
+      if (!result.success) {
+        throw new Error(result.message || 'Failed to update player');
+      }
+      onSaved();
+      onClose();
+    } catch (error) {
+      alert('Failed to update player: ' + (error instanceof Error ? error.message : 'Unknown error'));
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 shadow-2xl max-w-md w-full space-y-5 text-white"
+      >
+        <div className="flex justify-between items-center border-b border-zinc-800 pb-4">
+          <h3 className="text-xl font-bold text-white">編輯球員</h3>
+          <button type="button" onClick={onClose} className="text-zinc-400 hover:text-white">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-zinc-300">姓名</label>
+          <input
+            name="name"
+            defaultValue={player.name}
+            required
+            className="w-full border border-zinc-700 bg-zinc-800 rounded-lg px-3 py-2 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600"
+            placeholder="球員姓名"
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-zinc-300">球衣號碼</label>
+            <input
+              name="number"
+              type="number"
+              required
+              min="0"
+              max="99"
+              defaultValue={player.jerseyNumber ?? ''}
+              className="w-full border border-zinc-700 bg-zinc-800 rounded-lg px-3 py-2 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600"
+              placeholder="0-99"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-zinc-300">位置</label>
+            <select
+              name="position"
+              required
+              defaultValue={player.position ?? ''}
+              className="w-full border border-zinc-700 bg-zinc-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-zinc-600 appearance-none"
+            >
+              <option value="GK">守門員 (GK)</option>
+              <option value="DF">後衛 (DF)</option>
+              <option value="MF">中場 (MF)</option>
+              <option value="FW">前鋒 (FW)</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-zinc-300">身份證明 (前3位)</label>
+          <input
+            name="identityPrefix"
+            maxLength={3}
+            defaultValue={player.identityPrefix ?? ''}
+            className="w-full border border-zinc-700 bg-zinc-800 rounded-lg px-3 py-2 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 uppercase"
+            placeholder="例如 A12"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-zinc-300">電話</label>
+          <input
+            name="phoneNumber"
+            type="tel"
+            defaultValue={player.phoneNumber ?? ''}
+            className="w-full border border-zinc-700 bg-zinc-800 rounded-lg px-3 py-2 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600"
+            placeholder="電話號碼"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-zinc-300">電郵</label>
+          <input
+            name="email"
+            type="email"
+            defaultValue={player.email ?? ''}
+            className="w-full border border-zinc-700 bg-zinc-800 rounded-lg px-3 py-2 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600"
+            placeholder="電郵地址"
+          />
+        </div>
+
+        <div className="flex gap-3 pt-4">
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex-1 px-4 py-2.5 border border-zinc-700 bg-transparent text-white rounded-lg hover:bg-zinc-800 font-medium transition-colors"
+          >
+            取消
+          </button>
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="flex-1 px-4 py-2.5 bg-white text-black rounded-lg hover:bg-zinc-200 disabled:opacity-50 font-bold transition-colors"
+          >
+            {isLoading ? '儲存中...' : '儲存'}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
 export function TeamCard({ team, players }: TeamCardProps) {
+  const router = useRouter();
   const [expanded, setExpanded] = useState(false);
   const [playersExpanded, setPlayersExpanded] = useState(false);
+  const [editingPlayer, setEditingPlayer] = useState<Player | null>(null);
 
   const teamPlayers = players.filter(p => p.team === team.team);
 
@@ -161,6 +312,7 @@ export function TeamCard({ team, players }: TeamCardProps) {
             </div>
           )}
 
+
           {/* 3. 球員列表 */}
           <div>
             <button
@@ -191,12 +343,12 @@ export function TeamCard({ team, players }: TeamCardProps) {
                     </div>
                     <div className="flex items-center gap-1.5 text-[9px] font-bold text-zinc-400 uppercase flex-shrink-0">
                       <span className="w-3.5 text-center">電</span>
-                      <span className="w-3.5 text-center">電</span>
                       <span className="w-3.5 text-center">郵</span>
+                      <span className="w-3.5 text-center">編</span>
                     </div>
                   </div>
                   {teamPlayers.slice().sort((a, b) => (a.jerseyNumber ?? 999) - (b.jerseyNumber ?? 999)).map(player => (
-                    <PlayerRow key={player.id} player={player} />
+                    <PlayerRow key={player.id} player={player} onEdit={setEditingPlayer} />
                   ))}
                 </div>
               )}
@@ -205,6 +357,14 @@ export function TeamCard({ team, players }: TeamCardProps) {
 
         </div>
       </div>
+
+      {editingPlayer && (
+        <EditPlayerModal
+          player={editingPlayer}
+          onClose={() => setEditingPlayer(null)}
+          onSaved={() => router.refresh()}
+        />
+      )}
     </div>
   );
 }
