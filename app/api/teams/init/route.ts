@@ -25,10 +25,10 @@ export async function POST() {
       { name: 'BBVA', homeKitColor: 'blue', awayKitColor: 'white' },       // Home: Blue, Away: White
       { name: 'LGT', homeKitColor: 'red-blue', awayKitColor: 'white' },    // Home: Red+Blue (split), Away: White
       { name: 'CACIB', homeKitColor: 'white-green', awayKitColor: 'grey' }, // Home: White+Green (split), Away: Grey
-      { name: 'CITI', homeKitColor: 'blue', awayKitColor: 'white' },       // Default: Blue, White
+      { name: 'CITI', homeKitColor: 'white', awayKitColor: 'X' },            // Home: White, Away: Undecided
       { name: 'SCB', homeKitColor: 'navy', awayKitColor: 'white' },          // Home: Navy, Away: White
       { name: 'UBS', homeKitColor: 'white', awayKitColor: 'black' },         // Home: White, Away: Black
-      { name: 'HSBC', homeKitColor: 'red', awayKitColor: 'white' },          // Default: Red, White
+      { name: 'HSBC', homeKitColor: 'red', awayKitColor: 'navy' },          // Home: Red, Away: Navy
       { name: 'KPMG', homeKitColor: 'blue', awayKitColor: 'white' },         // Home: Blue, Away: White
     ];
 

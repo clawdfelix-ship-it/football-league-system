@@ -12,6 +12,8 @@ export const KIT_COLORS = [
   { value: 'indigo', label: '靛藍色', hex: '#4F46E5', text: 'text-white', type: 'solid' },
   { value: 'navy', label: '深藍色', hex: '#1e3a5f', text: 'text-white', type: 'solid' },
   { value: 'grey', label: '灰色', hex: '#6b7280', text: 'text-white', type: 'solid' },
+  // Undecided
+  { value: 'X', label: '待定', hex: '#9ca3af', text: 'text-white', type: 'solid' },
   // Split colors (two-tone kits)
   { value: 'white-green', label: '白+綠', hex: '#FFFFFF', hex2: '#16A34A', text: 'text-slate-900', type: 'split' },
   { value: 'red-blue', label: '紅+藍', hex: '#DC2626', hex2: '#2563EB', text: 'text-white', type: 'split' },
