@@ -173,7 +173,7 @@ export function UpcomingFixtures({ matches }: { matches: Match[] }) {
 
               {/* Match details */}
               <div className="text-xs text-zinc-500 dark:text-zinc-400 text-center">
-                {match.date ? new Date(match.date).toLocaleDateString('en-GB') : 'TBC'} 
+                {match.date ? new Date(match.date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }) : 'TBC'} 
                 {match.date && ` • ${new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}`}
                 {match.venue && ` • ${match.venue}`}
                 {match.round && ` • ${match.round}`}
