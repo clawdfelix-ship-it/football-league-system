@@ -376,7 +376,7 @@ function HomeContent() {
                       </div>
                       <div className="text-center w-1/3">
                         <div className="text-sm text-slate-600 font-bold">
-                          {match.date ? new Date(match.date).toLocaleDateString('en-GB') : 'TBC'}
+                          {match.date ? new Date(match.date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }) : 'TBC'}
                         </div>
                         {match.date && (
                           <div className="text-sm text-slate-600">
@@ -434,7 +434,7 @@ function HomeContent() {
                     >
                       <div className="text-left w-1/3">
                         <div className="font-bold text-slate-900">{match.homeTeam}</div>
-                        <div className="text-xs text-slate-500">{match.date ? new Date(match.date).toLocaleDateString('en-GB') : ''}</div>
+                        <div className="text-xs text-slate-500">{match.date ? new Date(match.date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }) : ''}</div>
                       </div>
                       <div className="text-center w-1/3">
                         <div className="font-black text-lg text-slate-900">
@@ -474,7 +474,7 @@ function HomeContent() {
                       <div className="flex justify-between items-start mb-2">
                         <h4 className="font-bold text-slate-900">{item.title}</h4>
                         <span className="text-xs font-medium text-slate-500 bg-slate-200 px-2 py-1 rounded">
-                          {new Date(item.date).toLocaleDateString('en-GB')} {new Date(item.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+                          {new Date(item.date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })} {new Date(item.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
                         </span>
                       </div>
                       <p className="text-slate-700 whitespace-pre-wrap">{item.content}</p>
