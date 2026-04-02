@@ -135,7 +135,7 @@ export default function FixturesPage() {
                         <div className="text-2xl font-bold text-gray-400">VS</div>
                       )}
                       <div className="text-sm text-gray-500 mt-2 text-center">
-                        <div>{match.date ? new Date(match.date).toLocaleDateString('zh-HK', { weekday: 'short', day: 'numeric', month: 'short' }) : 'TBC'}</div>
+                        <div>{match.date ? new Date(match.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) + ' (' + new Date(match.date).toLocaleDateString('en-GB', { weekday: 'short' }) + ')' : 'TBC'}</div>
                         <div>{match.venue || 'TBC'}</div>
                       </div>
                     </div>

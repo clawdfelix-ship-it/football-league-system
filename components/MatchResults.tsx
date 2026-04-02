@@ -76,7 +76,7 @@ export function MatchResults({ matches }: { matches: Match[] }) {
               <div className="text-sm">
                 <div className="font-semibold text-zinc-900 dark:text-zinc-100">{match.homeTeam} vs {match.awayTeam}</div>
                 <div className="text-xs text-zinc-500 dark:text-zinc-400">
-                  {match.date ? new Date(match.date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }) : 'TBC'} {match.date ? new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : ''} • {match.venue || 'TBC'} {match.round ? `• ${match.round}` : ''}
+                  {match.date ? new Date(match.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) + ' (' + new Date(match.date).toLocaleDateString('en-GB', { weekday: 'short' }) + ')' : 'TBC'} {match.date ? new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : ''} • {match.venue || 'TBC'} {match.round ? `• ${match.round}` : ''}
                 </div>
               </div>
               <div className="flex items-center gap-2">
