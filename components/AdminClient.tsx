@@ -153,7 +153,10 @@ export function MatchList({
                         <option value="finished">Finished</option>
                       </select>
                     </div>
-                    <button type="submit" className="bg-blue-600 text-white text-xs py-1.5 rounded hover:bg-blue-700 transition-colors">Update Result</button>
+                    <div className="flex gap-2">
+                      <button type="button" className="bg-zinc-200 text-zinc-700 text-xs py-1.5 px-3 rounded hover:bg-zinc-300 transition-colors" onClick={() => setEditingMatch(null)}>Cancel</button>
+                      <button type="submit" className="bg-blue-600 text-white text-xs py-1.5 px-3 rounded hover:bg-blue-700 transition-colors">Confirm Update</button>
+                    </div>
                   </form>
                 ) : (
                   <div className="text-right font-mono text-sm font-bold text-zinc-400 dark:text-zinc-600">
@@ -241,7 +244,10 @@ export function MatchList({
                         <option value="finished">Finished</option>
                       </select>
                     </div>
-                    <button type="submit" className="bg-blue-600 text-white text-xs py-1.5 rounded hover:bg-blue-700 transition-colors">Update Result</button>
+                    <div className="flex gap-2">
+                      <button type="button" className="bg-zinc-200 text-zinc-700 text-xs py-1.5 px-3 rounded hover:bg-zinc-300 transition-colors" onClick={() => setEditingMatch(null)}>Cancel</button>
+                      <button type="submit" className="bg-blue-600 text-white text-xs py-1.5 px-3 rounded hover:bg-blue-700 transition-colors">Confirm Update</button>
+                    </div>
                   </form>
                 ) : (
                   <div className="text-right font-mono text-sm font-bold text-zinc-900 dark:text-zinc-100">
