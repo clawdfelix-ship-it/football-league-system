@@ -95,8 +95,10 @@ export function UpcomingFixtures({ matches }: { matches: Match[] }) {
     let matchDate: Date | undefined;
     if (dateRaw && dateRaw !== 'TBC') {
       const timeString = timeRaw || '00:00';
-      const dateTimeString = `${dateRaw}T${timeString}`;
-      matchDate = new Date(dateTimeString);
+      const [year, month, day] = dateRaw.split('-').map(Number);
+      const [hours, minutes] = timeString.split(':').map(Number);
+      // Create date as LOCAL time (Hong Kong), not UTC
+      matchDate = new Date(year, month - 1, day, hours, minutes);
     }
 
     await updateMatch(matchId, {
