@@ -118,6 +118,21 @@ export async function createAnnouncementsTable() {
   }
 }
 
+// 創建比賽球員入球表（神射手榜）
+export async function createMatchPlayerGoalsTable() {
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS match_player_goals (
+      id SERIAL PRIMARY KEY,
+      match_id INTEGER NOT NULL,
+      player_id INTEGER NOT NULL,
+      goals INTEGER NOT NULL DEFAULT 0,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      CONSTRAINT match_player_goals_match_player_unique UNIQUE (match_id, player_id)
+    );
+  `);
+}
+
 // 初始化數據庫
 export async function initializeDatabase() {
   try {
@@ -125,6 +140,7 @@ export async function initializeDatabase() {
     await createUsersTable();
     await createMatchesTable();
     await createAnnouncementsTable();
+    await createMatchPlayerGoalsTable();
     console.log('數據庫初始化成功');
   } catch (error) {
     console.error('數據庫初始化失敗:', error);
