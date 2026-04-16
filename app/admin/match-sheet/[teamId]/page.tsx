@@ -48,27 +48,31 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
           position: 'relative',
         }}
       >
-        <a
-          href={whatsappUrl}
-          target="_blank"
-          rel="noreferrer"
+        <div
           style={{
             position: 'absolute',
             top: '6mm',
             right: '6mm',
-            width: '18mm',
-            height: '18mm',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '0.6mm',
           }}
         >
-          <Image
-            src={whatsappQrDataUrl}
-            alt="WhatsApp QR Code"
-            width={256}
-            height={256}
-            unoptimized
-            style={{ width: '100%', height: '100%' }}
-          />
-        </a>
+          <a href={whatsappUrl} target="_blank" rel="noreferrer" style={{ width: '14mm', height: '14mm' }}>
+            <Image
+              src={whatsappQrDataUrl}
+              alt="WhatsApp QR Code"
+              width={256}
+              height={256}
+              unoptimized
+              style={{ width: '100%', height: '100%' }}
+            />
+          </a>
+          <div style={{ fontSize: '5pt', fontWeight: 800, color: 'black', letterSpacing: '0.08em', lineHeight: 1 }}>
+            SCAN AND SEND
+          </div>
+        </div>
         {/* Inner container - 200mm wide for perfect print alignment */}
         <div style={{
           width: '200mm',
