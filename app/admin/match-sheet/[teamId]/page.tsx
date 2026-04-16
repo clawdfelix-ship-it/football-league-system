@@ -97,13 +97,15 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
         >
           <div style={{ position: 'relative' }}>
             <div style={{ fontSize: '6.5pt', fontWeight: 700, lineHeight: 1.2, textAlign: 'left', color: 'black', minWidth: '72mm' }}>
-              <div>日期：__________</div>
-              <div>
-                隊名 (Team):{' '}
-                <span style={{ textDecoration: 'underline dotted black', fontSize: '8pt', fontWeight: 800 }}>{team.name}</span>
-                <span style={{ fontSize: '5.5pt', fontWeight: 700, color: '#555', marginLeft: '1mm' }}>（主 Home / 客 Away）</span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2mm' }}>
+                <div>日期：__________</div>
+                <div>
+                  隊名 (Team):{' '}
+                  <span style={{ textDecoration: 'underline dotted black', fontSize: '8pt', fontWeight: 800 }}>{team.name}</span>
+                  <span style={{ fontSize: '5.5pt', fontWeight: 700, color: '#555', marginLeft: '1mm' }}>（主 Home / 客 Away）</span>
+                </div>
+                <div>地點：__________</div>
               </div>
-              <div>地點：__________</div>
             </div>
 
             <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.3mm' }}>
