@@ -95,7 +95,7 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
             boxSizing: 'border-box',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '2mm' }}>
+          <div style={{ position: 'relative' }}>
             <div style={{ fontSize: '6.5pt', fontWeight: 700, lineHeight: 1.2, textAlign: 'left', color: 'black', minWidth: '72mm' }}>
               <div>日期：__________</div>
               <div>
@@ -106,7 +106,7 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
               <div>地點：__________</div>
             </div>
 
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.3mm' }}>
+            <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.3mm' }}>
               <div style={{ fontSize: '12pt', fontWeight: 900, letterSpacing: '0.1em', fontStyle: 'italic', lineHeight: 1.1, color: 'black' }}>
                 HONG KONG BANK LEAGUE 2026
               </div>
@@ -128,8 +128,6 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
                 SQUAD LIST
               </div>
             </div>
-
-            <div style={{ width: '18mm' }} />
           </div>
         </header>
 
