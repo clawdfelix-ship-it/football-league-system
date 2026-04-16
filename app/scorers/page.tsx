@@ -9,6 +9,7 @@ type ScorerRow = {
   playerName: string;
   team: string | null;
   goals: number;
+  lastMatchDate: string | null;
 };
 
 export const dynamic = 'force-dynamic';
@@ -76,6 +77,7 @@ export default function ScorersPage() {
                       <th className="px-6 py-3 font-semibold text-slate-700 w-16">#</th>
                       <th className="px-6 py-3 font-semibold text-slate-700">{t('球員', 'Player')}</th>
                       <th className="px-6 py-3 font-semibold text-slate-700">{t('球隊', 'Team')}</th>
+                      <th className="px-6 py-3 font-semibold text-slate-700">{t('賽事日期', 'Match Date')}</th>
                       <th className="px-6 py-3 font-semibold text-slate-700 text-right w-24">{t('入球', 'Goals')}</th>
                     </tr>
                   </thead>
@@ -85,6 +87,9 @@ export default function ScorersPage() {
                         <td className="px-6 py-3 text-slate-600">{idx + 1}</td>
                         <td className="px-6 py-3 font-semibold text-slate-900">{r.playerName}</td>
                         <td className="px-6 py-3 text-slate-700">{r.team || '-'}</td>
+                        <td className="px-6 py-3 text-slate-700">
+                          {r.lastMatchDate ? new Date(r.lastMatchDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '-'}
+                        </td>
                         <td className="px-6 py-3 text-right font-bold text-slate-900">{r.goals}</td>
                       </tr>
                     ))}
@@ -98,4 +103,3 @@ export default function ScorersPage() {
     </HomeLayout>
   );
 }
-
