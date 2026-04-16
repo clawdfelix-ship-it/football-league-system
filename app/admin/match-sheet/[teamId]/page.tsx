@@ -1,5 +1,7 @@
 import React from 'react';
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
+import QRCode from 'qrcode';
 import { getTeamPlayers } from '@/lib/actions';
 import { TEAMS } from '@/lib/constants';
 import { PrintButton } from './PrintButton';
@@ -14,6 +16,8 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
   if (!team) return notFound();
 
   const players: Player[] = await getTeamPlayers(team.name);
+  const whatsappUrl = 'https://wa.me/85291000876';
+  const whatsappQrDataUrl = await QRCode.toDataURL(whatsappUrl, { margin: 0, width: 256 });
 
   // Always show 30 slots (5 cols × 6 rows = 30)
   const totalSlots = 30;
@@ -41,8 +45,30 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
           flexDirection: 'column',
           gap: '1mm',
           fontFamily: 'Arial, Helvetica, sans-serif',
+          position: 'relative',
         }}
       >
+        <a
+          href={whatsappUrl}
+          target="_blank"
+          rel="noreferrer"
+          style={{
+            position: 'absolute',
+            top: '6mm',
+            right: '6mm',
+            width: '18mm',
+            height: '18mm',
+          }}
+        >
+          <Image
+            src={whatsappQrDataUrl}
+            alt="WhatsApp QR Code"
+            width={256}
+            height={256}
+            unoptimized
+            style={{ width: '100%', height: '100%' }}
+          />
+        </a>
         {/* Inner container - 200mm wide for perfect print alignment */}
         <div style={{
           width: '200mm',
@@ -148,7 +174,7 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
               }}
             >
               {/* Checkbox corner - bigger */}
-              <div style={{ position: 'absolute', bottom: '0.3mm', left: '0.3mm', width: '2.5mm', height: '2.5mm', border: '1.5px solid black' }} />
+              <div style={{ position: 'absolute', bottom: '1mm', left: '1mm', width: '8mm', height: '8mm', border: '1.5px solid black', borderRadius: '9999px' }} />
 
               {/* Photo - bigger */}
               <div style={{ width: '24mm', height: '24mm', border: '1px solid #666', background: '#f5f5f5', overflow: 'hidden', flexShrink: 0, position: 'relative' }}>
@@ -192,7 +218,7 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
                 boxSizing: 'border-box',
               }}
             >
-              <div style={{ position: 'absolute', bottom: '0.3mm', left: '0.3mm', width: '2.5mm', height: '2.5mm', border: '1.5px solid black' }} />
+              <div style={{ position: 'absolute', bottom: '1mm', left: '1mm', width: '8mm', height: '8mm', border: '1.5px solid black', borderRadius: '9999px' }} />
               <div style={{ width: '24mm', height: '24mm', border: '1.5px dashed #888', flexShrink: 0, background: '#fafafa' }} />
             </div>
           ))}
