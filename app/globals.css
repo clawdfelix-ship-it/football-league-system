@@ -62,8 +62,11 @@
   }
 
   /* Remove decorative images, keep player photos */
-  body:not(.match-sheet) img {
+  body img {
     display: none !important;
+  }
+  .match-sheet img {
+    display: block !important;
   }
 
   /* Prevent page breaks inside elements */
