@@ -95,38 +95,41 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
             boxSizing: 'border-box',
           }}
         >
-          <div style={{ fontSize: '6.5pt', fontWeight: 700, lineHeight: 1.2, textAlign: 'left', color: 'black' }}>
-            日期：__________
-          </div>
-          <div style={{ fontSize: '12pt', fontWeight: 900, letterSpacing: '0.1em', fontStyle: 'italic', lineHeight: 1.1, color: 'black' }}>
-            HONG KONG BANK LEAGUE 2026
-          </div>
-          <div style={{ fontSize: '5.5pt', fontWeight: 700, letterSpacing: '0.04em', color: '#555', lineHeight: 1.1 }}>
-            PARTNERED WITH ZENEX SPORTS | 香港銀行足球聯賽 2026
-          </div>
-          <div style={{
-            display: 'inline-block',
-            borderTop: '1px solid black',
-            borderBottom: '1px solid black',
-            fontSize: '9pt',
-            fontWeight: 900,
-            letterSpacing: '0.16em',
-            padding: '0.3mm 6mm',
-            margin: '0.3mm auto 0.4mm',
-            lineHeight: 1.2,
-            color: 'black',
-          }}>
-            SQUAD LIST
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.2mm', fontSize: '6.5pt', fontWeight: 700, lineHeight: 1.2 }}>
-            <div style={{ textAlign: 'left' }}>
-              隊名 (Team):{' '}
-              <span style={{ textDecoration: 'underline dotted black', fontSize: '8pt', fontWeight: 800 }}>{team.name}</span>
-              <span style={{ fontSize: '5.5pt', fontWeight: 700, color: '#555', marginLeft: '1mm' }}>（主 Home / 客 Away）</span>
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '2mm' }}>
+            <div style={{ fontSize: '6.5pt', fontWeight: 700, lineHeight: 1.2, textAlign: 'left', color: 'black', minWidth: '72mm' }}>
+              <div>日期：__________</div>
+              <div>
+                隊名 (Team):{' '}
+                <span style={{ textDecoration: 'underline dotted black', fontSize: '8pt', fontWeight: 800 }}>{team.name}</span>
+                <span style={{ fontSize: '5.5pt', fontWeight: 700, color: '#555', marginLeft: '1mm' }}>（主 Home / 客 Away）</span>
+              </div>
+              <div>地點：__________</div>
             </div>
-            <div style={{ textAlign: 'right' }}>
-              地點：__________
+
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.3mm' }}>
+              <div style={{ fontSize: '12pt', fontWeight: 900, letterSpacing: '0.1em', fontStyle: 'italic', lineHeight: 1.1, color: 'black' }}>
+                HONG KONG BANK LEAGUE 2026
+              </div>
+              <div style={{ fontSize: '5.5pt', fontWeight: 700, letterSpacing: '0.04em', color: '#555', lineHeight: 1.1 }}>
+                PARTNERED WITH ZENEX SPORTS | 香港銀行足球聯賽 2026
+              </div>
+              <div style={{
+                display: 'inline-block',
+                borderTop: '1px solid black',
+                borderBottom: '1px solid black',
+                fontSize: '9pt',
+                fontWeight: 900,
+                letterSpacing: '0.16em',
+                padding: '0.3mm 6mm',
+                margin: '0.3mm auto 0.4mm',
+                lineHeight: 1.2,
+                color: 'black',
+              }}>
+                SQUAD LIST
+              </div>
             </div>
+
+            <div style={{ width: '18mm' }} />
           </div>
         </header>
 
