@@ -95,6 +95,9 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
             boxSizing: 'border-box',
           }}
         >
+          <div style={{ fontSize: '6.5pt', fontWeight: 700, lineHeight: 1.2, textAlign: 'left', color: 'black' }}>
+            日期：__________
+          </div>
           <div style={{ fontSize: '12pt', fontWeight: 900, letterSpacing: '0.1em', fontStyle: 'italic', lineHeight: 1.1, color: 'black' }}>
             HONG KONG BANK LEAGUE 2026
           </div>
@@ -115,17 +118,14 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
           }}>
             SQUAD LIST
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1.2mm', fontSize: '6.5pt', fontWeight: 700, lineHeight: 1.2 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.2mm', fontSize: '6.5pt', fontWeight: 700, lineHeight: 1.2 }}>
             <div style={{ textAlign: 'left' }}>
               隊名 (Team):{' '}
               <span style={{ textDecoration: 'underline dotted black', fontSize: '8pt', fontWeight: 800 }}>{team.name}</span>
               <span style={{ fontSize: '5.5pt', fontWeight: 700, color: '#555', marginLeft: '1mm' }}>（主 Home / 客 Away）</span>
             </div>
-            <div style={{ textAlign: 'center' }}>
-              地點：__________
-            </div>
             <div style={{ textAlign: 'right' }}>
-              日期：__________
+              地點：__________
             </div>
           </div>
         </header>
