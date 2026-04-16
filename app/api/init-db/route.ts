@@ -68,6 +68,24 @@ export async function POST(request: NextRequest) {
     } catch (e) {
       console.log('matches.updated_at 欄位檢查異常 (可能已存在)', e);
     }
+
+    // 5. 確保 match_player_goals 表存在（神射手榜）
+    try {
+      await db.execute(sql`
+        CREATE TABLE IF NOT EXISTS match_player_goals (
+          id SERIAL PRIMARY KEY,
+          match_id INTEGER NOT NULL,
+          player_id INTEGER NOT NULL,
+          goals INTEGER NOT NULL DEFAULT 0,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          CONSTRAINT match_player_goals_match_player_unique UNIQUE (match_id, player_id)
+        );
+      `);
+      console.log('5. 檢查/創建 match_player_goals 表完成');
+    } catch (e) {
+      console.log('match_player_goals 表創建異常', e);
+    }
     
     return NextResponse.json({ message: '數據庫初始化成功' });
   } catch (error) {

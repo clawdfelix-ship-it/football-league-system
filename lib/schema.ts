@@ -1,4 +1,4 @@
-import { pgTable, serial, varchar, integer, timestamp, text, date } from 'drizzle-orm/pg-core';
+import { pgTable, serial, varchar, integer, timestamp, text, date, uniqueIndex } from 'drizzle-orm/pg-core';
 
 // 球員表
 export const players = pgTable('players', {
@@ -68,6 +68,22 @@ export const teams = pgTable('teams', {
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 
+// 比賽球員入球（用於神射手榜）
+export const matchPlayerGoals = pgTable(
+  'match_player_goals',
+  {
+    id: serial('id').primaryKey(),
+    matchId: integer('match_id').notNull(),
+    playerId: integer('player_id').notNull(),
+    goals: integer('goals').notNull().default(0),
+    createdAt: timestamp('created_at').defaultNow(),
+    updatedAt: timestamp('updated_at').defaultNow(),
+  },
+  (table) => ({
+    matchPlayerUnique: uniqueIndex('match_player_goals_match_player_unique').on(table.matchId, table.playerId),
+  })
+);
+
 // 數據類型導出
 export type Player = typeof players.$inferSelect;
 export type NewPlayer = typeof players.$inferInsert;
@@ -79,3 +95,5 @@ export type Announcement = typeof announcements.$inferSelect;
 export type NewAnnouncement = typeof announcements.$inferInsert;
 export type Team = typeof teams.$inferSelect;
 export type NewTeam = typeof teams.$inferInsert;
+export type MatchPlayerGoals = typeof matchPlayerGoals.$inferSelect;
+export type NewMatchPlayerGoals = typeof matchPlayerGoals.$inferInsert;
