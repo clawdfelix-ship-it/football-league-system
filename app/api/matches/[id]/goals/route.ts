@@ -26,7 +26,11 @@ export async function GET(_: Request, ctx: { params: Promise<{ id: string }> }) 
   try {
     const entries = await listMatchGoalEntries(matchId);
     return ok({ entries });
-  } catch {
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    if (msg.includes('match_player_goals') && msg.includes('does not exist')) {
+      return fail(409, 'DB_NOT_INITIALIZED', 'Missing match_player_goals table. Run /api/init-db once.');
+    }
     return fail(500, 'INTERNAL_ERROR', 'Failed to fetch match goals');
   }
 }
@@ -87,8 +91,11 @@ export async function PUT(request: Request, ctx: { params: Promise<{ id: string 
     await replaceMatchGoalEntries(matchId, inputEntries);
     const entries = await listMatchGoalEntries(matchId);
     return ok({ message: 'Match goals saved', entries });
-  } catch {
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    if (msg.includes('match_player_goals') && msg.includes('does not exist')) {
+      return fail(409, 'DB_NOT_INITIALIZED', 'Missing match_player_goals table. Run /api/init-db once.');
+    }
     return fail(500, 'INTERNAL_ERROR', 'Failed to save match goals');
   }
 }
-

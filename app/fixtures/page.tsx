@@ -19,7 +19,14 @@ type Match = {
 };
 
 export default async function FixturesPage() {
-  const [teamRows, matchRows] = await Promise.all([listTeamSettings(), listMatches()]);
+  let teamRows: Awaited<ReturnType<typeof listTeamSettings>> = [];
+  let matchRows: Awaited<ReturnType<typeof listMatches>> = [];
+  try {
+    [teamRows, matchRows] = await Promise.all([listTeamSettings(), listMatches()]);
+  } catch {
+    teamRows = [];
+    matchRows = [];
+  }
 
   const teams: Record<string, Team> = {};
   for (const t of teamRows) {

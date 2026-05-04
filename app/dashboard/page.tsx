@@ -6,7 +6,12 @@ import { listPlayers } from '@/lib/queries';
 export const dynamic = 'force-dynamic';
 
 export default async function DashboardPage() {
-  const players: Player[] = (await listPlayers()) as Player[];
+  let players: Player[] = [];
+  try {
+    players = (await listPlayers()) as Player[];
+  } catch {
+    players = [];
+  }
 
   // 統計數據
   const totalPlayers = players.length;
