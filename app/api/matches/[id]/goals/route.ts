@@ -89,11 +89,21 @@ export async function PUT(request: Request, ctx: { params: Promise<{ id: string 
     if (team === awayTeam) sumAway += e.goals;
   }
 
-  if (match.homeScore !== null && sumHome !== match.homeScore) {
-    return fail(400, 'VALIDATION_ERROR', `Home goals total (${sumHome}) does not match home score (${match.homeScore})`);
-  }
-  if (match.awayScore !== null && sumAway !== match.awayScore) {
-    return fail(400, 'VALIDATION_ERROR', `Away goals total (${sumAway}) does not match away score (${match.awayScore})`);
+  if (inputEntries.length > 0) {
+    if (match.homeScore !== null && sumHome !== match.homeScore) {
+      return fail(
+        400,
+        'VALIDATION_ERROR',
+        `Home goals total (${sumHome}) does not match home score (${match.homeScore})`
+      );
+    }
+    if (match.awayScore !== null && sumAway !== match.awayScore) {
+      return fail(
+        400,
+        'VALIDATION_ERROR',
+        `Away goals total (${sumAway}) does not match away score (${match.awayScore})`
+      );
+    }
   }
 
   try {

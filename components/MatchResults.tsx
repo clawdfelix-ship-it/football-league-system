@@ -33,6 +33,7 @@ export function MatchResults({ matches, allowGoals }: { matches: Match[]; allowG
   const [goals, setGoals] = useState<Array<{ playerId: number; goals: number }>>([]);
   const [goalsLoading, setGoalsLoading] = useState(false);
   const [goalsError, setGoalsError] = useState<string | null>(null);
+  const playerLabel = (p: PublicPlayer) => (p.jerseyNumber ? `${p.name} #${p.jerseyNumber}` : p.name);
 
   const editing = useMemo(
     () => (editingMatch === null ? null : matches.find((m) => m.id === editingMatch) ?? null),
@@ -274,7 +275,7 @@ export function MatchResults({ matches, allowGoals }: { matches: Match[]; allowG
                             >
                               {homePlayers.map((p) => (
                                 <option key={p.id} value={p.id} disabled={p.id !== g.playerId && usedIds.has(p.id)}>
-                                  {p.name}
+                                  {playerLabel(p)}
                                 </option>
                               ))}
                             </select>
@@ -329,7 +330,7 @@ export function MatchResults({ matches, allowGoals }: { matches: Match[]; allowG
                             >
                               {awayPlayers.map((p) => (
                                 <option key={p.id} value={p.id} disabled={p.id !== g.playerId && usedIds.has(p.id)}>
-                                  {p.name}
+                                  {playerLabel(p)}
                                 </option>
                               ))}
                             </select>
