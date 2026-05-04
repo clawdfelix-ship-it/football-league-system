@@ -5,14 +5,22 @@ import { drizzle } from 'drizzle-orm/neon-http';
 const databaseUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL;
 
 if (!databaseUrl) {
-  if (process.env.NODE_ENV === 'production') {
-    throw new Error('DATABASE_URL or POSTGRES_URL is required in production');
-  }
   console.warn('⚠️ No database connection string found. Database queries will fail.');
 }
 
 // Export sql for direct usage if needed
-export const sql = databaseUrl ? neon(databaseUrl) : null;
+export const sql = databaseUrl ? neon(databaseUrl) : undefined;
 
 // Export db instance
-export const db = databaseUrl ? drizzle(sql!) : null as any;
+type Db = ReturnType<typeof drizzle>;
+
+const missingDb = new Proxy(
+  {},
+  {
+    get() {
+      throw new Error('DATABASE_URL or POSTGRES_URL is required');
+    },
+  }
+) as unknown as Db;
+
+export const db: Db = databaseUrl ? drizzle(neon(databaseUrl)) : missingDb;

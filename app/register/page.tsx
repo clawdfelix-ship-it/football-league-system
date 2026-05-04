@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
+import { apiJson } from '@/lib/api/client';
 
 export default function RegisterPage() {
   const [email, setEmail] = useState('');
@@ -22,17 +23,13 @@ export default function RegisterPage() {
     }
     setLoading(true);
     try {
-      const res = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, username, password }),
-      });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        setError(data?.message || '註冊失敗');
-        setLoading(false);
-        return;
-      }
+      await apiJson<{ user: { id: string; email: string; username: string; role: string; createdAt: string } }>(
+        await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, username, password }),
+        })
+      );
       const login = await signIn('credentials', {
         email,
         password,
@@ -44,8 +41,8 @@ export default function RegisterPage() {
       } else {
         router.push('/login');
       }
-    } catch {
-      setError('註冊時發生錯誤，請稍後再試');
+    } catch (e) {
+      setError(e instanceof Error ? e.message : '註冊時發生錯誤，請稍後再試');
     } finally {
       setLoading(false);
     }

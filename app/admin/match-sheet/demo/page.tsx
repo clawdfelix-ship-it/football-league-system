@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { PrintButton } from '../[teamId]/PrintButton';
 
 type DemoPlayer = {
@@ -38,18 +38,14 @@ function storageKey(id: number) {
 }
 
 export default function DemoMatchSheet() {
-  const [players, setPlayers] = useState<DemoPlayer[]>(DEMO_PLAYERS_BASE);
+  const [players, setPlayers] = useState<DemoPlayer[]>(() =>
+    DEMO_PLAYERS_BASE.map((p) => {
+      const stored = typeof window !== 'undefined' ? window.localStorage.getItem(storageKey(p.id)) : null;
+      return { ...p, photoUrl: stored || null };
+    })
+  );
   const totalGridSlots = 30;
   const emptySlots = useMemo(() => Array(Math.max(0, totalGridSlots - players.length)).fill(null), [players.length]);
-
-  useEffect(() => {
-    setPlayers((prev) =>
-      prev.map((p) => {
-        const stored = typeof window !== 'undefined' ? window.localStorage.getItem(storageKey(p.id)) : null;
-        return { ...p, photoUrl: stored || null };
-      })
-    );
-  }, []);
 
   const setPhoto = async (playerId: number, file: File) => {
     const reader = new FileReader();

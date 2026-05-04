@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import HomeLayout from '@/components/HomeLayout';
 import KitColorPicker from '@/components/KitColorPicker';
 import { TEAMS } from '@/lib/constants';
+import { apiJson } from '@/lib/api/client';
 
 interface TeamSettings {
   name: string;
@@ -23,15 +24,19 @@ export default function ManagerDashboardPage() {
 
   const loadTeamSettings = async () => {
     try {
-      const res = await fetch('/api/teams/settings');
-      const data = await res.json();
+      const data = await apiJson<{
+        teams: Array<{ name: string; homeKitColor: string; awayKitColor: string }>;
+      }>(await fetch('/api/teams/settings'));
       
       const settings: Record<string, TeamSettings> = {};
-      (data.teams || []).forEach((team: any) => {
-        settings[team.name] = {
-          name: team.name,
-          homeKitColor: team.home_kit_color || 'white',
-          awayKitColor: team.away_kit_color || 'black',
+      const teamRows = data.teams ?? [];
+      teamRows.forEach((team) => {
+        const name = team.name;
+        if (!name) return;
+        settings[name] = {
+          name,
+          homeKitColor: team.homeKitColor || 'white',
+          awayKitColor: team.awayKitColor || 'black',
         };
       });
       
@@ -49,15 +54,17 @@ export default function ManagerDashboardPage() {
     setSaving(true);
     try {
       const settings = teamSettings[selectedTeam];
-      await fetch('/api/teams/settings', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          teamName: selectedTeam,
-          homeKitColor: settings.homeKitColor,
-          awayKitColor: settings.awayKitColor,
-        }),
-      });
+      await apiJson<{ message: string }>(
+        await fetch('/api/teams/settings', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            teamName: selectedTeam,
+            homeKitColor: settings.homeKitColor,
+            awayKitColor: settings.awayKitColor,
+          }),
+        })
+      );
       alert('球衣顏色已更新！');
     } catch (error) {
       console.error('Failed to save settings:', error);

@@ -1,10 +1,20 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { ok, fail } from '@/lib/api/response';
 import { sql } from 'drizzle-orm';
 import { db } from '@/lib/db';
+import { getAuthContext } from '@/lib/authz';
 
-// POST /api/teams/init - Initialize teams table
+export const dynamic = 'force-dynamic';
+
 export async function POST() {
   try {
+    const auth = await getAuthContext();
+    if (!auth) {
+      return fail(401, 'UNAUTHENTICATED', 'Unauthorized');
+    }
+    if (auth.role !== 'admin') {
+      return fail(403, 'FORBIDDEN', 'Forbidden');
+    }
+
     // Create teams table manually using raw SQL
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS teams (
@@ -16,8 +26,6 @@ export async function POST() {
         updated_at TIMESTAMP DEFAULT NOW()
       )
     `);
-
-    console.log('✓ teams table created');
 
     // Insert initial teams with specific colors
     const initialTeams = [
@@ -45,43 +53,36 @@ export async function POST() {
       inserted++;
     }
 
-    console.log(`✓ ${inserted} teams inserted/updated`);
-
-    return NextResponse.json({ 
-      success: true, 
+    return ok({
       message: `Successfully initialized ${inserted} teams`,
-      count: inserted
+      count: inserted,
     });
   } catch (error) {
-    console.error('❌ Failed to initialize teams:', error);
     const errorMessage = error instanceof Error ? error.message : String(error);
-    return NextResponse.json(
-      { 
-        error: 'Failed to initialize teams', 
-        details: errorMessage,
-        stack: error instanceof Error ? error.stack : undefined
-      },
-      { status: 500 }
-    );
+    return fail(500, 'INTERNAL_ERROR', 'Failed to initialize teams', errorMessage);
   }
 }
 
-// GET /api/teams/init - Check teams table status
 export async function GET() {
   try {
+    const auth = await getAuthContext();
+    if (!auth) {
+      return fail(401, 'UNAUTHENTICATED', 'Unauthorized');
+    }
+    if (auth.role !== 'admin') {
+      return fail(403, 'FORBIDDEN', 'Forbidden');
+    }
+
     const result = await db.execute(sql`SELECT COUNT(*) FROM teams`);
-    const count = (result.rows[0] as any)?.count || 0;
-    
-    return NextResponse.json({ 
-      success: true,
-      count: Number(count),
-      message: Number(count) > 0 ? 'Teams table exists with data' : 'Teams table is empty'
+    const row = result.rows[0] as Record<string, unknown> | undefined;
+    const countRaw = row?.count;
+    const count = typeof countRaw === 'string' || typeof countRaw === 'number' ? Number(countRaw) : 0;
+
+    return ok({
+      count,
+      message: count > 0 ? 'Teams table exists with data' : 'Teams table is empty',
     });
   } catch (error) {
-    console.error('Failed to check teams table:', error);
-    return NextResponse.json(
-      { error: 'Teams table does not exist', details: String(error) },
-      { status: 500 }
-    );
+    return fail(500, 'INTERNAL_ERROR', 'Teams table does not exist', String(error));
   }
 }

@@ -1,7 +1,7 @@
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import { getMatches, getTeamPlayers, getAnnouncements, getAllPlayers } from '@/lib/actions';
+import { getMatches, getTeamPlayers, getAnnouncements, getAllPlayers, getTeamKitSettingsMap } from '@/lib/actions';
 import { MatchForm, ResetButton } from '@/components/AdminClient';
 import { PlayerContactList } from '@/components/PlayerContactList';
 import { CollapsibleSection } from '@/components/CollapsibleSection';
@@ -60,6 +60,7 @@ export default async function AdminPage() {
   let teamPlayers: Player[] = [];
   let allPlayers: Player[] = [];
   let announcements: Announcement[] = [];
+  let teamKitSettingsMap: Record<string, { name: string; homeKitColor: string; awayKitColor: string }> = {};
   let dbError = null;
 
   try {
@@ -67,6 +68,7 @@ export default async function AdminPage() {
     // Use try-catch to prevent page crash if DB schema is outdated
     const allMatches = (await getMatches()) as unknown as DbMatch[];
     announcements = await getAnnouncements();
+    teamKitSettingsMap = await getTeamKitSettingsMap();
     
     scheduledMatches = allMatches
       .filter(m => m.status === 'scheduled' || m.status === 'tbc')
@@ -102,9 +104,9 @@ export default async function AdminPage() {
     dbError = "Database schema mismatch. Please click 'Fix Database Schema' button.";
   }
 
-  const username = session.user?.name || (session.user as any)?.username || 'Admin';
-  const role = (session.user as any)?.role || 'manager';
-  const teamId = (session.user as any)?.teamId;
+  const username = session.user?.username || session.user?.name || 'Admin';
+  const role = session.user?.role || 'manager';
+  const teamId = session.user?.teamId;
 
   const isAdmin = role === 'admin';
   const isManager = role === 'manager';
@@ -249,13 +251,13 @@ export default async function AdminPage() {
             
             <CollapsibleSection title="Upcoming Fixtures" badge={scheduledMatches.length} defaultExpanded={false}>
               <div className="p-4 sm:p-6">
-                <UpcomingFixtures matches={scheduledMatches} />
+                <UpcomingFixtures matches={scheduledMatches} teamsByName={teamKitSettingsMap} />
               </div>
             </CollapsibleSection>
 
             <CollapsibleSection title="Match Results" badge={finishedMatches.length} defaultExpanded={false}>
               <div className="p-4 sm:p-6">
-                <MatchResults matches={finishedMatches} />
+                <MatchResults matches={finishedMatches} allowGoals={isAdmin} />
               </div>
             </CollapsibleSection>
 
@@ -266,4 +268,3 @@ export default async function AdminPage() {
     </div>
   );
 }
-

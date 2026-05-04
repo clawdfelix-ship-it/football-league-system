@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import KitColorPicker from './KitColorPicker';
+import { apiJson } from '@/lib/api/client';
 
 interface KitColorManagerProps {
   teamName: string;
@@ -15,71 +16,64 @@ export function KitColorManager({ teamName }: KitColorManagerProps) {
   const [debugInfo, setDebugInfo] = useState<string>('');
 
   useEffect(() => {
-    loadTeamColors();
-  }, [teamName]);
+    let cancelled = false;
+    async function load() {
+      try {
+        setDebugInfo('載入中...');
+        const data = await apiJson<{
+          teams: Array<{ name: string; homeKitColor: string; awayKitColor: string }>;
+        }>(await fetch('/api/teams/settings'));
+        const teamRows = data.teams ?? [];
 
-  const loadTeamColors = async () => {
-    try {
-      setDebugInfo('載入中...');
-      const res = await fetch('/api/teams/settings');
-      const data = await res.json();
-      
-      console.log('📦 API 返回數據:', data);
-      console.log('🔍 尋找球隊:', teamName);
-      
-      // 嘗試多種匹配方式
-      const team = (data.teams || []).find((t: any) => {
-        const match = t.name === teamName || 
-                     t.name?.toUpperCase() === teamName?.toUpperCase() ||
-                     t.name?.trim().toUpperCase() === teamName?.trim().toUpperCase();
-        if (match) {
-          console.log('✅ 找到球隊:', t);
+        const normalizedTarget = teamName.trim().toUpperCase();
+        const team = teamRows.find(
+          (t) => t.name.trim().toUpperCase() === normalizedTarget
+        );
+
+        if (cancelled) return;
+
+        if (team) {
+          const home = team.homeKitColor || 'white';
+          const away = team.awayKitColor || 'black';
+          setHomeKitColor(home);
+          setAwayKitColor(away);
+          setDebugInfo(`已載入：${team.name} - 主場：${home}, 客場：${away}`);
+        } else {
+          const available = teamRows.map((t) => t.name).filter(Boolean);
+          setDebugInfo(`未找到球隊 "${teamName}"，可用球隊：${available.join(', ')}`);
         }
-        return match;
-      });
-      
-      if (team) {
-        console.log('🎨 設置顏色:', team.home_kit_color, team.away_kit_color);
-        setHomeKitColor(team.home_kit_color || 'white');
-        setAwayKitColor(team.away_kit_color || 'black');
-        setDebugInfo(`已載入：${team.name} - 主場：${team.home_kit_color}, 客場：${team.away_kit_color}`);
-      } else {
-        console.log('❌ 找不到球隊，可用球隊:', data.teams?.map((t: any) => t.name));
-        setDebugInfo(`未找到球隊 "${teamName}"，可用球隊：${data.teams?.map((t: any) => t.name).join(', ')}`);
+      } catch (error) {
+        if (!cancelled) {
+          console.error('Failed to load team colors:', error);
+          setDebugInfo(`錯誤：${String(error)}`);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
       }
-    } catch (error) {
-      console.error('Failed to load team colors:', error);
-      setDebugInfo(`錯誤：${String(error)}`);
-    } finally {
-      setLoading(false);
     }
-  };
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [teamName]);
 
   const handleSave = async () => {
     setSaving(true);
     setDebugInfo('儲存中...');
     try {
-      console.log('💾 儲存顏色:', { teamName, homeKitColor, awayKitColor });
-      
-      const res = await fetch('/api/teams/settings', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          teamName,
-          homeKitColor,
-          awayKitColor,
-        }),
-      });
-      
-      const result = await res.json();
-      console.log('📥 儲存結果:', result);
-      
-      if (res.ok) {
-        alert('球衣顏色已更新！');
-        setDebugInfo('✅ 儲存成功！');
-      } else {
-        throw new Error(result.error || '儲存失敗');
-      }
+      await apiJson<{ message: string }>(
+        await fetch('/api/teams/settings', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            teamName,
+            homeKitColor,
+            awayKitColor,
+          }),
+        })
+      );
+      alert('球衣顏色已更新！');
+      setDebugInfo('✅ 儲存成功！');
     } catch (error) {
       console.error('Failed to save settings:', error);
       alert('儲存失敗，請再試一次');

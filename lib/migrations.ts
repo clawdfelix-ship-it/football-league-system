@@ -133,6 +133,70 @@ export async function createMatchPlayerGoalsTable() {
   `);
 }
 
+export async function createIndexesAndConstraints() {
+  await db.execute(sql`CREATE INDEX IF NOT EXISTS idx_players_team ON players(team);`);
+  await db.execute(sql`CREATE INDEX IF NOT EXISTS idx_players_team_jersey ON players(team, jersey_number);`);
+  await db.execute(sql`CREATE INDEX IF NOT EXISTS idx_matches_status_date ON matches(status, date);`);
+  await db.execute(sql`CREATE INDEX IF NOT EXISTS idx_matches_date ON matches(date);`);
+  await db.execute(sql`CREATE INDEX IF NOT EXISTS idx_match_player_goals_match_id ON match_player_goals(match_id);`);
+  await db.execute(sql`CREATE INDEX IF NOT EXISTS idx_match_player_goals_player_id ON match_player_goals(player_id);`);
+
+  await db.execute(sql`
+    DO $$
+    BEGIN
+      ALTER TABLE matches
+        ADD CONSTRAINT matches_status_check
+        CHECK (status IN ('scheduled','finished','tbc')) NOT VALID;
+    EXCEPTION WHEN duplicate_object THEN
+      NULL;
+    END $$;
+  `);
+
+  await db.execute(sql`
+    DO $$
+    BEGIN
+      ALTER TABLE players
+        ADD CONSTRAINT players_status_check
+        CHECK (status IN ('active','injured','suspended','inactive')) NOT VALID;
+    EXCEPTION WHEN duplicate_object THEN
+      NULL;
+    END $$;
+  `);
+
+  await db.execute(sql`
+    DO $$
+    BEGIN
+      ALTER TABLE match_player_goals
+        ADD CONSTRAINT match_player_goals_goals_check
+        CHECK (goals >= 0) NOT VALID;
+    EXCEPTION WHEN duplicate_object THEN
+      NULL;
+    END $$;
+  `);
+
+  await db.execute(sql`
+    DO $$
+    BEGIN
+      ALTER TABLE match_player_goals
+        ADD CONSTRAINT match_player_goals_match_fk
+        FOREIGN KEY (match_id) REFERENCES matches(id) ON DELETE CASCADE;
+    EXCEPTION WHEN duplicate_object THEN
+      NULL;
+    END $$;
+  `);
+
+  await db.execute(sql`
+    DO $$
+    BEGIN
+      ALTER TABLE match_player_goals
+        ADD CONSTRAINT match_player_goals_player_fk
+        FOREIGN KEY (player_id) REFERENCES players(id) ON DELETE CASCADE;
+    EXCEPTION WHEN duplicate_object THEN
+      NULL;
+    END $$;
+  `);
+}
+
 // 初始化數據庫
 export async function initializeDatabase() {
   try {
@@ -141,6 +205,7 @@ export async function initializeDatabase() {
     await createMatchesTable();
     await createAnnouncementsTable();
     await createMatchPlayerGoalsTable();
+    await createIndexesAndConstraints();
     console.log('數據庫初始化成功');
   } catch (error) {
     console.error('數據庫初始化失敗:', error);

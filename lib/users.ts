@@ -34,7 +34,8 @@ export function getUserByEmail(email: string) {
 }
 
 export function getUserPublic(u: AppUser) {
-  const { password, ...rest } = u;
+  const rest = { ...u } as { password?: string };
+  delete rest.password;
   return rest;
 }
 

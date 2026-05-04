@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { apiJson } from '@/lib/api/client';
 
 type CreatedAccount = { team: string; name: string; email: string; password: string };
 type SkippedAccount = { team: string; name: string; email: string };
@@ -27,18 +28,23 @@ export default function GenerateManagerAccountsButton() {
     setOutput('');
 
     try {
-      const res = await fetch('/api/admin/manager-accounts', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ regenerate, mode }),
-      });
-      const raw = await res.text();
-      const data = raw ? (() => { try { return JSON.parse(raw); } catch { return {}; } })() : {};
-      if (!res.ok) throw new Error((data as any).message || raw || 'Failed');
+      const data = await apiJson<{
+        message: string;
+        createdEmails?: string[];
+        updatedEmails?: string[];
+        created?: CreatedAccount[];
+        skipped?: SkippedAccount[];
+      }>(
+        await fetch('/api/admin/manager-accounts', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ regenerate, mode }),
+        })
+      );
 
       if (mode === 'shared') {
-        const createdEmails: string[] = (data as any).createdEmails || [];
-        const updatedEmails: string[] = (data as any).updatedEmails || [];
+        const createdEmails = data.createdEmails ?? [];
+        const updatedEmails = data.updatedEmails ?? [];
         setOutput(
           ['Shared manager password applied.', '', 'Created:', ...createdEmails, '', 'Updated:', ...updatedEmails].join('\n')
         );
@@ -47,8 +53,8 @@ export default function GenerateManagerAccountsButton() {
         return;
       }
 
-      setCreated((data as any).created || []);
-      setSkipped((data as any).skipped || []);
+      setCreated(data.created ?? []);
+      setSkipped(data.skipped ?? []);
       setStatus('success');
       setMessage('Done. Copy passwords now (they are shown only once here).');
     } catch (e) {

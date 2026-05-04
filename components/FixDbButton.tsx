@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { apiJson } from '@/lib/api/client';
 
 export default function FixDbButton() {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -11,10 +12,7 @@ export default function FixDbButton() {
     
     setStatus('loading');
     try {
-      const res = await fetch('/api/init-db', { method: 'POST' });
-      const raw = await res.text();
-      const data = raw ? (() => { try { return JSON.parse(raw); } catch { return {}; } })() : {};
-      if (!res.ok) throw new Error((data as any).message || raw || 'Failed to update DB');
+      await apiJson<{ message: string }>(await fetch('/api/init-db', { method: 'POST' }));
       
       setStatus('success');
       setMessage('Database updated successfully! Please try adding a player now.');

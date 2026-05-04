@@ -9,18 +9,6 @@ interface PlayerContactListProps {
   showTeamFilter?: boolean;
 }
 
-function maskContact(value: string, type: 'email' | 'phone'): string {
-  if (type === 'email') {
-    const [local, domain] = value.split('@');
-    if (!domain) return value;
-    const maskedLocal = local.charAt(0) + '***';
-    return `${maskedLocal}@${domain}`;
-  }
-  // Phone: show last 4 digits
-  if (value.length <= 4) return value;
-  return '****' + value.slice(-4);
-}
-
 export function PlayerContactList({ players, showTeamFilter = false }: PlayerContactListProps) {
   const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set());
   const [filterTeam, setFilterTeam] = useState<string>('all');

@@ -1,4 +1,7 @@
-import { NextResponse } from 'next/server';
+import { ok, fail } from '@/lib/api/response';
+import { ChangePasswordSchema } from '@/lib/api/schemas';
+import { zodDetails } from '@/lib/api/zod';
+import { getClientIp, rateLimit } from '@/lib/api/rate-limit';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { db } from '@/lib/db';
@@ -17,33 +20,29 @@ export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.email) {
-    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    return fail(401, 'UNAUTHENTICATED', 'Unauthorized');
   }
 
-  const role = (session.user as any)?.role;
+  const role = session.user?.role;
   if (role !== 'manager') {
-    return NextResponse.json({ message: 'Forbidden' }, { status: 403 });
+    return fail(403, 'FORBIDDEN', 'Forbidden');
   }
 
   const email = String(session.user.email).toLowerCase();
 
-  let currentPassword = '';
-  let newPassword = '';
+  const ip = getClientIp(request);
+  const rl = rateLimit(`change-password:${ip}:${email}`, { limit: 10, windowMs: 10 * 60 * 1000 });
+  if (!rl.allowed) return fail(429, 'RATE_LIMITED', 'Too many requests');
+
+  let input: { currentPassword: string; newPassword: string };
   try {
-    const body = await request.json();
-    currentPassword = String(body?.currentPassword || '');
-    newPassword = String(body?.newPassword || '');
-  } catch {
-    return NextResponse.json({ message: 'Invalid request body' }, { status: 400 });
+    input = ChangePasswordSchema.parse(await request.json());
+  } catch (e) {
+    return fail(400, 'VALIDATION_ERROR', 'Invalid request body', zodDetails(e));
   }
 
-  if (!currentPassword || !newPassword) {
-    return NextResponse.json({ message: 'Missing password fields' }, { status: 400 });
-  }
-
-  if (newPassword.length < 8) {
-    return NextResponse.json({ message: 'New password must be at least 8 characters' }, { status: 400 });
-  }
+  const currentPassword = input.currentPassword;
+  const newPassword = input.newPassword;
 
   const managerPassword = process.env.MANAGER_PASSWORD;
 
@@ -60,22 +59,22 @@ export async function POST(request: Request) {
 
   if (dbUser) {
     if (dbUser.role !== 'manager') {
-      return NextResponse.json({ message: 'Forbidden' }, { status: 403 });
+      return fail(403, 'FORBIDDEN', 'Forbidden');
     }
 
-    const ok = await bcrypt.compare(currentPassword, dbUser.passwordHash);
+    const passwordOk = await bcrypt.compare(currentPassword, dbUser.passwordHash);
     const okShared = Boolean(managerPassword && currentPassword === managerPassword);
-    if (!ok && !okShared) {
-      return NextResponse.json({ message: 'Current password is incorrect' }, { status: 400 });
+    if (!passwordOk && !okShared) {
+      return fail(400, 'INVALID_CREDENTIALS', 'Current password is incorrect');
     }
 
     const passwordHash = await bcrypt.hash(newPassword, 10);
     await db.update(users).set({ passwordHash }).where(eq(users.id, dbUser.id));
-    return NextResponse.json({ message: 'Password updated' });
+    return ok({ message: 'Password updated' });
   }
 
   if (!managerPassword || currentPassword !== managerPassword) {
-    return NextResponse.json({ message: 'Current password is incorrect' }, { status: 400 });
+    return fail(400, 'INVALID_CREDENTIALS', 'Current password is incorrect');
   }
 
   const passwordHash = await bcrypt.hash(newPassword, 10);
@@ -87,6 +86,5 @@ export async function POST(request: Request) {
     role: 'manager',
   });
 
-  return NextResponse.json({ message: 'Password set' });
+  return ok({ message: 'Password set' });
 }
-

@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode } from 'react';
 
 type Language = 'zh' | 'en';
 
@@ -19,18 +19,11 @@ const defaultContext: LanguageContextType = {
 const LanguageContext = createContext<LanguageContextType>(defaultContext);
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguage] = useState<Language>('zh');
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('language') as Language;
-      if (saved) {
-        setLanguage(saved);
-      }
-    }
-  }, []);
+  const [language, setLanguage] = useState<Language>(() => {
+    if (typeof window === 'undefined') return 'zh';
+    const saved = localStorage.getItem('language') as Language | null;
+    return saved === 'en' || saved === 'zh' ? saved : 'zh';
+  });
 
   const handleSetLanguage = (lang: Language) => {
     setLanguage(lang);
@@ -40,7 +33,6 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   };
 
   const t = (zh: string, en: string): string => {
-    if (!mounted) return zh; // Default to Chinese during SSR
     return language === 'zh' ? zh : en;
   };
 

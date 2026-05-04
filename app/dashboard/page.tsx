@@ -1,12 +1,12 @@
 import HomeLayout from '@/components/HomeLayout';
-import { getAllPlayers } from '@/lib/actions';
 import { TEAMS } from '@/lib/constants';
 import type { Player } from '@/lib/schema';
+import { listPlayers } from '@/lib/queries';
 
 export const dynamic = 'force-dynamic';
 
 export default async function DashboardPage() {
-  const players: Player[] = (await getAllPlayers()) as Player[];
+  const players: Player[] = (await listPlayers()) as Player[];
 
   // 統計數據
   const totalPlayers = players.length;

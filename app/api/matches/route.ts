@@ -1,69 +1,63 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
-import { matches } from '@/lib/schema';
-import { desc, eq, asc, or } from 'drizzle-orm';
+import { NextRequest } from 'next/server';
+import { getAuthContext } from '@/lib/authz';
+import { createMatch, listMatches } from '@/lib/queries';
+import { fail, ok } from '@/lib/api/response';
+import { CreateMatchSchema, MatchStatusSchema } from '@/lib/api/schemas';
+import { zodDetails } from '@/lib/api/zod';
 
 // GET all matches
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 10;
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
     
-    let allMatches;
+    const allMatches = await listMatches(
+      status ? MatchStatusSchema.safeParse(status).data : undefined
+    );
     
-    if (status === 'scheduled') {
-      // For scheduled, we want both 'scheduled' and 'tbc' matches
-      allMatches = await db
-        .select()
-        .from(matches)
-        .where(or(eq(matches.status, 'scheduled'), eq(matches.status, 'tbc')))
-        .orderBy(asc(matches.date));
-    } else if (status) {
-      allMatches = await db
-        .select()
-        .from(matches)
-        .where(eq(matches.status, status))
-        .orderBy(desc(matches.date));
-    } else {
-      allMatches = await db.select().from(matches).orderBy(desc(matches.date));
-    }
-    
-    return NextResponse.json({ matches: allMatches });
+    return ok({ matches: allMatches });
   } catch (error) {
     console.error('Failed to fetch matches:', error);
-    return NextResponse.json({ message: 'Failed to fetch matches' }, { status: 500 });
+    return fail(500, 'INTERNAL_ERROR', 'Failed to fetch matches');
   }
 }
 
 // POST - Add new match
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    
-    // Validate required fields
-    if (!body.homeTeam || !body.awayTeam || !body.date) {
-      return NextResponse.json(
-        { message: 'homeTeam, awayTeam and date are required' },
-        { status: 400 }
-      );
+    const auth = await getAuthContext();
+    if (!auth) {
+      return fail(401, 'UNAUTHORIZED', 'Unauthorized');
     }
+    if (auth.role !== 'admin') {
+      return fail(403, 'FORBIDDEN', 'Forbidden');
+    }
+
+    const body = CreateMatchSchema.parse(await request.json());
+    const status = body.status ?? 'scheduled';
     
-    const newMatch = await db.insert(matches).values({
+    const row = await createMatch({
       homeTeam: body.homeTeam,
       awayTeam: body.awayTeam,
-      homeScore: body.homeScore || null,
-      awayScore: body.awayScore || null,
-      date: new Date(body.date),
-      venue: body.venue || 'TBC',
-      status: body.status || 'scheduled',
-    }).returning();
+      homeScore: body.homeScore ?? null,
+      awayScore: body.awayScore ?? null,
+      date: body.date ?? null,
+      venue: body.venue ?? 'TBC',
+      status,
+      round: body.round ?? null,
+    });
+
+    if (!row) {
+      return fail(500, 'INTERNAL_ERROR', 'Failed to add match');
+    }
     
-    return NextResponse.json({ match: newMatch[0] });
+    return ok({ match: row }, { status: 201 });
   } catch (error) {
     console.error('Failed to add match:', error);
-    return NextResponse.json({ message: 'Failed to add match' }, { status: 500 });
+    const details = zodDetails(error);
+    if (details) return fail(400, 'VALIDATION_ERROR', 'Invalid request body', details);
+    return fail(500, 'INTERNAL_ERROR', 'Failed to add match');
   }
 }

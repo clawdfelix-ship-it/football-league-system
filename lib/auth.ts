@@ -181,9 +181,9 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token }) {
       if (token && session.user) {
-        (session.user as any).username = token.username;
-        (session.user as any).role = token.role;
-        (session.user as any).teamId = token.teamId;
+        session.user.username = token.username;
+        session.user.role = token.role;
+        session.user.teamId = token.teamId;
       }
       return session;
     }

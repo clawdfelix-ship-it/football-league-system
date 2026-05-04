@@ -1,4 +1,6 @@
-import { NextResponse } from 'next/server';
+import { ok, fail } from '@/lib/api/response';
+import { ManagerAccountsSchema } from '@/lib/api/schemas';
+import { zodDetails } from '@/lib/api/zod';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { TEAM_CONTACTS } from '@/lib/team-contacts';
@@ -23,28 +25,28 @@ export async function POST(request: Request) {
     const session = await getServerSession(authOptions);
 
     if (!session) {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+      return fail(401, 'UNAUTHENTICATED', 'Unauthorized');
     }
 
-    const role = (session.user as any)?.role;
+    const role = session.user?.role;
     if (role !== 'admin') {
-      return NextResponse.json({ message: 'Forbidden' }, { status: 403 });
+      return fail(403, 'FORBIDDEN', 'Forbidden');
     }
 
-    let regenerate = false;
-    let mode: 'random' | 'shared' = 'random';
+    let input: { regenerate?: boolean; mode?: 'random' | 'shared' } = {};
     try {
-      const body = await request.json();
-      regenerate = Boolean(body?.regenerate);
-      mode = body?.mode === 'shared' ? 'shared' : 'random';
-    } catch {
-      regenerate = false;
+      input = ManagerAccountsSchema.parse(await request.json().catch(() => ({})));
+    } catch (e) {
+      return fail(400, 'VALIDATION_ERROR', 'Invalid request body', zodDetails(e));
     }
+
+    const regenerate = Boolean(input.regenerate);
+    const mode: 'random' | 'shared' = input.mode === 'shared' ? 'shared' : 'random';
 
     if (mode === 'shared') {
       const sharedPassword = process.env.MANAGER_PASSWORD;
       if (!sharedPassword) {
-        return NextResponse.json({ message: 'MANAGER_PASSWORD is not configured on the server' }, { status: 500 });
+        return fail(500, 'CONFIG_ERROR', 'MANAGER_PASSWORD is not configured on the server');
       }
 
       const passwordHash = await bcrypt.hash(sharedPassword, 10);
@@ -85,7 +87,7 @@ export async function POST(request: Request) {
         }
       }
 
-      return NextResponse.json({
+      return ok({
         message: 'Shared manager password applied',
         createdEmails,
         updatedEmails,
@@ -140,16 +142,12 @@ export async function POST(request: Request) {
       }
     }
 
-    return NextResponse.json({
+    return ok({
       message: 'Manager accounts processed',
       created,
       skipped,
     });
   } catch (e) {
-    console.error('Failed to process manager accounts:', e);
-    return NextResponse.json(
-      { message: e instanceof Error ? e.message : 'Failed to process manager accounts' },
-      { status: 500 }
-    );
+    return fail(500, 'INTERNAL_ERROR', e instanceof Error ? e.message : 'Failed to process manager accounts');
   }
 }

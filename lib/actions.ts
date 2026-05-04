@@ -1,10 +1,53 @@
 'use server';
 
 import { db } from './db';
-import { matches, type Match, players, type Player, announcements, type Announcement } from './schema';
-import { desc, eq, asc } from 'drizzle-orm';
+import { matches, players } from './schema';
+import { eq } from 'drizzle-orm';
 import { TEAMS } from './constants';
 import { put } from '@vercel/blob';
+import {
+  createAnnouncement,
+  createMatch,
+  deleteAllMatches,
+  deleteAnnouncementById,
+  deleteMatchById,
+  deletePlayerById,
+  listPlayers,
+  listPlayersByTeam,
+  setPlayerPhotoUrlById,
+  updatePlayerById,
+  listAnnouncements,
+  listMatches,
+  listTeamSettings,
+  updateMatchById,
+} from '@/lib/queries';
+
+export type TeamKitSettings = {
+  name: string;
+  homeKitColor: string;
+  awayKitColor: string;
+};
+
+export async function getTeamKitSettingsMap(): Promise<Record<string, TeamKitSettings>> {
+  try {
+    const rows = await listTeamSettings();
+
+    const map: Record<string, TeamKitSettings> = {};
+    for (const t of rows) {
+      const key = (t.name ?? '').trim().toUpperCase();
+      if (!key) continue;
+      map[key] = {
+        name: t.name,
+        homeKitColor: t.homeKitColor ?? 'white',
+        awayKitColor: t.awayKitColor ?? 'black',
+      };
+    }
+    return map;
+  } catch (error) {
+    console.error('Failed to fetch team kit settings:', error);
+    return {};
+  }
+}
 
 export type TeamStanding = {
   teamName: string;
@@ -99,10 +142,7 @@ export async function getStandings(): Promise<TeamStanding[]> {
 }
 
 export async function getMatches(status?: 'scheduled' | 'finished' | 'tbc') {
-  if (status) {
-    return await db.select().from(matches).where(eq(matches.status, status)).orderBy(status === 'scheduled' ? asc(matches.date) : desc(matches.date));
-  }
-  return await db.select().from(matches).orderBy(desc(matches.date));
+  return await listMatches(status);
 }
 
 export async function addMatch(data: {
@@ -115,7 +155,16 @@ export async function addMatch(data: {
   status: 'scheduled' | 'finished' | 'tbc';
   round?: string;
 }) {
-  return await db.insert(matches).values({ ...data, updatedAt: new Date() }).returning();
+  return await createMatch({
+    homeTeam: data.homeTeam,
+    awayTeam: data.awayTeam,
+    homeScore: data.homeScore ?? null,
+    awayScore: data.awayScore ?? null,
+    date: data.date ?? null,
+    venue: data.venue ?? null,
+    status: data.status,
+    round: data.round ?? null,
+  });
 }
 
 export async function updateMatch(id: number, data: {
@@ -128,7 +177,10 @@ export async function updateMatch(id: number, data: {
   status?: 'scheduled' | 'finished' | 'tbc';
   round?: string;
 }) {
-  return await db.update(matches).set({ ...data, updatedAt: new Date() }).where(eq(matches.id, id)).returning();
+  return await updateMatchById(id, {
+    ...data,
+    date: data.date ?? undefined,
+  });
 }
 
 export async function deleteMatch(id: number | string) {
@@ -136,7 +188,7 @@ export async function deleteMatch(id: number | string) {
     const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
     if (isNaN(numericId)) throw new Error('Invalid match ID');
     
-    await db.delete(matches).where(eq(matches.id, numericId));
+    await deleteMatchById(numericId);
     return { success: true };
   } catch (error) {
     console.error('Failed to delete match:', error);
@@ -146,8 +198,7 @@ export async function deleteMatch(id: number | string) {
 
 export async function resetSeason() {
   try {
-    // Force direct delete
-    const result = await db.delete(matches).returning();
+    const result = await deleteAllMatches();
     console.log(`Deleted ${result.length} matches`);
     return result;
   } catch (error) {
@@ -158,12 +209,7 @@ export async function resetSeason() {
 
 export async function getTeamPlayers(teamName: string) {
   try {
-    const teamPlayers = await db
-      .select()
-      .from(players)
-      .where(eq(players.team, teamName))
-      .orderBy(asc(players.jerseyNumber));
-    return teamPlayers;
+    return await listPlayersByTeam(teamName);
   } catch (error) {
     console.error('Failed to get team players:', error);
     return [];
@@ -172,10 +218,7 @@ export async function getTeamPlayers(teamName: string) {
 
 export async function getAllPlayers() {
   try {
-    return await db
-      .select()
-      .from(players)
-      .orderBy(asc(players.team), asc(players.jerseyNumber), asc(players.name));
+    return await listPlayers();
   } catch (error) {
     console.error('Failed to get all players:', error);
     return [];
@@ -196,10 +239,7 @@ export async function addPlayer(data: {
       eq(players.team, data.team)
     );
     
-    // Explicitly type 'p' as any to bypass implicit any error, or cast existingPlayer
-    // Better yet, existingPlayer is inferred from schema, so p should be typed.
-    // However, sometimes Drizzle inference needs help or TS config is strict.
-    if (existingPlayer.some((p: any) => p.jerseyNumber === data.number)) {
+    if (existingPlayer.some((p) => p.jerseyNumber === data.number)) {
       return { success: false, message: `Player with number ${data.number} already exists for team ${data.team}` };
     }
 
@@ -228,7 +268,7 @@ export async function deletePlayer(id: number | string) {
       return { success: false, message: 'Invalid player ID' };
     }
 
-    await db.delete(players).where(eq(players.id, numericId));
+    await deletePlayerById(numericId);
     return { success: true };
   } catch (error) {
     console.error('Failed to delete player:', error);
@@ -251,17 +291,17 @@ export async function updatePlayer(id: number | string, data: {
       return { success: false, message: 'Invalid player ID' };
     }
 
-    const updateData: Record<string, unknown> = { updatedAt: new Date() };
-    if (data.name !== undefined) updateData.name = data.name;
-    if (data.number !== undefined) updateData.jerseyNumber = data.number;
-    if (data.position !== undefined) updateData.position = data.position;
-    if (data.phoneNumber !== undefined) updateData.phoneNumber = data.phoneNumber;
-    if (data.email !== undefined) updateData.email = data.email;
-    if (data.identityPrefix !== undefined) updateData.identityPrefix = data.identityPrefix;
+    const player = await updatePlayerById(numericId, {
+      name: data.name,
+      jerseyNumber: data.number,
+      position: data.position,
+      phoneNumber: data.phoneNumber,
+      email: data.email,
+      identityPrefix: data.identityPrefix,
+    });
 
-    const res = await db.update(players).set(updateData).where(eq(players.id, numericId)).returning();
-
-    return { success: true, player: res[0] };
+    if (!player) return { success: false, message: 'Player not found' };
+    return { success: true, player };
   } catch (error) {
     console.error('Failed to update player:', error);
     return { success: false, message: error instanceof Error ? error.message : 'Unknown error' };
@@ -286,10 +326,7 @@ export async function uploadPlayerPhoto(formData: FormData) {
       access: 'public',
     });
 
-    await db
-      .update(players)
-      .set({ photoUrl: blob.url })
-      .where(eq(players.id, parseInt(playerId)));
+    await setPlayerPhotoUrlById(parseInt(playerId), blob.url);
 
     return { success: true, url: blob.url };
   } catch (error) {
@@ -302,7 +339,7 @@ export async function uploadPlayerPhoto(formData: FormData) {
 
 export async function getAnnouncements() {
   try {
-    return await db.select().from(announcements).orderBy(asc(announcements.date));
+    return await listAnnouncements();
   } catch (error) {
     console.error('Failed to fetch announcements:', error);
     return [];
@@ -315,14 +352,14 @@ export async function addAnnouncement(data: {
   date: Date;
 }) {
   try {
-    const res = await db.insert(announcements).values({
-      title: data.title,
+    const announcement = await createAnnouncement({
+      title: data.title ?? null,
       content: data.content,
       date: data.date,
-      updatedAt: new Date(),
-    }).returning();
-    
-    return { success: true, announcement: res[0] };
+    });
+
+    if (!announcement) return { success: false, message: 'Failed to add announcement' };
+    return { success: true, announcement };
   } catch (error) {
     console.error('Failed to add announcement:', error);
     return { success: false, message: error instanceof Error ? error.message : 'Unknown error' };
@@ -331,7 +368,7 @@ export async function addAnnouncement(data: {
 
 export async function deleteAnnouncement(id: number) {
   try {
-    await db.delete(announcements).where(eq(announcements.id, id));
+    await deleteAnnouncementById(id);
     return { success: true };
   } catch (error) {
     console.error('Failed to delete announcement:', error);

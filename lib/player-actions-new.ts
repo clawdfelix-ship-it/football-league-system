@@ -1,6 +1,6 @@
 import { db } from './db';
 import { players, type Player, type NewPlayer } from './schema';
-import { eq, sql } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 
 // 球員位置選項
 export const POSITIONS = [

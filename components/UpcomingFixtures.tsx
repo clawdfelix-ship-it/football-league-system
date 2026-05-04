@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { updateMatch, deleteMatch } from '@/lib/actions';
 import { KIT_COLORS } from '@/lib/kitColors';
 
@@ -30,34 +30,15 @@ const VENUES = [
   'TBC'
 ];
 
-export function UpcomingFixtures({ matches }: { matches: Match[] }) {
+export function UpcomingFixtures({
+  matches,
+  teamsByName,
+}: {
+  matches: Match[];
+  teamsByName: Record<string, Team>;
+}) {
   const [editingMatch, setEditingMatch] = useState<number | null>(null);
-  const [teams, setTeams] = useState<Record<string, Team>>({});
-
-  useEffect(() => {
-    loadTeams();
-  }, []);
-
-  const loadTeams = async () => {
-    try {
-      const res = await fetch('/api/teams/settings');
-      const data = await res.json();
-      const teamMap: Record<string, Team> = {};
-      (data.teams || []).forEach((t: any) => {
-        // Normalize team name for matching
-        const normalizedName = t.name.trim().toUpperCase();
-        teamMap[normalizedName] = {
-          name: t.name,
-          homeKitColor: t.home_kit_color || 'white',
-          awayKitColor: t.away_kit_color || 'black',
-        };
-      });
-      console.log('Loaded teams:', teamMap);
-      setTeams(teamMap);
-    } catch (error) {
-      console.error('Failed to load teams:', error);
-    }
-  };
+  const teams = teamsByName;
 
   const getKitColor = (teamName: string, isHome: boolean) => {
     // Normalize team name for matching
@@ -65,7 +46,6 @@ export function UpcomingFixtures({ matches }: { matches: Match[] }) {
     const team = teams[normalizedName];
     
     if (!team) {
-      console.log('Team not found, using default:', teamName);
       return KIT_COLORS[0]; // Default white
     }
     
@@ -73,7 +53,6 @@ export function UpcomingFixtures({ matches }: { matches: Match[] }) {
     const color = KIT_COLORS.find(c => c.value === colorValue);
     
     if (!color) {
-      console.log('Color not found, using default:', colorValue);
       return KIT_COLORS[0]; // Default white
     }
     

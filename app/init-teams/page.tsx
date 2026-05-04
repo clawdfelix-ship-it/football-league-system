@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import HomeLayout from '@/components/HomeLayout';
+import { apiJson } from '@/lib/api/client';
 
 export default function InitTeamsPage() {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -10,16 +11,9 @@ export default function InitTeamsPage() {
   const handleInit = async () => {
     setStatus('loading');
     try {
-      const res = await fetch('/api/teams/init', { method: 'POST' });
-      const data = await res.json();
-      
-      if (res.ok) {
-        setStatus('success');
-        setMessage('✅ 球隊數據初始化成功！');
-      } else {
-        setStatus('error');
-        setMessage(`❌ 錯誤：${data.error}`);
-      }
+      await apiJson<{ message: string; count: number }>(await fetch('/api/teams/init', { method: 'POST' }));
+      setStatus('success');
+      setMessage('✅ 球隊數據初始化成功！');
     } catch (error) {
       setStatus('error');
       setMessage(`❌ 錯誤：${String(error)}`);
@@ -29,12 +23,18 @@ export default function InitTeamsPage() {
   const handleCheck = async () => {
     setStatus('loading');
     try {
-      const res = await fetch('/api/teams/settings');
-      const data = await res.json();
+      const data = await apiJson<{
+        teams: Array<{ name: string; homeKitColor: string; awayKitColor: string }>;
+      }>(await fetch('/api/teams/settings'));
       
       if (data.teams && data.teams.length > 0) {
+        const rows = data.teams ?? [];
         setStatus('success');
-        setMessage(`✅ 找到 ${data.teams.length} 支球隊：\n\n${data.teams.map((t: any) => `${t.name}: 主場=${t.home_kit_color}, 客場=${t.away_kit_color}`).join('\n')}`);
+        setMessage(
+          `✅ 找到 ${rows.length} 支球隊：\n\n${rows
+            .map((t) => `${t.name}: 主場=${t.homeKitColor}, 客場=${t.awayKitColor}`)
+            .join('\n')}`
+        );
       } else {
         setStatus('error');
         setMessage('❌ 數據庫為空，請點擊「初始化數據庫」');

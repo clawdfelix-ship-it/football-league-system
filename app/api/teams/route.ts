@@ -1,40 +1,30 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/lib/auth';
-import { db } from '@/lib/db';
-import { matches } from '@/lib/schema';
 import { TEAMS } from '@/lib/constants';
+import { ok, fail } from '@/lib/api/response';
+import { getAuthContext } from '@/lib/authz';
+import { deleteAllMatches } from '@/lib/queries';
 
-// GET - Get all teams
+export const revalidate = 3600;
+
 export async function GET() {
   try {
-    return NextResponse.json({ 
-      teams: TEAMS.filter(t => t.name !== 'DEMO').map(t => t.name)
+    return ok({
+      teams: TEAMS.filter((t) => t.name !== 'DEMO').map((t) => t.name),
     });
-  } catch (error) {
-    console.error('Failed:', error);
-    return NextResponse.json({ message: 'Error' }, { status: 500 });
+  } catch {
+    return fail(500, 'INTERNAL_ERROR', 'Failed to list teams');
   }
 }
 
-// POST - Reset all matches (clear data) - Admin only
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
-    const session = await getServerSession(authOptions);
-    const role = (session?.user as any)?.role;
+    const auth = await getAuthContext();
+    if (!auth) return fail(401, 'UNAUTHENTICATED', 'Unauthorized');
+    if (auth.role !== 'admin') return fail(403, 'FORBIDDEN', 'Admin access required');
 
-    if (role !== 'admin') {
-      return NextResponse.json({ message: 'Forbidden: Admin access required' }, { status: 403 });
-    }
+    await deleteAllMatches();
 
-    // Delete all matches
-    await db.delete(matches);
-    
-    return NextResponse.json({ 
-      message: '數據已清除' 
-    });
-  } catch (error) {
-    console.error('Failed to reset:', error);
-    return NextResponse.json({ message: 'Error' }, { status: 500 });
+    return ok({ message: '數據已清除' });
+  } catch {
+    return fail(500, 'INTERNAL_ERROR', 'Failed to reset matches');
   }
 }

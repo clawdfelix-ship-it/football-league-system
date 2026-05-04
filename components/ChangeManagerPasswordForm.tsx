@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { apiJson } from '@/lib/api/client';
 
 export default function ChangeManagerPasswordForm() {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -27,14 +28,13 @@ export default function ChangeManagerPasswordForm() {
 
     setStatus('loading');
     try {
-      const res = await fetch('/api/auth/change-password', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ currentPassword, newPassword }),
-      });
-      const raw = await res.text();
-      const data = raw ? (() => { try { return JSON.parse(raw); } catch { return {}; } })() : {};
-      if (!res.ok) throw new Error((data as any).message || raw || 'Failed');
+      await apiJson<{ message: string }>(
+        await fetch('/api/auth/change-password', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ currentPassword, newPassword }),
+        })
+      );
 
       setStatus('success');
       setMessage('Password updated.');
@@ -98,4 +98,3 @@ export default function ChangeManagerPasswordForm() {
     </form>
   );
 }
-

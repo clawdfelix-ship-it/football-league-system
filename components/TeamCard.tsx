@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import type { TeamContact } from '@/lib/team-contacts';
 import type { Player } from '@/lib/schema';
 import { updatePlayer } from '@/lib/actions';
@@ -90,7 +89,6 @@ function PlayerRow({ player, onEdit }: { player: Player; onEdit: (player: Player
 }
 
 function EditPlayerModal({ player, onClose, onSaved }: { player: Player; onClose: () => void; onSaved: () => void }) {
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -227,7 +225,6 @@ function EditPlayerModal({ player, onClose, onSaved }: { player: Player; onClose
 }
 
 export function TeamCard({ team, players }: TeamCardProps) {
-  const router = useRouter();
   const [expanded, setExpanded] = useState(false);
   const [playersExpanded, setPlayersExpanded] = useState(false);
   const [editingPlayer, setEditingPlayer] = useState<Player | null>(null);
@@ -362,7 +359,7 @@ export function TeamCard({ team, players }: TeamCardProps) {
         <EditPlayerModal
           player={editingPlayer}
           onClose={() => setEditingPlayer(null)}
-          onSaved={() => router.refresh()}
+          onSaved={() => window.location.reload()}
         />
       )}
     </div>

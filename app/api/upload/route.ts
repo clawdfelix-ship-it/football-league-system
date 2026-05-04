@@ -1,26 +1,39 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 import { extname } from 'path';
+import { ok, fail } from '@/lib/api/response';
+import { getClientIp, rateLimit } from '@/lib/api/rate-limit';
+import { getAuthContext } from '@/lib/authz';
 
 export async function POST(request: NextRequest) {
   try {
+    const auth = await getAuthContext();
+    if (!auth) {
+      return fail(401, 'UNAUTHENTICATED', 'Unauthorized');
+    }
+
+    const ip = getClientIp(request);
+    const actor = auth.email ?? auth.username ?? 'unknown';
+    const rl = rateLimit(`upload:${ip}:${actor}`, { limit: 30, windowMs: 10 * 60 * 1000 });
+    if (!rl.allowed) return fail(429, 'RATE_LIMITED', 'Too many requests');
+
     const formData = await request.formData();
     const file = formData.get('file') as File;
     
     if (!file) {
-      return NextResponse.json({ message: '未選擇文件' }, { status: 400 });
+      return fail(400, 'VALIDATION_ERROR', '未選擇文件');
     }
 
     // 驗證文件類型
     const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
-      return NextResponse.json({ message: '只支援 JPG、PNG、GIF、WebP 圖片格式' }, { status: 400 });
+      return fail(400, 'VALIDATION_ERROR', '只支援 JPG、PNG、GIF、WebP 圖片格式');
     }
 
     // 驗證文件大小 (5MB)
     const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) {
-      return NextResponse.json({ message: '圖片大小不能超過 5MB' }, { status: 400 });
+      return fail(400, 'VALIDATION_ERROR', '圖片大小不能超過 5MB');
     }
 
     // 生成唯一檔名
@@ -33,14 +46,13 @@ export async function POST(request: NextRequest) {
     const base64 = buffer.toString('base64');
     
     // 返回 base64 數據
-    return NextResponse.json({ 
+    return ok({ 
       url: `data:${file.type};base64,${base64}`,
       filename,
       size: file.size
     });
     
-  } catch (error) {
-    console.error('上傳錯誤:', error);
-    return NextResponse.json({ message: '上傳失敗' }, { status: 500 });
+  } catch {
+    return fail(500, 'INTERNAL_ERROR', '上傳失敗');
   }
 }

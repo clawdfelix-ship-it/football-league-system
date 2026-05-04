@@ -1,83 +1,43 @@
-'use client';
-
-import { useState, useEffect } from 'react';
 import HomeLayout from '@/components/HomeLayout';
 import { KIT_COLORS } from '@/lib/kitColors';
+import { listMatches, listTeamSettings } from '@/lib/queries';
 
-interface Team {
-  name: string;
-  homeKitColor: string;
-  awayKitColor: string;
-}
+export const dynamic = 'force-dynamic';
 
-interface Match {
+type Team = { name: string; homeKitColor: string; awayKitColor: string };
+
+type Match = {
   id: number;
   homeTeam: string;
   awayTeam: string;
-  date: string | null;
+  date: Date | null;
   venue: string | null;
-  round: string;
-  status: string;
-  homeScore?: number | null;
-  awayScore?: number | null;
-}
+  round: string | null;
+  status: string | null;
+  homeScore: number | null;
+  awayScore: number | null;
+};
 
-export default function FixturesPage() {
-  const [teams, setTeams] = useState<Record<string, Team>>({});
-  const [matches, setMatches] = useState<Match[]>([]);
-  const [loading, setLoading] = useState(true);
+export default async function FixturesPage() {
+  const [teamRows, matchRows] = await Promise.all([listTeamSettings(), listMatches()]);
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  const teams: Record<string, Team> = {};
+  for (const t of teamRows) {
+    teams[t.name] = {
+      name: t.name,
+      homeKitColor: t.homeKitColor ?? 'white',
+      awayKitColor: t.awayKitColor ?? 'black',
+    };
+  }
 
-  const loadData = async () => {
-    try {
-      // Load team settings
-      const teamsRes = await fetch('/api/teams/settings');
-      const teamsData = await teamsRes.json();
-      
-      const teamMap: Record<string, Team> = {};
-      (teamsData.teams || []).forEach((t: any) => {
-        teamMap[t.name] = {
-          name: t.name,
-          homeKitColor: t.home_kit_color || 'white',
-          awayKitColor: t.away_kit_color || 'black',
-        };
-      });
-      setTeams(teamMap);
-
-      // Load matches
-      const matchesRes = await fetch('/api/matches');
-      const matchesData = await matchesRes.json();
-      setMatches(matchesData.matches || []);
-    } catch (error) {
-      console.error('Failed to load data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const matches: Match[] = matchRows;
 
   const getKitColor = (teamName: string, isHome: boolean) => {
     const team = teams[teamName];
-    if (!team) return KIT_COLORS[0]; // Default white
-    
+    if (!team) return KIT_COLORS[0];
     const colorValue = isHome ? team.homeKitColor : team.awayKitColor;
-    return KIT_COLORS.find(c => c.value === colorValue) || KIT_COLORS[0];
+    return KIT_COLORS.find((c) => c.value === colorValue) || KIT_COLORS[0];
   };
-
-  if (loading) {
-    return (
-      <HomeLayout>
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-500">Loading...</p>
-          </div>
-        </div>
-      </HomeLayout>
-    );
-  }
 
   return (
     <HomeLayout>
@@ -100,7 +60,7 @@ export default function FixturesPage() {
                 >
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-sm font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
-                      {match.round}
+                      {match.round || ''}
                     </span>
                     <span className={`text-sm font-bold px-3 py-1 rounded-full ${
                       match.status === 'finished' ? 'bg-green-100 text-green-700' :

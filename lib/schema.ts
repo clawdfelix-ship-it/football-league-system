@@ -1,4 +1,4 @@
-import { pgTable, serial, varchar, integer, timestamp, text, date, uniqueIndex } from 'drizzle-orm/pg-core';
+import { pgTable, serial, varchar, integer, timestamp, text, uniqueIndex } from 'drizzle-orm/pg-core';
 
 // 球員表
 export const players = pgTable('players', {
