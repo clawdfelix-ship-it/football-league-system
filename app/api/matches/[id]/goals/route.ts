@@ -8,6 +8,15 @@ function norm(v: string | null | undefined) {
   return (v ?? '').trim().toUpperCase();
 }
 
+function errorText(e: unknown) {
+  if (e instanceof Error) return e.message;
+  try {
+    return JSON.stringify(e);
+  } catch {
+    return String(e);
+  }
+}
+
 export const dynamic = 'force-dynamic';
 
 export async function GET(_: Request, ctx: { params: Promise<{ id: string }> }) {
@@ -27,7 +36,7 @@ export async function GET(_: Request, ctx: { params: Promise<{ id: string }> }) 
     const entries = await listMatchGoalEntries(matchId);
     return ok({ entries });
   } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e);
+    const msg = errorText(e);
     if (msg.includes('match_player_goals') && msg.includes('does not exist')) {
       return fail(409, 'DB_NOT_INITIALIZED', 'Missing match_player_goals table. Run /api/init-db once.');
     }
@@ -92,7 +101,7 @@ export async function PUT(request: Request, ctx: { params: Promise<{ id: string 
     const entries = await listMatchGoalEntries(matchId);
     return ok({ message: 'Match goals saved', entries });
   } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e);
+    const msg = errorText(e);
     if (msg.includes('match_player_goals') && msg.includes('does not exist')) {
       return fail(409, 'DB_NOT_INITIALIZED', 'Missing match_player_goals table. Run /api/init-db once.');
     }
