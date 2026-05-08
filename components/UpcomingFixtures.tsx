@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { updateMatch, deleteMatch } from '@/lib/actions';
 import { KIT_COLORS } from '@/lib/kitColors';
+import { getMatchKitOverrideColorValue } from '@/lib/matchKitOverrides';
 
 interface Match {
   id: number;
@@ -40,7 +41,7 @@ export function UpcomingFixtures({
   const [editingMatch, setEditingMatch] = useState<number | null>(null);
   const teams = teamsByName;
 
-  const getKitColor = (teamName: string, isHome: boolean) => {
+  const getKitColor = (matchId: number, teamName: string, isHome: boolean) => {
     // Normalize team name for matching
     const normalizedName = teamName.trim().toUpperCase();
     const team = teams[normalizedName];
@@ -49,7 +50,8 @@ export function UpcomingFixtures({
       return KIT_COLORS[0]; // Default white
     }
     
-    const colorValue = isHome ? team.homeKitColor : team.awayKitColor;
+    const override = getMatchKitOverrideColorValue(matchId, normalizedName);
+    const colorValue = override ?? (isHome ? team.homeKitColor : team.awayKitColor);
     const color = KIT_COLORS.find(c => c.value === colorValue);
     
     if (!color) {
@@ -114,7 +116,7 @@ export function UpcomingFixtures({
                 <div className="flex-1 text-right flex flex-col items-end">
                   <div className="font-semibold text-zinc-900 dark:text-zinc-100 text-sm">{match.homeTeam}</div>
                   {(() => {
-                    const homeColor = getKitColor(match.homeTeam, true);
+                    const homeColor = getKitColor(match.id, match.homeTeam, true);
                     return (
                       <div
                         className="w-8 h-8 rounded-full border-2 border-gray-300 shadow-sm mt-1"
@@ -140,7 +142,7 @@ export function UpcomingFixtures({
                 <div className="flex-1 text-left flex flex-col items-start">
                   <div className="font-semibold text-zinc-900 dark:text-zinc-100 text-sm">{match.awayTeam}</div>
                   {(() => {
-                    const awayColor = getKitColor(match.awayTeam, false);
+                    const awayColor = getKitColor(match.id, match.awayTeam, false);
                     return (
                       <div
                         className="w-8 h-8 rounded-full border-2 border-gray-300 shadow-sm mt-1"

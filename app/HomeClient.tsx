@@ -6,6 +6,7 @@ import HomeLayout from '@/components/HomeLayout';
 import { useLanguage } from '@/context/LanguageContext';
 import { TEAMS } from '@/lib/constants';
 import { getKitColorInfo } from '@/lib/kitColors';
+import { getMatchKitOverrideColorValue } from '@/lib/matchKitOverrides';
 import type { PublicAnnouncement } from '@/lib/public-types';
 import { apiJson } from '@/lib/api/client';
 
@@ -179,10 +180,11 @@ export default function HomeClient(props: {
     [announcements]
   );
 
-  const getKitColor = (teamName: string, isHome: boolean) => {
+  const getKitColor = (matchId: number, teamName: string, isHome: boolean) => {
     const normalizedName = teamName?.trim().toUpperCase();
     const team = teams[normalizedName || ''];
-    const colorValue = isHome ? team?.homeKitColor : team?.awayKitColor;
+    const override = getMatchKitOverrideColorValue(matchId, normalizedName || '');
+    const colorValue = override ?? (isHome ? team?.homeKitColor : team?.awayKitColor);
     return getKitColorInfo(colorValue || 'white');
   };
 
@@ -394,7 +396,7 @@ export default function HomeClient(props: {
                     >
                       <div className="text-left w-1/3 flex items-center gap-2">
                         {(() => {
-                          const homeColor = getKitColor(match.homeTeam, true);
+                          const homeColor = getKitColor(match.id, match.homeTeam, true);
                           const isSplit = homeColor.type === 'split' && homeColor.hex2;
                           return (
                             <div
@@ -435,7 +437,7 @@ export default function HomeClient(props: {
                           <div className="text-xs text-slate-500">{t('作客', 'Away')}</div>
                         </div>
                         {(() => {
-                          const awayColor = getKitColor(match.awayTeam, false);
+                          const awayColor = getKitColor(match.id, match.awayTeam, false);
                           const isSplit = awayColor.type === 'split' && awayColor.hex2;
                           return (
                             <div
