@@ -116,11 +116,6 @@ export default function HeadToHeadTable({ serverMatches }: Props) {
 
   return (
     <div className="overflow-x-auto">
-      {debugInfo && (
-        <div className="mb-4 p-3 bg-blue-50 text-blue-700 rounded-lg text-sm">
-          📊 {debugInfo}
-        </div>
-      )}
       <table className="w-full text-sm">
         <thead>
           <tr>

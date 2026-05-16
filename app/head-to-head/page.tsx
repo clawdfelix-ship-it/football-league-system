@@ -1,28 +1,27 @@
 'use client';
 
-import dynamic from 'next/dynamic';
 import HomeLayout from '@/components/HomeLayout';
+import HeadToHeadTable from '@/components/HeadToHeadTable';
 import { useEffect, useState } from 'react';
-
-const HeadToHeadTable = dynamic(
-  () => import('@/components/HeadToHeadTable'),
-  { ssr: false }
-);
 
 export default function HeadToHeadPage() {
   const [matches, setMatches] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 用 fetch API 拎數據，唔直接 call server function
+    // 用 fetch API 拎數據
     fetch('/api/matches')
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error('API error');
+        return res.json();
+      })
       .then(data => {
         setMatches(data);
         setLoading(false);
       })
       .catch(err => {
         console.error('Failed to load matches:', err);
+        setMatches([]);
         setLoading(false);
       });
   }, []);
