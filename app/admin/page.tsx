@@ -3,6 +3,7 @@ import { authOptions } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { getMatches, getTeamPlayers, getAnnouncements, getAllPlayers, getTeamKitSettingsMap } from '@/lib/actions';
 import { MatchForm, ResetButton } from '@/components/AdminClient';
+import AddMatchForm from '@/components/AddMatchForm';
 import { PlayerContactList } from '@/components/PlayerContactList';
 import { CollapsibleSection } from '@/components/CollapsibleSection';
 import { UpcomingFixtures } from '@/components/UpcomingFixtures';
@@ -246,6 +247,12 @@ export default async function AdminPage() {
             </CollapsibleSection>
 
             <AnnouncementManager announcements={announcements} />
+
+            <CollapsibleSection title="🏆 新增比賽結果" defaultExpanded={true}>
+              <div className="p-4 sm:p-6">
+                <AddMatchForm />
+              </div>
+            </CollapsibleSection>
 
             <MatchForm />
             
