@@ -1,10 +1,47 @@
-import { db } from '@/lib/db';
-import { matchKitOverrides } from '@/lib/schema';
-import { eq, and } from 'drizzle-orm';
+// 從 localStorage 獲取某場比賽嘅所有 override
+export function getMatchKitOverridesLocal(matchId: number): Record<string, string> {
+  try {
+    const stored = localStorage.getItem(`kit_overrides_${matchId}`);
+    return stored ? JSON.parse(stored) : {};
+  } catch (e) {
+    return {};
+  }
+}
 
-// 從 DB 獲取某場比賽嘅所有 override
+// 儲存某場比賽嘅 override 到 localStorage
+export function setMatchKitOverrideLocal(matchId: number, teamName: string, color: string | null): void {
+  try {
+    const normalized = teamName.trim().toUpperCase();
+    const current = getMatchKitOverridesLocal(matchId);
+    
+    if (color) {
+      current[normalized] = color;
+    } else {
+      delete current[normalized];
+    }
+    
+    localStorage.setItem(`kit_overrides_${matchId}`, JSON.stringify(current));
+  } catch (e) {
+    console.error('Failed to save kit override to localStorage:', e);
+  }
+}
+
+// 獲取所有比賽嘅 overrides (用於預加載)
+export function getAllMatchKitOverridesLocal(matchIds: number[]): Record<number, Record<string, string>> {
+  const result: Record<number, Record<string, string>> = {};
+  for (const id of matchIds) {
+    result[id] = getMatchKitOverridesLocal(id);
+  }
+  return result;
+}
+
+// 從 DB 獲取某場比賽嘅所有 override (如果有 DB 連接)
 export async function getMatchKitOverrides(matchId: number): Promise<Record<string, string>> {
   try {
+    const { db } = await import('@/lib/db');
+    const { matchKitOverrides } = await import('@/lib/schema');
+    const { eq } = await import('drizzle-orm');
+    
     const overrides = await db
       .select()
       .from(matchKitOverrides)
@@ -17,7 +54,7 @@ export async function getMatchKitOverrides(matchId: number): Promise<Record<stri
     }
     return result;
   } catch (error) {
-    console.error('Failed to get match kit overrides:', error);
+    console.error('Failed to get match kit overrides from DB:', error);
     return {};
   }
 }
@@ -25,6 +62,10 @@ export async function getMatchKitOverrides(matchId: number): Promise<Record<stri
 // 獲取某場比賽某隊嘅 override 顏色 (Server-side)
 export async function getMatchKitOverrideColorValue(matchId: number, teamName: string): Promise<string | null> {
   try {
+    const { db } = await import('@/lib/db');
+    const { matchKitOverrides } = await import('@/lib/schema');
+    const { eq } = await import('drizzle-orm');
+    
     const normalized = teamName.trim().toUpperCase();
     const overrides = await db
       .select()
@@ -45,16 +86,20 @@ export async function getMatchKitOverrideColorValue(matchId: number, teamName: s
 
 // 設置/更新 override
 export async function setMatchKitOverride(matchId: number, teamName: string, kitColor: string) {
-  const normalized = teamName.trim().toUpperCase();
-  const now = new Date();
-
-  // Check if exists
-  const existing = await db
-    .select()
-    .from(matchKitOverrides)
-    .where(and(eq(matchKitOverrides.matchId, matchId), eq(matchKitOverrides.teamName, normalized)));
-
   try {
+    const { db } = await import('@/lib/db');
+    const { matchKitOverrides } = await import('@/lib/schema');
+    const { eq, and } = await import('drizzle-orm');
+    
+    const normalized = teamName.trim().toUpperCase();
+    const now = new Date();
+
+    // Check if exists
+    const existing = await db
+      .select()
+      .from(matchKitOverrides)
+      .where(and(eq(matchKitOverrides.matchId, matchId), eq(matchKitOverrides.teamName, normalized)));
+
     if (existing.length > 0) {
       // Update
       await db
@@ -80,6 +125,10 @@ export async function setMatchKitOverride(matchId: number, teamName: string, kit
 // 刪除 override
 export async function deleteMatchKitOverride(matchId: number, teamName: string) {
   try {
+    const { db } = await import('@/lib/db');
+    const { matchKitOverrides } = await import('@/lib/schema');
+    const { eq, and } = await import('drizzle-orm');
+    
     const normalized = teamName.trim().toUpperCase();
     await db
       .delete(matchKitOverrides)

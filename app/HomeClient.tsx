@@ -6,7 +6,7 @@ import HomeLayout from '@/components/HomeLayout';
 import { useLanguage } from '@/context/LanguageContext';
 import { TEAMS } from '@/lib/constants';
 import { getKitColorInfo } from '@/lib/kitColors';
-import { getMatchKitOverrideColorValueClient } from '@/lib/matchKitOverrides';
+import { getMatchKitOverrideColorValueClient, getMatchKitOverridesLocal } from '@/lib/matchKitOverrides';
 import type { PublicAnnouncement } from '@/lib/public-types';
 import { apiJson } from '@/lib/api/client';
 
@@ -181,19 +181,13 @@ export default function HomeClient(props: {
     [announcements]
   );
 
-  // Load kit overrides on mount
+  // Load kit overrides on mount - localStorage mode
   useEffect(() => {
-    const loadOverrides = async () => {
+    const loadOverrides = () => {
       const allMatches = [...upcomingFixtures, ...recentResults];
       const allOverrides: Record<number, Record<string, string>> = {};
       for (const match of allMatches) {
-        try {
-          const res = await fetch(`/api/matches/${match.id}/kit-overrides`);
-          const data = await res.json();
-          allOverrides[match.id] = data.overrides || {};
-        } catch (e) {
-          // Ignore errors
-        }
+        allOverrides[match.id] = getMatchKitOverridesLocal(match.id);
       }
       setKitOverrides(allOverrides);
     };

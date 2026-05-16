@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import KitColorPicker from './KitColorPicker';
 import { KIT_COLORS } from '@/lib/kitColors';
+import { getMatchKitOverridesLocal, setMatchKitOverrideLocal } from '@/lib/matchKitOverrides';
 
 interface MatchKitOverrideEditorProps {
   matchId: number;
@@ -26,11 +27,10 @@ export function MatchKitOverrideEditor({
     loadOverrides();
   }, [matchId]);
 
-  const loadOverrides = async () => {
+  const loadOverrides = () => {
     try {
-      const res = await fetch(`/api/matches/${matchId}/kit-overrides`);
-      const data = await res.json();
-      const overrides = data.overrides || {};
+      // Use localStorage mode - works without DB/API
+      const overrides = getMatchKitOverridesLocal(matchId);
       
       const homeNormalized = homeTeam.trim().toUpperCase();
       const awayNormalized = awayTeam.trim().toUpperCase();
@@ -44,33 +44,18 @@ export function MatchKitOverrideEditor({
     }
   };
 
-  const handleSave = async (team: string, color: string | null) => {
+  const handleSave = (team: string, color: string | null) => {
     setSaving(true);
     try {
-      let res;
-      if (color) {
-        // Set override
-        res = await fetch(`/api/matches/${matchId}/kit-overrides`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ teamName: team, kitColor: color }),
-        });
+      // Use localStorage mode - works without DB/API
+      setMatchKitOverrideLocal(matchId, team, color);
+      
+      // Update local state
+      if (team.trim().toUpperCase() === homeTeam.trim().toUpperCase()) {
+        setHomeOverride(color);
       } else {
-        // Delete override (use default)
-        res = await fetch(`/api/matches/${matchId}/kit-overrides`, {
-          method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ teamName: team }),
-        });
+        setAwayOverride(color);
       }
-      
-      if (!res.ok) {
-        const error = await res.json();
-        alert(`儲存失敗: ${error.error || '未知錯誤'}`);
-        return;
-      }
-      
-      await loadOverrides();
     } catch (error) {
       console.error('Failed to save override:', error);
       alert('儲存失敗，請稍後再試');

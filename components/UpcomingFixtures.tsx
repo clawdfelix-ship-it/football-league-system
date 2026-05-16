@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { updateMatch, deleteMatch } from '@/lib/actions';
 import { KIT_COLORS } from '@/lib/kitColors';
-import { getMatchKitOverrideColorValueClient } from '@/lib/matchKitOverrides';
+import { getMatchKitOverrideColorValueClient, getMatchKitOverridesLocal } from '@/lib/matchKitOverrides';
 import MatchKitOverrideEditor from './MatchKitOverrideEditor';
 
 interface Match {
@@ -44,23 +44,22 @@ export function UpcomingFixtures({
   const [kitOverrides, setKitOverrides] = useState<Record<number, Record<string, string>>>({});
   const teams = teamsByName;
 
-  // 載入所有 match kit overrides
+  // 載入所有 match kit overrides - localStorage mode
   useEffect(() => {
-    const loadOverrides = async () => {
+    const loadOverrides = () => {
       const allOverrides: Record<number, Record<string, string>> = {};
       for (const match of matches) {
-        try {
-          const res = await fetch(`/api/matches/${match.id}/kit-overrides`);
-          const data = await res.json();
-          allOverrides[match.id] = data.overrides || {};
-        } catch (e) {
-          // Ignore errors
-        }
+        allOverrides[match.id] = getMatchKitOverridesLocal(match.id);
       }
       setKitOverrides(allOverrides);
     };
     loadOverrides();
-  }, [matches]);
+    
+    // Refresh when editor closes (user saved changes)
+    if (editingKitMatch === null) {
+      loadOverrides();
+    }
+  }, [matches, editingKitMatch]);
 
   const getKitColor = (matchId: number, teamName: string, isHome: boolean) => {
     // Normalize team name for matching
