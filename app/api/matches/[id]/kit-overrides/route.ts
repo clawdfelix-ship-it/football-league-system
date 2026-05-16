@@ -102,7 +102,7 @@ export async function PUT(
   } catch (error) {
     console.error('Failed to set kit override:', error);
     return NextResponse.json(
-      { error: 'Failed to set kit override' },
+      { error: 'Failed to set kit override', details: String(error) },
       { status: 500 }
     );
   }
