@@ -33,10 +33,12 @@ export async function GET(
     });
   } catch (error) {
     console.error('Failed to get kit overrides:', error);
-    return NextResponse.json(
-      { error: 'Failed to get kit overrides' },
-      { status: 500 }
-    );
+    // 就算 DB error 都 return empty overrides，唔好 crash 前端
+    return NextResponse.json({
+      matchId: parseInt(params.id),
+      overrides: {},
+      error: String(error),
+    });
   }
 }
 

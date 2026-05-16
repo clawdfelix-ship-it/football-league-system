@@ -4,33 +4,43 @@ import { eq, and } from 'drizzle-orm';
 
 // 從 DB 獲取某場比賽嘅所有 override
 export async function getMatchKitOverrides(matchId: number): Promise<Record<string, string>> {
-  const overrides = await db
-    .select()
-    .from(matchKitOverrides)
-    .where(eq(matchKitOverrides.matchId, matchId));
+  try {
+    const overrides = await db
+      .select()
+      .from(matchKitOverrides)
+      .where(eq(matchKitOverrides.matchId, matchId));
 
-  const result: Record<string, string> = {};
-  for (const override of overrides) {
-    const normalized = override.teamName.trim().toUpperCase();
-    result[normalized] = override.kitColor;
+    const result: Record<string, string> = {};
+    for (const override of overrides) {
+      const normalized = override.teamName.trim().toUpperCase();
+      result[normalized] = override.kitColor;
+    }
+    return result;
+  } catch (error) {
+    console.error('Failed to get match kit overrides:', error);
+    return {};
   }
-  return result;
 }
 
 // 獲取某場比賽某隊嘅 override 顏色 (Server-side)
 export async function getMatchKitOverrideColorValue(matchId: number, teamName: string): Promise<string | null> {
-  const normalized = teamName.trim().toUpperCase();
-  const overrides = await db
-    .select()
-    .from(matchKitOverrides)
-    .where(eq(matchKitOverrides.matchId, matchId));
+  try {
+    const normalized = teamName.trim().toUpperCase();
+    const overrides = await db
+      .select()
+      .from(matchKitOverrides)
+      .where(eq(matchKitOverrides.matchId, matchId));
 
-  for (const override of overrides) {
-    if (override.teamName.trim().toUpperCase() === normalized) {
-      return override.kitColor;
+    for (const override of overrides) {
+      if (override.teamName.trim().toUpperCase() === normalized) {
+        return override.kitColor;
+      }
     }
+    return null;
+  } catch (error) {
+    console.error('Failed to get match kit override value:', error);
+    return null;
   }
-  return null;
 }
 
 // 設置/更新 override
@@ -44,30 +54,40 @@ export async function setMatchKitOverride(matchId: number, teamName: string, kit
     .from(matchKitOverrides)
     .where(and(eq(matchKitOverrides.matchId, matchId), eq(matchKitOverrides.teamName, normalized)));
 
-  if (existing.length > 0) {
-    // Update
-    await db
-      .update(matchKitOverrides)
-      .set({ kitColor, updatedAt: now })
-      .where(eq(matchKitOverrides.id, existing[0].id));
-  } else {
-    // Insert
-    await db.insert(matchKitOverrides).values({
-      matchId,
-      teamName: normalized,
-      kitColor,
-      createdAt: now,
-      updatedAt: now,
-    });
+  try {
+    if (existing.length > 0) {
+      // Update
+      await db
+        .update(matchKitOverrides)
+        .set({ kitColor, updatedAt: now })
+        .where(eq(matchKitOverrides.id, existing[0].id));
+    } else {
+      // Insert
+      await db.insert(matchKitOverrides).values({
+        matchId,
+        teamName: normalized,
+        kitColor,
+        createdAt: now,
+        updatedAt: now,
+      });
+    }
+  } catch (error) {
+    console.error('Failed to upsert match kit override:', error);
+    throw error;
   }
 }
 
 // 刪除 override
 export async function deleteMatchKitOverride(matchId: number, teamName: string) {
-  const normalized = teamName.trim().toUpperCase();
-  await db
-    .delete(matchKitOverrides)
-    .where(and(eq(matchKitOverrides.matchId, matchId), eq(matchKitOverrides.teamName, normalized)));
+  try {
+    const normalized = teamName.trim().toUpperCase();
+    await db
+      .delete(matchKitOverrides)
+      .where(and(eq(matchKitOverrides.matchId, matchId), eq(matchKitOverrides.teamName, normalized)));
+  } catch (error) {
+    console.error('Failed to delete match kit override:', error);
+    throw error;
+  }
 }
 
 // Client-side helper (從 API 獲取)
