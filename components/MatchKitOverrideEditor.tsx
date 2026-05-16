@@ -27,9 +27,27 @@ export function MatchKitOverrideEditor({
     loadOverrides();
   }, [matchId]);
 
-  const loadOverrides = () => {
+  const loadOverrides = async () => {
     try {
-      // Use localStorage mode - works without DB/API
+      // 先試 DB/API mode
+      const res = await fetch(`/api/matches/${matchId}/kit-overrides`);
+      if (res.ok) {
+        const data = await res.json();
+        const overrides = data.overrides || {};
+        
+        const homeNormalized = homeTeam.trim().toUpperCase();
+        const awayNormalized = awayTeam.trim().toUpperCase();
+        
+        setHomeOverride(overrides[homeNormalized] || null);
+        setAwayOverride(overrides[awayNormalized] || null);
+        return;
+      }
+    } catch (dbError) {
+      console.log('DB mode not available, falling back to localStorage:', dbError);
+    }
+    
+    // Fallback: localStorage mode
+    try {
       const overrides = getMatchKitOverridesLocal(matchId);
       
       const homeNormalized = homeTeam.trim().toUpperCase();
@@ -44,10 +62,35 @@ export function MatchKitOverrideEditor({
     }
   };
 
-  const handleSave = (team: string, color: string | null) => {
+  const handleSave = async (team: string, color: string | null) => {
     setSaving(true);
     try {
-      // Use localStorage mode - works without DB/API
+      // 先試 DB/API mode
+      let res;
+      if (color) {
+        res = await fetch(`/api/matches/${matchId}/kit-overrides`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ teamName: team, kitColor: color }),
+        });
+      } else {
+        res = await fetch(`/api/matches/${matchId}/kit-overrides`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ teamName: team }),
+        });
+      }
+      
+      if (res.ok) {
+        await loadOverrides();
+        return;
+      }
+    } catch (dbError) {
+      console.log('DB mode save failed, falling back to localStorage:', dbError);
+    }
+    
+    // Fallback: localStorage mode
+    try {
       setMatchKitOverrideLocal(matchId, team, color);
       
       // Update local state

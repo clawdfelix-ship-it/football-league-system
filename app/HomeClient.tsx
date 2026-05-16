@@ -181,13 +181,31 @@ export default function HomeClient(props: {
     [announcements]
   );
 
-  // Load kit overrides on mount - localStorage mode
+  // Load kit overrides on mount - 先試 DB/API，失敗先用 localStorage fallback
   useEffect(() => {
-    const loadOverrides = () => {
+    const loadOverrides = async () => {
       const allMatches = [...upcomingFixtures, ...recentResults];
       const allOverrides: Record<number, Record<string, string>> = {};
+      let useApiMode = true;
+      
       for (const match of allMatches) {
-        allOverrides[match.id] = getMatchKitOverridesLocal(match.id);
+        try {
+          if (useApiMode) {
+            const res = await fetch(`/api/matches/${match.id}/kit-overrides`);
+            if (res.ok) {
+              const data = await res.json();
+              allOverrides[match.id] = data.overrides || {};
+            } else {
+              useApiMode = false; // API failed, fall back all to localStorage
+              allOverrides[match.id] = getMatchKitOverridesLocal(match.id);
+            }
+          } else {
+            allOverrides[match.id] = getMatchKitOverridesLocal(match.id);
+          }
+        } catch (e) {
+          useApiMode = false;
+          allOverrides[match.id] = getMatchKitOverridesLocal(match.id);
+        }
       }
       setKitOverrides(allOverrides);
     };
