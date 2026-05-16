@@ -2,12 +2,24 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { matchKitOverrides } from '@/lib/schema';
 import { eq, and } from 'drizzle-orm';
+import { createMatchKitOverridesTable } from '@/lib/migrations';
+
+// 自動創建 table (如果唔存在)
+async function ensureTableExists() {
+  try {
+    await createMatchKitOverridesTable();
+  } catch (e) {
+    // Table might already exist, ignore
+  }
+}
 
 // GET /api/matches/[id]/kit-overrides - 獲取某場比賽嘅所有球衣 override
 export async function GET(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
+  await ensureTableExists();
+  
   const params = await context.params;
   try {
     const matchId = parseInt(params.id);
@@ -47,6 +59,8 @@ export async function PUT(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
+  await ensureTableExists();
+  
   const params = await context.params;
   try {
     const matchId = parseInt(params.id);
@@ -115,6 +129,8 @@ export async function DELETE(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
+  await ensureTableExists();
+  
   const params = await context.params;
   try {
     const matchId = parseInt(params.id);
