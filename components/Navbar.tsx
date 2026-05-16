@@ -33,9 +33,9 @@ export default function Navbar() {
             <Link href="/overview" className="text-sm font-medium hover:text-gray-300 transition-colors">
               {t('賽事簡介', 'Overview')}
             </Link>
-            <Link href="/scorers" className="text-sm font-medium hover:text-gray-300 transition-colors">
+            {/* <Link href="/scorers" className="text-sm font-medium hover:text-gray-300 transition-colors">
               {t('神射手榜', 'Top Scorers')}
-            </Link>
+            </Link> */}
             <Link href="/#standings" className="text-sm font-medium hover:text-gray-300 transition-colors">
               {t('積分榜', 'Standings')}
             </Link>
@@ -115,13 +115,13 @@ export default function Navbar() {
           >
             {t('積分榜', 'Standings')}
           </Link>
-          <Link
+          {/* <Link
             href="/scorers"
             className="block px-2 py-2 rounded hover:bg-gray-800 text-sm font-medium transition-colors"
             onClick={() => setIsMobileMenuOpen(false)}
           >
             {t('神射手榜', 'Top Scorers')}
-          </Link>
+          </Link> */}
           <Link
             href="/#matches"
             className="block px-2 py-2 rounded hover:bg-gray-800 text-sm font-medium transition-colors"
