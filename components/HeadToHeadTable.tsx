@@ -22,13 +22,22 @@ interface H2HData {
 export default function HeadToHeadTable() {
   const [h2hData, setH2hData] = useState<H2HData>({});
   const [loading, setLoading] = useState(true);
+  const [debugInfo, setDebugInfo] = useState<string>('');
 
   const teams = TEAMS.filter(t => t.name !== 'DEMO');
 
   useEffect(() => {
     async function loadH2H() {
       try {
-        const matches = await listMatches('finished');
+        const allMatches = await listMatches(); // 先拎全部，唔 filter status
+        const finishedMatches = allMatches.filter(m => 
+          m.status === 'finished' && 
+          m.homeScore !== null && 
+          m.awayScore !== null
+        );
+        
+        setDebugInfo(`總共 ${allMatches.length} 場比賽，其中 ${finishedMatches.length} 場已完成有比分`);
+        
         const data: H2HData = {};
 
         // Initialize all team pairs
@@ -48,17 +57,18 @@ export default function HeadToHeadTable() {
           }
         }
 
-        // Process matches
-        for (const match of matches) {
-          if (match.homeScore === null || match.awayScore === null) continue;
-
+        // Process matches - 用已 filter 嘅
+        for (const match of finishedMatches) {
           const homeTeam = match.homeTeam;
           const awayTeam = match.awayTeam;
-          const homeScore = match.homeScore;
-          const awayScore = match.awayScore;
+          const homeScore = match.homeScore!;
+          const awayScore = match.awayScore!;
 
           // Skip if team not in our list
-          if (!data[homeTeam] || !data[awayTeam]) continue;
+          if (!data[homeTeam] || !data[awayTeam]) {
+            console.log('Skipping match with unknown teams:', homeTeam, 'vs', awayTeam);
+            continue;
+          }
 
           // Update home team vs away team
           data[homeTeam][awayTeam].played += 1;
@@ -103,6 +113,11 @@ export default function HeadToHeadTable() {
 
   return (
     <div className="overflow-x-auto">
+      {debugInfo && (
+        <div className="mb-4 p-3 bg-blue-50 text-blue-700 rounded-lg text-sm">
+          📊 {debugInfo}
+        </div>
+      )}
       <table className="w-full text-sm">
         <thead>
           <tr>
