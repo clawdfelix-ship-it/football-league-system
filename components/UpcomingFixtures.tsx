@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { updateMatch, deleteMatch } from '@/lib/actions';
 import { KIT_COLORS } from '@/lib/kitColors';
-import { getMatchKitOverrideColorValue } from '@/lib/matchKitOverrides';
+import { getMatchKitOverrideColorValueClient } from '@/lib/matchKitOverrides';
+import MatchKitOverrideEditor from './MatchKitOverrideEditor';
 
 interface Match {
   id: number;
@@ -39,7 +40,27 @@ export function UpcomingFixtures({
   teamsByName: Record<string, Team>;
 }) {
   const [editingMatch, setEditingMatch] = useState<number | null>(null);
+  const [editingKitMatch, setEditingKitMatch] = useState<number | null>(null);
+  const [kitOverrides, setKitOverrides] = useState<Record<number, Record<string, string>>>({});
   const teams = teamsByName;
+
+  // 載入所有 match kit overrides
+  useEffect(() => {
+    const loadOverrides = async () => {
+      const allOverrides: Record<number, Record<string, string>> = {};
+      for (const match of matches) {
+        try {
+          const res = await fetch(`/api/matches/${match.id}/kit-overrides`);
+          const data = await res.json();
+          allOverrides[match.id] = data.overrides || {};
+        } catch (e) {
+          // Ignore errors
+        }
+      }
+      setKitOverrides(allOverrides);
+    };
+    loadOverrides();
+  }, [matches]);
 
   const getKitColor = (matchId: number, teamName: string, isHome: boolean) => {
     // Normalize team name for matching
@@ -50,7 +71,7 @@ export function UpcomingFixtures({
       return KIT_COLORS[0]; // Default white
     }
     
-    const override = getMatchKitOverrideColorValue(matchId, normalizedName);
+    const override = getMatchKitOverrideColorValueClient(kitOverrides, matchId, normalizedName);
     const colorValue = override ?? (isHome ? team.homeKitColor : team.awayKitColor);
     const color = KIT_COLORS.find(c => c.value === colorValue);
     
@@ -59,6 +80,20 @@ export function UpcomingFixtures({
     }
     
     return color;
+  };
+
+  // Refresh overrides after edit
+  const refreshOverride = async (matchId: number) => {
+    try {
+      const res = await fetch(`/api/matches/${matchId}/kit-overrides`);
+      const data = await res.json();
+      setKitOverrides(prev => ({
+        ...prev,
+        [matchId]: data.overrides || {}
+      }));
+    } catch (e) {
+      // Ignore
+    }
   };
 
   const handleUpdateMatch = async (matchId: number, formData: FormData) => {
@@ -165,7 +200,28 @@ export function UpcomingFixtures({
               {/* Action buttons */}
               <div className="flex items-center justify-end gap-2 pt-2 border-t border-zinc-100 dark:border-zinc-800">
                 <button
-                  onClick={() => setEditingMatch(editingMatch === match.id ? null : match.id)}
+                  onClick={() => {
+                    if (editingKitMatch === match.id) {
+                      setEditingKitMatch(null);
+                    } else {
+                      setEditingKitMatch(match.id);
+                      setEditingMatch(null);
+                    }
+                  }}
+                  className="text-xs bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-1 rounded hover:bg-green-200 dark:hover:bg-green-900/50 flex items-center gap-1"
+                >
+                  <span>🎽</span>
+                  {editingKitMatch === match.id ? '關閉' : '球衣'}
+                </button>
+                <button
+                  onClick={() => {
+                    if (editingMatch === match.id) {
+                      setEditingMatch(null);
+                    } else {
+                      setEditingMatch(match.id);
+                      setEditingKitMatch(null);
+                    }
+                  }}
                   className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-1 rounded hover:bg-blue-200 dark:hover:bg-blue-900/50"
                 >
                   {editingMatch === match.id ? 'Cancel' : 'Edit'}
@@ -177,6 +233,21 @@ export function UpcomingFixtures({
                   Delete
                 </button>
               </div>
+
+              {/* Kit Override Editor */}
+              {editingKitMatch === match.id && (
+                <div className="mt-3">
+                  <MatchKitOverrideEditor
+                    matchId={match.id}
+                    homeTeam={match.homeTeam}
+                    awayTeam={match.awayTeam}
+                    onClose={() => {
+                      setEditingKitMatch(null);
+                      refreshOverride(match.id);
+                    }}
+                  />
+                </div>
+              )}
             </div>
 
             {editingMatch === match.id ? (

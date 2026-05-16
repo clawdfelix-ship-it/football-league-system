@@ -197,6 +197,32 @@ export async function createIndexesAndConstraints() {
   `);
 }
 
+// 創建比賽球衣 override 表
+export async function createMatchKitOverridesTable() {
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS match_kit_overrides (
+      id SERIAL PRIMARY KEY,
+      match_id INTEGER NOT NULL,
+      team_name VARCHAR(100) NOT NULL,
+      kit_color VARCHAR(20) NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE(match_id, team_name)
+    );
+  `);
+
+  await db.execute(sql`
+    DO $$
+    BEGIN
+      ALTER TABLE match_kit_overrides
+        ADD CONSTRAINT match_kit_overrides_match_fk
+        FOREIGN KEY (match_id) REFERENCES matches(id) ON DELETE CASCADE;
+    EXCEPTION WHEN duplicate_object THEN
+      NULL;
+    END $$;
+  `);
+}
+
 // 初始化數據庫
 export async function initializeDatabase() {
   try {
@@ -205,6 +231,7 @@ export async function initializeDatabase() {
     await createMatchesTable();
     await createAnnouncementsTable();
     await createMatchPlayerGoalsTable();
+    await createMatchKitOverridesTable();
     await createIndexesAndConstraints();
     console.log('數據庫初始化成功');
   } catch (error) {

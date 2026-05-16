@@ -68,6 +68,22 @@ export const teams = pgTable('teams', {
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 
+// 比賽球衣顏色 override（特定比賽嘅自訂顏色）
+export const matchKitOverrides = pgTable(
+  'match_kit_overrides',
+  {
+    id: serial('id').primaryKey(),
+    matchId: integer('match_id').notNull(),
+    teamName: varchar('team_name', { length: 100 }).notNull(),
+    kitColor: varchar('kit_color', { length: 20 }).notNull(),
+    createdAt: timestamp('created_at').defaultNow(),
+    updatedAt: timestamp('updated_at').defaultNow(),
+  },
+  (table) => ({
+    matchTeamUnique: uniqueIndex('match_kit_overrides_match_team_unique').on(table.matchId, table.teamName),
+  })
+);
+
 // 比賽球員入球（用於神射手榜）
 export const matchPlayerGoals = pgTable(
   'match_player_goals',
@@ -97,3 +113,5 @@ export type Team = typeof teams.$inferSelect;
 export type NewTeam = typeof teams.$inferInsert;
 export type MatchPlayerGoals = typeof matchPlayerGoals.$inferSelect;
 export type NewMatchPlayerGoals = typeof matchPlayerGoals.$inferInsert;
+export type MatchKitOverride = typeof matchKitOverrides.$inferSelect;
+export type NewMatchKitOverride = typeof matchKitOverrides.$inferInsert;
