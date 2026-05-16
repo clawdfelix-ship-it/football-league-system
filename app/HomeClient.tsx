@@ -153,6 +153,7 @@ export default function HomeClient(props: {
 
   const [teams, setTeams] = useState<Record<string, { homeKitColor: string; awayKitColor: string }>>(initialTeams);
   const [kitOverrides, setKitOverrides] = useState<Record<number, Record<string, string>>>({});
+  const [showAllResults, setShowAllResults] = useState(false);
   const [upcomingFixtures, setUpcomingFixtures] = useState<Match[]>(() => {
     const fixtures = props.initial.fixtures.slice();
     fixtures.sort((a, b) => {
@@ -521,31 +522,44 @@ export default function HomeClient(props: {
                 {recentResults.length === 0 ? (
                   <p className="text-center text-gray-500">{t('沒有最近結果', 'No recent results.')}</p>
                 ) : (
-                  recentResults.map((match) => (
-                    <div
-                      key={match.id}
-                      className="flex justify-between items-center p-4 bg-slate-50 rounded-lg border border-slate-200"
-                    >
-                      <div className="text-left w-1/3">
-                        <div className="font-bold text-slate-900">{match.homeTeam}</div>
-                        <div className="text-xs text-slate-500">
-                          {match.date
-                            ? `${new Date(match.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} (${new Date(match.date).toLocaleDateString('en-GB', { weekday: 'short' })})`
-                            : ''}
+                  <>
+                    {(showAllResults ? recentResults : recentResults.slice(0, 5)).map((match) => (
+                      <div
+                        key={match.id}
+                        className="flex justify-between items-center p-4 bg-slate-50 rounded-lg border border-slate-200"
+                      >
+                        <div className="text-left w-1/3">
+                          <div className="font-bold text-slate-900">{match.homeTeam}</div>
+                          <div className="text-xs text-slate-500">
+                            {match.date
+                              ? `${new Date(match.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} (${new Date(match.date).toLocaleDateString('en-GB', { weekday: 'short' })})`
+                              : ''}
+                          </div>
+                        </div>
+                        <div className="text-center w-1/3">
+                          <div className="font-black text-lg text-slate-900">
+                            {match.homeScore !== null ? match.homeScore : 0} - {match.awayScore !== null ? match.awayScore : 0}
+                          </div>
+                          <div className="text-xs text-slate-500">{t('完場', 'Final')}</div>
+                          {match.round && <div className="text-[10px] text-slate-400 mt-1 uppercase">{match.round}</div>}
+                        </div>
+                        <div className="text-right w-1/3">
+                          <div className="font-bold text-slate-900">{match.awayTeam}</div>
                         </div>
                       </div>
-                      <div className="text-center w-1/3">
-                        <div className="font-black text-lg text-slate-900">
-                          {match.homeScore !== null ? match.homeScore : 0} - {match.awayScore !== null ? match.awayScore : 0}
-                        </div>
-                        <div className="text-xs text-slate-500">{t('完場', 'Final')}</div>
-                        {match.round && <div className="text-[10px] text-slate-400 mt-1 uppercase">{match.round}</div>}
-                      </div>
-                      <div className="text-right w-1/3">
-                        <div className="font-bold text-slate-900">{match.awayTeam}</div>
-                      </div>
-                    </div>
-                  ))
+                    ))}
+                    
+                    {recentResults.length > 5 && (
+                      <button
+                        onClick={() => setShowAllResults(!showAllResults)}
+                        className="w-full py-3 text-sm font-bold text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors mt-2"
+                      >
+                        {showAllResults
+                          ? `${t('收起', 'Show Less')} ▲`
+                          : `${t('顯示更多', `Show ${recentResults.length - 5} More Results`)} ▼`}
+                      </button>
+                    )}
+                  </>
                 )}
               </div>
             </div>
