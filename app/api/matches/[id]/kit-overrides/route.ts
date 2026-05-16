@@ -1,19 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
-import { matchKitOverrides } from '@/lib/schema';
-import { eq, and } from 'drizzle-orm';
+import { createMatchKitOverridesTable } from '@/lib/migrations';
+
+// 自動創建 table (如果唔存在) - 一定要有 try-catch，唔可以死
+async function ensureTableExists() {
+  try {
+    await createMatchKitOverridesTable();
+    return true;
+  } catch (e) {
+    console.log('Table might already exist or error creating:', e);
+    return false;
+  }
+}
 
 // GET /api/matches/[id]/kit-overrides - 獲取某場比賽嘅所有球衣 override
 export async function GET(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
+  await ensureTableExists();
+  
   const params = await context.params;
   try {
     const matchId = parseInt(params.id);
     if (isNaN(matchId)) {
       return NextResponse.json({ error: 'Invalid match ID' }, { status: 400 });
     }
+
+    // 動態 import，唔存在都唔會 crash
+    const { db } = await import('@/lib/db');
+    const { matchKitOverrides } = await import('@/lib/schema');
+    const { eq } = await import('drizzle-orm');
 
     const overrides = await db
       .select()
@@ -47,6 +63,8 @@ export async function PUT(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
+  await ensureTableExists();
+  
   const params = await context.params;
   try {
     const matchId = parseInt(params.id);
@@ -63,6 +81,10 @@ export async function PUT(
         { status: 400 }
       );
     }
+
+    const { db } = await import('@/lib/db');
+    const { matchKitOverrides } = await import('@/lib/schema');
+    const { eq, and } = await import('drizzle-orm');
 
     const normalizedTeamName = teamName.trim().toUpperCase();
     const now = new Date();
@@ -115,6 +137,8 @@ export async function DELETE(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
+  await ensureTableExists();
+  
   const params = await context.params;
   try {
     const matchId = parseInt(params.id);
@@ -131,6 +155,10 @@ export async function DELETE(
         { status: 400 }
       );
     }
+
+    const { db } = await import('@/lib/db');
+    const { matchKitOverrides } = await import('@/lib/schema');
+    const { eq, and } = await import('drizzle-orm');
 
     const normalizedTeamName = teamName.trim().toUpperCase();
 

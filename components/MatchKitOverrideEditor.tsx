@@ -12,7 +12,7 @@ interface MatchKitOverrideEditorProps {
   onClose: () => void;
 }
 
-export function MatchKitOverrideEditor({
+export default function MatchKitOverrideEditor({
   matchId,
   homeTeam,
   awayTeam,
@@ -22,19 +22,19 @@ export function MatchKitOverrideEditor({
   const [awayOverride, setAwayOverride] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [mode, setMode] = useState<'db' | 'local' | 'loading'>('loading');
 
   useEffect(() => {
     loadOverrides();
   }, [matchId]);
 
   const loadOverrides = async () => {
-    // 3 秒 timeout，太耐就自動 fallback 去 localStorage
+    // 先試 DB，5秒 timeout，唔得就用 localStorage
     const timeoutPromise = new Promise<null>((_, reject) => 
-      setTimeout(() => reject(new Error('Timeout')), 3000)
+      setTimeout(() => reject(new Error('Timeout')), 5000)
     );
     
     try {
-      // 先試 DB/API mode
       const res = await Promise.race([
         fetch(`/api/matches/${matchId}/kit-overrides`),
         timeoutPromise
@@ -49,11 +49,12 @@ export function MatchKitOverrideEditor({
         
         setHomeOverride(overrides[homeNormalized] || null);
         setAwayOverride(overrides[awayNormalized] || null);
+        setMode('db');
         setLoading(false);
         return;
       }
     } catch (dbError) {
-      console.log('DB mode failed or timeout, falling back to localStorage:', dbError);
+      console.log('DB mode not available, using localStorage:', dbError);
     }
     
     // Fallback: localStorage mode
@@ -65,6 +66,7 @@ export function MatchKitOverrideEditor({
       
       setHomeOverride(overrides[homeNormalized] || null);
       setAwayOverride(overrides[awayNormalized] || null);
+      setMode('local');
     } catch (error) {
       console.error('Failed to load overrides:', error);
     } finally {
@@ -74,29 +76,34 @@ export function MatchKitOverrideEditor({
 
   const handleSave = async (team: string, color: string | null) => {
     setSaving(true);
-    try {
-      // 先試 DB/API mode
-      let res;
-      if (color) {
-        res = await fetch(`/api/matches/${matchId}/kit-overrides`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ teamName: team, kitColor: color }),
-        });
-      } else {
-        res = await fetch(`/api/matches/${matchId}/kit-overrides`, {
-          method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ teamName: team }),
-        });
+    
+    // 如果係 DB mode，先試 DB
+    if (mode === 'db') {
+      try {
+        let res;
+        if (color) {
+          res = await fetch(`/api/matches/${matchId}/kit-overrides`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ teamName: team, kitColor: color }),
+          });
+        } else {
+          res = await fetch(`/api/matches/${matchId}/kit-overrides`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ teamName: team }),
+          });
+        }
+        
+        if (res.ok) {
+          await loadOverrides();
+          setSaving(false);
+          return;
+        }
+      } catch (dbError) {
+        console.log('DB save failed, falling back to localStorage:', dbError);
+        setMode('local');
       }
-      
-      if (res.ok) {
-        await loadOverrides();
-        return;
-      }
-    } catch (dbError) {
-      console.log('DB mode save failed, falling back to localStorage:', dbError);
     }
     
     // Fallback: localStorage mode
@@ -149,33 +156,26 @@ export function MatchKitOverrideEditor({
                 checked={homeOverride !== null}
                 onChange={(e) => {
                   if (e.target.checked) {
-                    setHomeOverride('red'); // Default override color
+                    // Default to white
+                    handleSave(homeTeam, 'white');
                   } else {
                     handleSave(homeTeam, null);
-                    setHomeOverride(null);
                   }
                 }}
                 className="rounded"
               />
-              自訂顏色
+              <span className="text-zinc-500 dark:text-zinc-400">
+                自訂球衣
+              </span>
             </label>
           </div>
           
-          {homeOverride !== null && (
-            <div className="space-y-2">
-              <KitColorPicker
-                label=""
-                value={homeOverride}
-                onChange={(color) => setHomeOverride(color)}
-              />
-              <button
-                onClick={() => handleSave(homeTeam, homeOverride)}
-                disabled={saving}
-                className="w-full py-1.5 px-3 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 disabled:bg-gray-400 transition-colors"
-              >
-                {saving ? '儲存中...' : '儲存'}
-              </button>
-            </div>
+          {homeOverride && (
+            <KitColorPicker
+              label="主場球衣顏色"
+              value={homeOverride}
+              onChange={(color) => handleSave(homeTeam, color)}
+            />
           )}
         </div>
 
@@ -191,57 +191,42 @@ export function MatchKitOverrideEditor({
                 checked={awayOverride !== null}
                 onChange={(e) => {
                   if (e.target.checked) {
-                    setAwayOverride('white-green'); // Default override color
+                    // Default to white
+                    handleSave(awayTeam, 'white');
                   } else {
                     handleSave(awayTeam, null);
-                    setAwayOverride(null);
                   }
                 }}
                 className="rounded"
               />
-              自訂顏色
+              <span className="text-zinc-500 dark:text-zinc-400">
+                自訂球衣
+              </span>
             </label>
           </div>
           
-          {awayOverride !== null && (
-            <div className="space-y-2">
-              <KitColorPicker
-                label=""
-                value={awayOverride}
-                onChange={(color) => setAwayOverride(color)}
-              />
-              <button
-                onClick={() => handleSave(awayTeam, awayOverride)}
-                disabled={saving}
-                className="w-full py-1.5 px-3 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 disabled:bg-gray-400 transition-colors"
-              >
-                {saving ? '儲存中...' : '儲存'}
-              </button>
-            </div>
+          {awayOverride && (
+            <KitColorPicker
+              label="客場球衣顏色"
+              value={awayOverride}
+              onChange={(color) => handleSave(awayTeam, color)}
+            />
           )}
         </div>
 
-        {/* Color Reference */}
-        <div className="pt-3 border-t border-zinc-200 dark:border-zinc-700">
-          <p className="text-xs text-zinc-500 mb-2">顏色參考：</p>
-          <div className="flex flex-wrap gap-1">
-            {KIT_COLORS.slice(0, 8).map((color) => (
-              <div
-                key={color.value}
-                className="w-6 h-6 rounded-full border border-gray-300 shadow-sm"
-                style={{
-                  backgroundColor: color.type === 'split' && color.hex2
-                    ? `linear-gradient(90deg, ${color.hex} 50%, ${color.hex2} 50%)`
-                    : color.hex
-                }}
-                title={color.label}
-              />
-            ))}
-          </div>
+        {/* Mode Indicator */}
+        <div className={`text-xs p-3 rounded-lg ${
+          mode === 'db' 
+            ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400'
+            : 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400'
+        }`}>
+          {mode === 'db' ? (
+            <>✅ <strong>DB 同步模式</strong>：所有用戶都會睇到同一個顏色</>
+          ) : (
+            <>⚠️ <strong>本機模式</strong>：設定只會係你嘅瀏覽器度，刷新頁面唔會消失</>
+          )}
         </div>
       </div>
     </div>
   );
 }
-
-export default MatchKitOverrideEditor;

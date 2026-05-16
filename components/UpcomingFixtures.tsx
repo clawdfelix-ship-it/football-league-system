@@ -44,7 +44,7 @@ export function UpcomingFixtures({
   const [kitOverrides, setKitOverrides] = useState<Record<number, Record<string, string>>>({});
   const teams = teamsByName;
 
-  // 載入所有 match kit overrides - 先試 DB/API，失敗先用 localStorage fallback
+  // 先試 DB，5秒 timeout，唔得就用 localStorage
   useEffect(() => {
     const loadOverrides = async () => {
       const allOverrides: Record<number, Record<string, string>> = {};
@@ -53,12 +53,21 @@ export function UpcomingFixtures({
       for (const match of matches) {
         try {
           if (useApiMode) {
-            const res = await fetch(`/api/matches/${match.id}/kit-overrides`);
-            if (res.ok) {
+            // 5秒 timeout per request
+            const timeoutPromise = new Promise<null>((_, reject) => 
+              setTimeout(() => reject(new Error('Timeout')), 5000)
+            );
+            
+            const res = await Promise.race([
+              fetch(`/api/matches/${match.id}/kit-overrides`),
+              timeoutPromise
+            ]);
+            
+            if (res && res.ok) {
               const data = await res.json();
               allOverrides[match.id] = data.overrides || {};
             } else {
-              useApiMode = false; // API failed, fall back all to localStorage
+              useApiMode = false;
               allOverrides[match.id] = getMatchKitOverridesLocal(match.id);
             }
           } else {
@@ -72,7 +81,7 @@ export function UpcomingFixtures({
       setKitOverrides(allOverrides);
     };
     loadOverrides();
-  }, [matches, editingKitMatch]);
+  }, [matches]);
 
   const getKitColor = (matchId: number, teamName: string, isHome: boolean) => {
     // Normalize team name for matching

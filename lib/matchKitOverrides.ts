@@ -1,5 +1,22 @@
-// 從 localStorage 獲取某場比賽嘅所有 override
+// 🎯 硬編碼 5月19日 比賽球衣顏色 - 永遠唔會變，所有人睇到一樣
+const HARDCODED_OVERRIDES: Record<string, string> = {
+  'UBS': 'white',
+  'NOMURA': 'red',
+  'HSBC': 'red',
+  'CACIB': 'white-green',
+};
+
+// 檢查係唔係有硬編碼顏色
+export function getHardcodedKitColor(teamName: string): string | null {
+  const normalized = teamName.trim().toUpperCase();
+  return HARDCODED_OVERRIDES[normalized] || null;
+}
+
+// 從 localStorage 獲取某場比賽嘅所有 override (client-side only)
 export function getMatchKitOverridesLocal(matchId: number): Record<string, string> {
+  // Server side 就 return empty object，唔好掂 localStorage
+  if (typeof window === 'undefined') return {};
+  
   try {
     const stored = localStorage.getItem(`kit_overrides_${matchId}`);
     return stored ? JSON.parse(stored) : {};
@@ -8,8 +25,11 @@ export function getMatchKitOverridesLocal(matchId: number): Record<string, strin
   }
 }
 
-// 儲存某場比賽嘅 override 到 localStorage
+// 儲存某場比賽嘅 override 到 localStorage (client-side only)
 export function setMatchKitOverrideLocal(matchId: number, teamName: string, color: string | null): void {
+  // Server side 就唔做任何嘢
+  if (typeof window === 'undefined') return;
+  
   try {
     const normalized = teamName.trim().toUpperCase();
     const current = getMatchKitOverridesLocal(matchId);
@@ -61,6 +81,10 @@ export async function getMatchKitOverrides(matchId: number): Promise<Record<stri
 
 // 獲取某場比賽某隊嘅 override 顏色 (Server-side)
 export async function getMatchKitOverrideColorValue(matchId: number, teamName: string): Promise<string | null> {
+  // 1. 永遠優先用硬編碼顏色
+  const hardcoded = getHardcodedKitColor(teamName);
+  if (hardcoded) return hardcoded;
+  
   try {
     const { db } = await import('@/lib/db');
     const { matchKitOverrides } = await import('@/lib/schema');
@@ -139,12 +163,17 @@ export async function deleteMatchKitOverride(matchId: number, teamName: string) 
   }
 }
 
-// Client-side helper (從 API 獲取)
+// Client-side helper (優先用硬編碼，然後先 API 再 localStorage)
 export function getMatchKitOverrideColorValueClient(
   overridesCache: Record<number, Record<string, string>>,
   matchId: number,
   teamName: string
 ): string | null {
+  // 1. 永遠優先用硬編碼顏色 - 唔會有錯，唔會載入中
+  const hardcoded = getHardcodedKitColor(teamName);
+  if (hardcoded) return hardcoded;
+  
+  // 2. 先試 cache
   const normalized = teamName.trim().toUpperCase();
   const byTeam = overridesCache[matchId];
   if (!byTeam) return null;
