@@ -1,6 +1,6 @@
 import HomeLayout from '@/components/HomeLayout';
 import { KIT_COLORS } from '@/lib/kitColors';
-import { getMatchKitOverrideColorValue } from '@/lib/matchKitOverrides';
+import { getMatchKitOverrides } from '@/lib/matchKitOverrides';
 import { listMatches, listTeamSettings } from '@/lib/queries';
 
 export const dynamic = 'force-dynamic';
@@ -40,10 +40,22 @@ export default async function FixturesPage() {
 
   const matches: Match[] = matchRows;
 
+  // Preload all kit overrides for sync lookup
+  const allMatchIds = matches.map(m => m.id);
+  const allOverrides: Record<number, Record<string, string>> = {};
+  for (const matchId of allMatchIds) {
+    try {
+      allOverrides[matchId] = await getMatchKitOverrides(matchId);
+    } catch (e) {
+      allOverrides[matchId] = {};
+    }
+  }
+
   const getKitColor = (matchId: number, teamName: string, isHome: boolean) => {
     const team = teams[teamName];
     if (!team) return KIT_COLORS[0];
-    const override = getMatchKitOverrideColorValue(matchId, teamName);
+    const normalizedName = teamName.trim().toUpperCase();
+    const override = allOverrides[matchId]?.[normalizedName];
     const colorValue = override ?? (isHome ? team.homeKitColor : team.awayKitColor);
     return KIT_COLORS.find((c) => c.value === colorValue) || KIT_COLORS[0];
   };
