@@ -1,6 +1,6 @@
 import { db } from '@/lib/db';
 import { matchKitOverrides } from '@/lib/schema';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 
 // 從 DB 獲取某場比賽嘅所有 override
 export async function getMatchKitOverrides(matchId: number): Promise<Record<string, string>> {
@@ -42,8 +42,7 @@ export async function setMatchKitOverride(matchId: number, teamName: string, kit
   const existing = await db
     .select()
     .from(matchKitOverrides)
-    .where(eq(matchKitOverrides.matchId, matchId))
-    .where(eq(matchKitOverrides.teamName, normalized));
+    .where(and(eq(matchKitOverrides.matchId, matchId), eq(matchKitOverrides.teamName, normalized)));
 
   if (existing.length > 0) {
     // Update
@@ -68,8 +67,7 @@ export async function deleteMatchKitOverride(matchId: number, teamName: string) 
   const normalized = teamName.trim().toUpperCase();
   await db
     .delete(matchKitOverrides)
-    .where(eq(matchKitOverrides.matchId, matchId))
-    .where(eq(matchKitOverrides.teamName, normalized));
+    .where(and(eq(matchKitOverrides.matchId, matchId), eq(matchKitOverrides.teamName, normalized)));
 }
 
 // Client-side helper (從 API 獲取)
