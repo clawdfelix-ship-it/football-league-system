@@ -6,8 +6,9 @@ import { eq, and } from 'drizzle-orm';
 // GET /api/matches/[id]/kit-overrides - 獲取某場比賽嘅所有球衣 override
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
+  const params = await context.params;
   try {
     const matchId = parseInt(params.id);
     if (isNaN(matchId)) {
@@ -42,8 +43,9 @@ export async function GET(
 // PUT /api/matches/[id]/kit-overrides - 設置/更新 override
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
+  const params = await context.params;
   try {
     const matchId = parseInt(params.id);
     if (isNaN(matchId)) {
@@ -109,8 +111,9 @@ export async function PUT(
 // DELETE /api/matches/[id]/kit-overrides - 刪除 override
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
+  const params = await context.params;
   try {
     const matchId = parseInt(params.id);
     if (isNaN(matchId)) {
