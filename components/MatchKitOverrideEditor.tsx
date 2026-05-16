@@ -47,24 +47,33 @@ export function MatchKitOverrideEditor({
   const handleSave = async (team: string, color: string | null) => {
     setSaving(true);
     try {
+      let res;
       if (color) {
         // Set override
-        await fetch(`/api/matches/${matchId}/kit-overrides`, {
+        res = await fetch(`/api/matches/${matchId}/kit-overrides`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ teamName: team, kitColor: color }),
         });
       } else {
         // Delete override (use default)
-        await fetch(`/api/matches/${matchId}/kit-overrides`, {
+        res = await fetch(`/api/matches/${matchId}/kit-overrides`, {
           method: 'DELETE',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ teamName: team }),
         });
       }
+      
+      if (!res.ok) {
+        const error = await res.json();
+        alert(`儲存失敗: ${error.error || '未知錯誤'}`);
+        return;
+      }
+      
       await loadOverrides();
     } catch (error) {
       console.error('Failed to save override:', error);
+      alert('儲存失敗，請稍後再試');
     } finally {
       setSaving(false);
     }
