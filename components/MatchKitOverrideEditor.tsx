@@ -28,10 +28,19 @@ export function MatchKitOverrideEditor({
   }, [matchId]);
 
   const loadOverrides = async () => {
+    // 3 秒 timeout，太耐就自動 fallback 去 localStorage
+    const timeoutPromise = new Promise<null>((_, reject) => 
+      setTimeout(() => reject(new Error('Timeout')), 3000)
+    );
+    
     try {
       // 先試 DB/API mode
-      const res = await fetch(`/api/matches/${matchId}/kit-overrides`);
-      if (res.ok) {
+      const res = await Promise.race([
+        fetch(`/api/matches/${matchId}/kit-overrides`),
+        timeoutPromise
+      ]);
+      
+      if (res && res.ok) {
         const data = await res.json();
         const overrides = data.overrides || {};
         
@@ -40,10 +49,11 @@ export function MatchKitOverrideEditor({
         
         setHomeOverride(overrides[homeNormalized] || null);
         setAwayOverride(overrides[awayNormalized] || null);
+        setLoading(false);
         return;
       }
     } catch (dbError) {
-      console.log('DB mode not available, falling back to localStorage:', dbError);
+      console.log('DB mode failed or timeout, falling back to localStorage:', dbError);
     }
     
     // Fallback: localStorage mode
