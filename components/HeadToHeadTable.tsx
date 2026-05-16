@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { TEAMS } from '@/lib/constants';
-import { listMatches } from '@/lib/queries';
 
 interface MatchRecord {
   played: number;
@@ -19,7 +18,11 @@ interface H2HData {
   };
 }
 
-export default function HeadToHeadTable() {
+interface Props {
+  serverMatches: any[];
+}
+
+export default function HeadToHeadTable({ serverMatches }: Props) {
   const [h2hData, setH2hData] = useState<H2HData>({});
   const [loading, setLoading] = useState(true);
   const [debugInfo, setDebugInfo] = useState<string>('');
@@ -29,7 +32,7 @@ export default function HeadToHeadTable() {
   useEffect(() => {
     async function loadH2H() {
       try {
-        const allMatches = await listMatches(); // 先拎全部，唔 filter status
+        const allMatches = serverMatches; // 用 Server 傳過黎嘅數據
         const finishedMatches = allMatches.filter(m => 
           m.status === 'finished' && 
           m.homeScore !== null && 

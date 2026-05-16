@@ -1,8 +1,8 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import Navbar from '@/components/Navbar';
 import HomeLayout from '@/components/HomeLayout';
+import { useEffect, useState } from 'react';
 
 const HeadToHeadTable = dynamic(
   () => import('@/components/HeadToHeadTable'),
@@ -10,6 +10,33 @@ const HeadToHeadTable = dynamic(
 );
 
 export default function HeadToHeadPage() {
+  const [matches, setMatches] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // 用 fetch API 拎數據，唔直接 call server function
+    fetch('/api/matches')
+      .then(res => res.json())
+      .then(data => {
+        setMatches(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('Failed to load matches:', err);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return (
+      <HomeLayout>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
+      </HomeLayout>
+    );
+  }
+
   return (
     <HomeLayout>
       <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans">
@@ -20,7 +47,7 @@ export default function HeadToHeadPage() {
               <p className="text-blue-100 mt-2">Head-to-Head Match Records</p>
             </div>
             <div className="p-6">
-              <HeadToHeadTable />
+              <HeadToHeadTable serverMatches={matches} />
             </div>
           </div>
         </div>
