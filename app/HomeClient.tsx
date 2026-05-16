@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import HomeLayout from '@/components/HomeLayout';
 import { useLanguage } from '@/context/LanguageContext';
 import { TEAMS } from '@/lib/constants';
 import { getKitColorInfo } from '@/lib/kitColors';
-import { getMatchKitOverrideColorValue } from '@/lib/matchKitOverrides';
+import { getMatchKitOverrideColorValueClient } from '@/lib/matchKitOverrides';
 import type { PublicAnnouncement } from '@/lib/public-types';
 import { apiJson } from '@/lib/api/client';
 
@@ -152,6 +152,7 @@ export default function HomeClient(props: {
   }, [props.initial.teamSettings]);
 
   const [teams, setTeams] = useState<Record<string, { homeKitColor: string; awayKitColor: string }>>(initialTeams);
+  const [kitOverrides, setKitOverrides] = useState<Record<number, Record<string, string>>>({});
   const [upcomingFixtures, setUpcomingFixtures] = useState<Match[]>(() => {
     const fixtures = props.initial.fixtures.slice();
     fixtures.sort((a, b) => {
@@ -180,10 +181,29 @@ export default function HomeClient(props: {
     [announcements]
   );
 
+  // Load kit overrides on mount
+  useEffect(() => {
+    const loadOverrides = async () => {
+      const allMatches = [...upcomingFixtures, ...recentResults];
+      const allOverrides: Record<number, Record<string, string>> = {};
+      for (const match of allMatches) {
+        try {
+          const res = await fetch(`/api/matches/${match.id}/kit-overrides`);
+          const data = await res.json();
+          allOverrides[match.id] = data.overrides || {};
+        } catch (e) {
+          // Ignore errors
+        }
+      }
+      setKitOverrides(allOverrides);
+    };
+    loadOverrides();
+  }, [upcomingFixtures, recentResults]);
+
   const getKitColor = (matchId: number, teamName: string, isHome: boolean) => {
     const normalizedName = teamName?.trim().toUpperCase();
     const team = teams[normalizedName || ''];
-    const override = getMatchKitOverrideColorValue(matchId, normalizedName || '');
+    const override = getMatchKitOverrideColorValueClient(kitOverrides, matchId, normalizedName || '');
     const colorValue = override ?? (isHome ? team?.homeKitColor : team?.awayKitColor);
     return getKitColorInfo(colorValue || 'white');
   };
@@ -215,6 +235,20 @@ export default function HomeClient(props: {
       setUpcomingFixtures(fixturesData.matches || []);
       setRecentResults(resultsData.matches || []);
       setAnnouncements(announcementsData.announcements || []);
+
+      // Load kit overrides for all matches
+      const allMatches = [...(fixturesData.matches || []), ...(resultsData.matches || [])];
+      const allOverrides: Record<number, Record<string, string>> = {};
+      for (const match of allMatches) {
+        try {
+          const res = await fetch(`/api/matches/${match.id}/kit-overrides`);
+          const data = await res.json();
+          allOverrides[match.id] = data.overrides || {};
+        } catch (e) {
+          // Ignore errors
+        }
+      }
+      setKitOverrides(allOverrides);
     } finally {
       setLoading(false);
     }
