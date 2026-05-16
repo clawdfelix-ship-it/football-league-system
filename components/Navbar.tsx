@@ -33,6 +33,9 @@ export default function Navbar() {
             <Link href="/overview" className="text-sm font-medium hover:text-gray-300 transition-colors">
               {t('賽事簡介', 'Overview')}
             </Link>
+            <Link href="/head-to-head" className="text-sm font-medium hover:text-gray-300 transition-colors">
+              {t('對戰表', 'Head to Head')}
+            </Link>
             {/* <Link href="/scorers" className="text-sm font-medium hover:text-gray-300 transition-colors">
               {t('神射手榜', 'Top Scorers')}
             </Link> */}
@@ -107,6 +110,13 @@ export default function Navbar() {
             onClick={() => setIsMobileMenuOpen(false)}
           >
             {t('賽事簡介', 'Overview')}
+          </Link>
+          <Link
+            href="/head-to-head"
+            className="block px-2 py-2 rounded hover:bg-gray-800 text-sm font-medium transition-colors"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            {t('對戰表', 'Head to Head')}
           </Link>
           <Link
             href="/#standings"
