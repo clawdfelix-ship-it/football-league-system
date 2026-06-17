@@ -1,8 +1,9 @@
 import React from 'react';
 import Image from 'next/image';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import QRCode from 'qrcode';
 import { getTeamPlayers } from '@/lib/actions';
+import { getAuthContext, getTeamNameFromTeamId } from '@/lib/authz';
 import { TEAMS } from '@/lib/constants';
 import { PrintButton } from './PrintButton';
 import { UploadPhotoButton } from './PlayerManager';
@@ -14,6 +15,18 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
   const team = TEAMS[teamIndex];
 
   if (!team) return notFound();
+
+  const auth = await getAuthContext();
+  if (!auth) {
+    redirect('/login');
+  }
+
+  if (auth.role === 'manager') {
+    const managerTeamName = getTeamNameFromTeamId(auth.teamId);
+    if (!managerTeamName || managerTeamName !== team.name) {
+      redirect('/admin');
+    }
+  }
 
   const players: Player[] = await getTeamPlayers(team.name);
   const whatsappUrl = 'https://wa.me/85291000876';

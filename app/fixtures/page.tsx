@@ -46,7 +46,7 @@ export default async function FixturesPage() {
   for (const matchId of allMatchIds) {
     try {
       allOverrides[matchId] = await getMatchKitOverrides(matchId);
-    } catch (e) {
+    } catch {
       allOverrides[matchId] = {};
     }
   }

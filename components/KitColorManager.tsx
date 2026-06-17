@@ -14,11 +14,16 @@ export function KitColorManager({ teamName }: KitColorManagerProps) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [debugInfo, setDebugInfo] = useState<string>('');
+  const [canSave, setCanSave] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
     async function load() {
       try {
+        if (!cancelled) {
+          setLoading(true);
+          setCanSave(false);
+        }
         setDebugInfo('載入中...');
         const data = await apiJson<{
           teams: Array<{ name: string; homeKitColor: string; awayKitColor: string }>;
@@ -37,6 +42,7 @@ export function KitColorManager({ teamName }: KitColorManagerProps) {
           const away = team.awayKitColor || 'black';
           setHomeKitColor(home);
           setAwayKitColor(away);
+          setCanSave(true);
           setDebugInfo(`已載入：${team.name} - 主場：${home}, 客場：${away}`);
         } else {
           const available = teamRows.map((t) => t.name).filter(Boolean);
@@ -58,6 +64,7 @@ export function KitColorManager({ teamName }: KitColorManagerProps) {
   }, [teamName]);
 
   const handleSave = async () => {
+    if (!canSave) return;
     setSaving(true);
     setDebugInfo('儲存中...');
     try {
@@ -140,10 +147,10 @@ export function KitColorManager({ teamName }: KitColorManagerProps) {
         {/* Save Button */}
         <button
           onClick={handleSave}
-          disabled={saving}
+          disabled={saving || !canSave}
           className={`
             w-full py-2 px-4 rounded-lg text-sm font-semibold text-white transition-all
-            ${saving 
+            ${saving || !canSave
               ? 'bg-gray-400 cursor-not-allowed' 
               : 'bg-blue-600 hover:bg-blue-700 shadow-sm hover:shadow-md'}
           `}

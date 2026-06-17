@@ -108,6 +108,10 @@ export default async function AdminPage() {
   const role = session.user?.role || 'manager';
   const teamId = session.user?.teamId;
 
+  if (role === 'user') {
+    redirect('/');
+  }
+
   const isAdmin = role === 'admin';
   const isManager = role === 'manager';
 

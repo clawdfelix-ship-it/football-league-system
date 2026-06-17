@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createMatchKitOverridesTable } from '@/lib/migrations';
+import { getAuthContext } from '@/lib/authz';
+import { fail } from '@/lib/api/response';
 
 // 自動創建 table (如果唔存在) - 一定要有 try-catch，唔可以死
 async function ensureTableExists() {
@@ -14,7 +16,7 @@ async function ensureTableExists() {
 
 // GET /api/matches/[id]/kit-overrides - 獲取某場比賽嘅所有球衣 override
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
   await ensureTableExists();
@@ -49,12 +51,10 @@ export async function GET(
     });
   } catch (error) {
     console.error('Failed to get kit overrides:', error);
-    // 就算 DB error 都 return empty overrides，唔好 crash 前端
     return NextResponse.json({
       matchId: parseInt(params.id),
-      overrides: {},
       error: String(error),
-    });
+    }, { status: 500 });
   }
 }
 
@@ -63,6 +63,14 @@ export async function PUT(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
+  const auth = await getAuthContext();
+  if (!auth) {
+    return fail(401, 'UNAUTHENTICATED', 'Unauthorized');
+  }
+  if (auth.role !== 'admin') {
+    return fail(403, 'FORBIDDEN', 'Admin access required');
+  }
+
   await ensureTableExists();
   
   const params = await context.params;
@@ -84,38 +92,26 @@ export async function PUT(
 
     const { db } = await import('@/lib/db');
     const { matchKitOverrides } = await import('@/lib/schema');
-    const { eq, and } = await import('drizzle-orm');
 
     const normalizedTeamName = teamName.trim().toUpperCase();
     const now = new Date();
 
-    // Check if exists
-    const existing = await db
-      .select()
-      .from(matchKitOverrides)
-      .where(
-        and(
-          eq(matchKitOverrides.matchId, matchId),
-          eq(matchKitOverrides.teamName, normalizedTeamName)
-        )
-      );
-
-    if (existing.length > 0) {
-      // Update
-      await db
-        .update(matchKitOverrides)
-        .set({ kitColor, updatedAt: now })
-        .where(eq(matchKitOverrides.id, existing[0].id));
-    } else {
-      // Insert
-      await db.insert(matchKitOverrides).values({
+    await db
+      .insert(matchKitOverrides)
+      .values({
         matchId,
         teamName: normalizedTeamName,
         kitColor,
         createdAt: now,
         updatedAt: now,
+      })
+      .onConflictDoUpdate({
+        target: [matchKitOverrides.matchId, matchKitOverrides.teamName],
+        set: {
+          kitColor,
+          updatedAt: now,
+        },
       });
-    }
 
     return NextResponse.json({
       success: true,
@@ -137,6 +133,14 @@ export async function DELETE(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
+  const auth = await getAuthContext();
+  if (!auth) {
+    return fail(401, 'UNAUTHENTICATED', 'Unauthorized');
+  }
+  if (auth.role !== 'admin') {
+    return fail(403, 'FORBIDDEN', 'Admin access required');
+  }
+
   await ensureTableExists();
   
   const params = await context.params;

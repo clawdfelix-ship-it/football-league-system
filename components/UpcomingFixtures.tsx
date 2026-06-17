@@ -73,7 +73,7 @@ export function UpcomingFixtures({
           } else {
             allOverrides[match.id] = getMatchKitOverridesLocal(match.id);
           }
-        } catch (e) {
+        } catch {
           useApiMode = false;
           allOverrides[match.id] = getMatchKitOverridesLocal(match.id);
         }
@@ -112,7 +112,7 @@ export function UpcomingFixtures({
         ...prev,
         [matchId]: data.overrides || {}
       }));
-    } catch (e) {
+    } catch {
       // Ignore
     }
   };

@@ -5,6 +5,7 @@ import { matches, players } from './schema';
 import { eq } from 'drizzle-orm';
 import { TEAMS } from './constants';
 import { put } from '@vercel/blob';
+import { getAuthContext, getTeamNameFromTeamId } from '@/lib/authz';
 import {
   createAnnouncement,
   createMatch,
@@ -12,6 +13,7 @@ import {
   deleteAnnouncementById,
   deleteMatchById,
   deletePlayerById,
+  getPlayerTeamById,
   listPlayers,
   listPlayersByTeam,
   setPlayerPhotoUrlById,
@@ -27,6 +29,28 @@ export type TeamKitSettings = {
   homeKitColor: string;
   awayKitColor: string;
 };
+
+function normalizeTeamName(teamName: string | null | undefined) {
+  return (teamName ?? '').trim().toUpperCase();
+}
+
+async function getPlayerMutationScope() {
+  const auth = await getAuthContext();
+  if (!auth) {
+    return { ok: false as const, message: 'Unauthorized' };
+  }
+
+  if (auth.role === 'admin') {
+    return { ok: true as const, role: 'admin' as const, teamName: null };
+  }
+
+  const managerTeamName = getTeamNameFromTeamId(auth.teamId);
+  if (!managerTeamName) {
+    return { ok: false as const, message: 'Forbidden' };
+  }
+
+  return { ok: true as const, role: 'manager' as const, teamName: managerTeamName };
+}
 
 export async function getTeamKitSettingsMap(): Promise<Record<string, TeamKitSettings>> {
   try {
@@ -234,22 +258,45 @@ export async function addPlayer(data: {
   email?: string;
 }) {
   try {
+    const scope = await getPlayerMutationScope();
+    if (!scope.ok) {
+      return { success: false, message: scope.message };
+    }
+
+    const teamName = data.team.trim();
+    if (!teamName) {
+      return { success: false, message: 'Team is required' };
+    }
+
+    if (scope.role === 'manager' && normalizeTeamName(scope.teamName) !== normalizeTeamName(teamName)) {
+      return { success: false, message: 'Forbidden' };
+    }
+
+    if (!Number.isInteger(data.number) || data.number < 0 || data.number > 99) {
+      return { success: false, message: 'Invalid jersey number' };
+    }
+
+    const identityPrefix = data.identityPrefix?.trim().toUpperCase();
+    if (identityPrefix && identityPrefix.length > 3) {
+      return { success: false, message: 'Identity prefix must be 3 characters or fewer' };
+    }
+
     // Check if player number already exists for this team
     const existingPlayer = await db.select().from(players).where(
-      eq(players.team, data.team)
+      eq(players.team, teamName)
     );
     
     if (existingPlayer.some((p) => p.jerseyNumber === data.number)) {
-      return { success: false, message: `Player with number ${data.number} already exists for team ${data.team}` };
+      return { success: false, message: `Player with number ${data.number} already exists for team ${teamName}` };
     }
 
     const res = await db.insert(players).values({
       name: data.name,
-      team: data.team,
+      team: teamName,
       jerseyNumber: data.number,
       position: data.position,
-      identityPrefix: data.identityPrefix,
-      email: data.email,
+      identityPrefix: identityPrefix || undefined,
+      email: data.email?.trim() || undefined,
     }).returning();
     
     return { success: true, player: res[0] };
@@ -261,11 +308,23 @@ export async function addPlayer(data: {
 
 export async function deletePlayer(id: number | string) {
   try {
+    const scope = await getPlayerMutationScope();
+    if (!scope.ok) {
+      return { success: false, message: scope.message };
+    }
+
     // Ensure id is a number
     const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
     
     if (isNaN(numericId)) {
       return { success: false, message: 'Invalid player ID' };
+    }
+
+    if (scope.role === 'manager') {
+      const playerTeam = await getPlayerTeamById(numericId);
+      if (!playerTeam || normalizeTeamName(playerTeam) !== normalizeTeamName(scope.teamName)) {
+        return { success: false, message: 'Forbidden' };
+      }
     }
 
     await deletePlayerById(numericId);
@@ -285,19 +344,42 @@ export async function updatePlayer(id: number | string, data: {
   identityPrefix?: string;
 }) {
   try {
+    const scope = await getPlayerMutationScope();
+    if (!scope.ok) {
+      return { success: false, message: scope.message };
+    }
+
     const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
 
     if (isNaN(numericId)) {
       return { success: false, message: 'Invalid player ID' };
     }
 
+    const playerTeam = await getPlayerTeamById(numericId);
+    if (!playerTeam) {
+      return { success: false, message: 'Player not found' };
+    }
+
+    if (scope.role === 'manager' && normalizeTeamName(playerTeam) !== normalizeTeamName(scope.teamName)) {
+      return { success: false, message: 'Forbidden' };
+    }
+
+    if (data.number !== undefined && (!Number.isInteger(data.number) || data.number < 0 || data.number > 99)) {
+      return { success: false, message: 'Invalid jersey number' };
+    }
+
+    const identityPrefix = data.identityPrefix?.trim().toUpperCase();
+    if (identityPrefix && identityPrefix.length > 3) {
+      return { success: false, message: 'Identity prefix must be 3 characters or fewer' };
+    }
+
     const player = await updatePlayerById(numericId, {
       name: data.name,
       jerseyNumber: data.number,
       position: data.position,
-      phoneNumber: data.phoneNumber,
-      email: data.email,
-      identityPrefix: data.identityPrefix,
+      phoneNumber: data.phoneNumber?.trim() || undefined,
+      email: data.email?.trim() || undefined,
+      identityPrefix: identityPrefix || undefined,
     });
 
     if (!player) return { success: false, message: 'Player not found' };
@@ -310,11 +392,40 @@ export async function updatePlayer(id: number | string, data: {
 
 export async function uploadPlayerPhoto(formData: FormData) {
   try {
+    const scope = await getPlayerMutationScope();
+    if (!scope.ok) {
+      return { success: false, message: scope.message };
+    }
+
     const file = formData.get('file') as File;
     const playerId = formData.get('playerId') as string;
     
     if (!file || !playerId) {
       return { success: false, message: 'Missing file or player ID' };
+    }
+
+    const numericPlayerId = parseInt(playerId, 10);
+    if (isNaN(numericPlayerId)) {
+      return { success: false, message: 'Invalid player ID' };
+    }
+
+    const playerTeam = await getPlayerTeamById(numericPlayerId);
+    if (!playerTeam) {
+      return { success: false, message: 'Player not found' };
+    }
+
+    if (scope.role === 'manager' && normalizeTeamName(playerTeam) !== normalizeTeamName(scope.teamName)) {
+      return { success: false, message: 'Forbidden' };
+    }
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      return { success: false, message: 'Only JPG, PNG, GIF, and WebP files are allowed' };
+    }
+
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      return { success: false, message: 'Image size must be 5MB or smaller' };
     }
     
     if (!process.env.BLOB_READ_WRITE_TOKEN) {
@@ -326,7 +437,7 @@ export async function uploadPlayerPhoto(formData: FormData) {
       access: 'public',
     });
 
-    await setPlayerPhotoUrlById(parseInt(playerId), blob.url);
+    await setPlayerPhotoUrlById(numericPlayerId, blob.url);
 
     return { success: true, url: blob.url };
   } catch (error) {

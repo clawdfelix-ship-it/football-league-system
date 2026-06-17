@@ -10,8 +10,23 @@ interface CustomUser {
   id: string;
   email: string;
   username: string;
-  role: 'admin' | 'manager';
+  role: 'admin' | 'manager' | 'user';
   teamId?: number; // Index in TEAMS array
+}
+
+export function resolveManagerTeamId(email: string): number | null {
+  const mappedTeamIndex = MANAGER_EMAILS[email];
+  if (mappedTeamIndex !== undefined && mappedTeamIndex >= 0 && mappedTeamIndex < TEAMS.length) {
+    return mappedTeamIndex;
+  }
+
+  const emailPrefix = email.split('@')[0].toUpperCase();
+  const prefixTeamIndex = TEAMS.findIndex((t) => t.shortName === emailPrefix);
+  if (prefixTeamIndex !== -1) {
+    return prefixTeamIndex;
+  }
+
+  return null;
 }
 
 // Map emails to team indexes (0-based index from TEAMS constant)
@@ -103,26 +118,42 @@ export const authOptions: NextAuthOptions = {
             .from(users)
             .where(eq(users.email, inputEmail));
 
-          if (dbUser && dbUser.role === 'manager') {
+          if (dbUser) {
             const ok = await bcrypt.compare(credentials.password, dbUser.passwordHash);
             if (!ok) return null;
 
-            const mappedTeamIndex = MANAGER_EMAILS[inputEmail];
-            const emailPrefixIndex = TEAMS.findIndex(t => t.shortName === inputEmail.split('@')[0].toUpperCase());
-            const teamIndex = mappedTeamIndex ?? emailPrefixIndex;
+            if (dbUser.role === 'manager') {
+              const teamIndex = resolveManagerTeamId(inputEmail);
+              if (teamIndex === null) {
+                console.warn('Manager login denied due to missing team mapping:', inputEmail);
+                return null;
+              }
 
-            return {
-              id: `manager-${dbUser.id}`,
-              email: dbUser.email,
-              username: dbUser.username,
-              role: 'manager',
-              teamId: teamIndex !== -1 ? teamIndex : undefined
-            };
+              return {
+                id: `manager-${dbUser.id}`,
+                email: dbUser.email,
+                username: dbUser.username,
+                role: 'manager',
+                teamId: teamIndex
+              };
+            }
+
+            if (dbUser.role === 'user') {
+              return {
+                id: `user-${dbUser.id}`,
+                email: dbUser.email,
+                username: dbUser.username,
+                role: 'user',
+              };
+            }
+
+            return null;
           }
         } catch (e) {
           console.error('Manager DB auth check failed:', e);
         }
-        
+
+        // Bootstrap-only fallback for whitelisted managers that do not yet have a DB account.
         if (credentials.password === TEAM_PASSWORD) {
           // Check if email is in our allowed list
           const teamIndex = MANAGER_EMAILS[inputEmail];

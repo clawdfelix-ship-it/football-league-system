@@ -63,8 +63,7 @@ export async function POST(request: Request) {
     }
 
     const passwordOk = await bcrypt.compare(currentPassword, dbUser.passwordHash);
-    const okShared = Boolean(managerPassword && currentPassword === managerPassword);
-    if (!passwordOk && !okShared) {
+    if (!passwordOk) {
       return fail(400, 'INVALID_CREDENTIALS', 'Current password is incorrect');
     }
 

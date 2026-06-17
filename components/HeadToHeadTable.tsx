@@ -18,14 +18,21 @@ interface H2HData {
   };
 }
 
+interface MatchSummary {
+  homeTeam: string;
+  awayTeam: string;
+  homeScore: number | null;
+  awayScore: number | null;
+  status: string | null;
+}
+
 interface Props {
-  serverMatches: any[];
+  serverMatches: MatchSummary[];
 }
 
 export default function HeadToHeadTable({ serverMatches }: Props) {
   const [h2hData, setH2hData] = useState<H2HData>({});
   const [loading, setLoading] = useState(true);
-  const [debugInfo, setDebugInfo] = useState<string>('');
 
   const teams = TEAMS.filter(t => t.name !== 'DEMO');
 
@@ -38,8 +45,6 @@ export default function HeadToHeadTable({ serverMatches }: Props) {
           m.homeScore !== null && 
           m.awayScore !== null
         );
-        
-        setDebugInfo(`總共 ${allMatches.length} 場比賽，其中 ${finishedMatches.length} 場已完成有比分`);
         
         const data: H2HData = {};
 
@@ -104,7 +109,7 @@ export default function HeadToHeadTable({ serverMatches }: Props) {
     }
 
     loadH2H();
-  }, [teams]);
+  }, [serverMatches, teams]);
 
   if (loading) {
     return (
@@ -138,9 +143,6 @@ export default function HeadToHeadTable({ serverMatches }: Props) {
         <tbody>
           {teams.map((team, rowIdx) => {
             const teamData = h2hData[team.name];
-            const totalPlayed = teamData
-              ? Object.values(teamData).reduce((sum, d) => sum + d.played, 0)
-              : 0;
             const totalWins = teamData
               ? Object.values(teamData).reduce((sum, d) => sum + d.wins, 0)
               : 0;

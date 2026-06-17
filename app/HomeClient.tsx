@@ -63,6 +63,17 @@ function maxDate(items: unknown[], keys: string[]) {
   return max;
 }
 
+function sortMatches(matches: Match[], direction: 'asc' | 'desc') {
+  const sorted = matches.slice();
+  sorted.sort((a, b) => {
+    if (!a.date) return 1;
+    if (!b.date) return -1;
+    const diff = new Date(a.date).getTime() - new Date(b.date).getTime();
+    return direction === 'asc' ? diff : -diff;
+  });
+  return sorted;
+}
+
 function computeStandings(results: Match[]) {
   const table = new Map<string, TeamStanding>();
   const ensureTeam = (name: string) => {
@@ -212,7 +223,7 @@ export default function HomeClient(props: {
           } else {
             allOverrides[match.id] = getMatchKitOverridesLocal(match.id);
           }
-        } catch (e) {
+        } catch {
           useApiMode = false;
           allOverrides[match.id] = getMatchKitOverridesLocal(match.id);
         }
@@ -233,16 +244,25 @@ export default function HomeClient(props: {
   const refresh = useCallback(async () => {
     setLoading(true);
     try {
-      const [teamSettings, fixturesData, resultsData, announcementsData] = await Promise.all([
+      const [teamSettings, matchesRes, announcementsData] = await Promise.all([
         apiJson<{ teams: Array<{ name: string; homeKitColor: string; awayKitColor: string }> }>(
           await fetch('/api/teams/settings', { cache: 'no-store' })
         ),
-        apiJson<{ matches: Match[] }>(await fetch('/api/matches?status=scheduled', { cache: 'no-store' })),
-        apiJson<{ matches: Match[] }>(await fetch('/api/matches?status=finished', { cache: 'no-store' })),
+        fetch('/api/matches', { cache: 'no-store' }),
         apiJson<{ announcements: PublicAnnouncement[] }>(
           await fetch('/api/announcements', { cache: 'no-store' })
         ),
       ]);
+      const rawMatches = (await matchesRes.json()) as unknown;
+      const allMatches = Array.isArray(rawMatches) ? (rawMatches as Match[]) : [];
+      const fixtures = sortMatches(
+        allMatches.filter((match) => match.status === 'scheduled' || match.status === 'tbc'),
+        'asc'
+      );
+      const results = sortMatches(
+        allMatches.filter((match) => match.status === 'finished'),
+        'desc'
+      );
 
       const teamMap: Record<string, { homeKitColor: string; awayKitColor: string }> = {};
       for (const trow of teamSettings.teams) {
@@ -254,19 +274,18 @@ export default function HomeClient(props: {
         };
       }
       setTeams(teamMap);
-      setUpcomingFixtures(fixturesData.matches || []);
-      setRecentResults(resultsData.matches || []);
+      setUpcomingFixtures(fixtures);
+      setRecentResults(results);
       setAnnouncements(announcementsData.announcements || []);
 
       // Load kit overrides for all matches
-      const allMatches = [...(fixturesData.matches || []), ...(resultsData.matches || [])];
       const allOverrides: Record<number, Record<string, string>> = {};
-      for (const match of allMatches) {
+      for (const match of [...fixtures, ...results]) {
         try {
           const res = await fetch(`/api/matches/${match.id}/kit-overrides`);
           const data = await res.json();
           allOverrides[match.id] = data.overrides || {};
-        } catch (e) {
+        } catch {
           // Ignore errors
         }
       }

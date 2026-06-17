@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import KitColorPicker from './KitColorPicker';
-import { KIT_COLORS } from '@/lib/kitColors';
 import { getMatchKitOverridesLocal, setMatchKitOverrideLocal } from '@/lib/matchKitOverrides';
 
 interface MatchKitOverrideEditorProps {
@@ -24,11 +23,7 @@ export default function MatchKitOverrideEditor({
   const [saving, setSaving] = useState(false);
   const [mode, setMode] = useState<'db' | 'local' | 'loading'>('loading');
 
-  useEffect(() => {
-    loadOverrides();
-  }, [matchId]);
-
-  const loadOverrides = async () => {
+  const loadOverrides = useCallback(async () => {
     // 先試 DB，5秒 timeout，唔得就用 localStorage
     const timeoutPromise = new Promise<null>((_, reject) => 
       setTimeout(() => reject(new Error('Timeout')), 5000)
@@ -72,7 +67,11 @@ export default function MatchKitOverrideEditor({
     } finally {
       setLoading(false);
     }
-  };
+  }, [awayTeam, homeTeam, matchId]);
+
+  useEffect(() => {
+    loadOverrides();
+  }, [loadOverrides]);
 
   const handleSave = async (team: string, color: string | null) => {
     setSaving(true);
@@ -154,6 +153,7 @@ export default function MatchKitOverrideEditor({
               <input
                 type="checkbox"
                 checked={homeOverride !== null}
+                disabled={saving}
                 onChange={(e) => {
                   if (e.target.checked) {
                     // Default to white
@@ -189,6 +189,7 @@ export default function MatchKitOverrideEditor({
               <input
                 type="checkbox"
                 checked={awayOverride !== null}
+                disabled={saving}
                 onChange={(e) => {
                   if (e.target.checked) {
                     // Default to white

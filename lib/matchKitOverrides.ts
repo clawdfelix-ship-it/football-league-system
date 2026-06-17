@@ -20,7 +20,7 @@ export function getMatchKitOverridesLocal(matchId: number): Record<string, strin
   try {
     const stored = localStorage.getItem(`kit_overrides_${matchId}`);
     return stored ? JSON.parse(stored) : {};
-  } catch (e) {
+  } catch {
     return {};
   }
 }
@@ -41,8 +41,8 @@ export function setMatchKitOverrideLocal(matchId: number, teamName: string, colo
     }
     
     localStorage.setItem(`kit_overrides_${matchId}`, JSON.stringify(current));
-  } catch (e) {
-    console.error('Failed to save kit override to localStorage:', e);
+  } catch (error) {
+    console.error('Failed to save kit override to localStorage:', error);
   }
 }
 

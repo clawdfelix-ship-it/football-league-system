@@ -4,8 +4,17 @@ import HomeLayout from '@/components/HomeLayout';
 import HeadToHeadTable from '@/components/HeadToHeadTable';
 import { useEffect, useState } from 'react';
 
+type Match = {
+  id: number;
+  homeTeam: string;
+  awayTeam: string;
+  homeScore: number | null;
+  awayScore: number | null;
+  status: string | null;
+};
+
 export default function HeadToHeadPage() {
-  const [matches, setMatches] = useState<any[]>([]);
+  const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
