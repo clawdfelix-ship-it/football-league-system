@@ -8,6 +8,7 @@ declare module 'next-auth' {
       username?: string;
       role?: 'admin' | 'manager' | 'user';
       teamId?: number;
+      mustChangePassword?: boolean;
     } & DefaultSession['user'];
   }
 
@@ -15,6 +16,7 @@ declare module 'next-auth' {
     username: string;
     role: 'admin' | 'manager' | 'user';
     teamId?: number;
+    mustChangePassword?: boolean;
   }
 }
 
@@ -23,5 +25,6 @@ declare module 'next-auth/jwt' {
     username?: string;
     role?: 'admin' | 'manager' | 'user';
     teamId?: number;
+    mustChangePassword?: boolean;
   }
 }

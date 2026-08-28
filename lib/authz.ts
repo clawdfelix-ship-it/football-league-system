@@ -1,8 +1,9 @@
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { TEAMS } from '@/lib/constants';
+import { ROLES, normalizeRole, type Role } from '@/lib/auth/roles';
 
-export type Role = 'admin' | 'manager';
+export type { Role } from '@/lib/auth/roles';
 
 export type AuthContext = {
   role: Role;
@@ -21,9 +22,11 @@ export async function getAuthContext(): Promise<AuthContext | null> {
     email?: unknown;
   } | null;
 
-  const roleRaw = user?.role;
-  const role: Role | null = roleRaw === 'admin' || roleRaw === 'manager' ? roleRaw : null;
+  const role = normalizeRole(user?.role);
   if (!role) return null;
+  // AuthContext exposes only admin/manager; 'user' is treated as unauthenticated
+  // for mutation scopes (consistent with existing route guards).
+  if (role !== ROLES.ADMIN && role !== ROLES.MANAGER) return null;
 
   return {
     role,

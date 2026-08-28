@@ -5,6 +5,8 @@ import { db } from '@/lib/db';
 import { users } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
+import { getManagerMapping } from '@/lib/auth/load-manager-mapping';
+import { rehashIfLegacy } from '@/lib/auth/password';
 
 interface CustomUser {
   id: string;
@@ -12,15 +14,21 @@ interface CustomUser {
   username: string;
   role: 'admin' | 'manager' | 'user';
   teamId?: number; // Index in TEAMS array
+  mustChangePassword?: boolean;
 }
 
 export function resolveManagerTeamId(email: string): number | null {
-  const mappedTeamIndex = MANAGER_EMAILS[email];
+  const inputEmail = email.toLowerCase();
+
+  // Source of truth is now lib/auth/load-manager-mapping (env var, gitignored file,
+  // or empty placeholder). Real PII lives outside the repo.
+  const mapping = getManagerMapping();
+  const mappedTeamIndex = mapping[inputEmail];
   if (mappedTeamIndex !== undefined && mappedTeamIndex >= 0 && mappedTeamIndex < TEAMS.length) {
     return mappedTeamIndex;
   }
 
-  const emailPrefix = email.split('@')[0].toUpperCase();
+  const emailPrefix = inputEmail.split('@')[0].toUpperCase();
   const prefixTeamIndex = TEAMS.findIndex((t) => t.shortName === emailPrefix);
   if (prefixTeamIndex !== -1) {
     return prefixTeamIndex;
@@ -29,51 +37,30 @@ export function resolveManagerTeamId(email: string): number | null {
   return null;
 }
 
-// Map emails to team indexes (0-based index from TEAMS constant)
-const MANAGER_EMAILS: Record<string, number> = {
-  // 0: NOMURA
-  'terrence.tan@nomura.com': 0,
-  'kenneth.miranda@nomura.com': 0,
-  
-  // 1: BBVA
-  'ibai.garatea1@bbva.com': 1,
-  'yassine.ayadi@bbva.com': 1,
-  
-  // 2: LGT
-  'david.pun@lgt.com': 2,
-  'alvin.li@lgt.com': 2,
-  
-  // 3: CACIB
-  'maxime.bonte@ca-cib.com': 3,
-  'victor.romier@ca-cib.com': 3,
-  
-  // 4: CITI
-  'michael.mak@citi.com': 4,
-  'toan.dc.nguyen@citi.com': 4,
-  
-  // 5: SCB
-  'david.oliveira@sc.com': 5,
-  'andyty.wan@sc.com': 5,
-  
-  // 6: UBS
-  'mortadha.lagha@ubs.com': 6,
-  'fu-bong.chan@ubs.com': 6,
-  'keith.kwok@ubs.com': 6,
-  'eugene.lam@ubs.com': 6,
-  
-  // 7: HSBC
-  'jimmy.k.p.chan@hsbc.com.hk': 7,
-
-  // 8: KPMG
-  'terrence.chan@kpmg.com': 8,
-  'andrew.chan@kpmg.com': 8,
-
-  // 9: DEMO
-  'hello@zenex-sports.com': 9,
-
-  // TEST ACCOUNT (Linked to NOMURA for testing)
-  'test@manager.com': 0,
-};
+// Legacy export kept for backward compatibility with any consumer that imported
+// the raw map. Now proxies through the loader so updates propagate.
+export const MANAGER_EMAILS: Readonly<Record<string, number>> = new Proxy(
+  {},
+  {
+    get(_target, prop: string) {
+      const map = getManagerMapping();
+      return map[prop.toLowerCase()];
+    },
+    has(_target, prop: string) {
+      const map = getManagerMapping();
+      return map[prop.toLowerCase()] !== undefined;
+    },
+    ownKeys() {
+      return Object.keys(getManagerMapping());
+    },
+    getOwnPropertyDescriptor(_target, prop: string) {
+      const map = getManagerMapping();
+      const value = map[prop.toLowerCase()];
+      if (value === undefined) return undefined;
+      return { configurable: true, enumerable: true, value, writable: false };
+    },
+  }
+);
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -114,6 +101,7 @@ export const authOptions: NextAuthOptions = {
               username: users.username,
               role: users.role,
               passwordHash: users.passwordHash,
+              mustChangePassword: users.mustChangePassword,
             })
             .from(users)
             .where(eq(users.email, inputEmail));
@@ -121,6 +109,28 @@ export const authOptions: NextAuthOptions = {
           if (dbUser) {
             const ok = await bcrypt.compare(credentials.password, dbUser.passwordHash);
             if (!ok) return null;
+
+            // Non-blocking auto-upgrade: if this user's password was hashed with
+            // an older bcrypt cost, transparently re-hash at the current cost.
+            // Never throws and never blocks the login path.
+            void rehashIfLegacy(credentials.password, dbUser.passwordHash).then(
+              async (newHash) => {
+                if (!newHash) return;
+                try {
+                  await db
+                    .update(users)
+                    .set({ passwordHash: newHash })
+                    .where(eq(users.id, dbUser.id));
+                } catch (e) {
+                  console.warn('[auth] failed to upgrade password hash for user', dbUser.id, e);
+                }
+              },
+              () => {
+                // intentionally ignored
+              }
+            );
+
+            const mustChange = Boolean(dbUser.mustChangePassword);
 
             if (dbUser.role === 'manager') {
               const teamIndex = resolveManagerTeamId(inputEmail);
@@ -134,7 +144,8 @@ export const authOptions: NextAuthOptions = {
                 email: dbUser.email,
                 username: dbUser.username,
                 role: 'manager',
-                teamId: teamIndex
+                teamId: teamIndex,
+                mustChangePassword: mustChange,
               };
             }
 
@@ -144,6 +155,7 @@ export const authOptions: NextAuthOptions = {
                 email: dbUser.email,
                 username: dbUser.username,
                 role: 'user',
+                mustChangePassword: mustChange,
               };
             }
 
@@ -154,45 +166,26 @@ export const authOptions: NextAuthOptions = {
         }
 
         // Bootstrap-only fallback for whitelisted managers that do not yet have a DB account.
-        if (credentials.password === TEAM_PASSWORD) {
-          // Check if email is in our allowed list
+        // Gated on MANAGER_PASSWORD env var so it ONLY works if the admin explicitly
+        // sets it (typically for the very first deploy before running the seed script).
+        // After seed-team-passwords.ts is run, every manager has a DB row and falls
+        // through the dbUser branch above instead of this one.
+        if (TEAM_PASSWORD && credentials.password === TEAM_PASSWORD) {
           const teamIndex = MANAGER_EMAILS[inputEmail];
-          
           if (teamIndex !== undefined) {
             const team = TEAMS[teamIndex];
-            // Extract name from email (e.g. david.pun -> David Pun) for display
-            let namePart = inputEmail.split('@')[0].split('.').map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
-            
-            // Special handling for test account name
-            if (inputEmail === 'test@manager.com') {
-              namePart = 'Test Manager';
-            }
-            
+            const namePart = inputEmail.split('@')[0].split('.').map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
             return {
               id: `manager-${teamIndex}-${namePart}`,
               email: inputEmail,
-              username: `${namePart} (${team.shortName})`,
+              username: inputEmail === 'test@manager.com' ? 'Test Manager' : `${namePart} (${team.shortName})`,
               role: 'manager',
-              teamId: teamIndex
-            };
-          }
-
-          // Fallback: Check for generic team emails (e.g. nomura@zenex.com) as backup
-          const emailPrefix = inputEmail.split('@')[0].toUpperCase();
-          const genericTeamIndex = TEAMS.findIndex(t => t.shortName === emailPrefix);
-          
-          if (genericTeamIndex !== -1 && inputEmail.endsWith('@zenex.com')) {
-            const team = TEAMS[genericTeamIndex];
-            return {
-              id: `manager-${genericTeamIndex}`,
-              email: inputEmail,
-              username: `${team.shortName} Manager`,
-              role: 'manager',
-              teamId: genericTeamIndex
+              teamId: teamIndex,
+              mustChangePassword: true, // force password set on first login
             };
           }
         }
-        
+
         return null;
       }
     })
@@ -201,12 +194,26 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       if (user) {
         const customUser = user as CustomUser;
         token.username = customUser.username;
         token.role = customUser.role;
         token.teamId = customUser.teamId;
+        token.mustChangePassword = customUser.mustChangePassword;
+      }
+      // Refresh the must_change_password flag from DB on every session update
+      // so the flag clears as soon as the manager changes their password.
+      if (trigger === 'update' && token.email) {
+        try {
+          const [row] = await db
+            .select({ must: users.mustChangePassword })
+            .from(users)
+            .where(eq(users.email, String(token.email).toLowerCase()));
+          token.mustChangePassword = Boolean(row?.must);
+        } catch {
+          // keep previous value on transient failure
+        }
       }
       return token;
     },
@@ -215,6 +222,7 @@ export const authOptions: NextAuthOptions = {
         session.user.username = token.username;
         session.user.role = token.role;
         session.user.teamId = token.teamId;
+        session.user.mustChangePassword = token.mustChangePassword;
       }
       return session;
     }
