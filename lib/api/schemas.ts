@@ -66,6 +66,25 @@ export const ChangePasswordSchema = z.object({
   newPassword: z.string().min(8).max(200),
 });
 
+export const ChangePasswordFirstTimeSchema = z
+  .object({
+    newPassword: z.string().min(8).max(200),
+    confirmPassword: z.string().min(8).max(200),
+  })
+  .refine((v) => v.newPassword === v.confirmPassword, {
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
+  });
+
+export const TeamPasswordSetSchema = z.object({
+  team: NonEmptyString,
+  password: z.string().min(8).max(200),
+});
+
+export const TeamPasswordResetSchema = z.object({
+  email: z.string().trim().email().toLowerCase(),
+});
+
 export const ManagerAccountsSchema = z.object({
   regenerate: z.boolean().optional(),
   mode: z.enum(['random', 'shared']).optional(),

@@ -7,14 +7,8 @@ import { authOptions } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { users } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
-import bcrypt from 'bcryptjs';
-
-function makeUsername(email: string) {
-  const local = email.split('@')[0] || email;
-  const cleaned = local.toLowerCase().replace(/[^a-z0-9._-]+/g, '-');
-  const base = `manager-${cleaned}`;
-  return base.length <= 50 ? base : base.slice(0, 50);
-}
+import { hashPassword } from '@/lib/auth/password';
+import { audit } from '@/lib/auth/audit-log';
 
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
@@ -24,66 +18,85 @@ export async function POST(request: Request) {
   }
 
   const role = session.user?.role;
-  if (role !== 'manager') {
-    return fail(403, 'FORBIDDEN', 'Forbidden');
+  if (role !== 'manager' && role !== 'user') {
+    return fail(403, 'FORBIDDEN', 'Only managers and users can change their own password');
   }
 
   const email = String(session.user.email).toLowerCase();
+  const isForced = Boolean(session.user?.mustChangePassword);
 
   const ip = getClientIp(request);
   const rl = rateLimit(`change-password:${ip}:${email}`, { limit: 10, windowMs: 10 * 60 * 1000 });
   if (!rl.allowed) return fail(429, 'RATE_LIMITED', 'Too many requests');
 
-  let input: { currentPassword: string; newPassword: string };
+  // First-change flow: only newPassword + confirm required.
+  // Self-service flow: requires currentPassword + newPassword.
+  let input: { currentPassword?: string; newPassword: string; confirmPassword?: string };
   try {
-    input = ChangePasswordSchema.parse(await request.json());
+    const raw = await request.json();
+    if (isForced) {
+      const { ChangePasswordFirstTimeSchema } = await import('@/lib/api/schemas');
+      input = ChangePasswordFirstTimeSchema.parse(raw);
+    } else {
+      input = ChangePasswordSchema.parse(raw);
+    }
   } catch (e) {
     return fail(400, 'VALIDATION_ERROR', 'Invalid request body', zodDetails(e));
   }
 
-  const currentPassword = input.currentPassword;
-  const newPassword = input.newPassword;
-
-  const managerPassword = process.env.MANAGER_PASSWORD;
-
   const [dbUser] = await db
     .select({
       id: users.id,
-      email: users.email,
-      username: users.username,
       role: users.role,
       passwordHash: users.passwordHash,
     })
     .from(users)
     .where(eq(users.email, email));
 
-  if (dbUser) {
-    if (dbUser.role !== 'manager') {
-      return fail(403, 'FORBIDDEN', 'Forbidden');
-    }
+  if (!dbUser) {
+    return fail(404, 'NOT_FOUND', 'Account not found');
+  }
 
-    const passwordOk = await bcrypt.compare(currentPassword, dbUser.passwordHash);
-    if (!passwordOk) {
+  if (!isForced) {
+    if (!input.currentPassword) {
+      return fail(400, 'VALIDATION_ERROR', 'currentPassword is required');
+    }
+    const okPw = await (await import('bcryptjs')).default.compare(input.currentPassword, dbUser.passwordHash);
+    if (!okPw) {
+      void audit({
+        action: 'admin.manager_account.generate', // reuse audit category
+        actor: { role: dbUser.role as 'admin' | 'manager' | 'user', email, username: null },
+        ip,
+        result: 'denied',
+        detail: 'change-password: wrong current password',
+      });
       return fail(400, 'INVALID_CREDENTIALS', 'Current password is incorrect');
     }
-
-    const passwordHash = await bcrypt.hash(newPassword, 10);
-    await db.update(users).set({ passwordHash }).where(eq(users.id, dbUser.id));
-    return ok({ message: 'Password updated' });
   }
 
-  if (!managerPassword || currentPassword !== managerPassword) {
-    return fail(400, 'INVALID_CREDENTIALS', 'Current password is incorrect');
+  // Reject setting the same password as the current one (only meaningful for
+  // self-service; for first-change the user wouldn't know the old one).
+  if (!isForced && input.currentPassword === input.newPassword) {
+    return fail(400, 'VALIDATION_ERROR', 'New password must be different from current password');
   }
 
-  const passwordHash = await bcrypt.hash(newPassword, 10);
+  const passwordHash = await hashPassword(input.newPassword);
+  await db
+    .update(users)
+    .set({
+      passwordHash,
+      mustChangePassword: null,
+      passwordChangedAt: new Date(),
+    })
+    .where(eq(users.id, dbUser.id));
 
-  await db.insert(users).values({
-    email,
-    username: makeUsername(email),
-    passwordHash,
-    role: 'manager',
+  void audit({
+    action: 'admin.manager_account.generate', // reuse category
+    actor: { role: dbUser.role as 'admin' | 'manager' | 'user', email, username: null },
+    ip,
+    result: 'success',
+    detail: isForced ? 'first-time password change' : 'self-service password change',
   });
 
-  return ok({ message: 'Password set' });
+  return ok({ message: 'Password updated' });
 }
