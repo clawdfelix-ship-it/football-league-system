@@ -1,6 +1,7 @@
 import { ok, fail } from '@/lib/api/response';
 import { ManagerAccountsSchema } from '@/lib/api/schemas';
 import { zodDetails } from '@/lib/api/zod';
+import { getClientIp, rateLimit } from '@/lib/api/rate-limit';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { TEAM_CONTACTS } from '@/lib/team-contacts';
@@ -9,6 +10,7 @@ import { users } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
 import { randomInt } from 'crypto';
+import { audit } from '@/lib/auth/audit-log';
 
 function sixDigits() {
   return String(randomInt(0, 1_000_000)).padStart(6, '0');
@@ -21,22 +23,62 @@ function makeUsername(team: string, email: string) {
 }
 
 export async function POST(request: Request) {
+  const ip = getClientIp(request);
+  const rl = rateLimit(`manager-accounts:${ip}`, { limit: 10, windowMs: 10 * 60 * 1000 });
+  if (!rl.allowed) {
+    void audit({
+      action: 'admin.manager_account.generate',
+      actor: { role: 'anonymous' },
+      ip,
+      result: 'denied',
+      detail: 'rate limited',
+    });
+    return fail(429, 'RATE_LIMITED', 'Too many requests');
+  }
+
   try {
     const session = await getServerSession(authOptions);
 
     if (!session) {
+      void audit({
+        action: 'admin.manager_account.generate',
+        actor: { role: 'anonymous' },
+        ip,
+        result: 'denied',
+        detail: 'no session',
+      });
       return fail(401, 'UNAUTHENTICATED', 'Unauthorized');
     }
 
     const role = session.user?.role;
     if (role !== 'admin') {
+      void audit({
+        action: 'admin.manager_account.generate',
+        actor: { role: session.user?.role ?? 'user', email: session.user?.email ?? null, username: session.user?.username ?? null },
+        ip,
+        result: 'denied',
+        detail: 'not admin',
+      });
       return fail(403, 'FORBIDDEN', 'Forbidden');
     }
+
+    const actor = {
+      role: 'admin' as const,
+      email: session.user?.email ?? null,
+      username: session.user?.username ?? null,
+    };
 
     let input: { regenerate?: boolean; mode?: 'random' | 'shared' } = {};
     try {
       input = ManagerAccountsSchema.parse(await request.json().catch(() => ({})));
     } catch (e) {
+      void audit({
+        action: 'admin.manager_account.generate',
+        actor,
+        ip,
+        result: 'denied',
+        detail: 'invalid body: ' + (e instanceof Error ? e.message : 'unknown'),
+      });
       return fail(400, 'VALIDATION_ERROR', 'Invalid request body', zodDetails(e));
     }
 
@@ -87,6 +129,13 @@ export async function POST(request: Request) {
         }
       }
 
+      void audit({
+        action: 'admin.manager_account.generate',
+        actor,
+        ip,
+        result: 'success',
+        detail: `mode=shared created=${createdEmails.length} updated=${updatedEmails.length}`,
+      });
       return ok({
         message: 'Shared manager password applied',
         createdEmails,
@@ -142,12 +191,26 @@ export async function POST(request: Request) {
       }
     }
 
+    void audit({
+      action: 'admin.manager_account.generate',
+      actor,
+      ip,
+      result: 'success',
+      detail: `mode=random created=${created.length} skipped=${skipped.length} regenerate=${regenerate}`,
+    });
     return ok({
       message: 'Manager accounts processed',
       created,
       skipped,
     });
   } catch (e) {
+    void audit({
+      action: 'admin.manager_account.generate',
+      actor: { role: 'admin', email: null, username: null },
+      ip,
+      result: 'error',
+      detail: e instanceof Error ? e.message : 'unknown',
+    });
     return fail(500, 'INTERNAL_ERROR', e instanceof Error ? e.message : 'Failed to process manager accounts');
   }
 }

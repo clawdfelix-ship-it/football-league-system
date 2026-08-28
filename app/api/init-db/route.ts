@@ -11,7 +11,9 @@ export const dynamic = 'force-dynamic';
 export async function POST(request: NextRequest) {
   try {
     const ip = getClientIp(request);
-    const rl = rateLimit(`init-db:${ip}`, { limit: 20, windowMs: 10 * 60 * 1000 });
+    // Tightened from 20 → 5 per 10min: this endpoint should fire at most once
+    // per environment. Legitimate callers shouldn't hit this limit.
+    const rl = rateLimit(`init-db:${ip}`, { limit: 5, windowMs: 10 * 60 * 1000 });
     if (!rl.allowed) return fail(429, 'RATE_LIMITED', 'Too many requests');
 
     const auth = await getAuthContext();
