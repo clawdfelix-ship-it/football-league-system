@@ -5,8 +5,38 @@ import { db } from '@/lib/db';
 import { users } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
+import { timingSafeEqual } from 'crypto';
 import { getManagerMapping } from '@/lib/auth/load-manager-mapping';
 import { rehashIfLegacy } from '@/lib/auth/password';
+
+/**
+ * How often (seconds) to re-validate the session's role/team against the DB
+ * during JWT refresh. Lower = tighter security, higher = less DB load.
+ * 5 minutes is a reasonable balance for a low-traffic league admin app.
+ */
+const JWT_RECHECK_INTERVAL = Number(process.env.JWT_RECHECK_INTERVAL ?? 300);
+
+/**
+ * Constant-time string comparison for shared/server-side secrets.
+ *
+ * Why: `a === b` short-circuits on the first differing byte, so an attacker who
+ * can measure response latency can statistically infer the password prefix.
+ * Per-user bcrypt compares are already constant-time; this covers the shared
+ * admin/team passwords which are compared in plaintext.
+ */
+function safeEqualString(a: string, b: string): boolean {
+  const bufA = Buffer.from(a, 'utf8');
+  const bufB = Buffer.from(b, 'utf8');
+  if (bufA.length !== bufB.length) {
+    // Still burn a constant-time comparison against bufA so length differences
+    // don't leak via timing, then report mismatch.
+    const padded = Buffer.alloc(bufA.length);
+    bufB.copy(padded, 0, 0, Math.min(bufB.length, bufA.length));
+    timingSafeEqual(bufA, padded);
+    return false;
+  }
+  return timingSafeEqual(bufA, bufB);
+}
 
 interface CustomUser {
   id: string;
@@ -81,7 +111,7 @@ export const authOptions: NextAuthOptions = {
         const adminEmail = process.env.ADMIN_EMAIL;
         const adminPassword = process.env.ADMIN_PASSWORD;
 
-        if (adminEmail && adminPassword && inputEmail === adminEmail && credentials.password === adminPassword) {
+        if (adminEmail && adminPassword && inputEmail === adminEmail.toLowerCase() && safeEqualString(credentials.password, adminPassword)) {
           return {
             id: 'admin',
             email: adminEmail,
@@ -170,7 +200,7 @@ export const authOptions: NextAuthOptions = {
         // sets it (typically for the very first deploy before running the seed script).
         // After seed-team-passwords.ts is run, every manager has a DB row and falls
         // through the dbUser branch above instead of this one.
-        if (TEAM_PASSWORD && credentials.password === TEAM_PASSWORD) {
+        if (TEAM_PASSWORD && safeEqualString(credentials.password, TEAM_PASSWORD)) {
           const teamIndex = MANAGER_EMAILS[inputEmail];
           if (teamIndex !== undefined) {
             const team = TEAMS[teamIndex];
@@ -201,18 +231,49 @@ export const authOptions: NextAuthOptions = {
         token.role = customUser.role;
         token.teamId = customUser.teamId;
         token.mustChangePassword = customUser.mustChangePassword;
+        return token;
       }
-      // Refresh the must_change_password flag from DB on every session update
-      // so the flag clears as soon as the manager changes their password.
-      if (trigger === 'update' && token.email) {
+
+      // Re-validate the session against the DB so role/team changes or account
+      // deletion take effect without waiting for the (30-day) JWT to expire.
+      // Runs on explicit `update()` or once the token is older than
+      // JWT_RECHECK_INTERVAL. The env-based super admin has no users row, so it
+      // is exempt; returning null discards the token and forces re-login.
+      const now = Math.floor(Date.now() / 1000);
+      const lastCheck = typeof token.iat === 'number' ? token.iat : now;
+      const email = typeof token.email === 'string' ? token.email : null;
+      const shouldRecheck =
+        trigger === 'update' || now - lastCheck > JWT_RECHECK_INTERVAL;
+
+      if (shouldRecheck && email && token.role !== 'admin') {
         try {
-          const [row] = await db
-            .select({ must: users.mustChangePassword })
+          const [dbUser] = await db
+            .select({ role: users.role, must: users.mustChangePassword })
             .from(users)
-            .where(eq(users.email, String(token.email).toLowerCase()));
-          token.mustChangePassword = Boolean(row?.must);
-        } catch {
-          // keep previous value on transient failure
+            .where(eq(users.email, email.toLowerCase()));
+
+          if (!dbUser) {
+            // Account deleted — revoke.
+            return null as unknown as typeof token;
+          }
+          if (dbUser.role !== token.role) {
+            console.warn(`[auth] JWT role drift for ${email}; revoking session.`);
+            return null as unknown as typeof token;
+          }
+          if (
+            dbUser.role === 'manager' &&
+            typeof token.teamId === 'number' &&
+            resolveManagerTeamId(email) !== token.teamId
+          ) {
+            console.warn(`[auth] JWT teamId drift for ${email}; revoking session.`);
+            return null as unknown as typeof token;
+          }
+          // Also keeps the must-change-password flag fresh (trigger==='update').
+          token.mustChangePassword = Boolean(dbUser.must);
+        } catch (e) {
+          // DB hiccup — fail open (keep the token) but log it, otherwise a
+          // transient outage would lock everyone out.
+          console.error('[auth] JWT recheck failed; keeping existing token:', e);
         }
       }
       return token;

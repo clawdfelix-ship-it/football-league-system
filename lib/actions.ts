@@ -221,6 +221,15 @@ export async function deleteMatch(id: number | string) {
 }
 
 export async function resetSeason() {
+  // Security: previously an unauthenticated server action — anyone who could
+  // reach it could wipe the entire season's matches. Server actions are NOT
+  // protected by the admin RSC layout guard (the layout only renders on
+  // navigation, not on direct action invocation), so enforce role here too.
+  const auth = await getAuthContext();
+  if (!auth || auth.role !== 'admin') {
+    throw new Error('Forbidden: admin only');
+  }
+
   try {
     const result = await deleteAllMatches();
     console.log(`Deleted ${result.length} matches`);
@@ -263,7 +272,7 @@ export async function addPlayer(data: {
       return { success: false, message: scope.message };
     }
 
-    const teamName = data.team.trim();
+    const teamName = data.team.trim().toUpperCase();
     if (!teamName) {
       return { success: false, message: 'Team is required' };
     }
