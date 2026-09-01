@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useCallback, useMemo, useEffect } from 'react';
-import Image from 'next/image';
 import HomeLayout from '@/components/HomeLayout';
+import Logo from '@/components/Logo';
 import { useLanguage } from '@/context/LanguageContext';
 import { TEAMS } from '@/lib/constants';
 import { getKitColorInfo } from '@/lib/kitColors';
@@ -300,12 +300,12 @@ export default function HomeClient(props: {
   if (loading && !hasAnyData) {
     return (
       <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans">
-        <header className="bg-[#1a237e] bg-gradient-to-b from-[#1a237e] to-[#283593] text-white pt-16 pb-24 px-6 text-center flex flex-col items-center">
-          <div className="mb-6 relative h-32 w-32">
-            <Image src="/logo.png" alt="ZENEX Logo" fill className="object-contain" priority />
+        <header className="bg-[#1a237e] bg-gradient-to-b from-[#1a237e] to-[#283593] text-white pt-14 pb-20 sm:pt-16 sm:pb-24 px-6 text-center flex flex-col items-center">
+          <div className="mb-5 sm:mb-6 h-24 w-24 sm:h-32 sm:w-32">
+            <Logo className="h-full w-full drop-shadow-lg" />
           </div>
-          <h2 className="text-6xl font-black italic mb-2 tracking-tight">Hong Kong Bank League 2026</h2>
-          <p className="text-blue-200 text-lg font-light tracking-widest uppercase">
+          <h2 className="font-black italic mb-2 tracking-[-0.02em] leading-[1.05] text-balance text-[clamp(1.9rem,7vw,3.75rem)]">Hong Kong Bank League 2026</h2>
+          <p className="text-blue-200 font-light tracking-widest uppercase text-[clamp(0.7rem,2.6vw,1.125rem)] text-balance">
             Partnered with ZENEX SPORTS | 香港銀行足球聯賽2026
           </p>
         </header>
@@ -324,12 +324,12 @@ export default function HomeClient(props: {
   return (
     <HomeLayout>
       <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans">
-        <header className="bg-[#1a237e] bg-gradient-to-b from-[#1a237e] to-[#283593] text-white pt-16 pb-24 px-6 text-center flex flex-col items-center">
-          <div className="mb-6 relative h-32 w-32">
-            <Image src="/logo.png" alt="ZENEX Logo" fill className="object-contain" priority />
+        <header className="bg-[#1a237e] bg-gradient-to-b from-[#1a237e] to-[#283593] text-white pt-14 pb-20 sm:pt-16 sm:pb-24 px-6 text-center flex flex-col items-center">
+          <div className="mb-5 sm:mb-6 h-24 w-24 sm:h-32 sm:w-32">
+            <Logo className="h-full w-full drop-shadow-lg" />
           </div>
-          <h2 className="text-6xl font-black italic mb-2 tracking-tight">Hong Kong Bank League 2026</h2>
-          <p className="text-blue-200 text-lg font-light tracking-widest uppercase">
+          <h2 className="font-black italic mb-2 tracking-[-0.02em] leading-[1.05] text-balance text-[clamp(1.9rem,7vw,3.75rem)]">Hong Kong Bank League 2026</h2>
+          <p className="text-blue-200 font-light tracking-widest uppercase text-[clamp(0.7rem,2.6vw,1.125rem)] text-balance">
             Partnered with ZENEX SPORTS | 香港銀行足球聯賽2026
           </p>
         </header>
@@ -354,14 +354,14 @@ export default function HomeClient(props: {
                     <tr className="bg-slate-100 text-slate-700 text-sm font-bold uppercase tracking-wider">
                       <th className="px-6 py-4 text-center w-20">{t('排名', 'Rank')}</th>
                       <th className="px-6 py-4 text-left">{t('球隊', 'Team')}</th>
-                      <th className="px-6 py-4 text-center bg-slate-200/50 text-slate-900">{t('分數', 'Points')}</th>
-                      <th className="px-6 py-4 text-center text-slate-500 font-normal">{t('踢咗', 'Played')}</th>
-                      <th className="px-6 py-4 text-center text-slate-500 font-normal">{t('贏', 'Won')}</th>
-                      <th className="px-6 py-4 text-center text-slate-500 font-normal">{t('和', 'Drawn')}</th>
-                      <th className="px-6 py-4 text-center text-slate-500 font-normal">{t('輸', 'Lost')}</th>
-                      <th className="px-6 py-4 text-center text-slate-500 font-normal">{t('入球', 'GF')}</th>
-                      <th className="px-6 py-4 text-center text-slate-500 font-normal">{t('失球', 'GA')}</th>
-                      <th className="px-6 py-4 text-center text-slate-500 font-normal">{t('球差', 'GD')}</th>
+                      <th className="px-3 md:px-6 py-4 text-center bg-slate-200/50 text-slate-900">{t('分數', 'Points')}</th>
+                      <th className="px-3 md:px-6 py-4 text-center text-slate-500 font-normal">{t('踢咗', 'Played')}</th>
+                      <th className="px-6 py-4 text-center text-slate-500 font-normal hidden md:table-cell">{t('贏', 'Won')}</th>
+                      <th className="px-6 py-4 text-center text-slate-500 font-normal hidden md:table-cell">{t('和', 'Drawn')}</th>
+                      <th className="px-6 py-4 text-center text-slate-500 font-normal hidden md:table-cell">{t('輸', 'Lost')}</th>
+                      <th className="px-6 py-4 text-center text-slate-500 font-normal hidden md:table-cell">{t('入球', 'GF')}</th>
+                      <th className="px-6 py-4 text-center text-slate-500 font-normal hidden md:table-cell">{t('失球', 'GA')}</th>
+                      <th className="px-3 md:px-6 py-4 text-center text-slate-500 font-normal">{t('球差', 'GD')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -377,21 +377,30 @@ export default function HomeClient(props: {
                       standings.map((team, index) => (
                         <tr
                           key={team.teamName}
-                          className="border-b border-slate-200 hover:bg-slate-50 transition-colors"
+                          className={`border-b border-slate-200 transition-colors ${
+                            index === 0
+                              ? 'bg-amber-50 hover:bg-amber-100/70'
+                              : 'hover:bg-slate-50'
+                          }`}
                         >
-                          <td className="px-6 py-4 font-black text-xl text-center text-slate-900">{index + 1}</td>
-                          <td className="px-6 py-4 font-bold text-slate-900 text-lg">{team.teamName}</td>
-                          <td className="px-6 py-4 text-center bg-slate-50 text-slate-900 font-black text-2xl border-x border-slate-100">
+                          <td className="px-3 md:px-6 py-4 font-black text-xl text-center text-slate-900">
+                            <span className="inline-flex items-center gap-1">
+                              {index === 0 && <span title={t('榜首', 'League leader')}>🥇</span>}
+                              {index + 1}
+                            </span>
+                          </td>
+                          <td className="px-3 md:px-6 py-4 font-bold text-slate-900 text-base md:text-lg whitespace-nowrap">{team.teamName}</td>
+                          <td className="px-3 md:px-6 py-4 text-center bg-slate-50 text-slate-900 font-black text-xl md:text-2xl border-x border-slate-100">
                             {team.points}
                           </td>
-                          <td className="px-6 py-4 text-center text-slate-400">{team.played}</td>
-                          <td className="px-6 py-4 text-center text-slate-400">{team.wins}</td>
-                          <td className="px-6 py-4 text-center text-slate-400">{team.draws}</td>
-                          <td className="px-6 py-4 text-center text-slate-400">{team.losses}</td>
-                          <td className="px-6 py-4 text-center text-slate-400">{team.goalsFor}</td>
-                          <td className="px-6 py-4 text-center text-slate-400">{team.goalsAgainst}</td>
+                          <td className="px-3 md:px-6 py-4 text-center text-slate-400">{team.played}</td>
+                          <td className="px-6 py-4 text-center text-slate-400 hidden md:table-cell">{team.wins}</td>
+                          <td className="px-6 py-4 text-center text-slate-400 hidden md:table-cell">{team.draws}</td>
+                          <td className="px-6 py-4 text-center text-slate-400 hidden md:table-cell">{team.losses}</td>
+                          <td className="px-6 py-4 text-center text-slate-400 hidden md:table-cell">{team.goalsFor}</td>
+                          <td className="px-6 py-4 text-center text-slate-400 hidden md:table-cell">{team.goalsAgainst}</td>
                           <td
-                            className={`px-6 py-4 text-center font-bold ${
+                            className={`px-3 md:px-6 py-4 text-center font-bold ${
                               team.goalDifference > 0
                                 ? 'text-green-600'
                                 : team.goalDifference < 0
@@ -407,37 +416,6 @@ export default function HomeClient(props: {
                     )}
                   </tbody>
                 </table>
-              </div>
-              <div className="md:hidden flex items-center justify-center gap-2 py-3 text-slate-500 text-sm bg-slate-50 border-t border-slate-100">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="animate-pulse"
-                >
-                  <path d="m9 18 6-6-6-6" />
-                </svg>
-                <span>{t('向右滑動查看更多', 'Swipe right to see more')}</span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="animate-pulse"
-                >
-                  <path d="m9 18 6-6-6-6" />
-                </svg>
               </div>
             </div>
           </section>

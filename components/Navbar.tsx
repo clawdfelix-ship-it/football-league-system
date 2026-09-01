@@ -1,53 +1,75 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import LanguageToggle from './LanguageToggle';
+import Logo from './Logo';
 import { useLanguage } from '@/context/LanguageContext';
+
+type NavItem = { href: string; zh: string; en: string; hash?: string };
+
+const NAV_ITEMS: NavItem[] = [
+  { href: '/overview', zh: '賽事簡介', en: 'Overview' },
+  { href: '/head-to-head', zh: '對戰表', en: 'Head to Head' },
+  { href: '/#standings', zh: '積分榜', en: 'Standings', hash: '#standings' },
+  { href: '/#matches', zh: '賽程 & 結果', en: 'Fixtures & Results', hash: '#matches' },
+  { href: '/pdf', zh: 'PDF', en: 'PDF' },
+];
 
 export default function Navbar() {
   const { t } = useLanguage();
+  const pathname = usePathname();
+  const [hash, setHash] = useState('');
   const [isAdminMenuOpen, setIsAdminMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const sync = () => setHash(window.location.hash);
+    sync();
+    window.addEventListener('hashchange', sync);
+    return () => window.removeEventListener('hashchange', sync);
+  }, [pathname]);
+
+  const isActive = (item: NavItem) => {
+    if (item.hash) {
+      if (pathname !== '/') return false;
+      // On the home page with no hash, highlight the standings (primary) tab.
+      return hash === item.hash || (hash === '' && item.hash === '#standings');
+    }
+    return pathname === item.href;
+  };
+
+  const linkClass = (item: NavItem) =>
+    [
+      'text-sm font-medium rounded-full px-3 py-1.5 transition-colors',
+      isActive(item)
+        ? 'text-white bg-white/15'
+        : 'text-gray-300 hover:text-white hover:bg-white/5',
+    ].join(' ');
+
+  const mobileLinkClass = (item: NavItem) =>
+    [
+      'block px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+      isActive(item) ? 'text-white bg-white/15' : 'text-gray-300 hover:bg-gray-800 hover:text-white',
+    ].join(' ');
 
   return (
     <nav className="bg-gray-900 text-white p-4 shadow-md sticky top-0 z-50">
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center gap-8">
           <Link href="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
-            <div className="relative h-12 w-12 flex-shrink-0">
-              <Image
-                src="/logo.png"
-                alt="ZENEX Logo"
-                width={48}
-                height={48}
-                className="h-full w-full object-contain"
-              />
-            </div>
+            <Logo className="h-12 w-12 flex-shrink-0" />
             <span className="text-xl font-bold tracking-tight">
               Hong Kong Bank League 2026
             </span>
           </Link>
-          <div className="hidden md:flex items-center gap-6">
-            <Link href="/overview" className="text-sm font-medium hover:text-gray-300 transition-colors">
-              {t('賽事簡介', 'Overview')}
-            </Link>
-            <Link href="/head-to-head" className="text-sm font-medium hover:text-gray-300 transition-colors">
-              {t('對戰表', 'Head to Head')}
-            </Link>
-            {/* <Link href="/scorers" className="text-sm font-medium hover:text-gray-300 transition-colors">
-              {t('神射手榜', 'Top Scorers')}
-            </Link> */}
-            <Link href="/#standings" className="text-sm font-medium hover:text-gray-300 transition-colors">
-              {t('積分榜', 'Standings')}
-            </Link>
-            <Link href="/#matches" className="text-sm font-medium hover:text-gray-300 transition-colors">
-              {t('賽程 & 結果', 'Fixtures & Results')}
-            </Link>
-            <Link href="/pdf" className="text-sm font-medium hover:text-gray-300 transition-colors">
-              {t('PDF', 'PDF')}
-            </Link>
+          <div className="hidden md:flex items-center gap-2">
+            {NAV_ITEMS.map((item) => (
+              <Link key={item.href} href={item.href} className={linkClass(item)}>
+                {t(item.zh, item.en)}
+              </Link>
+            ))}
           </div>
         </div>
         <div>
@@ -103,49 +125,17 @@ export default function Navbar() {
         </div>
       </div>
       {isMobileMenuOpen && (
-        <div className="container mx-auto mt-3 md:hidden space-y-2">
-          <Link
-            href="/overview"
-            className="block px-2 py-2 rounded hover:bg-gray-800 text-sm font-medium transition-colors"
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            {t('賽事簡介', 'Overview')}
-          </Link>
-          <Link
-            href="/head-to-head"
-            className="block px-2 py-2 rounded hover:bg-gray-800 text-sm font-medium transition-colors"
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            {t('對戰表', 'Head to Head')}
-          </Link>
-          <Link
-            href="/#standings"
-            className="block px-2 py-2 rounded hover:bg-gray-800 text-sm font-medium transition-colors"
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            {t('積分榜', 'Standings')}
-          </Link>
-          {/* <Link
-            href="/scorers"
-            className="block px-2 py-2 rounded hover:bg-gray-800 text-sm font-medium transition-colors"
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            {t('神射手榜', 'Top Scorers')}
-          </Link> */}
-          <Link
-            href="/#matches"
-            className="block px-2 py-2 rounded hover:bg-gray-800 text-sm font-medium transition-colors"
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            {t('賽程 & 結果', 'Fixtures & Results')}
-          </Link>
-          <Link
-            href="/pdf"
-            className="block px-2 py-2 rounded hover:bg-gray-800 text-sm font-medium transition-colors"
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            {t('PDF', 'PDF')}
-          </Link>
+        <div className="container mx-auto mt-3 md:hidden space-y-1">
+          {NAV_ITEMS.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={mobileLinkClass(item)}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              {t(item.zh, item.en)}
+            </Link>
+          ))}
         </div>
       )}
     </nav>
