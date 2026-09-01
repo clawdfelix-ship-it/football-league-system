@@ -389,7 +389,28 @@ export default function HomeClient(props: {
                               {index + 1}
                             </span>
                           </td>
-                          <td className="px-3 md:px-6 py-4 font-bold text-slate-900 text-base md:text-lg whitespace-nowrap">{team.teamName}</td>
+                          <td className="px-3 md:px-6 py-4 font-bold text-slate-900 text-base md:text-lg whitespace-nowrap">
+                            <span className="inline-flex items-center gap-2">
+                              {(() => {
+                                const info = getKitColorInfo(
+                                  teams[team.teamName.trim().toUpperCase()]?.homeKitColor || 'white'
+                                );
+                                return (
+                                  <span
+                                    className="inline-block h-3.5 w-3.5 shrink-0 rounded-full border border-slate-300 shadow-sm"
+                                    style={{
+                                      background:
+                                        info.type === 'split'
+                                          ? `linear-gradient(135deg, ${info.hex} 0 50%, ${info.hex2} 50% 100%)`
+                                          : info.hex,
+                                    }}
+                                    title={info.label}
+                                  />
+                                );
+                              })()}
+                              {team.teamName}
+                            </span>
+                          </td>
                           <td className="px-3 md:px-6 py-4 text-center bg-slate-50 text-slate-900 font-black text-xl md:text-2xl border-x border-slate-100">
                             {team.points}
                           </td>
