@@ -380,12 +380,18 @@ export default function HomeClient(props: {
                           className={`border-b border-slate-200 transition-colors ${
                             index === 0
                               ? 'bg-amber-50 hover:bg-amber-100/70'
+                              : index === 1
+                              ? 'bg-slate-100 hover:bg-slate-200/70'
+                              : index === 2
+                              ? 'bg-orange-50 hover:bg-orange-100/70'
                               : 'hover:bg-slate-50'
                           }`}
                         >
                           <td className="px-3 md:px-6 py-4 font-black text-xl text-center text-slate-900">
                             <span className="inline-flex items-center gap-1">
-                              {index === 0 && <span title={t('榜首', 'League leader')}>🥇</span>}
+                              {index === 0 && <span title={t('冠軍', 'Champion')}>🥇</span>}
+                              {index === 1 && <span title={t('亞軍', 'Runner-up')}>🥈</span>}
+                              {index === 2 && <span title={t('季軍', 'Third place')}>🥉</span>}
                               {index + 1}
                             </span>
                           </td>
