@@ -58,9 +58,9 @@ export default function Navbar() {
     <nav className="bg-gray-900 text-white p-4 shadow-md sticky top-0 z-50">
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center gap-8">
-          <Link href="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
+          <Link href="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity min-w-0">
             <Logo className="h-12 w-12 flex-shrink-0" />
-            <span className="text-xl font-bold tracking-tight">
+            <span className="text-xl font-bold tracking-tight whitespace-nowrap hidden sm:block">
               Hong Kong Bank League 2026
             </span>
           </Link>
