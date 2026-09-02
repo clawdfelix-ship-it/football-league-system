@@ -7,6 +7,14 @@ import { createUser, getUserByEmail } from '@/lib/users-new';
 
 export async function POST(request: NextRequest) {
   try {
+    // League accounts are invite-only (provisioned by an admin). Public
+    // self-signup is disabled by default; set ALLOW_PUBLIC_REGISTER=true to
+    // temporarily re-open. A registered 'user' role has no write access
+    // regardless, but closing the door prevents junk-account signups.
+    if (process.env.ALLOW_PUBLIC_REGISTER !== 'true') {
+      return fail(403, 'REGISTRATION_CLOSED', '註冊目前僅限邀請，請聯絡管理員開立帳號');
+    }
+
     const ip = getClientIp(request);
     const rl = rateLimit(`register:${ip}`, { limit: 10, windowMs: 10 * 60 * 1000 });
     if (!rl.allowed) return fail(429, 'RATE_LIMITED', 'Too many requests');
