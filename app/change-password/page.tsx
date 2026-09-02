@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
 export default function ChangePasswordPage() {
-  const { data: session, status } = useSession();
+  const { data: session, status, update } = useSession();
   const router = useRouter();
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -50,10 +50,18 @@ export default function ChangePasswordPage() {
         return;
       }
       setDone(true);
-      // Refresh session so mustChangePassword flag clears client-side.
-      // NextAuth will re-read the JWT on the next session fetch.
+      // Force a JWT refresh: this fires the jwt callback with trigger='update',
+      // which re-reads mustChangePassword from the DB (now null) and re-signs
+      // the cookie. Without this, the stale token keeps mustChangePassword=true
+      // and middleware bounces the user back to this page.
+      try {
+        await update();
+      } catch {
+        // Session refresh is best-effort; the hard navigation below plus a
+        // fresh login would also recover.
+      }
       setTimeout(() => {
-        // Force a hard navigation to refresh JWT in cookie.
+        // Hard navigation with the refreshed cookie -> middleware lets them through.
         window.location.href = '/manager-dashboard';
       }, 800);
     } catch (e) {
