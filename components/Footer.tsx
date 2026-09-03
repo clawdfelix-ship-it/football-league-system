@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 
 export default function Footer() {
@@ -72,12 +73,12 @@ export default function Footer() {
           <div className="border-t border-slate-800 pt-6 mt-6 text-xs text-slate-500 flex justify-between items-center">
             <p>&copy; {new Date().getFullYear()} ZENEX-SPORTS LeagueCenter. All rights reserved.</p>
             <div className="flex gap-4">
-              <span className="hover:text-white cursor-pointer transition-colors">
+              <Link href="/privacy-policy" className="hover:text-white transition-colors">
                 {isZh ? '私隱政策' : 'Privacy Policy'}
-              </span>
-              <span className="hover:text-white cursor-pointer transition-colors">
+              </Link>
+              <Link href="/terms-of-service" className="hover:text-white transition-colors">
                 {isZh ? '服務條款' : 'Terms of Service'}
-              </span>
+              </Link>
             </div>
           </div>
         </div>
