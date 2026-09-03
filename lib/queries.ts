@@ -2,6 +2,22 @@ import { db } from '@/lib/db';
 import { announcements, matchPlayerGoals, matches, players, teams as teamsTable } from '@/lib/schema';
 import { asc, desc, eq, inArray, or, sql } from 'drizzle-orm';
 
+// Resolve a team's display name to its teams.id (case/whitespace insensitive).
+// Returns null when the name does not match a known team — callers keep the
+// legacy string column intact and leave the *_id column NULL (never throws),
+// which matches the FK's ON DELETE SET NULL semantics.
+export async function resolveTeamId(teamName: string | null | undefined): Promise<number | null> {
+  const normalized = (teamName ?? '').trim();
+  if (!normalized) return null;
+  const [row] = await db
+    .select({ id: teamsTable.id })
+    .from(teamsTable)
+    .where(sql`LOWER(TRIM(${teamsTable.name})) = LOWER(TRIM(${normalized}))`)
+    .limit(1);
+  return row?.id ?? null;
+}
+
+
 export async function listMatches(status?: 'scheduled' | 'finished' | 'tbc') {
   if (status === 'scheduled') {
     return await db
@@ -29,11 +45,17 @@ export async function createMatch(input: {
   round?: string | null;
 }) {
   const now = new Date();
+  const [homeTeamId, awayTeamId] = await Promise.all([
+    resolveTeamId(input.homeTeam),
+    resolveTeamId(input.awayTeam),
+  ]);
   const [row] = await db
     .insert(matches)
     .values({
       homeTeam: input.homeTeam,
       awayTeam: input.awayTeam,
+      homeTeamId,
+      awayTeamId,
       homeScore: input.homeScore ?? null,
       awayScore: input.awayScore ?? null,
       date: input.date ?? null,
@@ -62,10 +84,17 @@ export async function updateMatchById(
   }
 ) {
   const now = new Date();
+  // Keep FK columns in sync when a team name is changed.
+  const resolvedHome =
+    input.homeTeam !== undefined ? { homeTeamId: await resolveTeamId(input.homeTeam) } : {};
+  const resolvedAway =
+    input.awayTeam !== undefined ? { awayTeamId: await resolveTeamId(input.awayTeam) } : {};
   const [row] = await db
     .update(matches)
     .set({
       ...input,
+      ...resolvedHome,
+      ...resolvedAway,
       updatedAt: now,
     })
     .where(eq(matches.id, id))
@@ -216,6 +245,7 @@ export async function createPlayer(input: {
   identityPrefix?: string;
 }) {
   const now = new Date();
+  const teamId = await resolveTeamId(input.team);
   const [row] = await db
     .insert(players)
     .values({
@@ -223,6 +253,7 @@ export async function createPlayer(input: {
       jerseyNumber: input.jerseyNumber,
       position: input.position,
       team: input.team,
+      teamId,
       age: input.age,
       nationality: input.nationality ?? null,
       height: input.height ?? null,
@@ -258,16 +289,20 @@ export async function updatePlayerById(
     name?: string;
     jerseyNumber?: number;
     position?: string;
+    team?: string;
     phoneNumber?: string | null;
     email?: string | null;
     identityPrefix?: string | null;
   }
 ) {
   const now = new Date();
+  // Keep FK column in sync when the team name is changed.
+  const resolvedTeam = input.team !== undefined ? { teamId: await resolveTeamId(input.team) } : {};
   const [row] = await db
     .update(players)
     .set({
       ...input,
+      ...resolvedTeam,
       updatedAt: now,
     })
     .where(eq(players.id, id))

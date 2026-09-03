@@ -1,5 +1,11 @@
 import { pgTable, serial, varchar, integer, timestamp, text, uniqueIndex } from 'drizzle-orm/pg-core';
 
+// NOTE: teamId / homeTeamId / awayTeamId mirror the nullable FK columns added
+// by migrations 0007 + 0009 (ON DELETE SET NULL). The legacy string columns
+// (team / homeTeam / awayTeam) remain the source of truth for display; the
+// *_id columns are kept in sync on write so the foreign keys stay valid.
+// They are intentionally nullable to match the DB schema.
+
 // 球員表
 export const players = pgTable('players', {
   id: serial('id').primaryKey(),
@@ -7,6 +13,7 @@ export const players = pgTable('players', {
   jerseyNumber: integer('jersey_number'),
   position: varchar('position', { length: 50 }),
   team: varchar('team', { length: 100 }),
+  teamId: integer('team_id'),
   age: integer('age'),
   nationality: varchar('nationality', { length: 50 }),
   height: integer('height'),
@@ -40,6 +47,8 @@ export const matches = pgTable('matches', {
   id: serial('id').primaryKey(),
   homeTeam: varchar('home_team', { length: 100 }).notNull(),
   awayTeam: varchar('away_team', { length: 100 }).notNull(),
+  homeTeamId: integer('home_team_id'),
+  awayTeamId: integer('away_team_id'),
   homeScore: integer('home_score'),
   awayScore: integer('away_score'),
   date: timestamp('date'), // Allow null for TBC

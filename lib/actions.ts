@@ -21,6 +21,7 @@ import {
   listAnnouncements,
   listMatches,
   listTeamSettings,
+  resolveTeamId,
   updateMatchById,
 } from '@/lib/queries';
 
@@ -299,9 +300,11 @@ export async function addPlayer(data: {
       return { success: false, message: `Player with number ${data.number} already exists for team ${teamName}` };
     }
 
+    const teamId = await resolveTeamId(teamName);
     const res = await db.insert(players).values({
       name: data.name,
       team: teamName,
+      teamId,
       jerseyNumber: data.number,
       position: data.position,
       identityPrefix: identityPrefix || undefined,
