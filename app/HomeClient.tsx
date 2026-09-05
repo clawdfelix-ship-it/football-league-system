@@ -4,6 +4,7 @@ import { useState, useCallback, useMemo, useEffect } from 'react';
 import HomeLayout from '@/components/HomeLayout';
 import Logo from '@/components/Logo';
 import MatchWeather from '@/components/MatchWeather';
+import ShareMatch from '@/components/ShareMatch';
 import { venueMapsUrl } from '@/lib/weather';
 import { googleCalendarUrl } from '@/lib/calendar';
 import { useLanguage } from '@/context/LanguageContext';
@@ -535,28 +536,37 @@ export default function HomeClient(props: {
                         {match.date && (
                           <div className="mt-1.5 flex flex-col items-center gap-1.5">
                             <MatchWeather venue={match.venue} date={match.date} />
-                            {googleCalendarUrl({
-                              homeTeam: match.homeTeam,
-                              awayTeam: match.awayTeam,
-                              date: match.date,
-                              venue: match.venue,
-                              round: match.round,
-                            }) && (
-                              <a
-                                href={googleCalendarUrl({
-                                  homeTeam: match.homeTeam,
-                                  awayTeam: match.awayTeam,
-                                  date: match.date,
-                                  venue: match.venue,
-                                  round: match.round,
-                                })!}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1 rounded-full bg-slate-800 px-2.5 py-0.5 text-[11px] font-semibold text-white hover:bg-slate-700"
-                              >
-                                📅 {t('加入日曆', 'Add to Calendar')}
-                              </a>
-                            )}
+                            <div className="flex items-center gap-2">
+                              {googleCalendarUrl({
+                                homeTeam: match.homeTeam,
+                                awayTeam: match.awayTeam,
+                                date: match.date,
+                                venue: match.venue,
+                                round: match.round,
+                              }) && (
+                                <a
+                                  href={googleCalendarUrl({
+                                    homeTeam: match.homeTeam,
+                                    awayTeam: match.awayTeam,
+                                    date: match.date,
+                                    venue: match.venue,
+                                    round: match.round,
+                                  })!}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-1 rounded-full bg-slate-800 px-2.5 py-0.5 text-[11px] font-semibold text-white hover:bg-slate-700"
+                                >
+                                  📅 {t('加入日曆', 'Add to Calendar')}
+                                </a>
+                              )}
+                              <ShareMatch
+                                homeTeam={match.homeTeam}
+                                awayTeam={match.awayTeam}
+                                date={match.date}
+                                venue={match.venue}
+                                round={match.round}
+                              />
+                            </div>
                           </div>
                         )}
                       </div>
