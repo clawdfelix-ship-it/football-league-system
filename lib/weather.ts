@@ -26,6 +26,17 @@ export function venueCoord(venue: string | null | undefined): VenueCoord | null 
   return { lat: 22.28, lon: 114.17 };
 }
 
+// 場地名稱 → Google Maps 搜尋連結（一按導航）
+export function venueMapsUrl(venue: string | null | undefined): string | null {
+  if (!venue) return null;
+  const v = venue.trim();
+  if (!v || /^tbc$/i.test(v)) return null;
+  // 優先用英文地址部分（括號內通常係英文）做搜尋，更準
+  const en = v.match(/\(([^)]+)\)/);
+  const query = en ? en[1] : v;
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+}
+
 // WMO weather code → 圖標 + 中文描述
 export function describeWeather(code: number): { icon: string; zh: string; en: string } {
   if (code === 0) return { icon: '☀️', zh: '天晴', en: 'Clear' };

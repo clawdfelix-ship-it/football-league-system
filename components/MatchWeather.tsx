@@ -82,20 +82,35 @@ export default function MatchWeather({
   if (!w) return null;
 
   const info = describeWeather(w.code);
+  // 雷暴 (95+) 或降雨概率極高 → 提示或需改期/掛波
+  const storm = w.code >= 95;
+  const heavyRain = w.precip >= 80;
   const rainy = w.precip >= 50 || w.code >= 80;
+  const warn = storm || heavyRain;
 
   return (
-    <span
-      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
-        rainy ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-600'
-      } ${className}`}
-      title={`${info.zh} / ${info.en} · 降雨機率 ${w.precip}%`}
-    >
-      <span>{info.icon}</span>
-      <span>
-        {w.tmin}–{w.tmax}°C
+    <span className={`inline-flex flex-col items-center gap-1 ${className}`}>
+      <span
+        className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
+          warn
+            ? 'bg-red-100 text-red-700'
+            : rainy
+              ? 'bg-blue-100 text-blue-700'
+              : 'bg-slate-100 text-slate-600'
+        }`}
+        title={`${info.zh} / ${info.en} · 降雨機率 ${w.precip}%`}
+      >
+        <span>{info.icon}</span>
+        <span>
+          {w.tmin}–{w.tmax}°C
+        </span>
+        <span className="opacity-70">· 💧{w.precip}%</span>
       </span>
-      <span className="opacity-70">· 💧{w.precip}%</span>
+      {warn && (
+        <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-semibold text-red-600 ring-1 ring-red-200">
+          ⚠️ {storm ? '雷暴，或需改期' : '大雨，注意掛波'}
+        </span>
+      )}
     </span>
   );
 }

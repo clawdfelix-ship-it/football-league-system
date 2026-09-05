@@ -1,6 +1,8 @@
 import HomeLayout from '@/components/HomeLayout';
 import MatchWeather from '@/components/MatchWeather';
 import { KIT_COLORS } from '@/lib/kitColors';
+import { venueMapsUrl } from '@/lib/weather';
+import { googleCalendarUrl } from '@/lib/calendar';
 import { getMatchKitOverrides } from '@/lib/matchKitOverrides';
 import { listMatches, listTeamSettings } from '@/lib/queries';
 
@@ -118,10 +120,45 @@ export default async function FixturesPage() {
                       )}
                       <div className="text-sm text-gray-500 mt-2 text-center">
                         <div>{match.date ? new Date(match.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) + ' (' + new Date(match.date).toLocaleDateString('en-GB', { weekday: 'short' }) + ')' : 'TBC'}</div>
-                        <div>{match.venue || 'TBC'}</div>
+                        <div>
+                          {match.venue && !/^tbc$/i.test(match.venue.trim()) ? (
+                            <a
+                              href={venueMapsUrl(match.venue) || '#'}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 hover:underline"
+                            >
+                              📍 {match.venue}
+                            </a>
+                          ) : (
+                            <>{match.venue || 'TBC'}</>
+                          )}
+                        </div>
                         {match.status !== 'finished' && match.date && (
-                          <div className="mt-1.5 flex justify-center">
+                          <div className="mt-1.5 flex flex-col items-center gap-1.5">
                             <MatchWeather venue={match.venue} date={match.date} />
+                            {googleCalendarUrl({
+                              homeTeam: match.homeTeam,
+                              awayTeam: match.awayTeam,
+                              date: match.date,
+                              venue: match.venue,
+                              round: match.round,
+                            }) && (
+                              <a
+                                href={googleCalendarUrl({
+                                  homeTeam: match.homeTeam,
+                                  awayTeam: match.awayTeam,
+                                  date: match.date,
+                                  venue: match.venue,
+                                  round: match.round,
+                                })!}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 rounded-full bg-slate-800 px-3 py-1 text-xs font-semibold text-white hover:bg-slate-700"
+                              >
+                                📅 加入日曆
+                              </a>
+                            )}
                           </div>
                         )}
                       </div>

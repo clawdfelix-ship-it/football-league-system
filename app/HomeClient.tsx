@@ -4,6 +4,8 @@ import { useState, useCallback, useMemo, useEffect } from 'react';
 import HomeLayout from '@/components/HomeLayout';
 import Logo from '@/components/Logo';
 import MatchWeather from '@/components/MatchWeather';
+import { venueMapsUrl } from '@/lib/weather';
+import { googleCalendarUrl } from '@/lib/calendar';
 import { useLanguage } from '@/context/LanguageContext';
 import { TEAMS } from '@/lib/constants';
 import { getKitColorInfo } from '@/lib/kitColors';
@@ -516,10 +518,45 @@ export default function HomeClient(props: {
                         {match.round && (
                           <div className="text-xs font-bold text-green-600 mt-1 uppercase tracking-wide">{match.round}</div>
                         )}
-                        <div className="text-xs text-slate-500 mt-1">{match.venue || 'TBC'}</div>
+                        <div className="text-xs text-slate-500 mt-1">
+                          {match.venue && !/^tbc$/i.test(match.venue.trim()) ? (
+                            <a
+                              href={venueMapsUrl(match.venue) || '#'}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-0.5 text-blue-600 hover:underline"
+                            >
+                              📍 {match.venue}
+                            </a>
+                          ) : (
+                            match.venue || 'TBC'
+                          )}
+                        </div>
                         {match.date && (
-                          <div className="mt-1.5 flex justify-center">
+                          <div className="mt-1.5 flex flex-col items-center gap-1.5">
                             <MatchWeather venue={match.venue} date={match.date} />
+                            {googleCalendarUrl({
+                              homeTeam: match.homeTeam,
+                              awayTeam: match.awayTeam,
+                              date: match.date,
+                              venue: match.venue,
+                              round: match.round,
+                            }) && (
+                              <a
+                                href={googleCalendarUrl({
+                                  homeTeam: match.homeTeam,
+                                  awayTeam: match.awayTeam,
+                                  date: match.date,
+                                  venue: match.venue,
+                                  round: match.round,
+                                })!}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 rounded-full bg-slate-800 px-2.5 py-0.5 text-[11px] font-semibold text-white hover:bg-slate-700"
+                              >
+                                📅 {t('加入日曆', 'Add to Calendar')}
+                              </a>
+                            )}
                           </div>
                         )}
                       </div>
