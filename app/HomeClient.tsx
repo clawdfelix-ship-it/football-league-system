@@ -3,6 +3,7 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import HomeLayout from '@/components/HomeLayout';
 import Logo from '@/components/Logo';
+import MatchWeather from '@/components/MatchWeather';
 import { useLanguage } from '@/context/LanguageContext';
 import { TEAMS } from '@/lib/constants';
 import { getKitColorInfo } from '@/lib/kitColors';
@@ -516,6 +517,11 @@ export default function HomeClient(props: {
                           <div className="text-xs font-bold text-green-600 mt-1 uppercase tracking-wide">{match.round}</div>
                         )}
                         <div className="text-xs text-slate-500 mt-1">{match.venue || 'TBC'}</div>
+                        {match.date && (
+                          <div className="mt-1.5 flex justify-center">
+                            <MatchWeather venue={match.venue} date={match.date} />
+                          </div>
+                        )}
                       </div>
                       <div className="text-right w-1/3 flex items-center gap-2 justify-end">
                         <div>

@@ -1,4 +1,5 @@
 import HomeLayout from '@/components/HomeLayout';
+import MatchWeather from '@/components/MatchWeather';
 import { KIT_COLORS } from '@/lib/kitColors';
 import { getMatchKitOverrides } from '@/lib/matchKitOverrides';
 import { listMatches, listTeamSettings } from '@/lib/queries';
@@ -118,6 +119,11 @@ export default async function FixturesPage() {
                       <div className="text-sm text-gray-500 mt-2 text-center">
                         <div>{match.date ? new Date(match.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) + ' (' + new Date(match.date).toLocaleDateString('en-GB', { weekday: 'short' }) + ')' : 'TBC'}</div>
                         <div>{match.venue || 'TBC'}</div>
+                        {match.status !== 'finished' && match.date && (
+                          <div className="mt-1.5 flex justify-center">
+                            <MatchWeather venue={match.venue} date={match.date} />
+                          </div>
+                        )}
                       </div>
                     </div>
 
