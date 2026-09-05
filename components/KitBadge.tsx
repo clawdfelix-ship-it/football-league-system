@@ -22,7 +22,7 @@ export function KitBadge({ colorValue, size = 'md', showLabel = false }: KitBadg
   return (
     <div className="flex items-center gap-1.5">
       <div 
-        className={`${sizeClasses[size]} rounded-full border border-slate-300 shadow-sm overflow-hidden flex-shrink-0`}
+        className={`${sizeClasses[size]} rounded-full border-2 border-slate-400 shadow-sm ring-1 ring-slate-300 overflow-hidden flex-shrink-0`}
         style={isSplit ? {
           background: `linear-gradient(135deg, ${color.hex} 50%, ${color.hex2} 50%)`,
         } : {

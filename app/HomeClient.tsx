@@ -403,7 +403,7 @@ export default function HomeClient(props: {
                                 );
                                 return (
                                   <span
-                                    className="inline-block h-3.5 w-3.5 shrink-0 rounded-full border border-slate-300 shadow-sm"
+                                    className="inline-block h-3.5 w-3.5 shrink-0 rounded-full border-2 border-slate-400 shadow-sm ring-1 ring-slate-300"
                                     style={{
                                       background:
                                         info.type === 'split'
@@ -480,7 +480,7 @@ export default function HomeClient(props: {
                           const isSplit = homeColor.type === 'split' && homeColor.hex2;
                           return (
                             <div
-                              className="w-6 h-6 rounded-full border border-slate-300 shadow-sm flex-shrink-0"
+                              className="w-6 h-6 rounded-full border-2 border-slate-400 shadow-sm ring-1 ring-slate-300 flex-shrink-0"
                               style={
                                 isSplit
                                   ? { background: `linear-gradient(135deg, ${homeColor.hex} 50%, ${homeColor.hex2} 50%)` }
@@ -521,7 +521,7 @@ export default function HomeClient(props: {
                           const isSplit = awayColor.type === 'split' && awayColor.hex2;
                           return (
                             <div
-                              className="w-6 h-6 rounded-full border border-slate-300 shadow-sm flex-shrink-0"
+                              className="w-6 h-6 rounded-full border-2 border-slate-400 shadow-sm ring-1 ring-slate-300 flex-shrink-0"
                               style={
                                 isSplit
                                   ? { background: `linear-gradient(135deg, ${awayColor.hex} 50%, ${awayColor.hex2} 50%)` }

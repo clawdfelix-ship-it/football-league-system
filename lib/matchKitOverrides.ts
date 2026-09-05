@@ -1,16 +1,7 @@
-// 🎯 硬編碼 5月19日 比賽球衣顏色 - 永遠唔會變，所有人睇到一樣
-const HARDCODED_OVERRIDES: Record<string, string> = {
-  'UBS': 'white',
-  'NOMURA': 'red',
-  'HSBC': 'red',
-  'CACIB': 'white-green',
-};
-
-// 檢查係唔係有硬編碼顏色
-export function getHardcodedKitColor(teamName: string): string | null {
-  const normalized = teamName.trim().toUpperCase();
-  return HARDCODED_OVERRIDES[normalized] || null;
-}
+// 註：舊版曾用「硬編碼球衣色」（2026-05-19 單一場次）並凌駕所有設定，
+// 導致 DB 嘅主/客場球衣色同每場 override 全部被蓋過（例如 UBS 主場被鎖白）。
+// 已移除硬編碼——球衣色一律以 DB team_settings（主/客場）為準，
+// 每場 match_kit_overrides 可再覆蓋。
 
 // 從 localStorage 獲取某場比賽嘅所有 override (client-side only)
 export function getMatchKitOverridesLocal(matchId: number): Record<string, string> {
@@ -81,10 +72,8 @@ export async function getMatchKitOverrides(matchId: number): Promise<Record<stri
 
 // 獲取某場比賽某隊嘅 override 顏色 (Server-side)
 export async function getMatchKitOverrideColorValue(matchId: number, teamName: string): Promise<string | null> {
-  // 1. 永遠優先用硬編碼顏色
-  const hardcoded = getHardcodedKitColor(teamName);
-  if (hardcoded) return hardcoded;
-  
+  // 球衣色優先序：每場 override（DB）→ null（由呼叫端 fallback 去 team 主/客場色）。
+  // 硬編碼已廢除，否則會蓋過管理員設定。
   try {
     const { db } = await import('@/lib/db');
     const { matchKitOverrides } = await import('@/lib/schema');
@@ -169,11 +158,8 @@ export function getMatchKitOverrideColorValueClient(
   matchId: number,
   teamName: string
 ): string | null {
-  // 1. 永遠優先用硬編碼顏色 - 唔會有錯，唔會載入中
-  const hardcoded = getHardcodedKitColor(teamName);
-  if (hardcoded) return hardcoded;
-  
-  // 2. 先試 cache
+  // 球衣色優先序：每場 override（cache）→ null（由呼叫端 fallback 去 team 主/客場色）。
+  // 硬編碼已廢除，否則會蓋過管理員設定。
   const normalized = teamName.trim().toUpperCase();
   const byTeam = overridesCache[matchId];
   if (!byTeam) return null;

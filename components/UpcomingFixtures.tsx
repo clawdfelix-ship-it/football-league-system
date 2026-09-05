@@ -175,7 +175,7 @@ export function UpcomingFixtures({
                     const homeColor = getKitColor(match.id, match.homeTeam, true);
                     return (
                       <div
-                        className="w-8 h-8 rounded-full border-2 border-gray-300 shadow-sm mt-1"
+                        className="w-8 h-8 rounded-full border-2 border-slate-400 shadow-sm ring-1 ring-slate-300 mt-1"
                         style={{ backgroundColor: homeColor.hex }}
                         title={`Home Kit: ${homeColor.label}`}
                       />
@@ -201,7 +201,7 @@ export function UpcomingFixtures({
                     const awayColor = getKitColor(match.id, match.awayTeam, false);
                     return (
                       <div
-                        className="w-8 h-8 rounded-full border-2 border-gray-300 shadow-sm mt-1"
+                        className="w-8 h-8 rounded-full border-2 border-slate-400 shadow-sm ring-1 ring-slate-300 mt-1"
                         style={{ backgroundColor: awayColor.hex }}
                         title={`Away Kit: ${awayColor.label}`}
                       />
