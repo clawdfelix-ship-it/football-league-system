@@ -19,8 +19,10 @@ function PlayersPageInner(props: { initialPlayers: PublicPlayer[] }) {
   const activeTeam = useMemo(() => (validTeams.has(normalizedTeam) ? normalizedTeam : ''), [normalizedTeam, validTeams]);
 
   const filtered = useMemo(() => {
-    if (!activeTeam) return players;
-    return players.filter((p) => (p.team ?? '').toUpperCase() === activeTeam);
+    // 永遠排除 DEMO 測試隊球員（無論總頁定球隊專頁都唔可以公開露出）
+    const real = players.filter((p) => (p.team ?? '').trim().toUpperCase() !== 'DEMO');
+    if (!activeTeam) return real;
+    return real.filter((p) => (p.team ?? '').toUpperCase() === activeTeam);
   }, [players, activeTeam]);
 
   const title = activeTeam ? `${activeTeam} ${t('球員名單', 'Players')}` : t('所有球員', 'All Players');

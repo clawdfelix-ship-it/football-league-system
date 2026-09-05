@@ -251,7 +251,7 @@ export function MatchResults({ matches, allowGoals }: { matches: Match[]; allowG
                 {allowGoals ? (
                   <div className="rounded border border-zinc-200 dark:border-zinc-700 p-3 grid gap-3">
                   <div className="flex items-center justify-between">
-                    <div className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Goals (for Top Scorers)</div>
+                    <div className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Goals / 入球球員</div>
                     {goalsLoading ? <div className="text-xs text-zinc-500">Loading…</div> : null}
                   </div>
                   {goalsError ? <div className="text-xs text-red-600">{goalsError}</div> : null}

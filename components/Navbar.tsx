@@ -11,9 +11,11 @@ type NavItem = { href: string; zh: string; en: string; hash?: string };
 
 const NAV_ITEMS: NavItem[] = [
   { href: '/overview', zh: '賽事簡介', en: 'Overview' },
+  { href: '/teams', zh: '球隊', en: 'Teams' },
   { href: '/head-to-head', zh: '對戰表', en: 'Head to Head' },
   { href: '/#standings', zh: '積分榜', en: 'Standings', hash: '#standings' },
-  { href: '/#matches', zh: '賽程 & 結果', en: 'Fixtures & Results', hash: '#matches' },
+  { href: '/fixtures', zh: '賽程 & 結果', en: 'Fixtures & Results' },
+  { href: '/contacts', zh: '聯絡', en: 'Contacts' },
   { href: '/pdf', zh: 'PDF', en: 'PDF' },
 ];
 

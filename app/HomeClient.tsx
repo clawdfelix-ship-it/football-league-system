@@ -343,9 +343,15 @@ export default function HomeClient(props: {
                   type="button"
                   onClick={refresh}
                   disabled={loading}
-                  className="text-xs bg-yellow-500 text-black px-2 py-1 rounded font-black disabled:opacity-70"
+                  className="text-xs bg-yellow-500 text-black px-3 py-1.5 rounded font-black disabled:opacity-70 inline-flex items-center gap-1.5"
                 >
-                  {t('即時更新', 'LIVE UPDATE')}
+                  {loading && (
+                    <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-90" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.4 0 0 5.4 0 12h4z" />
+                    </svg>
+                  )}
+                  {loading ? t('更新中…', 'UPDATING…') : t('即時更新', 'LIVE UPDATE')}
                 </button>
               </div>
               <div className="overflow-x-auto">

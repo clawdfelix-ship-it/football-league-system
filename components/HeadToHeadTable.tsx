@@ -185,7 +185,7 @@ export default function HeadToHeadTable({ serverMatches }: Props) {
                           style={{ background: HATCH }}
                           title="未對賽"
                         >
-                          <span className="text-slate-300 text-xs">·</span>
+                          <span className="text-slate-300 text-xs">–</span>
                         </td>
                       );
                     }
@@ -293,9 +293,9 @@ export default function HeadToHeadTable({ serverMatches }: Props) {
               className="inline-block align-middle rounded border border-slate-200 px-2"
               style={{ background: HATCH }}
             >
-              &nbsp;
+              &nbsp;&nbsp;&nbsp;
             </span>{' '}
-            斜紋格 = 未對賽
+            斜紋格 = 未對賽（包括雙循環中尚未進行的場次）
           </li>
         </ul>
       </div>

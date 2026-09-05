@@ -49,7 +49,7 @@ export default function OverviewPage() {
 
               <li className="flex flex-col gap-1">
                 <span className="font-bold">
-                  {isZh ? '• 8 隊參賽，8 ⼈制' : '• 8 teams, 8-a-side'}
+                  {isZh ? '• 9 隊參賽，8 人制' : '• 9 teams, 8-a-side'}
                 </span>
                 <span className="text-gray-600">
                   {isZh ? '每隊最多 30 名球員' : 'Up to 30 registered players per team'}
@@ -58,7 +58,7 @@ export default function OverviewPage() {
 
               <li className="flex flex-col gap-1">
                 <span className="font-bold">
-                  {isZh ? '• 共 14 場⽐賽' : '• 14 matches in total'}
+                  {isZh ? '• 雙循環聯賽，主客場制（每隊對賽兩次）' : '• Double round-robin, home & away (each pair plays twice)'}
                 </span>
                 <span className="text-gray-600">
                   {isZh ? '主客場制' : 'Home & away format'}
@@ -88,34 +88,34 @@ export default function OverviewPage() {
               <li>
                 <div className="font-bold">{isZh ? '• 賽季' : '• Season'}</div>
                 <div className="text-gray-800 mt-1">
-                  {isZh ? '3 ⽉底開始，預計 12 ⽉中結束（7-8 ⽉休賽）' : 'Matches start at the end of March and finish no later than mid-December (excluding July and August)'}
+                  {isZh ? '3 月底開始，預計 12 月中結束（7-8 月休賽）' : 'Matches start at the end of March and finish no later than mid-December (excluding July and August)'}
                 </div>
               </li>
               
               <li>
                 <div className="font-bold">{isZh ? '• 主客場安排' : '• Format'}</div>
                 <div className="text-gray-800 mt-1">
-                  {isZh ? '主場賽事：3 ⽉底⾄ 6 ⽉；客場賽事：9 ⽉⾄ 11 ⽉' : 'Home matches: End of March – June; Away matches: September – November 2026'}
+                  {isZh ? '主場賽事：3 月底至 6 月；客場賽事：9 月至 11 月' : 'Home matches: End of March – June; Away matches: September – November 2026'}
                 </div>
               </li>
 
               <li>
-                <div className="font-bold">{isZh ? '• ⽐賽時間' : '• Time'}</div>
+                <div className="font-bold">{isZh ? '• 比賽時間' : '• Time'}</div>
                 <div className="text-gray-800 mt-1">
-                  {isZh ? '逢星期⼆及星期三（公眾假期除外）, 晚上 8:00 或 9:30（視乎場地安排）' : 'Matches on Tuesdays and Wednesdays (excluding public holidays), 8:00pm or 9:30pm (subject to pitch availability)'}
+                  {isZh ? '逢星期二及星期三（公眾假期除外）, 晚上 8:00 或 9:30（視乎場地安排）' : 'Matches on Tuesdays and Wednesdays (excluding public holidays), 8:00pm or 9:30pm (subject to pitch availability)'}
                 </div>
               </li>
 
               <li>
-                <div className="font-bold">{isZh ? '• ⽐賽場地' : '• Venues'}</div>
+                <div className="font-bold">{isZh ? '• 比賽場地' : '• Venues'}</div>
                 <div className="text-gray-800 mt-1">
-                  {isZh ? '⾹港島⼈⼯草地球場:' : 'HK Island artificial grass pitches:'}
+                  {isZh ? '香港島人工草地球場:' : 'HK Island artificial grass pitches:'}
                 </div>
                 <ul className="list-disc pl-6 mt-2 space-y-1 text-base text-gray-700">
-                  <li>{isZh ? '中⼭紀念公園' : 'Sun Yat Sen Memorial Park'}</li>
-                  <li>{isZh ? '跑⾺地遊樂場 8 號場' : 'Happy Valley Recreation Ground No. 8'}</li>
-                  <li>{isZh ? '鰂⿂涌公園 1 號場' : 'Quarry Bay Park No. 1, near Taikoo Shing'}</li>
-                  <li>{isZh ? '鰂⿂涌公園 2 號場' : 'Quarry Bay Park No. 2, near Quarry Bay Station'}</li>
+                  <li>{isZh ? '中山紀念公園' : 'Sun Yat Sen Memorial Park'}</li>
+                  <li>{isZh ? '跑馬地遊樂場 8 號場' : 'Happy Valley Recreation Ground No. 8'}</li>
+                  <li>{isZh ? '鰂魚涌公園 1 號場' : 'Quarry Bay Park No. 1, near Taikoo Shing'}</li>
+                  <li>{isZh ? '鰂魚涌公園 2 號場' : 'Quarry Bay Park No. 2, near Quarry Bay Station'}</li>
                 </ul>
               </li>
             </ul>
@@ -126,7 +126,7 @@ export default function OverviewPage() {
             <div className="flex items-center gap-4 mb-6 border-b border-gray-200 pb-2">
               <div className="bg-orange-600 w-2 h-8"></div>
               <h2 className="text-2xl font-bold text-slate-900">
-                {isZh ? '⽐賽規則' : 'Match Rules'}
+                {isZh ? '比賽規則' : 'Match Rules'}
               </h2>
             </div>
             <ul className="space-y-6 text-lg">
@@ -140,21 +140,21 @@ export default function OverviewPage() {
               <li>
                 <div className="font-bold">{isZh ? '• 越位與換人' : '• Offside & Subs'}</div>
                 <div className="text-gray-800 mt-1">
-                  {isZh ? '不設越位，換⼈無限制' : 'No offside, unlimited substitutions'}
+                  {isZh ? '不設越位，換人無限制' : 'No offside, unlimited substitutions'}
                 </div>
               </li>
 
               <li>
                 <div className="font-bold">{isZh ? '• 裝備' : '• Equipment'}</div>
                 <div className="text-gray-800 mt-1">
-                  {isZh ? '球員需穿著適合⽐賽的裝備及統⼀球⾐，所有球員必須佩戴護脛' : 'Players must wear proper gear and matching jerseys; all players must wear shin pads'}
+                  {isZh ? '球員需穿著適合比賽的裝備及統一球衣，所有球員必須佩戴護脛' : 'Players must wear proper gear and matching jerseys; all players must wear shin pads'}
                 </div>
               </li>
 
               <li>
                 <div className="font-bold">{isZh ? '• 球衣' : '• Jerseys'}</div>
                 <div className="text-gray-800 mt-1">
-                  {isZh ? '每隊球隊須準備主場及作客波衫各⼀套' : 'All teams are required to provide one set of home jerseys and one set of away jerseys'}
+                  {isZh ? '每隊球隊須準備主場及作客波衫各一套' : 'All teams are required to provide one set of home jerseys and one set of away jerseys'}
                 </div>
               </li>
             </ul>
@@ -170,19 +170,19 @@ export default function OverviewPage() {
                 <li>
                   <div className="font-bold text-red-600">{isZh ? '• 遲到棄權' : '• Late Start'}</div>
                   <div className="text-sm">
-                    {isZh ? '開賽後 10 分鐘未能開始⽐賽，視作棄權' : 'Failure to start within 10 minutes after scheduled kick-off = forfeit'}
+                    {isZh ? '開賽後 10 分鐘未能開始比賽，視作棄權' : 'Failure to start within 10 minutes after scheduled kick-off = forfeit'}
                   </div>
                 </li>
                 <li>
                   <div className="font-bold text-red-600">{isZh ? '• 人數不足' : '• Insufficient Players'}</div>
                   <div className="text-sm">
-                    {isZh ? '球隊⼈數少於 6 ⼈，視作棄權' : 'Fewer than 6 players = forfeit'}
+                    {isZh ? '球隊人數少於 6 人，視作棄權' : 'Fewer than 6 players = forfeit'}
                   </div>
                 </li>
                 <li>
                   <div className="font-bold text-red-600">{isZh ? '• 判罰' : '• Penalty'}</div>
                   <div className="text-sm">
-                    {isZh ? '棄權⽅將被判負 0-3' : 'Forfeiting team loses 0-3'}
+                    {isZh ? '棄權方將被判負 0-3' : 'Forfeiting team loses 0-3'}
                   </div>
                 </li>
               </ul>
@@ -190,13 +190,13 @@ export default function OverviewPage() {
 
             <div className="bg-gray-50 p-6 rounded-xl border border-gray-200">
               <h3 className="text-xl font-bold text-slate-900 mb-4 border-b border-gray-300 pb-2">
-                {isZh ? '延期⽐賽' : 'Postponement'}
+                {isZh ? '延期比賽' : 'Postponement'}
               </h3>
               <div className="space-y-2">
                 <p className="font-bold text-gray-800">{isZh ? '提前通知' : 'Advance Notice'}</p>
                 <p className="text-sm text-gray-700 leading-relaxed">
                   {isZh 
-                    ? '球隊應該在不少於 30 ⽇前聯絡會⽅有關申請休假事宜，該賽周將不會安排任何⽐賽。' 
+                    ? '球隊應該在不少於 30 日前聯絡會方有關申請休假事宜，該賽周將不會安排任何比賽。' 
                     : 'Teams are requested to advise the fixtures officer as early as possible (and at least 30 days before the event) if a special event that involves a majority of the team is planned (e.g., company dinner, weddings), the team will not be required to play a fixture on that week.'}
                 </p>
               </div>
@@ -216,13 +216,13 @@ export default function OverviewPage() {
                 <div>
                   <div className="font-bold text-lg text-red-800">{isZh ? '以友誼為重' : 'Sportsmanship First'}</div>
                   <div className="text-gray-700">
-                    {isZh ? '嚴禁粗暴或攻擊⾏為' : 'No aggressive or unsporting behavior'}
+                    {isZh ? '嚴禁粗暴或攻擊行為' : 'No aggressive or unsporting behavior'}
                   </div>
                 </div>
                 <div>
                   <div className="font-bold text-lg text-red-800">{isZh ? '隊長責任' : 'Captain\'s Responsibility'}</div>
                   <div className="text-gray-700">
-                    {isZh ? '球隊隊⻑/經理需協助維持球員良好⾏為' : 'Team captain/manager helps ensure good conduct'}
+                    {isZh ? '球隊隊⻑/經理需協助維持球員良好行為' : 'Team captain/manager helps ensure good conduct'}
                   </div>
                 </div>
                 <div>
@@ -242,7 +242,7 @@ export default function OverviewPage() {
                 <div className="bg-red-100 p-4 rounded-lg border-l-4 border-red-600">
                   <div className="font-bold text-red-900">{isZh ? '紅牌停賽' : 'Red Card Suspension'}</div>
                   <div className="text-sm text-red-800">
-                    {isZh ? '紅牌球員需即時離場，並⾃動停賽⼀場' : 'Red card: player leaves immediately, suspended for next match'}
+                    {isZh ? '紅牌球員需即時離場，並自動停賽一場' : 'Red card: player leaves immediately, suspended for next match'}
                   </div>
                 </div>
               </div>

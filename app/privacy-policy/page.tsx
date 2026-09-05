@@ -21,8 +21,8 @@ const SECTIONS: Section[] = [
     heading: { zh: '2. 資料的用途', en: '2. How We Use the Information' },
     body: [
       {
-        zh: '收集所得資料僅用於營運聯賽，包括：管理球隊及球員帳戶、編排賽程及記錄賽果、計算積分榜與射手榜、核實領隊身份、處理帳戶登入及安全，以及聯絡球隊代表。我們不會將你的個人資料用於未經相關的商業推廣。',
-        en: 'The information collected is used solely to operate the league, including: managing team and player accounts, arranging fixtures and recording results, computing standings and scorers tables, verifying manager identity, handling account login and security, and contacting team representatives. We will not use your personal data for unrelated commercial marketing.',
+        zh: '收集所得資料僅用於營運聯賽，包括：管理球隊及球員帳戶、編排賽程及記錄賽果、計算積分榜、核實領隊身份、處理帳戶登入及安全，以及聯絡球隊代表。我們不會將你的個人資料用於未經相關的商業推廣。',
+        en: 'The information collected is used solely to operate the league, including: managing team and player accounts, arranging fixtures and recording results, computing standings, verifying manager identity, handling account login and security, and contacting team representatives. We will not use your personal data for unrelated commercial marketing.',
       },
     ],
   },
