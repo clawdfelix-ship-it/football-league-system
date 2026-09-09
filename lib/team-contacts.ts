@@ -86,10 +86,10 @@ export const TEAM_CONTACTS: TeamContact[] = [
     shortName: 'CITI',
     color: 'from-blue-400 to-blue-600',
     venue: '香港大球場',
-    coach: { name: 'Michael Mak', phone: '+852 9555 1111', email: 'michael.mak@citi.com' },
+    coach: { name: 'Ben', email: 'ben199833@gmail.com' },
     manager: { name: 'Toan Nguyen', phone: '+852 9555 2222', email: 'toan.dc.nguyen@citi.com' },
     captains: [
-      { name: 'Michael Mak', email: 'michael.mak@citi.com' },
+      { name: 'Ben', email: 'ben199833@gmail.com' },
       { name: 'Toan Nguyen', email: 'toan.dc.nguyen@citi.com' },
     ],
   },
