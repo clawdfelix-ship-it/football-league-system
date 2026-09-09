@@ -361,23 +361,26 @@ export default function HomeClient(props: {
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="bg-slate-100 text-slate-700 text-sm font-bold uppercase tracking-wider">
-                      <th className="px-6 py-4 text-center w-20">{t('排名', 'Rank')}</th>
-                      <th className="px-6 py-4 text-left">{t('球隊', 'Team')}</th>
-                      <th className="px-3 md:px-6 py-4 text-center bg-slate-200/50 text-slate-900">{t('分數', 'Points')}</th>
-                      <th className="px-3 md:px-6 py-4 text-center text-slate-500 font-normal">{t('踢咗', 'Played')}</th>
+                    <tr className="bg-slate-100 text-slate-700 text-[11px] md:text-sm font-bold uppercase tracking-wider">
+                      <th className="px-2 md:px-6 py-3 md:py-4 text-center w-10 md:w-20">{t('排名', 'Rank')}</th>
+                      <th className="px-2 md:px-6 py-3 md:py-4 text-left">{t('球隊', 'Team')}</th>
+                      <th className="px-2 md:px-6 py-3 md:py-4 text-center bg-slate-200/50 text-slate-900">{t('分數', 'Points')}</th>
+                      <th className="px-2 md:px-6 py-3 md:py-4 text-center text-slate-500 font-normal">{t('踢咗', 'Played')}</th>
+                      {/* 手機：勝-和-負 合併一欄；入球:失球 合併一欄（桌面用返獨立欄） */}
+                      <th className="px-1.5 py-3 text-center text-slate-500 font-normal md:hidden">{t('勝和負', 'W-D-L')}</th>
+                      <th className="px-1.5 py-3 text-center text-slate-500 font-normal md:hidden">{t('入失', 'GF:GA')}</th>
                       <th className="px-6 py-4 text-center text-slate-500 font-normal hidden md:table-cell">{t('贏', 'Won')}</th>
                       <th className="px-6 py-4 text-center text-slate-500 font-normal hidden md:table-cell">{t('和', 'Drawn')}</th>
                       <th className="px-6 py-4 text-center text-slate-500 font-normal hidden md:table-cell">{t('輸', 'Lost')}</th>
                       <th className="px-6 py-4 text-center text-slate-500 font-normal hidden md:table-cell">{t('入球', 'GF')}</th>
                       <th className="px-6 py-4 text-center text-slate-500 font-normal hidden md:table-cell">{t('失球', 'GA')}</th>
-                      <th className="px-3 md:px-6 py-4 text-center text-slate-500 font-normal">{t('球差', 'GD')}</th>
+                      <th className="px-2 md:px-6 py-3 md:py-4 text-center text-slate-500 font-normal">{t('球差', 'GD')}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {standings.length === 0 ? (
                       <tr>
-                        <td colSpan={10} className="px-6 py-8 text-center text-slate-500">
+                        <td colSpan={12} className="px-6 py-8 text-center text-slate-500">
                           {upcomingFixtures.length === 0 && recentResults.length === 0
                             ? 'Database not initialized. Please run /api/init-db'
                             : 'No standings data available yet.'}
@@ -397,15 +400,15 @@ export default function HomeClient(props: {
                               : 'hover:bg-slate-50'
                           }`}
                         >
-                          <td className="px-3 md:px-6 py-4 font-black text-xl text-center text-slate-900">
-                            <span className="inline-flex items-center gap-1">
-                              {index === 0 && <span title={t('冠軍', 'Champion')}>🥇</span>}
-                              {index === 1 && <span title={t('亞軍', 'Runner-up')}>🥈</span>}
-                              {index === 2 && <span title={t('季軍', 'Third place')}>🥉</span>}
+                          <td className="px-2 md:px-6 py-2.5 md:py-4 font-black text-base md:text-xl text-center text-slate-900">
+                            <span className="inline-flex items-center gap-0.5 md:gap-1">
+                              {index === 0 && <span className="hidden sm:inline" title={t('冠軍', 'Champion')}>🥇</span>}
+                              {index === 1 && <span className="hidden sm:inline" title={t('亞軍', 'Runner-up')}>🥈</span>}
+                              {index === 2 && <span className="hidden sm:inline" title={t('季軍', 'Third place')}>🥉</span>}
                               {index + 1}
                             </span>
                           </td>
-                          <td className="px-3 md:px-6 py-4 font-bold text-slate-900 text-base md:text-lg whitespace-nowrap">
+                          <td className="px-2 md:px-6 py-2.5 md:py-4 font-bold text-slate-900 text-sm md:text-lg whitespace-nowrap">
                             <span className="inline-flex items-center gap-2">
                               {(() => {
                                 const info = getKitColorInfo(
@@ -427,17 +430,29 @@ export default function HomeClient(props: {
                               {team.teamName}
                             </span>
                           </td>
-                          <td className="px-3 md:px-6 py-4 text-center bg-slate-50 text-slate-900 font-black text-xl md:text-2xl border-x border-slate-100">
+                          <td className="px-2 md:px-6 py-2.5 md:py-4 text-center bg-slate-50 text-slate-900 font-black text-lg md:text-2xl border-x border-slate-100">
                             {team.points}
                           </td>
-                          <td className="px-3 md:px-6 py-4 text-center text-slate-400">{team.played}</td>
+                          <td className="px-2 md:px-6 py-2.5 md:py-4 text-center text-slate-400 text-sm md:text-base">{team.played}</td>
+                          {/* 手機合併欄：勝-和-負 */}
+                          <td className="px-1.5 py-2.5 text-center text-xs tabular-nums text-slate-600 whitespace-nowrap md:hidden">
+                            <span className="font-bold text-slate-800">{team.wins}</span>
+                            <span className="text-slate-300">-</span>
+                            <span>{team.draws}</span>
+                            <span className="text-slate-300">-</span>
+                            <span>{team.losses}</span>
+                          </td>
+                          {/* 手機合併欄：入球:失球 */}
+                          <td className="px-1.5 py-2.5 text-center text-xs tabular-nums text-slate-500 whitespace-nowrap md:hidden">
+                            {team.goalsFor}:{team.goalsAgainst}
+                          </td>
                           <td className="px-6 py-4 text-center text-slate-400 hidden md:table-cell">{team.wins}</td>
                           <td className="px-6 py-4 text-center text-slate-400 hidden md:table-cell">{team.draws}</td>
                           <td className="px-6 py-4 text-center text-slate-400 hidden md:table-cell">{team.losses}</td>
                           <td className="px-6 py-4 text-center text-slate-400 hidden md:table-cell">{team.goalsFor}</td>
                           <td className="px-6 py-4 text-center text-slate-400 hidden md:table-cell">{team.goalsAgainst}</td>
                           <td
-                            className={`px-3 md:px-6 py-4 text-center font-bold ${
+                            className={`px-2 md:px-6 py-2.5 md:py-4 text-center text-sm md:text-base font-bold ${
                               team.goalDifference > 0
                                 ? 'text-green-600'
                                 : team.goalDifference < 0
