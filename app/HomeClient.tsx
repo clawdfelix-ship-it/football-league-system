@@ -497,33 +497,33 @@ export default function HomeClient(props: {
                   upcomingFixtures.map((match) => (
                     <div
                       key={match.id}
-                      className="p-4 bg-slate-50 rounded-lg border border-slate-200 space-y-3"
+                      className="p-3.5 bg-slate-50 rounded-lg border border-slate-200 space-y-2"
                     >
-                      {/* Header：日期/時間 + 圈次 */}
+                      {/* Header：日期/時間 + ROUND 藥丸 */}
                       <div className="flex items-center justify-between gap-2">
-                        <div className="text-sm text-slate-700 font-bold whitespace-nowrap">
+                        <div className="text-[13px] text-slate-700 font-bold whitespace-nowrap">
                           {match.date
                             ? `${new Date(match.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} (${new Date(match.date).toLocaleDateString('en-GB', { weekday: 'short' })})`
                             : 'TBC'}
                           {match.date && (
-                            <span className="ml-1.5 font-medium text-slate-500">
+                            <span className="ml-1 font-medium text-slate-400">
                               {new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
                             </span>
                           )}
                         </div>
                         {match.round && (
-                          <span className="font-bold text-green-600 text-[11px] uppercase tracking-wide">{match.round}</span>
+                          <span className="rounded-full bg-green-100 px-2 py-0.5 font-bold text-green-700 text-[10px] uppercase tracking-wide">{match.round}</span>
                         )}
                       </div>
 
-                      {/* 主隊（獨立一行，全名）*/}
-                      <div className="flex items-center gap-2.5">
+                      {/* 主隊（獨立一行）*/}
+                      <div className="flex items-center gap-2">
                         {(() => {
                           const homeColor = getKitColor(match.id, match.homeTeam, true);
                           const isSplit = homeColor.type === 'split' && homeColor.hex2;
                           return (
                             <div
-                              className="w-7 h-7 rounded-full border-2 border-slate-400 shadow-sm ring-1 ring-slate-300 flex-shrink-0"
+                              className="w-6 h-6 rounded-full border-2 border-slate-400 shadow-sm ring-1 ring-slate-300 flex-shrink-0"
                               style={
                                 isSplit
                                   ? { background: `linear-gradient(135deg, ${homeColor.hex} 50%, ${homeColor.hex2} 50%)` }
@@ -533,18 +533,18 @@ export default function HomeClient(props: {
                             />
                           );
                         })()}
-                        <span className="font-bold text-slate-900 leading-tight">{match.homeTeam}</span>
-                        <span className="text-[11px] text-slate-400 font-medium">{t('主場', 'Home')}</span>
+                        <span className="font-bold text-sm text-slate-900 leading-tight truncate">{match.homeTeam}</span>
+                        <span className="text-[10px] text-slate-400 font-medium">{t('主場', 'Home')}</span>
                       </div>
 
-                      {/* 客隊（獨立一行，全名）*/}
-                      <div className="flex items-center gap-2.5">
+                      {/* 客隊（獨立一行）*/}
+                      <div className="flex items-center gap-2">
                         {(() => {
                           const awayColor = getKitColor(match.id, match.awayTeam, false);
                           const isSplit = awayColor.type === 'split' && awayColor.hex2;
                           return (
                             <div
-                              className="w-7 h-7 rounded-full border-2 border-slate-400 shadow-sm ring-1 ring-slate-300 flex-shrink-0"
+                              className="w-6 h-6 rounded-full border-2 border-slate-400 shadow-sm ring-1 ring-slate-300 flex-shrink-0"
                               style={
                                 isSplit
                                   ? { background: `linear-gradient(135deg, ${awayColor.hex} 50%, ${awayColor.hex2} 50%)` }
@@ -554,61 +554,61 @@ export default function HomeClient(props: {
                             />
                           );
                         })()}
-                        <span className="font-bold text-slate-900 leading-tight">{match.awayTeam}</span>
-                        <span className="text-[11px] text-slate-400 font-medium">{t('作客', 'Away')}</span>
+                        <span className="font-bold text-sm text-slate-900 leading-tight truncate">{match.awayTeam}</span>
+                        <span className="text-[10px] text-slate-400 font-medium">{t('作客', 'Away')}</span>
                       </div>
 
-                      {/* 場地 */}
-                      <div className="text-xs text-slate-500 leading-relaxed">
+                      {/* Footer：場地 + 天氣 + 操作（一行，可換行）*/}
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 pt-2 border-t border-slate-200 text-[11px] text-slate-500">
                         {match.venue && !/^tbc$/i.test(match.venue.trim()) ? (
                           <a
                             href={venueMapsUrl(match.venue) || '#'}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-start gap-0.5 text-blue-600 hover:underline"
+                            className="inline-flex items-center gap-0.5 text-blue-600 hover:underline truncate max-w-full"
                           >
-                            📍 <span>{match.venue}</span>
+                            📍 <span className="truncate">{match.venue}</span>
                           </a>
                         ) : (
                           <span>📍 {match.venue || 'TBC'}</span>
                         )}
+                        {match.date && (
+                          <>
+                            <MatchWeather venue={match.venue} date={match.date} />
+                            {googleCalendarUrl({
+                              homeTeam: match.homeTeam,
+                              awayTeam: match.awayTeam,
+                              date: match.date,
+                              venue: match.venue,
+                              round: match.round,
+                            }) && (
+                              <a
+                                href={googleCalendarUrl({
+                                  homeTeam: match.homeTeam,
+                                  awayTeam: match.awayTeam,
+                                  date: match.date,
+                                  venue: match.venue,
+                                  round: match.round,
+                                })!}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label={t('加入日曆', 'Add to Calendar')}
+                                className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-slate-800 text-[12px] text-white hover:bg-slate-700"
+                              >
+                                📅
+                              </a>
+                            )}
+                            <ShareMatch
+                              iconOnly
+                              homeTeam={match.homeTeam}
+                              awayTeam={match.awayTeam}
+                              date={match.date}
+                              venue={match.venue}
+                              round={match.round}
+                            />
+                          </>
+                        )}
                       </div>
-
-                      {/* 天氣 + 操作 */}
-                      {match.date && (
-                        <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-200">
-                          <MatchWeather venue={match.venue} date={match.date} />
-                          {googleCalendarUrl({
-                            homeTeam: match.homeTeam,
-                            awayTeam: match.awayTeam,
-                            date: match.date,
-                            venue: match.venue,
-                            round: match.round,
-                          }) && (
-                            <a
-                              href={googleCalendarUrl({
-                                homeTeam: match.homeTeam,
-                                awayTeam: match.awayTeam,
-                                date: match.date,
-                                venue: match.venue,
-                                round: match.round,
-                              })!}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1 rounded-full bg-slate-800 px-2.5 py-0.5 text-[11px] font-semibold text-white hover:bg-slate-700"
-                            >
-                              📅 {t('加入日曆', 'Add to Calendar')}
-                            </a>
-                          )}
-                          <ShareMatch
-                            homeTeam={match.homeTeam}
-                            awayTeam={match.awayTeam}
-                            date={match.date}
-                            venue={match.venue}
-                            round={match.round}
-                          />
-                        </div>
-                      )}
                     </div>
                   ))
                 )}

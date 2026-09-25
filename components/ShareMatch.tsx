@@ -11,6 +11,7 @@ interface ShareMatchProps {
   venue?: string | null;
   round?: string | null;
   className?: string;
+  iconOnly?: boolean;
 }
 
 function buildText(p: ShareMatchProps, language: 'zh' | 'en'): string {
@@ -66,9 +67,13 @@ export default function ShareMatch(props: ShareMatchProps) {
         type="button"
         onClick={() => setOpen((v) => !v)}
         onBlur={() => setTimeout(() => setOpen(false), 200)}
-        className="inline-flex items-center gap-1 rounded-full bg-emerald-600 px-2.5 py-0.5 text-[11px] font-semibold text-white hover:bg-emerald-700"
+        className={
+          props.iconOnly
+            ? 'inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-200 text-sm text-slate-600 hover:bg-slate-300'
+            : 'inline-flex items-center gap-1 rounded-full bg-emerald-600 px-2.5 py-0.5 text-[11px] font-semibold text-white hover:bg-emerald-700'
+        }
       >
-        📤 {t('分享', 'Share')}
+        📤{props.iconOnly ? '' : ` ${t('分享', 'Share')}`}
       </button>
       {open && (
         <div className="absolute right-0 z-50 mt-1 w-36 overflow-hidden rounded-lg border border-slate-200 bg-white py-1 text-left shadow-xl">
