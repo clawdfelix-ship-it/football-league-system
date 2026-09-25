@@ -1,4 +1,4 @@
-import { getMatchKitOverrides } from '@/lib/matchKitOverrides';
+import { getManyMatchKitOverrides } from '@/lib/matchKitOverrides';
 import { listMatches, listTeamSettings } from '@/lib/queries';
 import FixturesClient, { type Match, type Team } from './FixturesClient';
 
@@ -23,15 +23,13 @@ export default async function FixturesPage() {
     };
   }
 
-  // Preload all kit overrides
+  // Preload all kit overrides — single batched query (was a per-match N+1 loop)
   const allMatchIds = matchRows.map((m) => m.id);
-  const allOverrides: Record<number, Record<string, string>> = {};
-  for (const matchId of allMatchIds) {
-    try {
-      allOverrides[matchId] = await getMatchKitOverrides(matchId);
-    } catch {
-      allOverrides[matchId] = {};
-    }
+  let allOverrides: Record<number, Record<string, string>> = {};
+  try {
+    allOverrides = await getManyMatchKitOverrides(allMatchIds);
+  } catch {
+    allOverrides = {};
   }
 
   // Serialize dates for the client component

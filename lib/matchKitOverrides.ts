@@ -70,6 +70,32 @@ export async function getMatchKitOverrides(matchId: number): Promise<Record<stri
   }
 }
 
+// 一次過攞多場比賽嘅所有 override（批量，避免 N+1 逐場查 DB）
+export async function getManyMatchKitOverrides(
+  matchIds: number[],
+): Promise<Record<number, Record<string, string>>> {
+  const result: Record<number, Record<string, string>> = {};
+  if (matchIds.length === 0) return result;
+  try {
+    const { db } = await import('@/lib/db');
+    const { matchKitOverrides } = await import('@/lib/schema');
+    const { inArray } = await import('drizzle-orm');
+
+    const rows = await db
+      .select()
+      .from(matchKitOverrides)
+      .where(inArray(matchKitOverrides.matchId, matchIds));
+
+    for (const r of rows) {
+      const bucket = (result[r.matchId] ??= {});
+      bucket[r.teamName.trim().toUpperCase()] = r.kitColor;
+    }
+  } catch (error) {
+    console.error('Failed to batch load match kit overrides:', error);
+  }
+  return result;
+}
+
 // 獲取某場比賽某隊嘅 override 顏色 (Server-side)
 export async function getMatchKitOverrideColorValue(matchId: number, teamName: string): Promise<string | null> {
   // 球衣色優先序：每場 override（DB）→ null（由呼叫端 fallback 去 team 主/客場色）。
