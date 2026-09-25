@@ -194,22 +194,16 @@ export default function HeadToHeadTable({ serverMatches }: Props) {
                     return (
                       <td
                         key={opponent.name}
-                        className="px-2 py-3 text-center border-b border-slate-200 text-xs"
+                        className="px-2 py-3 text-center border-b border-slate-200 text-sm font-bold"
                       >
-                        <div className="font-bold text-slate-700">
-                          {record.wins}-{record.draws}-{record.losses}
-                        </div>
-                        <div className={`text-xs ${gdClass(gd)}`}>
+                        <span className={gdClass(gd)}>
                           {record.goalsFor}:{record.goalsAgainst}
-                        </div>
+                        </span>
                       </td>
                     );
                   })}
-                  <td className="px-3 py-3 text-center border-b border-slate-200 bg-blue-50 font-bold">
-                    <div className="text-slate-800">{t.wins} 勝</div>
-                    <div className="text-xs text-slate-500">
-                      {t.draws} 和 · {t.losses} 負
-                    </div>
+                  <td className="px-3 py-3 text-center border-b border-slate-200 bg-blue-50 font-bold text-slate-800">
+                    {t.wins} 勝
                   </td>
                 </tr>
               );
