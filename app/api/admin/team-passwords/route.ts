@@ -10,6 +10,8 @@ import { eq } from 'drizzle-orm';
 import { hashPassword } from '@/lib/auth/password';
 import { audit } from '@/lib/auth/audit-log';
 import { TEAMS } from '@/lib/constants';
+import { sendMail } from '@/lib/mail/mailer';
+import { passwordResetByAdminEmail } from '@/lib/mail/templates';
 
 /**
  * Admin-only endpoint to manage per-team manager passwords.
@@ -165,7 +167,7 @@ export async function PUT(request: Request) {
   const now = new Date();
 
   const [existing] = await db
-    .select({ id: users.id, role: users.role })
+    .select({ id: users.id, role: users.role, username: users.username })
     .from(users)
     .where(eq(users.email, input.email));
 
@@ -187,9 +189,28 @@ export async function PUT(request: Request) {
     detail: 'single-manager password reset',
   });
 
+  // A：自動發重設通知信（best-effort）
+  let emailSent = true;
+  try {
+    const base = process.env.APP_BASE_URL || 'https://football-league-system-zenex.vercel.app';
+    const msg = passwordResetByAdminEmail({
+      name: existing.username,
+      email: input.email,
+      tempPassword: newPassword,
+      loginUrl: `${base.replace(/\/$/, '')}/login`,
+    });
+    await sendMail({ to: input.email, subject: msg.subject, html: msg.html, text: msg.text });
+  } catch (e) {
+    emailSent = false;
+    console.error('Reset-by-admin email failed:', e);
+  }
+
   return ok({
-    message: 'Password reset. Capture the plaintext below NOW — it will not be shown again.',
+    message: emailSent
+      ? 'Password reset. The new password has been emailed.'
+      : 'Password reset, but the email failed — send the password manually.',
     email: input.email,
+    emailSent,
     plaintextPassword: newPassword,
     mustChangeOnLogin: true,
   });

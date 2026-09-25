@@ -11,6 +11,8 @@ import { eq } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
 import { randomInt } from 'crypto';
 import { audit } from '@/lib/auth/audit-log';
+import { sendMail } from '@/lib/mail/mailer';
+import { accountCreatedEmail } from '@/lib/mail/templates';
 
 function sixDigits() {
   return String(randomInt(0, 1_000_000)).padStart(6, '0');
@@ -198,10 +200,35 @@ export async function POST(request: Request) {
       result: 'success',
       detail: `mode=random created=${created.length} skipped=${skipped.length} regenerate=${regenerate}`,
     });
+
+    // A：為每個新建帳號自動發帳號建立信（best-effort）
+    const emailed: string[] = [];
+    const emailFailed: string[] = [];
+    const base = process.env.APP_BASE_URL || 'https://football-league-system-zenex.vercel.app';
+    for (const c of created) {
+      try {
+        const msg = accountCreatedEmail({
+          name: c.name || null,
+          email: c.email,
+          tempPassword: c.password,
+          loginUrl: `${base.replace(/\/$/, '')}/login`,
+        });
+        await sendMail({ to: c.email, subject: msg.subject, html: msg.html, text: msg.text });
+        emailed.push(c.email);
+      } catch (e) {
+        emailFailed.push(c.email);
+        console.error('Account email failed for', c.email, e);
+      }
+    }
+
     return ok({
-      message: 'Manager accounts processed',
+      message: emailFailed.length
+        ? `Processed. ${emailed.length} emailed, ${emailFailed.length} failed — send those passwords manually.`
+        : 'Manager accounts processed and credentials emailed.',
       created,
       skipped,
+      emailed,
+      emailFailed,
     });
   } catch (e) {
     void audit({

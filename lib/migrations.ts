@@ -223,6 +223,36 @@ export async function createMatchKitOverridesTable() {
   `);
 }
 
+// 密碼重設 token 表（自助忘記密碼用）
+export async function createPasswordResetTokensTable() {
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS password_reset_tokens (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER NOT NULL,
+      token_hash VARCHAR(128) NOT NULL,
+      expires_at TIMESTAMPTZ NOT NULL,
+      used_at TIMESTAMPTZ,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    );
+  `);
+
+  await db.execute(sql`
+    DO $$
+    BEGIN
+      ALTER TABLE password_reset_tokens
+        ADD CONSTRAINT password_reset_tokens_user_fk
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+    EXCEPTION WHEN duplicate_object THEN
+      NULL;
+    END $$;
+  `);
+
+  await db.execute(sql`
+    CREATE INDEX IF NOT EXISTS idx_prt_token ON password_reset_tokens(token_hash);
+    CREATE INDEX IF NOT EXISTS idx_prt_user ON password_reset_tokens(user_id);
+  `);
+}
+
 // 初始化數據庫
 export async function initializeDatabase() {
   try {
@@ -232,6 +262,7 @@ export async function initializeDatabase() {
     await createAnnouncementsTable();
     await createMatchPlayerGoalsTable();
     await createMatchKitOverridesTable();
+    await createPasswordResetTokensTable();
     await createIndexesAndConstraints();
     console.log('數據庫初始化成功');
   } catch (error) {
