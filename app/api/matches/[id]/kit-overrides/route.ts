@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidateTag } from 'next/cache';
 import { createMatchKitOverridesTable } from '@/lib/migrations';
 import { getAuthContext } from '@/lib/authz';
 import { fail } from '@/lib/api/response';
+import { FIXTURES_CACHE_TAG } from '@/lib/fixtures-data';
 
 // 自動創建 table (如果唔存在) - 一定要有 try-catch，唔可以死
 async function ensureTableExists() {
@@ -113,6 +115,8 @@ export async function PUT(
         },
       });
 
+    revalidateTag(FIXTURES_CACHE_TAG, 'max');
+
     return NextResponse.json({
       success: true,
       matchId,
@@ -174,6 +178,8 @@ export async function DELETE(
           eq(matchKitOverrides.teamName, normalizedTeamName)
         )
       );
+
+    revalidateTag(FIXTURES_CACHE_TAG, 'max');
 
     return NextResponse.json({
       success: true,

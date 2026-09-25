@@ -1,11 +1,13 @@
 'use server';
 
+import { revalidateTag } from 'next/cache';
 import { db } from './db';
 import { matches, players } from './schema';
 import { eq } from 'drizzle-orm';
 import { TEAMS } from './constants';
 import { put } from '@vercel/blob';
 import { getAuthContext, getTeamNameFromTeamId } from '@/lib/authz';
+import { FIXTURES_CACHE_TAG } from '@/lib/fixtures-data';
 import {
   createAnnouncement,
   createMatch,
@@ -180,7 +182,7 @@ export async function addMatch(data: {
   status: 'scheduled' | 'finished' | 'tbc';
   round?: string;
 }) {
-  return await createMatch({
+  const result = await createMatch({
     homeTeam: data.homeTeam,
     awayTeam: data.awayTeam,
     homeScore: data.homeScore ?? null,
@@ -190,6 +192,8 @@ export async function addMatch(data: {
     status: data.status,
     round: data.round ?? null,
   });
+  revalidateTag(FIXTURES_CACHE_TAG, 'max');
+  return result;
 }
 
 export async function updateMatch(id: number, data: {
@@ -202,10 +206,12 @@ export async function updateMatch(id: number, data: {
   status?: 'scheduled' | 'finished' | 'tbc';
   round?: string;
 }) {
-  return await updateMatchById(id, {
+  const result = await updateMatchById(id, {
     ...data,
     date: data.date ?? undefined,
   });
+  revalidateTag(FIXTURES_CACHE_TAG, 'max');
+  return result;
 }
 
 export async function deleteMatch(id: number | string) {
@@ -214,6 +220,7 @@ export async function deleteMatch(id: number | string) {
     if (isNaN(numericId)) throw new Error('Invalid match ID');
     
     await deleteMatchById(numericId);
+    revalidateTag(FIXTURES_CACHE_TAG, 'max');
     return { success: true };
   } catch (error) {
     console.error('Failed to delete match:', error);
@@ -233,6 +240,7 @@ export async function resetSeason() {
 
   try {
     const result = await deleteAllMatches();
+    revalidateTag(FIXTURES_CACHE_TAG, 'max');
     console.log(`Deleted ${result.length} matches`);
     return result;
   } catch (error) {

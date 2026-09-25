@@ -1,51 +1,21 @@
-import { getManyMatchKitOverrides } from '@/lib/matchKitOverrides';
-import { listMatches, listTeamSettings } from '@/lib/queries';
 import FixturesClient, { type Match, type Team } from './FixturesClient';
+import { getFixturesData } from '@/lib/fixtures-data';
 
-export const dynamic = 'force-dynamic';
-
+// 改用快取（ISR）：正常訪問直接返快取秒開，唔使等 Neon cold start。
+// 管理員改賽果/球衣色時 revalidateTag，下次訪問先重建。
 export default async function FixturesPage() {
-  let teamRows: Awaited<ReturnType<typeof listTeamSettings>> = [];
-  let matchRows: Awaited<ReturnType<typeof listMatches>> = [];
+  let data;
   try {
-    [teamRows, matchRows] = await Promise.all([listTeamSettings(), listMatches()]);
+    data = await getFixturesData();
   } catch {
-    teamRows = [];
-    matchRows = [];
+    data = { teams: {}, matches: [], allOverrides: {} };
   }
-
-  const teams: Record<string, Team> = {};
-  for (const t of teamRows) {
-    teams[t.name] = {
-      name: t.name,
-      homeKitColor: t.homeKitColor ?? 'white',
-      awayKitColor: t.awayKitColor ?? 'black',
-    };
-  }
-
-  // Preload all kit overrides — single batched query (was a per-match N+1 loop)
-  const allMatchIds = matchRows.map((m) => m.id);
-  let allOverrides: Record<number, Record<string, string>> = {};
-  try {
-    allOverrides = await getManyMatchKitOverrides(allMatchIds);
-  } catch {
-    allOverrides = {};
-  }
-
-  // Serialize dates for the client component
-  const matches: Match[] = matchRows.map((m) => ({
-    id: m.id,
-    homeTeam: m.homeTeam,
-    awayTeam: m.awayTeam,
-    date: m.date ? new Date(m.date).toISOString() : null,
-    venue: m.venue,
-    round: m.round,
-    status: m.status,
-    homeScore: m.homeScore,
-    awayScore: m.awayScore,
-  }));
 
   return (
-    <FixturesClient matches={matches} teams={teams} allOverrides={allOverrides} />
+    <FixturesClient
+      matches={data.matches as Match[]}
+      teams={data.teams as Record<string, Team>}
+      allOverrides={data.allOverrides}
+    />
   );
 }

@@ -1,9 +1,11 @@
 import { NextRequest } from 'next/server';
+import { revalidateTag } from 'next/cache';
 import { ok, fail } from '@/lib/api/response';
 import { TeamSettingsSchema } from '@/lib/api/schemas';
 import { zodDetails } from '@/lib/api/zod';
 import { getAuthContext, getTeamNameFromTeamId } from '@/lib/authz';
 import { listTeamSettings, upsertTeamSettings } from '@/lib/queries';
+import { FIXTURES_CACHE_TAG } from '@/lib/fixtures-data';
 
 export const revalidate = 10;
 
@@ -61,6 +63,8 @@ export async function PUT(request: NextRequest) {
     if (!team) {
       return fail(500, 'INTERNAL_ERROR', 'Failed to update team settings');
     }
+
+    revalidateTag(FIXTURES_CACHE_TAG, 'max');
 
     return ok({
       message: 'Team kit colors updated successfully',
