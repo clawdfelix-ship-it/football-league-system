@@ -2,10 +2,9 @@ import { fail, ok } from '@/lib/api/response';
 import { getClientIp, rateLimit } from '@/lib/api/rate-limit';
 import { db } from '@/lib/db';
 import { passwordResetTokens, users } from '@/lib/schema';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, gt, isNull } from 'drizzle-orm';
 import { createHash } from 'crypto';
 
-const EXPIRES_MS = 30 * 60 * 1000;
 const MIN_LENGTH = 8;
 const MAX_LENGTH = 128;
 
@@ -40,28 +39,64 @@ export async function POST(request: Request) {
 
   const tokenHash = hashToken(token);
 
-  const [row] = await db
-    .select()
-    .from(passwordResetTokens)
-    .where(and(eq(passwordResetTokens.tokenHash, tokenHash)));
-
-  if (!row) {
-    return fail(400, 'INVALID_TOKEN', 'This reset link is invalid. Please request a new one.');
-  }
-  if (row.usedAt) {
-    return fail(400, 'TOKEN_USED', 'This reset link has already been used. Please request a new one.');
-  }
-  if (new Date(row.expiresAt).getTime() < Date.now()) {
-    return fail(400, 'TOKEN_EXPIRED', 'This reset link has expired. Please request a new one.');
-  }
-
   const now = new Date();
   // 動態 import bcryptjs（同現有認證一致）
   const bcrypt = await import('bcryptjs');
   const passwordHash = await bcrypt.hash(password, 10);
 
-  // 交易：更新密碼 + 標記 token 已用 + 清除 must_change_password（因為用戶自己設咗新密）
-  await db.transaction(async (tx) => {
+  const result = await db.transaction(async (tx) => {
+    // Atomically consume the token so concurrent requests cannot both succeed.
+    const [consumed] = await tx
+      .update(passwordResetTokens)
+      .set({ usedAt: now })
+      .where(
+        and(
+          eq(passwordResetTokens.tokenHash, tokenHash),
+          isNull(passwordResetTokens.usedAt),
+          gt(passwordResetTokens.expiresAt, now)
+        )
+      )
+      .returning({
+        id: passwordResetTokens.id,
+        userId: passwordResetTokens.userId,
+        createdAt: passwordResetTokens.createdAt,
+      });
+
+    if (!consumed) {
+      const [row] = await tx
+        .select({
+          usedAt: passwordResetTokens.usedAt,
+          expiresAt: passwordResetTokens.expiresAt,
+        })
+        .from(passwordResetTokens)
+        .where(eq(passwordResetTokens.tokenHash, tokenHash))
+        .limit(1);
+
+      if (!row) return { state: 'invalid' as const };
+      if (row.usedAt) return { state: 'used' as const };
+      if (new Date(row.expiresAt).getTime() <= now.getTime()) return { state: 'expired' as const };
+      return { state: 'invalid' as const };
+    }
+
+    const [dbUser] = await tx
+      .select({
+        id: users.id,
+        passwordChangedAt: users.passwordChangedAt,
+      })
+      .from(users)
+      .where(eq(users.id, consumed.userId))
+      .limit(1);
+
+    if (!dbUser) return { state: 'invalid' as const };
+
+    if (
+      consumed.createdAt &&
+      dbUser.passwordChangedAt &&
+      new Date(dbUser.passwordChangedAt).getTime() > new Date(consumed.createdAt).getTime()
+    ) {
+      return { state: 'stale' as const };
+    }
+
     await tx
       .update(users)
       .set({
@@ -69,13 +104,28 @@ export async function POST(request: Request) {
         passwordChangedAt: now,
         mustChangePassword: null,
       })
-      .where(eq(users.id, row.userId));
+      .where(eq(users.id, dbUser.id));
 
     await tx
       .update(passwordResetTokens)
       .set({ usedAt: now })
-      .where(eq(passwordResetTokens.id, row.id));
+      .where(and(eq(passwordResetTokens.userId, dbUser.id), isNull(passwordResetTokens.usedAt)));
+
+    return { state: 'ok' as const };
   });
+
+  if (result.state === 'invalid') {
+    return fail(400, 'INVALID_TOKEN', 'This reset link is invalid. Please request a new one.');
+  }
+  if (result.state === 'used') {
+    return fail(400, 'TOKEN_USED', 'This reset link has already been used. Please request a new one.');
+  }
+  if (result.state === 'expired') {
+    return fail(400, 'TOKEN_EXPIRED', 'This reset link has expired. Please request a new one.');
+  }
+  if (result.state === 'stale') {
+    return fail(400, 'TOKEN_STALE', 'This reset link is no longer valid. Please request a new one.');
+  }
 
   return ok({ message: 'Password updated. You can now sign in.' });
 }

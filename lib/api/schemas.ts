@@ -98,5 +98,18 @@ export const MatchGoalsSchema = z.object({
         goals: z.coerce.number().int().min(0).max(20),
       })
     )
-    .default([]),
+    .default([])
+    .superRefine((entries, ctx) => {
+      const seen = new Set<number>();
+      for (const [index, entry] of entries.entries()) {
+        if (seen.has(entry.playerId)) {
+          ctx.addIssue({
+            code: 'custom',
+            path: [index, 'playerId'],
+            message: 'Duplicate playerId entries are not allowed',
+          });
+        }
+        seen.add(entry.playerId);
+      }
+    }),
 });

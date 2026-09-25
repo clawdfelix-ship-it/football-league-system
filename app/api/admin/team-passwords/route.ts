@@ -99,7 +99,7 @@ export async function POST(request: Request) {
     if (existing) {
       await db
         .update(users)
-        .set({ passwordHash, mustChangePassword: now, passwordChangedAt: null })
+        .set({ passwordHash, mustChangePassword: now, passwordChangedAt: now })
         .where(eq(users.id, existing.id));
     } else {
       await db.insert(users).values({
@@ -108,6 +108,7 @@ export async function POST(request: Request) {
         passwordHash,
         role: 'manager',
         mustChangePassword: now,
+        passwordChangedAt: now,
       });
     }
     affectedEmails.push(email);
@@ -177,7 +178,7 @@ export async function PUT(request: Request) {
 
   await db
     .update(users)
-    .set({ passwordHash, mustChangePassword: now, passwordChangedAt: null })
+    .set({ passwordHash, mustChangePassword: now, passwordChangedAt: now })
     .where(eq(users.id, existing.id));
 
   void audit({

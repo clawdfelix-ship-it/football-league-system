@@ -44,3 +44,17 @@ describe('ChangePasswordSchema', () => {
     ).toThrow();
   });
 });
+
+describe('MatchGoalsSchema', () => {
+  it('rejects duplicate player ids', async () => {
+    const { MatchGoalsSchema } = await import('@/lib/api/schemas');
+    expect(() =>
+      MatchGoalsSchema.parse({
+        entries: [
+          { playerId: 7, goals: 1 },
+          { playerId: 7, goals: 2 },
+        ],
+      })
+    ).toThrow(/Duplicate playerId entries are not allowed/);
+  });
+});

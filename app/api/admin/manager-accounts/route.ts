@@ -115,6 +115,7 @@ export async function POST(request: Request) {
                 passwordHash,
                 role: 'manager',
                 username: existing.username || makeUsername(team, email),
+                passwordChangedAt: new Date(),
               })
               .where(eq(users.email, email));
             updatedEmails.push(email);
@@ -126,6 +127,7 @@ export async function POST(request: Request) {
             username: makeUsername(team, email),
             passwordHash,
             role: 'manager',
+            passwordChangedAt: new Date(),
           });
           createdEmails.push(email);
         }
@@ -155,10 +157,10 @@ export async function POST(request: Request) {
         const team = teamBlock.team;
         const name = captain.name;
 
-      const [existing] = await db
-        .select({ email: users.email, username: users.username })
-        .from(users)
-        .where(eq(users.email, email));
+        const [existing] = await db
+          .select({ email: users.email, username: users.username })
+          .from(users)
+          .where(eq(users.email, email));
 
         if (existing) {
           if (!regenerate) {
@@ -173,6 +175,7 @@ export async function POST(request: Request) {
               passwordHash,
               role: 'manager',
               username: existing.username || makeUsername(team, email),
+              passwordChangedAt: new Date(),
             })
             .where(eq(users.email, email));
           created.push({ team, name, email, password });
@@ -187,6 +190,7 @@ export async function POST(request: Request) {
           username: makeUsername(team, email),
           passwordHash,
           role: 'manager',
+          passwordChangedAt: new Date(),
         });
 
         created.push({ team, name, email, password });

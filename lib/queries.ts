@@ -367,13 +367,23 @@ export async function replaceMatchGoalEntries(
   matchId: number,
   entries: Array<{ playerId: number; goals: number }>
 ) {
-  await db.delete(matchPlayerGoals).where(eq(matchPlayerGoals.matchId, matchId));
   const filtered = entries.filter((e) => Number.isFinite(e.goals) && e.goals > 0);
-  if (filtered.length === 0) return [];
-  return await db
-    .insert(matchPlayerGoals)
-    .values(filtered.map((e) => ({ matchId, playerId: e.playerId, goals: e.goals })))
-    .returning();
+  const seen = new Set<number>();
+  for (const entry of filtered) {
+    if (seen.has(entry.playerId)) {
+      throw new Error('Duplicate playerId entries are not allowed');
+    }
+    seen.add(entry.playerId);
+  }
+
+  return await db.transaction(async (tx) => {
+    await tx.delete(matchPlayerGoals).where(eq(matchPlayerGoals.matchId, matchId));
+    if (filtered.length === 0) return [];
+    return await tx
+      .insert(matchPlayerGoals)
+      .values(filtered.map((e) => ({ matchId, playerId: e.playerId, goals: e.goals })))
+      .returning();
+  });
 }
 
 export async function getPlayersByIds(ids: number[]) {
