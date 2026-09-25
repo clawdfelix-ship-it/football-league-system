@@ -558,57 +558,60 @@ export default function HomeClient(props: {
                         <span className="text-[10px] text-slate-400 font-medium">{t('作客', 'Away')}</span>
                       </div>
 
-                      {/* Footer：場地 + 天氣 + 操作（一行，可換行）*/}
-                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 pt-2 border-t border-slate-200 text-[11px] text-slate-500">
+                      {/* 場地：獨立一行，完整顯示（可換兩行），唔截斷 */}
+                      <div className="text-[12px] leading-snug">
                         {match.venue && !/^tbc$/i.test(match.venue.trim()) ? (
                           <a
                             href={venueMapsUrl(match.venue) || '#'}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-0.5 text-blue-600 hover:underline truncate max-w-full"
+                            className="inline-flex items-start gap-1 text-blue-600 hover:underline"
                           >
-                            📍 <span className="truncate">{match.venue}</span>
+                            <span className="flex-shrink-0">📍</span>
+                            <span>{match.venue}</span>
                           </a>
                         ) : (
-                          <span>📍 {match.venue || 'TBC'}</span>
-                        )}
-                        {match.date && (
-                          <>
-                            <MatchWeather venue={match.venue} date={match.date} />
-                            {googleCalendarUrl({
-                              homeTeam: match.homeTeam,
-                              awayTeam: match.awayTeam,
-                              date: match.date,
-                              venue: match.venue,
-                              round: match.round,
-                            }) && (
-                              <a
-                                href={googleCalendarUrl({
-                                  homeTeam: match.homeTeam,
-                                  awayTeam: match.awayTeam,
-                                  date: match.date,
-                                  venue: match.venue,
-                                  round: match.round,
-                                })!}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                aria-label={t('加入日曆', 'Add to Calendar')}
-                                className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-slate-800 text-[12px] text-white hover:bg-slate-700"
-                              >
-                                📅
-                              </a>
-                            )}
-                            <ShareMatch
-                              iconOnly
-                              homeTeam={match.homeTeam}
-                              awayTeam={match.awayTeam}
-                              date={match.date}
-                              venue={match.venue}
-                              round={match.round}
-                            />
-                          </>
+                          <span className="text-slate-500">📍 {match.venue || 'TBC'}</span>
                         )}
                       </div>
+
+                      {/* 天氣 + 操作（一行，觸控 ≥36px）*/}
+                      {match.date && (
+                        <div className="flex flex-wrap items-center gap-x-2 gap-y-2 pt-2 border-t border-slate-200 text-[11px] text-slate-500">
+                          <MatchWeather venue={match.venue} date={match.date} />
+                          {googleCalendarUrl({
+                            homeTeam: match.homeTeam,
+                            awayTeam: match.awayTeam,
+                            date: match.date,
+                            venue: match.venue,
+                            round: match.round,
+                          }) && (
+                            <a
+                              href={googleCalendarUrl({
+                                homeTeam: match.homeTeam,
+                                awayTeam: match.awayTeam,
+                                date: match.date,
+                                venue: match.venue,
+                                round: match.round,
+                              })!}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              aria-label={t('加入日曆', 'Add to Calendar')}
+                              className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-800 text-[14px] text-white hover:bg-slate-700"
+                            >
+                              📅
+                            </a>
+                          )}
+                          <ShareMatch
+                            iconOnly
+                            homeTeam={match.homeTeam}
+                            awayTeam={match.awayTeam}
+                            date={match.date}
+                            venue={match.venue}
+                            round={match.round}
+                          />
+                        </div>
+                      )}
                     </div>
                   ))
                 )}
