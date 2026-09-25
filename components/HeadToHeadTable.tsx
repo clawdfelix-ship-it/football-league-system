@@ -135,23 +135,24 @@ export default function HeadToHeadTable({ serverMatches }: Props) {
 
   return (
     <div>
-      {/* ── Desktop / tablet: full matrix (kept, with hatched unplayed cells) ── */}
-      <div className="hidden md:block overflow-x-auto">
-        <table className="w-full text-sm">
+      {/* ── 所有尺寸：三角形矩陣（手機可橫向滑動） ── */}
+      <p className="md:hidden text-xs text-slate-400 mb-2">← {''}橫向滑動睇全部球隊{''} →</p>
+      <div className="block overflow-x-auto">
+        <table className="min-w-[620px] w-full text-xs md:text-sm">
           <thead>
             <tr>
-              <th className="px-3 py-3 bg-slate-100 font-bold text-slate-700 text-left border-b border-slate-200">
+              <th className="px-1.5 md:px-3 py-2 md:py-3 bg-slate-100 font-bold text-slate-700 text-left border-b border-slate-200">
                 球隊
               </th>
               {teams.map((team) => (
                 <th
                   key={team.name}
-                  className="px-2 py-3 bg-slate-100 font-bold text-slate-700 text-center border-b border-slate-200 whitespace-nowrap"
+                  className="px-1.5 md:px-3 py-2 md:py-3 bg-slate-100 font-bold text-slate-700 text-center border-b border-slate-200 whitespace-nowrap"
                 >
                   {team.shortName}
                 </th>
               ))}
-              <th className="px-3 py-3 bg-blue-100 font-bold text-blue-700 text-center border-b border-slate-200">
+              <th className="px-1.5 md:px-3 py-2 md:py-3 bg-blue-100 font-bold text-blue-700 text-center border-b border-slate-200">
                 總計
               </th>
             </tr>
@@ -162,7 +163,7 @@ export default function HeadToHeadTable({ serverMatches }: Props) {
               const t = totalFor(team.name);
               return (
                 <tr key={team.name} className={rowIdx % 2 === 0 ? 'bg-white' : 'bg-slate-50/60'}>
-                  <td className="px-3 py-3 font-bold text-slate-800 border-b border-slate-200 whitespace-nowrap">
+                  <td className="px-1.5 md:px-3 py-2 md:py-3 font-bold text-slate-800 border-b border-slate-200 whitespace-nowrap">
                     {team.shortName}
                   </td>
                   {teams.map((opponent, colIdx) => {
@@ -171,7 +172,7 @@ export default function HeadToHeadTable({ serverMatches }: Props) {
                       return (
                         <td
                           key={opponent.name}
-                          className="px-2 py-3 text-center border-b border-slate-300 bg-slate-900"
+                          className="px-1.5 md:px-2 py-2 md:py-3 text-center border-b border-slate-300 bg-slate-900"
                         >
                           <span className="text-slate-700">■</span>
                         </td>
@@ -182,7 +183,7 @@ export default function HeadToHeadTable({ serverMatches }: Props) {
                       return (
                         <td
                           key={opponent.name}
-                          className="px-2 py-3 text-center border-b border-slate-200"
+                          className="px-1.5 md:px-2 py-2 md:py-3 text-center border-b border-slate-200"
                           style={{ background: HATCH }}
                           title="未對賽"
                         >
@@ -194,7 +195,7 @@ export default function HeadToHeadTable({ serverMatches }: Props) {
                     return (
                       <td
                         key={opponent.name}
-                        className="px-2 py-3 text-center border-b border-slate-200 text-sm font-bold"
+                        className="px-1.5 md:px-2 py-2 md:py-3 text-center border-b border-slate-200 text-xs md:text-sm font-bold"
                       >
                         <span className={gdClass(gd)}>
                           {record.goalsFor}:{record.goalsAgainst}
@@ -202,7 +203,7 @@ export default function HeadToHeadTable({ serverMatches }: Props) {
                       </td>
                     );
                   })}
-                  <td className="px-3 py-3 text-center border-b border-slate-200 bg-blue-50 font-bold text-slate-800">
+                  <td className="px-1.5 md:px-3 py-2 md:py-3 text-center border-b border-slate-200 bg-blue-50 font-bold text-slate-800 whitespace-nowrap">
                     {t.wins} 勝
                   </td>
                 </tr>
@@ -210,69 +211,6 @@ export default function HeadToHeadTable({ serverMatches }: Props) {
             })}
           </tbody>
         </table>
-      </div>
-
-      {/* ── Mobile: pick a team, see its record vs each opponent ── */}
-      <div className="md:hidden">
-        <label className="block text-sm font-semibold text-slate-700 mb-2">選擇球隊</label>
-        <select
-          value={selectedTeam}
-          onChange={(e) => setSelectedTeam(e.target.value)}
-          className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm font-medium text-slate-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-        >
-          {teams.map((team) => (
-            <option key={team.name} value={team.name}>
-              {team.shortName} — {team.nameZh}
-            </option>
-          ))}
-        </select>
-
-        {selectedRecord && (
-          <div className="mt-4 rounded-2xl border border-slate-200 overflow-hidden">
-            <div className="bg-blue-600 text-white px-4 py-3 flex items-center justify-between">
-              <span className="font-bold">{selectedTeam} 對賽成績</span>
-              {(() => {
-                const t = totalFor(selectedTeam);
-                return (
-                  <span className="text-sm font-semibold bg-white/20 rounded-full px-3 py-0.5">
-                    總計 {t.wins}-{t.draws}-{t.losses}
-                  </span>
-                );
-              })()}
-            </div>
-            <ul className="divide-y divide-slate-100">
-              {teams
-                .filter((opp) => opp.name !== selectedTeam)
-                .map((opp) => {
-                  const rec = selectedRecord[opp.name] ?? EMPTY_RECORD;
-                  const played = rec.played > 0;
-                  const gd = rec.goalsFor - rec.goalsAgainst;
-                  return (
-                    <li key={opp.name} className="flex items-center justify-between px-4 py-3">
-                      <div className="font-semibold text-slate-800 text-sm">{opp.shortName}</div>
-                      {played ? (
-                        <div className="text-right">
-                          <div className="font-bold text-slate-800 text-sm">
-                            {rec.wins}-{rec.draws}-{rec.losses}
-                          </div>
-                          <div className={`text-xs ${gdClass(gd)}`}>
-                            {rec.goalsFor}:{rec.goalsAgainst}
-                          </div>
-                        </div>
-                      ) : (
-                        <span
-                          className="text-xs text-slate-400 rounded px-2 py-1 border border-slate-200"
-                          style={{ background: HATCH }}
-                        >
-                          未對賽
-                        </span>
-                      )}
-                    </li>
-                  );
-                })}
-            </ul>
-          </div>
-        )}
       </div>
 
       <div className="mt-4 p-4 bg-slate-50 rounded-lg text-sm text-slate-600">
