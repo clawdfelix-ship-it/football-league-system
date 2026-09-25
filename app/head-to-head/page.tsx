@@ -4,6 +4,7 @@ import HomeLayout from '@/components/HomeLayout';
 import HeadToHeadTable from '@/components/HeadToHeadTable';
 import HeadToHeadChart from '@/components/HeadToHeadChart';
 import { useEffect, useState } from 'react';
+import { useLanguage } from '@/context/LanguageContext';
 
 type Match = {
   id: number;
@@ -15,6 +16,7 @@ type Match = {
 };
 
 export default function HeadToHeadPage() {
+  const { t } = useLanguage();
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -52,16 +54,16 @@ export default function HeadToHeadPage() {
         <div className="container mx-auto px-4 py-8">
           <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200">
             <div className="bg-[#1a237e] text-white px-8 py-6">
-              <h1 className="text-3xl font-black tracking-tight">對戰記錄表</h1>
-              <p className="text-blue-100 mt-2">Head-to-Head Match Records</p>
+              <h1 className="text-3xl font-black tracking-tight">{t('對戰記錄表', 'Head-to-Head Records')}</h1>
+              <p className="text-blue-100 mt-2">{t('球隊對賽成績', 'Head-to-Head Match Records')}</p>
             </div>
             <div className="p-6">
-              <h2 className="text-lg font-black text-slate-800 mb-1">全隊總覽</h2>
-              <p className="text-xs text-slate-400 mb-4">All Teams — Win / Draw / Loss Overview</p>
+              <h2 className="text-lg font-black text-slate-800 mb-1">{t('全隊總覽', 'All Teams Overview')}</h2>
+              <p className="text-xs text-slate-400 mb-4">{t('各隊勝 / 和 / 負總覽', 'All Teams — Win / Draw / Loss Overview')}</p>
               <HeadToHeadChart serverMatches={matches} />
             </div>
             <div className="border-t border-slate-100 p-6">
-              <h2 className="text-lg font-black text-slate-800 mb-4">對戰矩陣</h2>
+              <h2 className="text-lg font-black text-slate-800 mb-4">{t('對戰矩陣', 'Head-to-Head Matrix')}</h2>
               <HeadToHeadTable serverMatches={matches} />
             </div>
           </div>

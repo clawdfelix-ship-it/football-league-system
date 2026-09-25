@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { venueMapsUrl } from '@/lib/weather';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface ShareMatchProps {
   homeTeam: string;
@@ -12,9 +13,9 @@ interface ShareMatchProps {
   className?: string;
 }
 
-function buildText(p: ShareMatchProps): string {
+function buildText(p: ShareMatchProps, language: 'zh' | 'en'): string {
   const when = p.date
-    ? new Date(p.date).toLocaleString('zh-HK', {
+    ? new Date(p.date).toLocaleString(language === 'zh' ? 'zh-HK' : 'en-GB', {
         timeZone: 'Asia/Hong_Kong',
         month: 'short',
         day: 'numeric',
@@ -30,17 +31,18 @@ function buildText(p: ShareMatchProps): string {
   if (p.venue && !/^tbc$/i.test(p.venue.trim())) {
     lines.push(`📍 ${p.venue}`);
     const maps = venueMapsUrl(p.venue);
-    if (maps) lines.push(`🗺️ 地圖：${maps}`);
+    if (maps) lines.push(`${language === 'zh' ? '🗺️ 地圖：' : '🗺️ Map: '}${maps}`);
   }
-  lines.push('— HK Bank League 2026');
+  lines.push(language === 'zh' ? '— 香港銀行足球聯賽 2026' : '— HK Bank League 2026');
   return lines.join('\n');
 }
 
 export default function ShareMatch(props: ShareMatchProps) {
+  const { t, language } = useLanguage();
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const text = buildText(props);
+  const text = buildText(props, language);
   const enc = encodeURIComponent(text);
   const siteUrl =
     typeof window !== 'undefined' ? window.location.origin + '/fixtures' : 'https://football-league-system-zenex.vercel.app/fixtures';
@@ -66,7 +68,7 @@ export default function ShareMatch(props: ShareMatchProps) {
         onBlur={() => setTimeout(() => setOpen(false), 200)}
         className="inline-flex items-center gap-1 rounded-full bg-emerald-600 px-2.5 py-0.5 text-[11px] font-semibold text-white hover:bg-emerald-700"
       >
-        📤 分享
+        📤 {t('分享', 'Share')}
       </button>
       {open && (
         <div className="absolute right-0 z-50 mt-1 w-36 overflow-hidden rounded-lg border border-slate-200 bg-white py-1 text-left shadow-xl">
@@ -92,7 +94,7 @@ export default function ShareMatch(props: ShareMatchProps) {
             onClick={copy}
             className="block w-full px-3 py-2 text-left text-xs text-slate-700 hover:bg-slate-50"
           >
-            {copied ? '✅ 已複製' : '📋 複製文字'}
+            {copied ? t('✅ 已複製', '✅ Copied') : t('📋 複製文字', '📋 Copy text')}
           </button>
         </div>
       )}

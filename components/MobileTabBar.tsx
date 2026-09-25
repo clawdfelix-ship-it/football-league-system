@@ -2,15 +2,17 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useLanguage } from '@/context/LanguageContext';
 
 const TABS = [
-  { href: '/', label: '首頁', icon: '🏠' },
-  { href: '/fixtures', label: '賽程', icon: '📅' },
-  { href: '/teams', label: '球隊', icon: '🛡️' },
-  { href: '/players', label: '球員', icon: '👥' },
+  { href: '/', zh: '首頁', en: 'Home', icon: '🏠' },
+  { href: '/fixtures', zh: '賽程', en: 'Fixtures', icon: '📅' },
+  { href: '/teams', zh: '球隊', en: 'Teams', icon: '🛡️' },
+  { href: '/players', zh: '球員', en: 'Players', icon: '👥' },
 ] as const;
 
 export default function MobileTabBar() {
+  const { t } = useLanguage();
   const pathname = usePathname() ?? '/';
 
   const isActive = (href: string) =>
@@ -19,7 +21,7 @@ export default function MobileTabBar() {
   return (
     <nav
       className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-white/95 backdrop-blur border-t border-slate-200 pb-[env(safe-area-inset-bottom)]"
-      aria-label="主導航"
+      aria-label={t('主導航', 'Main navigation')}
     >
       <ul className="grid grid-cols-4">
         {TABS.map((tab) => {
@@ -35,7 +37,7 @@ export default function MobileTabBar() {
                 <span className={`text-lg leading-none transition-transform ${active ? 'scale-110' : ''}`}>
                   {tab.icon}
                 </span>
-                {tab.label}
+                {t(tab.zh, tab.en)}
                 <span
                   className={`h-0.5 w-6 rounded-full transition-colors ${
                     active ? 'bg-[#1a237e]' : 'bg-transparent'

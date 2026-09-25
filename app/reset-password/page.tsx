@@ -3,8 +3,10 @@
 import { Suspense, useState } from 'react';
 import type { FormEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useLanguage } from '@/context/LanguageContext';
 
 function ResetPasswordForm() {
+  const { t } = useLanguage();
   const params = useSearchParams();
   const router = useRouter();
   const token = params.get('token') || '';
@@ -19,15 +21,15 @@ function ResetPasswordForm() {
     setError('');
 
     if (password.length < 8) {
-      setError('密碼最少要 8 位。');
+      setError(t('密碼最少要 8 位。', 'Password must be at least 8 characters.'));
       return;
     }
     if (!/[A-Za-z]/.test(password) || !/[0-9]/.test(password)) {
-      setError('密碼要同時包含字母同數字。');
+      setError(t('密碼要同時包含字母同數字。', 'Password must contain both letters and numbers.'));
       return;
     }
     if (password !== confirm) {
-      setError('兩次輸入嘅密碼唔一致。');
+      setError(t('兩次輸入嘅密碼唔一致。', 'The two passwords do not match.'));
       return;
     }
 
@@ -40,12 +42,12 @@ function ResetPasswordForm() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data?.error?.message || '重設失敗，請重新申請。');
+        setError(data?.error?.message || t('重設失敗，請重新申請。', 'Reset failed. Please request a new link.'));
       } else {
         router.replace('/login?reset=1');
       }
     } catch {
-      setError('網絡錯誤，請稍後再試。');
+      setError(t('網絡錯誤，請稍後再試。', 'Network error. Please try again.'));
     } finally {
       setLoading(false);
     }
@@ -54,12 +56,12 @@ function ResetPasswordForm() {
   if (!token) {
     return (
       <div className="space-y-4 text-center">
-        <p className="text-sm text-red-600">連結無效或缺少重設憑證。</p>
+        <p className="text-sm text-red-600">{t('連結無效或缺少重設憑證。', 'Invalid link or missing reset token.')}</p>
         <button
           onClick={() => router.replace('/login')}
           className="text-sm text-slate-500 hover:text-[#1a237e]"
         >
-          返回登入
+          {t('返回登入', 'Back to login')}
         </button>
       </div>
     );
@@ -67,10 +69,10 @@ function ResetPasswordForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      <p className="text-sm text-slate-500">請輸入你嘅新密碼。</p>
+      <p className="text-sm text-slate-500">{t('請輸入你嘅新密碼。', 'Please enter your new password.')}</p>
       <div>
         <label htmlFor="new-password" className="block text-sm font-medium text-slate-700 mb-2">
-          新密碼
+          {t('新密碼', 'New password')}
         </label>
         <input
           id="new-password"
@@ -78,13 +80,13 @@ function ResetPasswordForm() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e] focus:border-transparent transition"
-          placeholder="最少 8 位，含字母及數字"
+          placeholder={t('最少 8 位，含字母及數字', 'At least 8 chars, with letters and numbers')}
           required
         />
       </div>
       <div>
         <label htmlFor="confirm-password" className="block text-sm font-medium text-slate-700 mb-2">
-          確認新密碼
+          {t('確認新密碼', 'Confirm new password')}
         </label>
         <input
           id="confirm-password"
@@ -92,7 +94,7 @@ function ResetPasswordForm() {
           value={confirm}
           onChange={(e) => setConfirm(e.target.value)}
           className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e] focus:border-transparent transition"
-          placeholder="再輸入一次"
+          placeholder={t('再輸入一次', 'Enter it again')}
           required
         />
       </div>
@@ -108,22 +110,23 @@ function ResetPasswordForm() {
         disabled={loading}
         className="w-full bg-[#1a237e] text-white font-bold py-3 px-4 rounded-xl hover:bg-[#283593] focus:outline-none focus:ring-2 focus:ring-[#1a237e] focus:ring-offset-2 focus:ring-offset-white disabled:opacity-50 disabled:cursor-not-allowed transition"
       >
-        {loading ? '設定中...' : '設定新密碼'}
+        {loading ? t('設定中...', 'Setting...') : t('設定新密碼', 'Set new password')}
       </button>
     </form>
   );
 }
 
 export default function ResetPasswordPage() {
+  const { t } = useLanguage();
   return (
     <div className="min-h-screen bg-[#1a237e] bg-gradient-to-b from-[#1a237e] to-[#283593] flex items-center justify-center px-4 py-12">
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">ZENEX-SPORTS LeagueCenter</h1>
-          <p className="text-blue-200">重設密碼</p>
+          <p className="text-blue-200">{t('重設密碼', 'Reset Password')}</p>
         </div>
         <div className="bg-white border border-slate-200 rounded-2xl shadow-2xl p-8">
-          <Suspense fallback={<p className="text-sm text-slate-400">載入中…</p>}>
+          <Suspense fallback={<p className="text-sm text-slate-400">{t('載入中…', 'Loading...')}</p>}>
             <ResetPasswordForm />
           </Suspense>
         </div>

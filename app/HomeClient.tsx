@@ -310,14 +310,14 @@ export default function HomeClient(props: {
           </div>
           <h2 className="font-black italic mb-2 tracking-[-0.02em] leading-[1.05] text-balance text-[clamp(1.9rem,7vw,3.75rem)]">Hong Kong Bank League 2026</h2>
           <p className="text-blue-200 font-light tracking-widest uppercase text-[clamp(0.7rem,2.6vw,1.125rem)] text-balance">
-            Partnered with ZENEX SPORTS | 香港銀行足球聯賽2026
+            Partnered with ZENEX SPORTS | {t('香港銀行足球聯賽2026', 'Hong Kong Bank Football League 2026')}
           </p>
         </header>
         <main className="max-w-6xl mx-auto px-6 -mt-16 pb-20">
           <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200 p-8">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-              <p className="text-gray-500">Loading...</p>
+              <p className="text-gray-500">{t('載入中…', 'Loading...')}</p>
             </div>
           </div>
         </main>
@@ -334,7 +334,7 @@ export default function HomeClient(props: {
           </div>
           <h2 className="font-black italic mb-2 tracking-[-0.02em] leading-[1.05] text-balance text-[clamp(1.9rem,7vw,3.75rem)]">Hong Kong Bank League 2026</h2>
           <p className="text-blue-200 font-light tracking-widest uppercase text-[clamp(0.7rem,2.6vw,1.125rem)] text-balance">
-            Partnered with ZENEX SPORTS | 香港銀行足球聯賽2026
+            Partnered with ZENEX SPORTS | {t('香港銀行足球聯賽2026', 'Hong Kong Bank Football League 2026')}
           </p>
         </header>
 
@@ -382,8 +382,8 @@ export default function HomeClient(props: {
                       <tr>
                         <td colSpan={12} className="px-6 py-8 text-center text-slate-500">
                           {upcomingFixtures.length === 0 && recentResults.length === 0
-                            ? 'Database not initialized. Please run /api/init-db'
-                            : 'No standings data available yet.'}
+                            ? t('數據庫未初始化，請執行 /api/init-db', 'Database not initialized. Please run /api/init-db')
+                            : t('暫時未有積分榜數據。', 'No standings data available yet.')}
                         </td>
                       </tr>
                     ) : (

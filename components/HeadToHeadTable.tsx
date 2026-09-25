@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { TEAMS } from '@/lib/constants';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface MatchRecord {
   played: number;
@@ -44,6 +45,7 @@ const HATCH =
   'repeating-linear-gradient(45deg, #f1f5f9 0px, #f1f5f9 4px, #ffffff 4px, #ffffff 9px)';
 
 export default function HeadToHeadTable({ serverMatches }: Props) {
+  const { t: tr } = useLanguage();
   const [h2hData, setH2hData] = useState<H2HData>({});
   const [loading, setLoading] = useState(true);
   const [selectedTeam, setSelectedTeam] = useState<string>('');
@@ -136,13 +138,13 @@ export default function HeadToHeadTable({ serverMatches }: Props) {
   return (
     <div>
       {/* ── 完整矩陣：桌面全闊；手機可橫向滑動 ── */}
-      <p className="md:hidden text-xs text-slate-400 mb-2">← {''}橫向滑動睇全部球隊{''} →</p>
+      <p className="md:hidden text-xs text-slate-400 mb-2">← {''}{tr('橫向滑動睇全部球隊', 'Swipe sideways to see all teams')}{''} →</p>
       <div className="block overflow-x-auto">
         <table className="min-w-[680px] md:min-w-0 w-full text-xs md:text-sm">
           <thead>
             <tr>
               <th className="px-3 py-3 bg-slate-100 font-bold text-slate-700 text-left border-b border-slate-200">
-                球隊
+                {tr('球隊', 'Team')}
               </th>
               {teams.map((team) => (
                 <th
@@ -153,7 +155,7 @@ export default function HeadToHeadTable({ serverMatches }: Props) {
                 </th>
               ))}
               <th className="px-3 py-3 bg-blue-100 font-bold text-blue-700 text-center border-b border-slate-200">
-                總計
+                {tr('總計', 'Total')}
               </th>
             </tr>
           </thead>
@@ -184,7 +186,7 @@ export default function HeadToHeadTable({ serverMatches }: Props) {
                           key={opponent.name}
                           className="px-2 py-3 text-center border-b border-slate-200"
                           style={{ background: HATCH }}
-                          title="未對賽"
+                          title={tr('未對賽', 'Not played yet')}
                         >
                           <span className="text-slate-300 text-xs">–</span>
                         </td>
@@ -222,7 +224,7 @@ export default function HeadToHeadTable({ serverMatches }: Props) {
 
       {/* ── Mobile: pick a team, see its record vs each opponent ── */}
       <div className="md:hidden">
-        <label className="block text-sm font-semibold text-slate-700 mb-2">選擇球隊</label>
+        <label className="block text-sm font-semibold text-slate-700 mb-2">{tr('選擇球隊', 'Select a team')}</label>
         <select
           value={selectedTeam}
           onChange={(e) => setSelectedTeam(e.target.value)}
@@ -238,12 +240,12 @@ export default function HeadToHeadTable({ serverMatches }: Props) {
         {selectedRecord && (
           <div className="mt-4 rounded-2xl border border-slate-200 overflow-hidden">
             <div className="bg-blue-600 text-white px-4 py-3 flex items-center justify-between">
-              <span className="font-bold">{selectedTeam} 對賽成績</span>
+              <span className="font-bold">{selectedTeam} {tr('對賽成績', 'Head-to-Head')}</span>
               {(() => {
                 const t = totalFor(selectedTeam);
                 return (
                   <span className="text-sm font-semibold bg-white/20 rounded-full px-3 py-0.5">
-                    總計 {t.wins}-{t.draws}-{t.losses}
+                    {tr('總計', 'Total')} {t.wins}-{t.draws}-{t.losses}
                   </span>
                 );
               })()}
@@ -272,7 +274,7 @@ export default function HeadToHeadTable({ serverMatches }: Props) {
                           className="text-xs text-slate-400 rounded px-2 py-1 border border-slate-200"
                           style={{ background: HATCH }}
                         >
-                          未對賽
+                          {tr('未對賽', 'Not played')}
                         </span>
                       )}
                     </li>
@@ -284,11 +286,11 @@ export default function HeadToHeadTable({ serverMatches }: Props) {
       </div>
 
       <div className="mt-4 p-4 bg-slate-50 rounded-lg text-sm text-slate-600">
-        <p className="font-bold mb-2">圖例說明：</p>
+        <p className="font-bold mb-2">{tr('圖例說明：', 'Legend:')}</p>
         <ul className="space-y-1">
-          <li>📊 <code>勝-和-負</code> — 對賽成績</li>
-          <li>⚽ <code>入球:失球</code> — 得失球數</li>
-          <li>🟢 綠色 = 正得失球差 | 🔴 紅色 = 負得失球差</li>
+          <li>📊 <code>{tr('勝-和-負', 'W-D-L')}</code> — {tr('對賽成績', 'Head-to-head record')}</li>
+          <li>⚽ <code>{tr('入球:失球', 'GF:GA')}</code> — {tr('得失球數', 'Goals for/against')}</li>
+          <li>🟢 {tr('綠色 = 正得失球差', 'Green = positive GD')} | 🔴 {tr('紅色 = 負得失球差', 'Red = negative GD')}</li>
           <li>
             <span
               className="inline-block align-middle rounded border border-slate-200 px-2"
@@ -296,7 +298,7 @@ export default function HeadToHeadTable({ serverMatches }: Props) {
             >
               &nbsp;&nbsp;&nbsp;
             </span>{' '}
-            斜紋格 = 未對賽（包括雙循環中尚未進行的場次）
+            {tr('斜紋格 = 未對賽（包括雙循環中尚未進行的場次）', 'Hatched = not played yet (including the second leg still to come)')}
           </li>
         </ul>
       </div>

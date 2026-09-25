@@ -37,6 +37,7 @@ const EMPTY: Omit<TeamTotals, 'name' | 'shortName' | 'nameZh'> = {
 
 export default function HeadToHeadChart({ serverMatches }: { serverMatches: MatchSummary[] }) {
   const { language } = useLanguage();
+  const tr = (zh: string, en: string) => (language === 'zh' ? zh : en);
 
   const { rows, maxPlayed } = useMemo(() => {
     const teams = TEAMS.filter((t) => t.name !== 'DEMO');
@@ -92,18 +93,18 @@ export default function HeadToHeadChart({ serverMatches }: { serverMatches: Matc
       {/* Legend */}
       <div className="flex flex-wrap items-center gap-4 text-xs text-slate-600 mb-4">
         <span className="inline-flex items-center gap-1.5">
-          <i className="w-3 h-3 rounded-sm bg-green-600" /> 勝 Win
+          <i className="w-3 h-3 rounded-sm bg-green-600" /> {tr('勝', 'Win')}
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <i className="w-3 h-3 rounded-sm bg-amber-500" /> 和 Draw
+          <i className="w-3 h-3 rounded-sm bg-amber-500" /> {tr('和', 'Draw')}
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <i className="w-3 h-3 rounded-sm bg-red-600" /> 負 Loss
+          <i className="w-3 h-3 rounded-sm bg-red-600" /> {tr('負', 'Loss')}
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <i className="w-3 h-3 rounded-sm bg-slate-200 border border-slate-300" /> 未踢 Remaining
+          <i className="w-3 h-3 rounded-sm bg-slate-200 border border-slate-300" /> {tr('未踢', 'Remaining')}
         </span>
-        <span className="text-slate-400">（按積分排序 · sorted by points）</span>
+        <span className="text-slate-400">{tr('（按積分排序）', '(sorted by points)')}</span>
       </div>
 
       <div className="space-y-2.5">
@@ -121,34 +122,34 @@ export default function HeadToHeadChart({ serverMatches }: { serverMatches: Matc
                 <div
                   className="h-full bg-green-600 flex items-center justify-center text-[11px] font-bold text-white transition-[width] duration-500"
                   style={{ width: seg(r.wins) }}
-                  title={`勝 ${r.wins}`}
+                  title={`${tr('勝', 'Wins')} ${r.wins}`}
                 >
                   {r.wins > 0 ? r.wins : ''}
                 </div>
                 <div
                   className="h-full bg-amber-500 flex items-center justify-center text-[11px] font-bold text-white transition-[width] duration-500"
                   style={{ width: seg(r.draws) }}
-                  title={`和 ${r.draws}`}
+                  title={`${tr('和', 'Draws')} ${r.draws}`}
                 >
                   {r.draws > 0 ? r.draws : ''}
                 </div>
                 <div
                   className="h-full bg-red-600 flex items-center justify-center text-[11px] font-bold text-white transition-[width] duration-500"
                   style={{ width: seg(r.losses) }}
-                  title={`負 ${r.losses}`}
+                  title={`${tr('負', 'Losses')} ${r.losses}`}
                 >
                   {r.losses > 0 ? r.losses : ''}
                 </div>
                 {!hasGames ? (
                   <div className="flex-1 flex items-center px-2 text-[11px] text-slate-400">
-                    暫無比賽
+                    {tr('暫無比賽', 'No matches yet')}
                   </div>
                 ) : null}
               </div>
 
               <div className="w-14 shrink-0 text-right">
                 <span className="text-sm font-black text-[#1a237e]">{r.points}</span>
-                <span className="text-[10px] text-slate-400"> pts</span>
+                <span className="text-[10px] text-slate-400">{tr('分', 'pts')}</span>
               </div>
               <div className="hidden sm:block w-16 shrink-0 text-right text-[11px] text-slate-500">
                 {r.gf}:{r.ga}

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { venueCoord, describeWeather } from '@/lib/weather';
+import { useLanguage } from '@/context/LanguageContext';
 
 // 模組級快取：同一球場只抓一次（一個 forecast 已含未來 16 日）
 const forecastCache = new Map<string, Promise<Record<string, DayWeather> | null>>();
@@ -64,6 +65,7 @@ export default function MatchWeather({
   className?: string;
 }) {
   const [w, setW] = useState<DayWeather | null>(null);
+  const { t } = useLanguage();
 
   useEffect(() => {
     const coord = venueCoord(venue);
@@ -98,7 +100,7 @@ export default function MatchWeather({
               ? 'bg-blue-100 text-blue-700'
               : 'bg-slate-100 text-slate-600'
         }`}
-        title={`${info.zh} / ${info.en} · 降雨機率 ${w.precip}%`}
+        title={`${info.zh} / ${info.en} · ${t('降雨機率', 'Rain chance')} ${w.precip}%`}
       >
         <span>{info.icon}</span>
         <span>
@@ -108,7 +110,7 @@ export default function MatchWeather({
       </span>
       {warn && (
         <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-semibold text-red-600 ring-1 ring-red-200">
-          ⚠️ {storm ? '雷暴，或需改期' : '大雨，注意掛波'}
+          ⚠️ {storm ? t('雷暴，或需改期', 'Thunderstorm, may be postponed') : t('大雨，注意掛波', 'Heavy rain, match at risk')}
         </span>
       )}
     </span>
