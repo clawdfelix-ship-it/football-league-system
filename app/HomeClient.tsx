@@ -497,7 +497,7 @@ export default function HomeClient(props: {
                   upcomingFixtures.map((match) => (
                     <div
                       key={match.id}
-                      className="p-3.5 bg-slate-50 rounded-lg border border-slate-200 space-y-2"
+                      className="p-4 bg-slate-50 rounded-lg border border-slate-200 space-y-2.5"
                     >
                       {/* Header：日期/時間 + ROUND 藥丸 */}
                       <div className="flex items-center justify-between gap-2">
@@ -577,7 +577,7 @@ export default function HomeClient(props: {
 
                       {/* 天氣 + 操作（一行，觸控 ≥36px）*/}
                       {match.date && (
-                        <div className="flex flex-wrap items-center gap-x-2 gap-y-2 pt-2 border-t border-slate-200 text-[11px] text-slate-500">
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 pt-2.5 border-t border-slate-200 text-[11px] text-slate-500">
                           <MatchWeather venue={match.venue} date={match.date} />
                           {googleCalendarUrl({
                             homeTeam: match.homeTeam,
