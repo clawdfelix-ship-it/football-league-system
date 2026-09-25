@@ -490,7 +490,7 @@ export default function HomeClient(props: {
                   </span>
                 )}
               </div>
-              <div className="p-6 space-y-4">
+              <div className="p-6 space-y-5">
                 {upcomingFixtures.length === 0 ? (
                   <p className="text-center text-gray-500">{t('沒有近期賽事', 'No upcoming fixtures.')}</p>
                 ) : (
@@ -577,7 +577,7 @@ export default function HomeClient(props: {
 
                       {/* 天氣 + 操作（一行，觸控 ≥36px）*/}
                       {match.date && (
-                        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 pt-2.5 border-t border-slate-200 text-[11px] text-slate-500">
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-2.5 pt-2.5 border-t border-slate-200 text-[11px] text-slate-500">
                           <MatchWeather venue={match.venue} date={match.date} />
                           {googleCalendarUrl({
                             homeTeam: match.homeTeam,
