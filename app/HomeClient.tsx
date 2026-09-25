@@ -512,7 +512,7 @@ export default function HomeClient(props: {
                           )}
                         </div>
                         {match.round && (
-                          <span className="rounded-full bg-green-100 px-2 py-0.5 font-bold text-green-700 text-[10px] uppercase tracking-wide">{match.round}</span>
+                          <span className="rounded-full bg-green-700 px-2 py-0.5 font-bold text-white text-[10px] uppercase tracking-wide">{match.round}</span>
                         )}
                       </div>
 
@@ -534,7 +534,7 @@ export default function HomeClient(props: {
                           );
                         })()}
                         <span className="font-bold text-sm text-slate-900 leading-tight truncate">{match.homeTeam}</span>
-                        <span className="text-[10px] text-slate-400 font-medium">{t('主場', 'Home')}</span>
+                        <span className="ml-0.5 text-[10px] text-slate-400 font-medium">{t('主場', 'Home')}</span>
                       </div>
 
                       {/* 客隊（獨立一行）*/}
@@ -555,7 +555,7 @@ export default function HomeClient(props: {
                           );
                         })()}
                         <span className="font-bold text-sm text-slate-900 leading-tight truncate">{match.awayTeam}</span>
-                        <span className="text-[10px] text-slate-400 font-medium">{t('作客', 'Away')}</span>
+                        <span className="ml-0.5 text-[10px] text-slate-400 font-medium">{t('作客', 'Away')}</span>
                       </div>
 
                       {/* 場地：獨立一行，完整顯示（可換兩行），唔截斷 */}
