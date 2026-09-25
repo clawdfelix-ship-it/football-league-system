@@ -165,14 +165,15 @@ export default function HeadToHeadTable({ serverMatches }: Props) {
                   <td className="px-3 py-3 font-bold text-slate-800 border-b border-slate-200 whitespace-nowrap">
                     {team.shortName}
                   </td>
-                  {teams.map((opponent) => {
-                    if (team.name === opponent.name) {
+                  {teams.map((opponent, colIdx) => {
+                    // 三角形：對角線及下半幅黑格（每場對賽只記一次）
+                    if (colIdx <= rowIdx) {
                       return (
                         <td
                           key={opponent.name}
-                          className="px-2 py-3 text-center border-b border-slate-200 bg-slate-200"
+                          className="px-2 py-3 text-center border-b border-slate-300 bg-slate-900"
                         >
-                          <span className="text-slate-400">-</span>
+                          <span className="text-slate-700">■</span>
                         </td>
                       );
                     }
@@ -205,11 +206,9 @@ export default function HeadToHeadTable({ serverMatches }: Props) {
                     );
                   })}
                   <td className="px-3 py-3 text-center border-b border-slate-200 bg-blue-50 font-bold">
-                    <div className="text-slate-700">
-                      {t.wins}-{t.draws}-{t.losses}
-                    </div>
-                    <div className={`text-xs ${gdClass(t.gf - t.ga)}`}>
-                      {t.gf}:{t.ga}
+                    <div className="text-slate-800">{t.wins} 勝</div>
+                    <div className="text-xs text-slate-500">
+                      {t.draws} 和 · {t.losses} 負
                     </div>
                   </td>
                 </tr>
