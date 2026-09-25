@@ -175,7 +175,107 @@ export default function FixturesClient(props: {
                       </span>
                     </div>
 
-                    <div className="flex items-center justify-between gap-4">
+                    {/* ===== 手機：豎向佈局 ===== */}
+                    <div className="md:hidden space-y-3">
+                      {/* 日期 + VS/比分 */}
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-sm font-bold text-slate-700">
+                          {match.date
+                            ? new Date(match.date).toLocaleString('en-GB', {
+                                day: 'numeric', month: 'short', weekday: 'short',
+                                hour: '2-digit', minute: '2-digit',
+                              })
+                            : 'TBC'}
+                        </span>
+                        {match.status === 'finished' ? (
+                          <span className="text-2xl font-black text-slate-900">
+                            {match.homeScore ?? 0}-{match.awayScore ?? 0}
+                          </span>
+                        ) : (
+                          <span className="text-sm font-bold text-gray-400">VS</span>
+                        )}
+                      </div>
+
+                      {/* 主隊 */}
+                      <div className="flex items-center gap-2.5">
+                        <div
+                          className="w-9 h-9 rounded-full border-2 border-gray-300 shadow-sm flex-shrink-0"
+                          style={{ backgroundColor: homeColor.hex }}
+                          title={`${t('主場球衣', 'Home kit')}：${homeColor.label}`}
+                        />
+                        <span className="flex-1 min-w-0 text-base font-bold text-slate-800 truncate">{match.homeTeam}</span>
+                        <span className="text-xs text-gray-400">{t('主場', 'Home')}</span>
+                      </div>
+
+                      {/* 客隊 */}
+                      <div className="flex items-center gap-2.5">
+                        <div
+                          className="w-9 h-9 rounded-full border-2 border-gray-300 shadow-sm flex-shrink-0"
+                          style={{ backgroundColor: awayColor.hex }}
+                          title={`${t('客場球衣', 'Away kit')}：${awayColor.label}`}
+                        />
+                        <span className="flex-1 min-w-0 text-base font-bold text-slate-800 truncate">{match.awayTeam}</span>
+                        <span className="text-xs text-gray-400">{t('客場', 'Away')}</span>
+                      </div>
+
+                      {/* 場地：核心短名一行，點擊開地圖 */}
+                      <div className="text-xs text-slate-500">
+                        {match.venue && !/^tbc$/i.test(match.venue.trim()) ? (
+                          <a
+                            href={venueMapsUrl(match.venue) || '#'}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-blue-600 hover:underline"
+                          >
+                            <span className="flex-shrink-0">📍</span>
+                            <span>{coreVenue(match.venue)}</span>
+                          </a>
+                        ) : (
+                          <span>📍 {match.venue || 'TBC'}</span>
+                        )}
+                      </div>
+
+                      {/* 天氣 + 操作 */}
+                      {match.status !== 'finished' && match.date && (
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 pt-3 border-t border-slate-100 text-[11px] text-slate-500">
+                          <MatchWeather venue={match.venue} date={match.date} />
+                          {googleCalendarUrl({
+                            homeTeam: match.homeTeam,
+                            awayTeam: match.awayTeam,
+                            date: match.date,
+                            venue: match.venue,
+                            round: match.round,
+                          }) && (
+                            <a
+                              href={googleCalendarUrl({
+                                homeTeam: match.homeTeam,
+                                awayTeam: match.awayTeam,
+                                date: match.date,
+                                venue: match.venue,
+                                round: match.round,
+                              })!}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              aria-label={t('加入日曆', 'Calendar')}
+                              className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-800 text-sm text-white hover:bg-slate-700"
+                            >
+                              📅
+                            </a>
+                          )}
+                          <ShareMatch
+                            iconOnly
+                            homeTeam={match.homeTeam}
+                            awayTeam={match.awayTeam}
+                            date={match.date}
+                            venue={match.venue}
+                            round={match.round}
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* ===== 桌面：三欄佈局（保留原樣）===== */}
+                    <div className="hidden md:flex items-center justify-between gap-4">
                       {/* Home Team */}
                       <div className="flex-1 text-right">
                         <div className="text-xl font-bold text-slate-800 mb-2">
@@ -304,6 +404,11 @@ export default function FixturesClient(props: {
       `}</style>
     </HomeLayout>
   );
+}
+
+function coreVenue(venue: string): string {
+  // 只保留括號前嘅核心場地名（一行），英文車站說明去掉
+  return venue.trim().replace(/[（(].*$/, '').trim() || venue.trim();
 }
 
 function FilterButton(props: {
