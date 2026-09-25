@@ -497,90 +497,86 @@ export default function HomeClient(props: {
                   upcomingFixtures.map((match) => (
                     <div
                       key={match.id}
-                      className="p-4 bg-slate-50 rounded-lg border border-slate-200 space-y-2.5"
+                      className="p-4 bg-slate-50 rounded-lg border border-slate-200 space-y-3"
                     >
-                      {/* Row 1：主隊 — 日期 — 客隊 */}
+                      {/* Header：日期/時間 + 圈次 */}
                       <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-2 min-w-0 flex-1">
-                          {(() => {
-                            const homeColor = getKitColor(match.id, match.homeTeam, true);
-                            const isSplit = homeColor.type === 'split' && homeColor.hex2;
-                            return (
-                              <div
-                                className="w-6 h-6 rounded-full border-2 border-slate-400 shadow-sm ring-1 ring-slate-300 flex-shrink-0"
-                                style={
-                                  isSplit
-                                    ? { background: `linear-gradient(135deg, ${homeColor.hex} 50%, ${homeColor.hex2} 50%)` }
-                                    : { backgroundColor: homeColor.hex }
-                                }
-                                title={homeColor.label}
-                              />
-                            );
-                          })()}
-                          <div className="min-w-0">
-                            <div className="font-bold text-slate-900 truncate">{match.homeTeam}</div>
-                            <div className="text-xs text-slate-500">{t('主場', 'Home')}</div>
-                          </div>
-                        </div>
-
-                        <div className="text-center flex-shrink-0">
-                          <div className="text-sm text-slate-600 font-bold whitespace-nowrap">
-                            {match.date
-                              ? `${new Date(match.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} (${new Date(match.date).toLocaleDateString('en-GB', { weekday: 'short' })})`
-                              : 'TBC'}
-                          </div>
+                        <div className="text-sm text-slate-700 font-bold whitespace-nowrap">
+                          {match.date
+                            ? `${new Date(match.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} (${new Date(match.date).toLocaleDateString('en-GB', { weekday: 'short' })})`
+                            : 'TBC'}
                           {match.date && (
-                            <div className="text-sm text-slate-600">
+                            <span className="ml-1.5 font-medium text-slate-500">
                               {new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
-                            </div>
+                            </span>
                           )}
                         </div>
-
-                        <div className="flex items-center gap-2 min-w-0 flex-1 justify-end">
-                          <div className="min-w-0 text-right">
-                            <div className="font-bold text-slate-900 truncate">{match.awayTeam}</div>
-                            <div className="text-xs text-slate-500">{t('作客', 'Away')}</div>
-                          </div>
-                          {(() => {
-                            const awayColor = getKitColor(match.id, match.awayTeam, false);
-                            const isSplit = awayColor.type === 'split' && awayColor.hex2;
-                            return (
-                              <div
-                                className="w-6 h-6 rounded-full border-2 border-slate-400 shadow-sm ring-1 ring-slate-300 flex-shrink-0"
-                                style={
-                                  isSplit
-                                    ? { background: `linear-gradient(135deg, ${awayColor.hex} 50%, ${awayColor.hex2} 50%)` }
-                                    : { backgroundColor: awayColor.hex }
-                                }
-                                title={awayColor.label}
-                              />
-                            );
-                          })()}
-                        </div>
+                        {match.round && (
+                          <span className="font-bold text-green-600 text-[11px] uppercase tracking-wide">{match.round}</span>
+                        )}
                       </div>
 
-                      {/* Row 2：圈次 + 場地 */}
-                      <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-slate-500">
-                        {match.round && (
-                          <span className="font-bold text-green-600 uppercase tracking-wide">{match.round}</span>
-                        )}
+                      {/* 主隊（獨立一行，全名）*/}
+                      <div className="flex items-center gap-2.5">
+                        {(() => {
+                          const homeColor = getKitColor(match.id, match.homeTeam, true);
+                          const isSplit = homeColor.type === 'split' && homeColor.hex2;
+                          return (
+                            <div
+                              className="w-7 h-7 rounded-full border-2 border-slate-400 shadow-sm ring-1 ring-slate-300 flex-shrink-0"
+                              style={
+                                isSplit
+                                  ? { background: `linear-gradient(135deg, ${homeColor.hex} 50%, ${homeColor.hex2} 50%)` }
+                                  : { backgroundColor: homeColor.hex }
+                              }
+                              title={homeColor.label}
+                            />
+                          );
+                        })()}
+                        <span className="font-bold text-slate-900 leading-tight">{match.homeTeam}</span>
+                        <span className="text-[11px] text-slate-400 font-medium">{t('主場', 'Home')}</span>
+                      </div>
+
+                      {/* 客隊（獨立一行，全名）*/}
+                      <div className="flex items-center gap-2.5">
+                        {(() => {
+                          const awayColor = getKitColor(match.id, match.awayTeam, false);
+                          const isSplit = awayColor.type === 'split' && awayColor.hex2;
+                          return (
+                            <div
+                              className="w-7 h-7 rounded-full border-2 border-slate-400 shadow-sm ring-1 ring-slate-300 flex-shrink-0"
+                              style={
+                                isSplit
+                                  ? { background: `linear-gradient(135deg, ${awayColor.hex} 50%, ${awayColor.hex2} 50%)` }
+                                  : { backgroundColor: awayColor.hex }
+                              }
+                              title={awayColor.label}
+                            />
+                          );
+                        })()}
+                        <span className="font-bold text-slate-900 leading-tight">{match.awayTeam}</span>
+                        <span className="text-[11px] text-slate-400 font-medium">{t('作客', 'Away')}</span>
+                      </div>
+
+                      {/* 場地 */}
+                      <div className="text-xs text-slate-500 leading-relaxed">
                         {match.venue && !/^tbc$/i.test(match.venue.trim()) ? (
                           <a
                             href={venueMapsUrl(match.venue) || '#'}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-0.5 text-blue-600 hover:underline"
+                            className="inline-flex items-start gap-0.5 text-blue-600 hover:underline"
                           >
-                            📍 {match.venue}
+                            📍 <span>{match.venue}</span>
                           </a>
                         ) : (
-                          <span>{match.venue || 'TBC'}</span>
+                          <span>📍 {match.venue || 'TBC'}</span>
                         )}
                       </div>
 
-                      {/* Row 3：天氣 + 操作 */}
+                      {/* 天氣 + 操作 */}
                       {match.date && (
-                        <div className="flex flex-wrap items-center justify-center gap-2">
+                        <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-200">
                           <MatchWeather venue={match.venue} date={match.date} />
                           {googleCalendarUrl({
                             homeTeam: match.homeTeam,
