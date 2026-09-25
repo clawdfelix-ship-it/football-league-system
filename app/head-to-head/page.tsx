@@ -2,6 +2,7 @@
 
 import HomeLayout from '@/components/HomeLayout';
 import HeadToHeadTable from '@/components/HeadToHeadTable';
+import HeadToHeadChart from '@/components/HeadToHeadChart';
 import { useEffect, useState } from 'react';
 
 type Match = {
@@ -55,6 +56,12 @@ export default function HeadToHeadPage() {
               <p className="text-blue-100 mt-2">Head-to-Head Match Records</p>
             </div>
             <div className="p-6">
+              <h2 className="text-lg font-black text-slate-800 mb-1">全隊總覽</h2>
+              <p className="text-xs text-slate-400 mb-4">All Teams — Win / Draw / Loss Overview</p>
+              <HeadToHeadChart serverMatches={matches} />
+            </div>
+            <div className="border-t border-slate-100 p-6">
+              <h2 className="text-lg font-black text-slate-800 mb-4">對戰矩陣</h2>
               <HeadToHeadTable serverMatches={matches} />
             </div>
           </div>
