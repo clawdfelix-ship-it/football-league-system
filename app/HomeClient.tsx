@@ -497,69 +497,45 @@ export default function HomeClient(props: {
                   upcomingFixtures.map((match) => (
                     <div
                       key={match.id}
-                      className="p-4 bg-slate-50 rounded-lg border border-slate-200 space-y-2.5"
+                      className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2.5"
                     >
-                      {/* Header：日期/時間 + ROUND 藥丸 */}
+                      {/* 幾時 + 圈次 */}
                       <div className="flex items-center justify-between gap-2">
-                        <div className="text-[13px] text-slate-700 font-bold whitespace-nowrap">
+                        <span className="text-sm font-bold text-slate-800 whitespace-nowrap">
                           {match.date
-                            ? `${new Date(match.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} (${new Date(match.date).toLocaleDateString('en-GB', { weekday: 'short' })})`
+                            ? new Date(match.date).toLocaleString('en-GB', {
+                                day: 'numeric', month: 'short', weekday: 'short',
+                                hour: '2-digit', minute: '2-digit',
+                              })
                             : 'TBC'}
-                          {match.date && (
-                            <span className="ml-1 font-medium text-slate-400">
-                              {new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
-                            </span>
-                          )}
-                        </div>
+                        </span>
                         {match.round && (
-                          <span className="rounded-full bg-green-700 px-2 py-0.5 font-bold text-white text-[10px] uppercase tracking-wide">{match.round}</span>
+                          <span className="rounded-full bg-green-700 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+                            {match.round}
+                          </span>
                         )}
                       </div>
 
-                      {/* 主隊（獨立一行）*/}
-                      <div className="flex items-center gap-2">
-                        {(() => {
-                          const homeColor = getKitColor(match.id, match.homeTeam, true);
-                          const isSplit = homeColor.type === 'split' && homeColor.hex2;
-                          return (
-                            <div
-                              className="w-6 h-6 rounded-full border-2 border-slate-400 shadow-sm ring-1 ring-slate-300 flex-shrink-0"
-                              style={
-                                isSplit
-                                  ? { background: `linear-gradient(135deg, ${homeColor.hex} 50%, ${homeColor.hex2} 50%)` }
-                                  : { backgroundColor: homeColor.hex }
-                              }
-                              title={homeColor.label}
-                            />
-                          );
-                        })()}
-                        <span className="font-bold text-sm text-slate-900 leading-tight truncate">{match.homeTeam}</span>
-                        <span className="ml-0.5 text-[10px] text-slate-400 font-medium">{t('主場', 'Home')}</span>
+                      {/* 邊隊對邊隊 */}
+                      <div className="space-y-1.5 text-[15px] font-bold text-slate-900">
+                        <div className="flex items-center gap-2">
+                          <span
+                            className="h-2.5 w-2.5 rounded-full ring-1 ring-slate-300 flex-shrink-0"
+                            style={{ backgroundColor: getKitColor(match.id, match.homeTeam, true).hex }}
+                          />
+                          <span className="truncate">{match.homeTeam}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span
+                            className="h-2.5 w-2.5 rounded-full ring-1 ring-slate-300 flex-shrink-0"
+                            style={{ backgroundColor: getKitColor(match.id, match.awayTeam, false).hex }}
+                          />
+                          <span className="truncate">{match.awayTeam}</span>
+                        </div>
                       </div>
 
-                      {/* 客隊（獨立一行）*/}
-                      <div className="flex items-center gap-2">
-                        {(() => {
-                          const awayColor = getKitColor(match.id, match.awayTeam, false);
-                          const isSplit = awayColor.type === 'split' && awayColor.hex2;
-                          return (
-                            <div
-                              className="w-6 h-6 rounded-full border-2 border-slate-400 shadow-sm ring-1 ring-slate-300 flex-shrink-0"
-                              style={
-                                isSplit
-                                  ? { background: `linear-gradient(135deg, ${awayColor.hex} 50%, ${awayColor.hex2} 50%)` }
-                                  : { backgroundColor: awayColor.hex }
-                              }
-                              title={awayColor.label}
-                            />
-                          );
-                        })()}
-                        <span className="font-bold text-sm text-slate-900 leading-tight truncate">{match.awayTeam}</span>
-                        <span className="ml-0.5 text-[10px] text-slate-400 font-medium">{t('作客', 'Away')}</span>
-                      </div>
-
-                      {/* 場地：獨立一行，完整顯示（可換兩行），唔截斷 */}
-                      <div className="text-[12px] leading-snug">
+                      {/* 邊度 */}
+                      <div className="text-xs text-slate-500 leading-snug">
                         {match.venue && !/^tbc$/i.test(match.venue.trim()) ? (
                           <a
                             href={venueMapsUrl(match.venue) || '#'}
@@ -571,47 +547,9 @@ export default function HomeClient(props: {
                             <span>{match.venue}</span>
                           </a>
                         ) : (
-                          <span className="text-slate-500">📍 {match.venue || 'TBC'}</span>
+                          <span>📍 {match.venue || 'TBC'}</span>
                         )}
                       </div>
-
-                      {/* 天氣 + 操作（一行，觸控 ≥36px）*/}
-                      {match.date && (
-                        <div className="flex flex-wrap items-center gap-x-4 gap-y-2.5 pt-2.5 border-t border-slate-200 text-[11px] text-slate-500">
-                          <MatchWeather venue={match.venue} date={match.date} />
-                          {googleCalendarUrl({
-                            homeTeam: match.homeTeam,
-                            awayTeam: match.awayTeam,
-                            date: match.date,
-                            venue: match.venue,
-                            round: match.round,
-                          }) && (
-                            <a
-                              href={googleCalendarUrl({
-                                homeTeam: match.homeTeam,
-                                awayTeam: match.awayTeam,
-                                date: match.date,
-                                venue: match.venue,
-                                round: match.round,
-                              })!}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              aria-label={t('加入日曆', 'Add to Calendar')}
-                              className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-800 text-[14px] text-white hover:bg-slate-700"
-                            >
-                              📅
-                            </a>
-                          )}
-                          <ShareMatch
-                            iconOnly
-                            homeTeam={match.homeTeam}
-                            awayTeam={match.awayTeam}
-                            date={match.date}
-                            venue={match.venue}
-                            round={match.round}
-                          />
-                        </div>
-                      )}
                     </div>
                   ))
                 )}
