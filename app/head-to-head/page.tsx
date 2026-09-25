@@ -39,7 +39,7 @@ export default function HeadToHeadPage() {
     return (
       <HomeLayout>
         <div className="min-h-screen flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1a237e]"></div>
         </div>
       </HomeLayout>
     );
@@ -50,7 +50,7 @@ export default function HeadToHeadPage() {
       <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans">
         <div className="container mx-auto px-4 py-8">
           <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200">
-            <div className="bg-blue-600 text-white px-8 py-6">
+            <div className="bg-[#1a237e] text-white px-8 py-6">
               <h1 className="text-3xl font-black tracking-tight">對戰記錄表</h1>
               <p className="text-blue-100 mt-2">Head-to-Head Match Records</p>
             </div>

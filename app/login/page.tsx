@@ -81,20 +81,20 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-950 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#1a237e] bg-gradient-to-b from-[#1a237e] to-[#283593] flex items-center justify-center px-4 py-12">
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">ZENEX-SPORTS LeagueCenter</h1>
-          <p className="text-zinc-400">
+          <p className="text-blue-200">
             {mode === 'login' ? '管理員 / Team Manager 登入' : '重設密碼'}
           </p>
         </div>
 
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl shadow-xl p-8">
+        <div className="bg-white border border-slate-200 rounded-2xl shadow-2xl p-8">
           {mode === 'login' ? (
             <form onSubmit={handleLogin} className="space-y-6">
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-zinc-300 mb-2">
+                <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">
                   電郵地址
                 </label>
                 <input
@@ -102,7 +102,7 @@ export default function LoginPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent transition"
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e] focus:border-transparent transition"
                   placeholder="you@example.com"
                   required
                 />
@@ -110,7 +110,7 @@ export default function LoginPage() {
 
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label htmlFor="password" className="block text-sm font-medium text-zinc-300">
+                  <label htmlFor="password" className="block text-sm font-medium text-slate-700">
                     密碼
                   </label>
                   <button
@@ -120,7 +120,7 @@ export default function LoginPage() {
                       setError('');
                       setNotice('');
                     }}
-                    className="text-xs text-zinc-400 hover:text-white transition"
+                    className="text-xs text-slate-500 hover:text-[#1a237e] transition"
                   >
                     忘記密碼？
                   </button>
@@ -130,14 +130,14 @@ export default function LoginPage() {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent transition"
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e] focus:border-transparent transition"
                   placeholder="••••••••"
                   required
                 />
               </div>
 
               {error && (
-                <div className="bg-red-900/30 border border-red-800 text-red-200 px-4 py-3 rounded-xl text-sm">
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
                   {error}
                 </div>
               )}
@@ -145,18 +145,18 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-white text-black font-bold py-3 px-4 rounded-xl hover:bg-zinc-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-zinc-900 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200"
+                className="w-full bg-[#1a237e] text-white font-bold py-3 px-4 rounded-xl hover:bg-[#283593] focus:outline-none focus:ring-2 focus:ring-[#1a237e] focus:ring-offset-2 focus:ring-offset-white disabled:opacity-50 disabled:cursor-not-allowed transition duration-200"
               >
                 {loading ? '登入中...' : '登入'}
               </button>
             </form>
           ) : (
             <form onSubmit={handleForgot} className="space-y-6">
-              <p className="text-sm text-zinc-400">
+              <p className="text-sm text-slate-500">
                 輸入你嘅帳號電郵，我哋會發送一條重設密碼連結（30 分鐘內有效）。
               </p>
               <div>
-                <label htmlFor="forgot-email" className="block text-sm font-medium text-zinc-300 mb-2">
+                <label htmlFor="forgot-email" className="block text-sm font-medium text-slate-700 mb-2">
                   電郵地址
                 </label>
                 <input
@@ -164,19 +164,19 @@ export default function LoginPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent transition"
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e] focus:border-transparent transition"
                   placeholder="you@example.com"
                   required
                 />
               </div>
 
               {error && (
-                <div className="bg-red-900/30 border border-red-800 text-red-200 px-4 py-3 rounded-xl text-sm">
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
                   {error}
                 </div>
               )}
               {notice && (
-                <div className="bg-emerald-900/30 border border-emerald-800 text-emerald-200 px-4 py-3 rounded-xl text-sm">
+                <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl text-sm">
                   {notice}
                 </div>
               )}
@@ -184,7 +184,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-white text-black font-bold py-3 px-4 rounded-xl hover:bg-zinc-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-zinc-900 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200"
+                className="w-full bg-[#1a237e] text-white font-bold py-3 px-4 rounded-xl hover:bg-[#283593] focus:outline-none focus:ring-2 focus:ring-[#1a237e] focus:ring-offset-2 focus:ring-offset-white disabled:opacity-50 disabled:cursor-not-allowed transition duration-200"
               >
                 {loading ? '發送中...' : '發送重設連結'}
               </button>
@@ -196,7 +196,7 @@ export default function LoginPage() {
                   setError('');
                   setNotice('');
                 }}
-                className="w-full text-sm text-zinc-400 hover:text-white transition"
+                className="w-full text-sm text-slate-500 hover:text-[#1a237e] transition"
               >
                 ← 返回登入
               </button>

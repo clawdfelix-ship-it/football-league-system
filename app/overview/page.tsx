@@ -25,14 +25,14 @@ export default function OverviewPage() {
             {isZh ? (
               <h2 className="text-2xl font-bold text-blue-900 mb-2">以享受、友誼、聯繫和樂趣為主</h2>
             ) : (
-              <p className="text-xl font-medium text-blue-700">Focus on Enjoyment, Friendship, Networking, and Fun</p>
+              <p className="text-xl font-medium text-[#283593]">Focus on Enjoyment, Friendship, Networking, and Fun</p>
             )}
           </section>
 
           {/* League Overview */}
           <section>
             <div className="flex items-center gap-4 mb-6 border-b border-gray-200 pb-2">
-              <div className="bg-blue-600 w-2 h-8"></div>
+              <div className="bg-[#1a237e] w-2 h-8"></div>
               <h2 className="text-2xl font-bold text-slate-900">
                 {isZh ? '賽事簡介' : 'League Overview'}
               </h2>

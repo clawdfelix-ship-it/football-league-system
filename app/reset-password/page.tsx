@@ -54,10 +54,10 @@ function ResetPasswordForm() {
   if (!token) {
     return (
       <div className="space-y-4 text-center">
-        <p className="text-sm text-red-300">連結無效或缺少重設憑證。</p>
+        <p className="text-sm text-red-600">連結無效或缺少重設憑證。</p>
         <button
           onClick={() => router.replace('/login')}
-          className="text-sm text-zinc-300 hover:text-white"
+          className="text-sm text-slate-500 hover:text-[#1a237e]"
         >
           返回登入
         </button>
@@ -67,9 +67,9 @@ function ResetPasswordForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      <p className="text-sm text-zinc-400">請輸入你嘅新密碼。</p>
+      <p className="text-sm text-slate-500">請輸入你嘅新密碼。</p>
       <div>
-        <label htmlFor="new-password" className="block text-sm font-medium text-zinc-300 mb-2">
+        <label htmlFor="new-password" className="block text-sm font-medium text-slate-700 mb-2">
           新密碼
         </label>
         <input
@@ -77,13 +77,13 @@ function ResetPasswordForm() {
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent transition"
+          className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e] focus:border-transparent transition"
           placeholder="最少 8 位，含字母及數字"
           required
         />
       </div>
       <div>
-        <label htmlFor="confirm-password" className="block text-sm font-medium text-zinc-300 mb-2">
+        <label htmlFor="confirm-password" className="block text-sm font-medium text-slate-700 mb-2">
           確認新密碼
         </label>
         <input
@@ -91,14 +91,14 @@ function ResetPasswordForm() {
           type="password"
           value={confirm}
           onChange={(e) => setConfirm(e.target.value)}
-          className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent transition"
+          className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e] focus:border-transparent transition"
           placeholder="再輸入一次"
           required
         />
       </div>
 
       {error && (
-        <div className="bg-red-900/30 border border-red-800 text-red-200 px-4 py-3 rounded-xl text-sm">
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
           {error}
         </div>
       )}
@@ -106,7 +106,7 @@ function ResetPasswordForm() {
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-white text-black font-bold py-3 px-4 rounded-xl hover:bg-zinc-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-zinc-900 disabled:opacity-50 disabled:cursor-not-allowed transition"
+        className="w-full bg-[#1a237e] text-white font-bold py-3 px-4 rounded-xl hover:bg-[#283593] focus:outline-none focus:ring-2 focus:ring-[#1a237e] focus:ring-offset-2 focus:ring-offset-white disabled:opacity-50 disabled:cursor-not-allowed transition"
       >
         {loading ? '設定中...' : '設定新密碼'}
       </button>
@@ -116,14 +116,14 @@ function ResetPasswordForm() {
 
 export default function ResetPasswordPage() {
   return (
-    <div className="min-h-screen bg-zinc-950 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#1a237e] bg-gradient-to-b from-[#1a237e] to-[#283593] flex items-center justify-center px-4 py-12">
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">ZENEX-SPORTS LeagueCenter</h1>
-          <p className="text-zinc-400">重設密碼</p>
+          <p className="text-blue-200">重設密碼</p>
         </div>
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl shadow-xl p-8">
-          <Suspense fallback={<p className="text-sm text-zinc-500">載入中…</p>}>
+        <div className="bg-white border border-slate-200 rounded-2xl shadow-2xl p-8">
+          <Suspense fallback={<p className="text-sm text-slate-400">載入中…</p>}>
             <ResetPasswordForm />
           </Suspense>
         </div>

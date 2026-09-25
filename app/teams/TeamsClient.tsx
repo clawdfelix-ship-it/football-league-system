@@ -80,7 +80,7 @@ export default function TeamsClient(props: { initialTeams: TeamInfo[] }) {
                   <div className="flex justify-center">
                     <Link
                       href={`/players?team=${encodeURIComponent(team.name)}`}
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors w-full text-center"
+                      className="bg-[#1a237e] hover:bg-[#283593] text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors w-full text-center"
                     >
                       {t('查看全部球員', 'View All Players')}
                     </Link>

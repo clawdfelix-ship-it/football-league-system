@@ -59,7 +59,7 @@ export default async function DashboardPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {/* 總覽卡片 */}
             <div className="bg-white rounded-2xl shadow-lg p-6 border border-slate-200">
-              <div className="text-3xl font-bold text-blue-600">{totalPlayers}</div>
+              <div className="text-3xl font-bold text-[#1a237e]">{totalPlayers}</div>
               <div className="text-sm text-gray-600 mt-1">總球員數</div>
             </div>
             <div className="bg-white rounded-2xl shadow-lg p-6 border border-slate-200">
@@ -84,7 +84,7 @@ export default async function DashboardPage() {
                 {teamStats.map(team => (
                   <div key={team.team} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                     <div className="flex items-center gap-3">
-                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                      <div className="w-3 h-3 bg-[#1a237e] rounded-full"></div>
                       <span className="font-medium">{team.team}</span>
                     </div>
                     <div className="flex items-center gap-4 text-sm">
@@ -104,7 +104,7 @@ export default async function DashboardPage() {
                 {Object.entries(positionStats).map(([position, count]) => (
                   <div key={position} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                     <span className="font-medium">{position}</span>
-                    <span className="text-blue-600 font-bold">{count} 人</span>
+                    <span className="text-[#1a237e] font-bold">{count} 人</span>
                   </div>
                 ))}
               </div>
