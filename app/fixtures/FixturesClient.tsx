@@ -33,7 +33,7 @@ export default function FixturesClient(props: {
   const { t } = useLanguage();
   const { matches, teams, allOverrides } = props;
 
-  const [mode, setMode] = useState<FilterMode>('all');
+  const [showFinished, setShowFinished] = useState(false);
   const [round, setRound] = useState('');
 
   const rounds = useMemo(() => {
@@ -57,22 +57,27 @@ export default function FixturesClient(props: {
     return KIT_COLORS.find((c) => c.value === colorValue) || KIT_COLORS[0];
   };
 
-  const filtered = useMemo(() => {
+  const upcoming = useMemo(() => {
     return matches
-      .filter((m) => {
-        if (mode === 'finished') return m.status === 'finished';
-        if (mode === 'upcoming') return m.status !== 'finished';
-        return true;
-      })
+      .filter((m) => m.status !== 'finished')
       .filter((m) => (round ? m.round === round : true))
       .slice()
-      .sort((a, b) => {
-        // 未來賽事由近到遠、過去賽事由新到舊：統一用日期 desc
-        const ta = a.date ? new Date(a.date).getTime() : 0;
-        const tb = b.date ? new Date(b.date).getTime() : 0;
-        return tb - ta;
-      });
-  }, [matches, mode, round]);
+      .sort(byDateDesc);
+  }, [matches, round]);
+
+  const finished = useMemo(() => {
+    return matches
+      .filter((m) => m.status === 'finished')
+      .filter((m) => (round ? m.round === round : true))
+      .slice()
+      .sort(byDateDesc);
+  }, [matches, round]);
+
+  function byDateDesc(a: Match, b: Match) {
+    const ta = a.date ? new Date(a.date).getTime() : 0;
+    const tb = b.date ? new Date(b.date).getTime() : 0;
+    return tb - ta;
+  }
 
   const counts = useMemo(() => {
     let upcoming = 0;
@@ -84,72 +89,11 @@ export default function FixturesClient(props: {
     return { all: matches.length, upcoming, finished };
   }, [matches]);
 
-  return (
-    <HomeLayout>
-      <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans">
-        <header className="bg-[#1a237e] bg-gradient-to-b from-[#1a237e] to-[#283593] text-white pt-16 pb-24 px-6 text-center">
-          <h2 className="text-6xl font-black italic mb-2 tracking-tight">{t('賽程', 'FIXTURES')}</h2>
-          <p className="text-blue-200 text-lg font-light tracking-widest uppercase">
-            {t('即將舉行嘅比賽', 'Upcoming Matches')}
-          </p>
-        </header>
-
-        <main className="max-w-5xl mx-auto px-4 sm:px-6 -mt-16 pb-20">
-          {/* 篩選列 */}
-          <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-3 mb-4 flex flex-col sm:flex-row sm:items-center gap-3">
-            <div className="flex gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              <FilterButton
-                active={mode === 'all'}
-                label={t('全部', 'All')}
-                count={counts.all}
-                onClick={() => setMode('all')}
-              />
-              <FilterButton
-                active={mode === 'upcoming'}
-                label={t('即將', 'Upcoming')}
-                count={counts.upcoming}
-                onClick={() => setMode('upcoming')}
-              />
-              <FilterButton
-                active={mode === 'finished'}
-                label={t('完場', 'Results')}
-                count={counts.finished}
-                onClick={() => setMode('finished')}
-              />
-            </div>
-
-            <div className="sm:ml-auto flex items-center gap-2">
-              <label htmlFor="round-select" className="text-sm text-slate-500 whitespace-nowrap">
-                {t('輪次', 'Round')}
-              </label>
-              <select
-                id="round-select"
-                value={round}
-                onChange={(e) => setRound(e.target.value)}
-                className="min-h-[44px] pl-3 pr-8 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition"
-              >
-                <option value="">{t('全部輪次', 'All rounds')}</option>
-                {rounds.map((r) => (
-                  <option key={r} value={r}>
-                    {r}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {filtered.length === 0 ? (
-            <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-12 text-center text-slate-500">
-              {t('暫無符合嘅比賽', 'No matches match your filters')}
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {filtered.map((match, i) => {
-                const homeColor = getKitColor(match.id, match.homeTeam, true);
-                const awayColor = getKitColor(match.id, match.awayTeam, false);
-
-                return (
-                  <div
+  const renderCard = (match: Match, i: number) => {
+    const homeColor = getKitColor(match.id, match.homeTeam, true);
+    const awayColor = getKitColor(match.id, match.awayTeam, false);
+    return (
+      <div
                     key={match.id}
                     className="bg-white rounded-xl shadow-lg p-6 border border-slate-200 hover:shadow-xl transition-shadow animate-[fixturefade_0.35s_ease_both]"
                     style={{ animationDelay: `${Math.min(i, 15) * 30}ms` }}
@@ -383,8 +327,73 @@ export default function FixturesClient(props: {
                       </div>
                     </div>
                   </div>
-                );
-              })}
+    );
+  };
+
+  return (
+    <HomeLayout>
+      <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans">
+        <header className="bg-[#1a237e] bg-gradient-to-b from-[#1a237e] to-[#283593] text-white pt-16 pb-24 px-6 text-center">
+          <h2 className="text-6xl font-black italic mb-2 tracking-tight">{t('賽程', 'FIXTURES')}</h2>
+          <p className="text-blue-200 text-lg font-light tracking-widest uppercase">
+            {t('即將舉行嘅比賽', 'Upcoming Matches')}
+          </p>
+        </header>
+
+        <main className="max-w-5xl mx-auto px-4 sm:px-6 -mt-16 pb-20">
+          {/* 篩選列 */}
+          <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-3 mb-4 flex flex-col sm:flex-row sm:items-center gap-3">
+            <div className="sm:ml-auto flex items-center gap-2">
+              <label htmlFor="round-select" className="text-sm text-slate-500 whitespace-nowrap">
+                {t('輪次', 'Round')}
+              </label>
+              <select
+                id="round-select"
+                value={round}
+                onChange={(e) => setRound(e.target.value)}
+                className="min-h-[44px] pl-3 pr-8 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition"
+              >
+                <option value="">{t('全部輪次', 'All rounds')}</option>
+                {rounds.map((r) => (
+                  <option key={r} value={r}>
+                    {r}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* 即將進行 */}
+          {upcoming.length === 0 ? (
+            <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-12 text-center text-slate-500">
+              {t('暫無即將進行嘅比賽', 'No upcoming matches')}
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {upcoming.map((match, i) => renderCard(match, i))}
+            </div>
+          )}
+
+          {/* 已完成（可疊起） */}
+          {finished.length > 0 && (
+            <div className="mt-6">
+              <button
+                type="button"
+                onClick={() => setShowFinished((v) => !v)}
+                aria-expanded={showFinished}
+                className="w-full flex items-center justify-between gap-2 rounded-2xl bg-white border border-slate-200 shadow-lg px-5 py-4 text-left hover:bg-slate-50 transition"
+              >
+                <span className="font-bold text-slate-800">
+                  {t('已完成賽事', 'Finished matches')}
+                  <span className="ml-2 text-sm font-semibold text-slate-400">({finished.length})</span>
+                </span>
+                <span className={'text-slate-500 text-xl leading-none transition-transform ' + (showFinished ? 'rotate-180' : '')}>⌄</span>
+              </button>
+              {showFinished && (
+                <div className="mt-4 space-y-4">
+                  {finished.map((match, i) => renderCard(match, i))}
+                </div>
+              )}
             </div>
           )}
         </main>
