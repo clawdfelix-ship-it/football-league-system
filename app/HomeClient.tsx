@@ -402,9 +402,9 @@ export default function HomeClient(props: {
                         >
                           <td className="px-2 md:px-6 py-2.5 md:py-4 font-black text-base md:text-xl text-center text-slate-900">
                             <span className="inline-flex items-center gap-0.5 md:gap-1">
-                              {index === 0 && <span className="hidden sm:inline" title={t('冠軍', 'Champion')}>🥇</span>}
-                              {index === 1 && <span className="hidden sm:inline" title={t('亞軍', 'Runner-up')}>🥈</span>}
-                              {index === 2 && <span className="hidden sm:inline" title={t('季軍', 'Third place')}>🥉</span>}
+                              {index === 0 && <span title={t('冠軍', 'Champion')}>🥇</span>}
+                              {index === 1 && <span title={t('亞軍', 'Runner-up')}>🥈</span>}
+                              {index === 2 && <span title={t('季軍', 'Third place')}>🥉</span>}
                               {index + 1}
                             </span>
                           </td>
