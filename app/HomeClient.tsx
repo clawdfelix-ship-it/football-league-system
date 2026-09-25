@@ -143,6 +143,14 @@ function computeStandings(results: Match[]) {
   return standingsArray;
 }
 
+// 首頁用：只保留核心場地名（一行），括號內嘅英文 / 車站說明去掉，全名留返賽程頁
+function shortVenue(venue: string, language: 'zh' | 'en'): string {
+  const v = venue.trim();
+  const beforeParen = v.replace(/[（(].*$/, '').trim();
+  if (language === 'zh') return beforeParen || v;
+  return beforeParen || v;
+}
+
 export default function HomeClient(props: {
   initial: {
     teamSettings: TeamSetting[];
@@ -151,7 +159,7 @@ export default function HomeClient(props: {
     announcements: PublicAnnouncement[];
   };
 }) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const initialTeams = useMemo(() => {
     const teamMap: Record<string, { homeKitColor: string; awayKitColor: string }> = {};
@@ -534,17 +542,17 @@ export default function HomeClient(props: {
                         </div>
                       </div>
 
-                      {/* 邊度 */}
-                      <div className="text-xs text-slate-500 leading-snug">
+                      {/* 邊度（首頁只顯示核心短名，全名留賽程頁；點擊開地圖）*/}
+                      <div className="text-xs text-slate-500 leading-snug truncate">
                         {match.venue && !/^tbc$/i.test(match.venue.trim()) ? (
                           <a
                             href={venueMapsUrl(match.venue) || '#'}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-start gap-1 text-blue-600 hover:underline"
+                            className="inline-flex items-center gap-1 text-blue-600 hover:underline"
                           >
                             <span className="flex-shrink-0">📍</span>
-                            <span>{match.venue}</span>
+                            <span className="truncate">{shortVenue(match.venue, language)}</span>
                           </a>
                         ) : (
                           <span>📍 {match.venue || 'TBC'}</span>
