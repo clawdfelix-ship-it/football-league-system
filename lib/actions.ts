@@ -55,6 +55,13 @@ async function getPlayerMutationScope() {
   return { ok: true as const, role: 'manager' as const, teamName: managerTeamName };
 }
 
+async function requireAdminMutation() {
+  const auth = await getAuthContext();
+  if (!auth || auth.role !== 'admin') {
+    throw new Error('Forbidden: admin only');
+  }
+}
+
 export async function getTeamKitSettingsMap(): Promise<Record<string, TeamKitSettings>> {
   try {
     const rows = await listTeamSettings();
@@ -182,6 +189,7 @@ export async function addMatch(data: {
   status: 'scheduled' | 'finished' | 'tbc';
   round?: string;
 }) {
+  await requireAdminMutation();
   const result = await createMatch({
     homeTeam: data.homeTeam,
     awayTeam: data.awayTeam,
@@ -206,6 +214,7 @@ export async function updateMatch(id: number, data: {
   status?: 'scheduled' | 'finished' | 'tbc';
   round?: string;
 }) {
+  await requireAdminMutation();
   const result = await updateMatchById(id, {
     ...data,
     date: data.date ?? undefined,
@@ -216,6 +225,8 @@ export async function updateMatch(id: number, data: {
 
 export async function deleteMatch(id: number | string) {
   try {
+    await requireAdminMutation();
+
     const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
     if (isNaN(numericId)) throw new Error('Invalid match ID');
     
@@ -483,6 +494,8 @@ export async function addAnnouncement(data: {
   date: Date;
 }) {
   try {
+    await requireAdminMutation();
+
     const announcement = await createAnnouncement({
       title: data.title ?? null,
       content: data.content,
@@ -499,6 +512,8 @@ export async function addAnnouncement(data: {
 
 export async function deleteAnnouncement(id: number) {
   try {
+    await requireAdminMutation();
+
     await deleteAnnouncementById(id);
     return { success: true };
   } catch (error) {

@@ -2,10 +2,9 @@ import { fail, ok } from '@/lib/api/response';
 import { getClientIp, rateLimit } from '@/lib/api/rate-limit';
 import { db } from '@/lib/db';
 import { passwordResetTokens, users } from '@/lib/schema';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, isNull } from 'drizzle-orm';
 import { createHash } from 'crypto';
 
-const EXPIRES_MS = 30 * 60 * 1000;
 const MIN_LENGTH = 8;
 const MAX_LENGTH = 128;
 
@@ -74,7 +73,12 @@ export async function POST(request: Request) {
     await tx
       .update(passwordResetTokens)
       .set({ usedAt: now })
-      .where(eq(passwordResetTokens.id, row.id));
+      .where(
+        and(
+          eq(passwordResetTokens.userId, row.userId),
+          isNull(passwordResetTokens.usedAt),
+        ),
+      );
   });
 
   return ok({ message: 'Password updated. You can now sign in.' });

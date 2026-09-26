@@ -175,6 +175,18 @@ export async function PUT(request: Request) {
     return fail(404, 'NOT_FOUND', 'No account for that email');
   }
 
+  if (existing.role !== 'manager') {
+    void audit({
+      action: 'admin.manager_account.generate',
+      actor,
+      ip,
+      target: { kind: 'user', id: input.email },
+      result: 'denied',
+      detail: `single-manager password reset rejected for role=${existing.role ?? 'unknown'}`,
+    });
+    return fail(409, 'ROLE_CONFLICT', 'Only manager accounts can be reset from this endpoint');
+  }
+
   await db
     .update(users)
     .set({ passwordHash, mustChangePassword: now, passwordChangedAt: null })

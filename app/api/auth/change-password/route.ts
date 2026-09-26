@@ -5,8 +5,8 @@ import { getClientIp, rateLimit } from '@/lib/api/rate-limit';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { db } from '@/lib/db';
-import { users } from '@/lib/schema';
-import { eq } from 'drizzle-orm';
+import { passwordResetTokens, users } from '@/lib/schema';
+import { and, eq, isNull } from 'drizzle-orm';
 import { hashPassword } from '@/lib/auth/password';
 import { audit } from '@/lib/auth/audit-log';
 
@@ -81,14 +81,27 @@ export async function POST(request: Request) {
   }
 
   const passwordHash = await hashPassword(input.newPassword);
-  await db
-    .update(users)
-    .set({
-      passwordHash,
-      mustChangePassword: null,
-      passwordChangedAt: new Date(),
-    })
-    .where(eq(users.id, dbUser.id));
+  const now = new Date();
+  await db.transaction(async (tx) => {
+    await tx
+      .update(users)
+      .set({
+        passwordHash,
+        mustChangePassword: null,
+        passwordChangedAt: now,
+      })
+      .where(eq(users.id, dbUser.id));
+
+    await tx
+      .update(passwordResetTokens)
+      .set({ usedAt: now })
+      .where(
+        and(
+          eq(passwordResetTokens.userId, dbUser.id),
+          isNull(passwordResetTokens.usedAt),
+        ),
+      );
+  });
 
   void audit({
     action: 'admin.manager_account.generate', // reuse category

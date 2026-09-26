@@ -2,7 +2,7 @@ import { ok, fail } from '@/lib/api/response';
 import { getClientIp, rateLimit } from '@/lib/api/rate-limit';
 import { db } from '@/lib/db';
 import { users } from '@/lib/schema';
-import { eq } from 'drizzle-orm';
+import { and, eq, isNull } from 'drizzle-orm';
 import { createHash, randomBytes } from 'crypto';
 import { passwordResetTokens } from '@/lib/schema';
 import { sendMail, isMailConfigured } from '@/lib/mail/mailer';
@@ -61,11 +61,24 @@ export async function POST(request: Request) {
     const rawToken = randomBytes(32).toString('hex');
     const tokenHash = hashToken(rawToken);
     const expiresAt = new Date(Date.now() + EXPIRES_MINUTES * 60 * 1000);
+    const usedAt = new Date();
 
-    await db.insert(passwordResetTokens).values({
-      userId: dbUser.id,
-      tokenHash,
-      expiresAt,
+    await db.transaction(async (tx) => {
+      await tx
+        .update(passwordResetTokens)
+        .set({ usedAt })
+        .where(
+          and(
+            eq(passwordResetTokens.userId, dbUser.id),
+            isNull(passwordResetTokens.usedAt),
+          ),
+        );
+
+      await tx.insert(passwordResetTokens).values({
+        userId: dbUser.id,
+        tokenHash,
+        expiresAt,
+      });
     });
 
     const url = buildResetUrl(rawToken);
