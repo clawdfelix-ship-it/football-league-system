@@ -7,8 +7,7 @@ import { useLanguage } from '@/context/LanguageContext';
 const TABS = [
   { href: '/', zh: '首頁', en: 'Home', icon: '🏠' },
   { href: '/fixtures', zh: '賽程', en: 'Fixtures', icon: '📅' },
-  { href: '/teams', zh: '球隊', en: 'Teams', icon: '🛡️' },
-  { href: '/players', zh: '球員', en: 'Players', icon: '👥' },
+  { href: '/#standings', zh: '積分', en: 'Table', icon: '🏆' },
 ] as const;
 
 export default function MobileTabBar() {
@@ -23,7 +22,7 @@ export default function MobileTabBar() {
       className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-white/95 backdrop-blur border-t border-slate-200 pb-[env(safe-area-inset-bottom)]"
       aria-label={t('主導航', 'Main navigation')}
     >
-      <ul className="grid grid-cols-4">
+      <ul className="grid grid-cols-3">
         {TABS.map((tab) => {
           const active = isActive(tab.href);
           return (
