@@ -211,7 +211,7 @@ export async function PUT(request: Request) {
       : 'Password reset, but the email failed — send the password manually.',
     email: input.email,
     emailSent,
-    plaintextPassword: newPassword,
+    plaintextPassword: emailSent ? undefined : newPassword,
     mustChangeOnLogin: true,
   });
 }

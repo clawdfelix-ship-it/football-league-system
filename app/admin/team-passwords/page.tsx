@@ -7,7 +7,7 @@ import { TEAMS } from '@/lib/constants';
 type Issued = {
   team: string;
   email: string;
-  password: string;
+  password?: string;
   mustChangeOnLogin: boolean;
 };
 
@@ -98,6 +98,11 @@ export default function AdminTeamPasswordsPage() {
         password: json.data.plaintextPassword,
         mustChangeOnLogin: true,
       });
+      setSuccess(
+        json.data.emailSent
+          ? `Password reset for ${json.data.email}. The new password has been emailed.`
+          : `Password reset for ${json.data.email}, but email delivery failed. Copy the fallback password below and send it manually.`
+      );
       setResetEmail('');
       setRevealCountdown(30);
     } catch (e) {
@@ -250,7 +255,11 @@ export default function AdminTeamPasswordsPage() {
             ))}
             {resetIssued && (revealCountdown > 0 ? (
               <li>
-                <span className="font-semibold">reset</span> / {resetIssued.email} → <span className="rounded bg-amber-100 px-1 dark:bg-amber-900/50">{resetIssued.password}</span>
+                <span className="font-semibold">reset</span> / {resetIssued.email} → {resetIssued.password ? (
+                  <span className="rounded bg-amber-100 px-1 dark:bg-amber-900/50">{resetIssued.password}</span>
+                ) : (
+                  <span className="text-amber-700 dark:text-amber-300">[emailed]</span>
+                )}
               </li>
             ) : null)}
           </ul>

@@ -74,6 +74,9 @@ export async function PUT(request: Request, ctx: { params: Promise<{ id: string 
 
   const inputEntries = (body.entries ?? []).filter((e) => e.goals > 0);
   const playerIds = inputEntries.map((e) => e.playerId);
+  if (new Set(playerIds).size !== playerIds.length) {
+    return fail(400, 'VALIDATION_ERROR', 'Duplicate players are not allowed');
+  }
   const players = await getPlayersByIds(playerIds);
   if (players.length !== Array.from(new Set(playerIds)).length) {
     return fail(400, 'VALIDATION_ERROR', 'One or more players do not exist');
