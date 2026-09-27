@@ -99,5 +99,18 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), var(--font-noto-tc), Arial, Helvetica, sans-serif;
+}
+
+/* =============================================
+   Reduced motion：用戶要求少啲動畫時，關閉非必要過渡/動畫，
+   但保留狀態變化（即時跳切）同層級。符合 WCAG 2.3.3。
+   ============================================= */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

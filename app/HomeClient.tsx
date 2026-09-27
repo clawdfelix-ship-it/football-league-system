@@ -316,7 +316,7 @@ export default function HomeClient(props: {
           <div className="mb-5 sm:mb-6 h-24 w-24 sm:h-32 sm:w-32">
             <Logo className="h-full w-full drop-shadow-lg" />
           </div>
-          <h2 className="font-black italic mb-2 tracking-[-0.02em] leading-[1.05] text-balance text-[clamp(1.9rem,7vw,3.75rem)]">Hong Kong Bank League 2026</h2>
+          <h1 className="font-black italic mb-2 tracking-[-0.02em] leading-[1.05] text-balance text-[clamp(1.9rem,7vw,3.75rem)]">Hong Kong Bank League 2026</h1>
           <p className="text-blue-200 font-light tracking-widest uppercase text-[clamp(0.7rem,2.6vw,1.125rem)] text-balance">
             Partnered with ZENEX SPORTS | {t('香港銀行足球聯賽2026', 'Hong Kong Bank Football League 2026')}
           </p>
@@ -340,13 +340,13 @@ export default function HomeClient(props: {
           <div className="mb-5 sm:mb-6 h-24 w-24 sm:h-32 sm:w-32">
             <Logo className="h-full w-full drop-shadow-lg" />
           </div>
-          <h2 className="font-black italic mb-2 tracking-[-0.02em] leading-[1.05] text-balance text-[clamp(1.9rem,7vw,3.75rem)]">Hong Kong Bank League 2026</h2>
+          <h1 className="font-black italic mb-2 tracking-[-0.02em] leading-[1.05] text-balance text-[clamp(1.9rem,7vw,3.75rem)]">Hong Kong Bank League 2026</h1>
           <p className="text-blue-200 font-light tracking-widest uppercase text-[clamp(0.7rem,2.6vw,1.125rem)] text-balance">
             Partnered with ZENEX SPORTS | {t('香港銀行足球聯賽2026', 'Hong Kong Bank Football League 2026')}
           </p>
         </header>
 
-        <main className="max-w-6xl mx-auto px-6 -mt-16 pb-20">
+        <div className="max-w-6xl mx-auto px-6 -mt-16 pb-20">
           <section id="standings" className="mb-12">
             <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200">
               <div className="bg-slate-900 text-white px-8 py-5 flex justify-between items-center">
@@ -652,7 +652,7 @@ export default function HomeClient(props: {
               </div>
             </section>
           )}
-        </main>
+        </div>
       </div>
     </HomeLayout>
   );
