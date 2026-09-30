@@ -37,6 +37,13 @@ function normalizeTeamName(teamName: string | null | undefined) {
   return (teamName ?? '').trim().toUpperCase();
 }
 
+async function requireAdminAction() {
+  const auth = await getAuthContext();
+  if (!auth || auth.role !== 'admin') {
+    throw new Error('Forbidden: admin only');
+  }
+}
+
 async function getPlayerMutationScope() {
   const auth = await getAuthContext();
   if (!auth) {
@@ -182,6 +189,8 @@ export async function addMatch(data: {
   status: 'scheduled' | 'finished' | 'tbc';
   round?: string;
 }) {
+  await requireAdminAction();
+
   const result = await createMatch({
     homeTeam: data.homeTeam,
     awayTeam: data.awayTeam,
@@ -206,6 +215,8 @@ export async function updateMatch(id: number, data: {
   status?: 'scheduled' | 'finished' | 'tbc';
   round?: string;
 }) {
+  await requireAdminAction();
+
   const result = await updateMatchById(id, {
     ...data,
     date: data.date ?? undefined,
@@ -215,6 +226,8 @@ export async function updateMatch(id: number, data: {
 }
 
 export async function deleteMatch(id: number | string) {
+  await requireAdminAction();
+
   try {
     const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
     if (isNaN(numericId)) throw new Error('Invalid match ID');
@@ -229,14 +242,8 @@ export async function deleteMatch(id: number | string) {
 }
 
 export async function resetSeason() {
-  // Security: previously an unauthenticated server action — anyone who could
-  // reach it could wipe the entire season's matches. Server actions are NOT
-  // protected by the admin RSC layout guard (the layout only renders on
-  // navigation, not on direct action invocation), so enforce role here too.
-  const auth = await getAuthContext();
-  if (!auth || auth.role !== 'admin') {
-    throw new Error('Forbidden: admin only');
-  }
+  // Server actions are not protected by page-level route guards.
+  await requireAdminAction();
 
   try {
     const result = await deleteAllMatches();
@@ -482,6 +489,8 @@ export async function addAnnouncement(data: {
   content: string;
   date: Date;
 }) {
+  await requireAdminAction();
+
   try {
     const announcement = await createAnnouncement({
       title: data.title ?? null,
@@ -498,6 +507,8 @@ export async function addAnnouncement(data: {
 }
 
 export async function deleteAnnouncement(id: number) {
+  await requireAdminAction();
+
   try {
     await deleteAnnouncementById(id);
     return { success: true };
