@@ -6,6 +6,7 @@ import MatchWeather from '@/components/MatchWeather';
 import ShareMatch from '@/components/ShareMatch';
 import { KIT_COLORS } from '@/lib/kitColors';
 import { venueMapsUrl } from '@/lib/weather';
+import { bilingualVenue, bilingualCoreVenue } from '@/lib/venues';
 import { googleCalendarUrl } from '@/lib/calendar';
 import { useLanguage } from '@/context/LanguageContext';
 
@@ -172,7 +173,7 @@ export default function FixturesClient(props: {
                             className="inline-flex items-center gap-1 text-blue-600 hover:underline"
                           >
                             <span className="flex-shrink-0">📍</span>
-                            <span>{coreVenue(match.venue)}</span>
+                            <span>{bilingualCoreVenue(match.venue)}</span>
                           </a>
                         ) : (
                           <span>📍 {match.venue || 'TBC'}</span>
@@ -266,7 +267,7 @@ export default function FixturesClient(props: {
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 hover:underline"
                               >
-                                📍 {match.venue}
+                                📍 {bilingualVenue(match.venue)}
                               </a>
                             ) : (
                               <>{match.venue || 'TBC'}</>
@@ -416,8 +417,8 @@ export default function FixturesClient(props: {
 }
 
 function coreVenue(venue: string): string {
-  // 只保留括號前嘅核心場地名（一行），英文車站說明去掉
-  return venue.trim().replace(/[（(].*$/, '').trim() || venue.trim();
+  // 保留兼容內部調用；雙語短版由 lib/venues 統一處理
+  return bilingualCoreVenue(venue) || venue.trim();
 }
 
 function FilterButton(props: {

@@ -5,6 +5,7 @@ import { updateMatch, deleteMatch } from '@/lib/actions';
 import { KIT_COLORS } from '@/lib/kitColors';
 import { getMatchKitOverrideColorValueClient, getMatchKitOverridesLocal } from '@/lib/matchKitOverrides';
 import MatchKitOverrideEditor from './MatchKitOverrideEditor';
+import { bilingualVenue, VENUE_OPTIONS } from '@/lib/venues';
 
 interface Match {
   id: number;
@@ -24,13 +25,7 @@ interface Team {
   awayKitColor: string;
 }
 
-const VENUES = [
-  '跑馬地遊樂場 8 號場 (Happy Valley Recreation Ground No. 8)',
-  '中山紀念公園 (Sun Yat Sen Memorial Park)',
-  '鰂魚涌公園 1 號場 (Quarry Bay Park No. 1, near Taikoo Shing)',
-  '鰂魚涌公園 2 號場 (Quarry Bay Park No. 2, near Quarry Bay Station)',
-  'TBC'
-];
+const VENUES = VENUE_OPTIONS;
 
 export function UpcomingFixtures({
   matches,
@@ -214,7 +209,7 @@ export function UpcomingFixtures({
               <div className="text-xs text-zinc-500 dark:text-zinc-400 text-center">
                 {match.date ? new Date(match.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) + ' (' + new Date(match.date).toLocaleDateString('en-GB', { weekday: 'short' }) + ')' : 'TBC'} 
                 {match.date && ` • ${new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}`}
-                {match.venue && ` • ${match.venue}`}
+                {match.venue && ` • ${bilingualVenue(match.venue)}`}
                 {match.round && ` • ${match.round}`}
               </div>
 

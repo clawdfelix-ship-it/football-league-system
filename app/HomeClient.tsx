@@ -6,6 +6,7 @@ import Logo from '@/components/Logo';
 import MatchWeather from '@/components/MatchWeather';
 import ShareMatch from '@/components/ShareMatch';
 import { venueMapsUrl } from '@/lib/weather';
+import { bilingualCoreVenue } from '@/lib/venues';
 import { googleCalendarUrl } from '@/lib/calendar';
 import { useLanguage } from '@/context/LanguageContext';
 import { TEAMS } from '@/lib/constants';
@@ -143,12 +144,9 @@ function computeStandings(results: Match[]) {
   return standingsArray;
 }
 
-// 首頁用：只保留核心場地名（一行），括號內嘅英文 / 車站說明去掉，全名留返賽程頁
+// 首頁用：雙語核心場地名（一行），由 lib/venues 統一處理
 function shortVenue(venue: string, language: 'zh' | 'en'): string {
-  const v = venue.trim();
-  const beforeParen = v.replace(/[（(].*$/, '').trim();
-  if (language === 'zh') return beforeParen || v;
-  return beforeParen || v;
+  return bilingualCoreVenue(venue) || venue.trim();
 }
 
 export default function HomeClient(props: {
