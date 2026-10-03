@@ -18,6 +18,10 @@ export const CreateMatchSchema = z
   .refine(
     (v) => (v.status ?? 'scheduled') === 'tbc' || v.date instanceof Date,
     { message: 'date is required when status is not tbc', path: ['date'] }
+  )
+  .refine(
+    (v) => (v.status ?? 'scheduled') !== 'finished' || (v.homeScore != null && v.awayScore != null),
+    { message: 'homeScore and awayScore are required when status is finished', path: ['homeScore'] }
   );
 
 export const CreateAnnouncementSchema = z.object({
@@ -99,4 +103,17 @@ export const MatchGoalsSchema = z.object({
       })
     )
     .default([]),
+}).superRefine((value, ctx) => {
+  const seen = new Set<number>();
+  value.entries.forEach((entry, index) => {
+    if (seen.has(entry.playerId)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Duplicate playerId is not allowed',
+        path: ['entries', index, 'playerId'],
+      });
+      return;
+    }
+    seen.add(entry.playerId);
+  });
 });

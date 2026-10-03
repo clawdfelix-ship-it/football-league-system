@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ChangePasswordSchema, CreateMatchSchema, RegisterSchema } from '@/lib/api/schemas';
+import { ChangePasswordSchema, CreateMatchSchema, MatchGoalsSchema, RegisterSchema } from '@/lib/api/schemas';
 
 describe('CreateMatchSchema', () => {
   it('requires date when status is scheduled/finished', () => {
@@ -19,6 +19,18 @@ describe('CreateMatchSchema', () => {
       status: 'tbc',
     });
     expect(value.status).toBe('tbc');
+  });
+
+  it('requires both scores when status is finished', () => {
+    expect(() =>
+      CreateMatchSchema.parse({
+        homeTeam: 'A',
+        awayTeam: 'B',
+        status: 'finished',
+        date: new Date('2026-10-03T10:00:00Z'),
+        homeScore: 2,
+      })
+    ).toThrow();
   });
 });
 
@@ -40,6 +52,19 @@ describe('ChangePasswordSchema', () => {
       ChangePasswordSchema.parse({
         currentPassword: 'old',
         newPassword: 'short',
+      })
+    ).toThrow();
+  });
+});
+
+describe('MatchGoalsSchema', () => {
+  it('rejects duplicate player ids', () => {
+    expect(() =>
+      MatchGoalsSchema.parse({
+        entries: [
+          { playerId: 12, goals: 1 },
+          { playerId: 12, goals: 2 },
+        ],
       })
     ).toThrow();
   });

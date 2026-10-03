@@ -15,6 +15,7 @@ import {
   deleteAnnouncementById,
   deleteMatchById,
   deletePlayerById,
+  getMatchById,
   getPlayerTeamById,
   listPlayers,
   listPlayersByTeam,
@@ -53,6 +54,30 @@ async function getPlayerMutationScope() {
   }
 
   return { ok: true as const, role: 'manager' as const, teamName: managerTeamName };
+}
+
+async function requireAdminMutationScope() {
+  const auth = await getAuthContext();
+  if (!auth || auth.role !== 'admin') {
+    throw new Error('Forbidden: admin only');
+  }
+}
+
+async function ensureFinishedMatchScores(
+  status: 'scheduled' | 'finished' | 'tbc' | undefined,
+  homeScore: number | null | undefined,
+  awayScore: number | null | undefined,
+  matchId?: number
+) {
+  if (status !== 'finished') return;
+
+  const existingMatch = matchId !== undefined ? await getMatchById(matchId) : null;
+  const resolvedHomeScore = homeScore ?? existingMatch?.homeScore ?? null;
+  const resolvedAwayScore = awayScore ?? existingMatch?.awayScore ?? null;
+
+  if (resolvedHomeScore === null || resolvedAwayScore === null) {
+    throw new Error('Finished matches require both scores');
+  }
 }
 
 export async function getTeamKitSettingsMap(): Promise<Record<string, TeamKitSettings>> {
@@ -182,6 +207,8 @@ export async function addMatch(data: {
   status: 'scheduled' | 'finished' | 'tbc';
   round?: string;
 }) {
+  await requireAdminMutationScope();
+  await ensureFinishedMatchScores(data.status, data.homeScore, data.awayScore);
   const result = await createMatch({
     homeTeam: data.homeTeam,
     awayTeam: data.awayTeam,
@@ -206,6 +233,8 @@ export async function updateMatch(id: number, data: {
   status?: 'scheduled' | 'finished' | 'tbc';
   round?: string;
 }) {
+  await requireAdminMutationScope();
+  await ensureFinishedMatchScores(data.status, data.homeScore, data.awayScore, id);
   const result = await updateMatchById(id, {
     ...data,
     date: data.date ?? undefined,
@@ -215,6 +244,7 @@ export async function updateMatch(id: number, data: {
 }
 
 export async function deleteMatch(id: number | string) {
+  await requireAdminMutationScope();
   try {
     const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
     if (isNaN(numericId)) throw new Error('Invalid match ID');
@@ -483,6 +513,7 @@ export async function addAnnouncement(data: {
   date: Date;
 }) {
   try {
+    await requireAdminMutationScope();
     const announcement = await createAnnouncement({
       title: data.title ?? null,
       content: data.content,
@@ -499,6 +530,7 @@ export async function addAnnouncement(data: {
 
 export async function deleteAnnouncement(id: number) {
   try {
+    await requireAdminMutationScope();
     await deleteAnnouncementById(id);
     return { success: true };
   } catch (error) {
