@@ -1,9 +1,14 @@
 import { sql } from 'drizzle-orm';
 import { db } from './db';
 
-// 創建球員表
-export async function createPlayersTable() {
-  await db.execute(sql`
+async function executeStatements(statements: readonly string[]) {
+  for (const statement of statements) {
+    await db.execute(sql.raw(statement));
+  }
+}
+
+export const PLAYERS_TABLE_BOOTSTRAP_SQL = [
+  `
     CREATE TABLE IF NOT EXISTS players (
       id SERIAL PRIMARY KEY,
       name VARCHAR(100) NOT NULL,
@@ -25,21 +30,14 @@ export async function createPlayersTable() {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
-  `);
-  
-  // Add column if it doesn't exist (for existing tables)
-  try {
-    await db.execute(sql`
-      ALTER TABLE players ADD COLUMN IF NOT EXISTS identity_prefix VARCHAR(10);
-    `);
-  } catch (e) {
-    console.log('Column identity_prefix might already exist or error adding it', e);
-  }
-}
+  `,
+  `ALTER TABLE players ADD COLUMN IF NOT EXISTS identity_prefix VARCHAR(10);`,
+  `ALTER TABLE players ADD COLUMN IF NOT EXISTS team_id INTEGER;`,
+  `CREATE INDEX IF NOT EXISTS idx_players_team_id ON players(team_id);`,
+] as const;
 
-// 創建用戶表
-export async function createUsersTable() {
-  await db.execute(sql`
+export const USERS_TABLE_BOOTSTRAP_SQL = [
+  `
     CREATE TABLE IF NOT EXISTS users (
       id SERIAL PRIMARY KEY,
       email VARCHAR(100) UNIQUE NOT NULL,
@@ -48,12 +46,31 @@ export async function createUsersTable() {
       role VARCHAR(20) DEFAULT 'user',
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
-  `);
-}
+  `,
+  `ALTER TABLE users ADD COLUMN IF NOT EXISTS must_change_password TIMESTAMP;`,
+  `ALTER TABLE users ADD COLUMN IF NOT EXISTS password_changed_at TIMESTAMP;`,
+  `
+    CREATE INDEX IF NOT EXISTS idx_users_must_change_password
+      ON users(must_change_password)
+      WHERE must_change_password IS NOT NULL;
+  `,
+] as const;
 
-// 創建比賽表
-export async function createMatchesTable() {
-  await db.execute(sql`
+export const TEAMS_TABLE_BOOTSTRAP_SQL = [
+  `
+    CREATE TABLE IF NOT EXISTS teams (
+      id SERIAL PRIMARY KEY,
+      name VARCHAR(100) NOT NULL UNIQUE,
+      home_kit_color VARCHAR(20) DEFAULT 'white',
+      away_kit_color VARCHAR(20) DEFAULT 'black',
+      created_at TIMESTAMP DEFAULT NOW(),
+      updated_at TIMESTAMP DEFAULT NOW()
+    );
+  `,
+] as const;
+
+export const MATCHES_TABLE_BOOTSTRAP_SQL = [
+  `
     CREATE TABLE IF NOT EXISTS matches (
       id SERIAL PRIMARY KEY,
       home_team VARCHAR(100) NOT NULL,
@@ -67,26 +84,40 @@ export async function createMatchesTable() {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
-  `);
+  `,
+  `ALTER TABLE matches ADD COLUMN IF NOT EXISTS round VARCHAR(20);`,
+  `ALTER TABLE matches ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;`,
+  `ALTER TABLE matches ADD COLUMN IF NOT EXISTS home_team_id INTEGER;`,
+  `ALTER TABLE matches ADD COLUMN IF NOT EXISTS away_team_id INTEGER;`,
+  `ALTER TABLE matches ALTER COLUMN date DROP NOT NULL;`,
+  `UPDATE matches SET updated_at = created_at WHERE updated_at IS NULL;`,
+  `CREATE INDEX IF NOT EXISTS idx_matches_home_team_id ON matches(home_team_id);`,
+  `CREATE INDEX IF NOT EXISTS idx_matches_away_team_id ON matches(away_team_id);`,
+] as const;
 
-  // Add round column if it doesn't exist (for existing tables)
+// 創建球員表
+export async function createPlayersTable() {
   try {
-    await db.execute(sql`
-      ALTER TABLE matches ADD COLUMN IF NOT EXISTS round VARCHAR(20);
-    `);
+    await executeStatements(PLAYERS_TABLE_BOOTSTRAP_SQL);
+  } catch (e) {
+    console.log('Error migrating players table', e);
+  }
+}
 
-    await db.execute(sql`
-      ALTER TABLE matches ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
-    `);
-    
-    // Modify date column to be nullable
-    await db.execute(sql`
-      ALTER TABLE matches ALTER COLUMN date DROP NOT NULL;
-    `);
+// 創建用戶表
+export async function createUsersTable() {
+  await executeStatements(USERS_TABLE_BOOTSTRAP_SQL);
+}
 
-    await db.execute(sql`
-      UPDATE matches SET updated_at = created_at WHERE updated_at IS NULL;
-    `);
+// 創建球隊表
+export async function createTeamsTable() {
+  await executeStatements(TEAMS_TABLE_BOOTSTRAP_SQL);
+}
+
+// 創建比賽表
+export async function createMatchesTable() {
+  try {
+    await executeStatements(MATCHES_TABLE_BOOTSTRAP_SQL);
   } catch (e) {
     console.log('Error migrating matches table', e);
   }
@@ -258,6 +289,7 @@ export async function initializeDatabase() {
   try {
     await createPlayersTable();
     await createUsersTable();
+    await createTeamsTable();
     await createMatchesTable();
     await createAnnouncementsTable();
     await createMatchPlayerGoalsTable();
