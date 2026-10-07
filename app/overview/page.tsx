@@ -113,6 +113,7 @@ export default function OverviewPage() {
                 </div>
                 <ul className="list-disc pl-6 mt-2 space-y-1 text-base text-gray-700">
                   <li>{isZh ? '中山紀念公園' : 'Sun Yat Sen Memorial Park'}</li>
+                  <li>{isZh ? '跑馬地遊樂場 3 號場' : 'Happy Valley Recreation Ground No. 3'}</li>
                   <li>{isZh ? '跑馬地遊樂場 8 號場' : 'Happy Valley Recreation Ground No. 8'}</li>
                   <li>{isZh ? '鰂魚涌公園 1 號場' : 'Quarry Bay Park No. 1, near Taikoo Shing'}</li>
                   <li>{isZh ? '鰂魚涌公園 2 號場' : 'Quarry Bay Park No. 2, near Quarry Bay Station'}</li>

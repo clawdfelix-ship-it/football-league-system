@@ -17,6 +17,11 @@ export const VENUE_ENTRIES: VenueEntry[] = [
     keywords: ['happy valley', '跑馬地', '跑马地'],
   },
   {
+    zh: '跑馬地遊樂場 3 號場',
+    en: 'Happy Valley Recreation Ground No. 3',
+    keywords: ['happy valley', '跑馬地', '跑马地'],
+  },
+  {
     zh: '跑馬地遊樂場',
     en: 'Happy Valley Recreation Ground',
     keywords: ['happy valley', '跑馬地', '跑马地'],
@@ -46,6 +51,7 @@ export const VENUE_ENTRIES: VenueEntry[] = [
 // 編輯表單 datalist 用嘅標準中英選項
 export const VENUE_OPTIONS: string[] = [
   '跑馬地遊樂場 8 號場 (Happy Valley Recreation Ground No. 8)',
+  '跑馬地遊樂場 3 號場 (Happy Valley Recreation Ground No. 3)',
   '中山紀念公園 (Sun Yat Sen Memorial Park)',
   '鰂魚涌公園 1 號場 (Quarry Bay Park No. 1, near Taikoo Shing)',
   '鰂魚涌公園 2 號場 (Quarry Bay Park No. 2, near Quarry Bay Station)',
@@ -67,8 +73,11 @@ function matchKnown(raw: string): VenueEntry | null {
   const group = VENUE_ENTRIES.filter((e) => e.keywords.some((k) => v.includes(k)));
   if (group.length === 0) return null;
 
-  // Happy Valley 只有 8 號場一個選項
+  // 跑馬地：按場號區分（預設沿用 8 號場）
   if (group.some((e) => e.keywords.includes('happy valley'))) {
+    const num = courtNumber(v);
+    if (num === 3) return VENUE_ENTRIES.find((e) => e.en === 'Happy Valley Recreation Ground No. 3')!;
+    if (num === 8) return VENUE_ENTRIES.find((e) => e.en === 'Happy Valley Recreation Ground No. 8')!;
     return VENUE_ENTRIES.find((e) => e.en === 'Happy Valley Recreation Ground No. 8')!;
   }
   // 中山紀念公園
