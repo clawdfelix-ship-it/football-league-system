@@ -68,13 +68,13 @@ export default function GenerateManagerAccountsButton() {
       <div className="flex flex-col items-end gap-1">
         <button
           onClick={() => run(false, 'random')}
-          className="text-xs text-amber-500 hover:text-amber-400 underline underline-offset-2"
+          className="-my-1 py-1 text-xs text-amber-500 hover:text-amber-400 underline underline-offset-2"
         >
           Generate Manager Accounts
         </button>
         <button
           onClick={() => run(true, 'random')}
-          className="text-[11px] text-zinc-400 hover:text-zinc-300 underline underline-offset-2"
+          className="-my-1 py-1 text-[11px] text-zinc-400 hover:text-zinc-300 underline underline-offset-2"
         >
           Regenerate Passwords
         </button>

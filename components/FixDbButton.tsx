@@ -32,7 +32,7 @@ export default function FixDbButton() {
     return (
       <button
         onClick={handleFixDb}
-        className="text-xs text-amber-500 hover:text-amber-400 underline underline-offset-2"
+        className="-my-1 py-1 text-xs text-amber-500 hover:text-amber-400 underline underline-offset-2"
       >
         Fix Database Schema
       </button>
