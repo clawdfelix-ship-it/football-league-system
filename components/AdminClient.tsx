@@ -383,7 +383,7 @@ export function MatchForm() {
             <label className="text-sm font-medium text-zinc-800 dark:text-zinc-200">Round</label>
             <select name="round" className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100">
               <option value="">Select Round</option>
-              {Array.from({ length: 14 }, (_, i) => i + 1).map(num => (
+              {[1, 2].map(num => (
                 <option key={num} value={`Round ${num}`}>Round {num}</option>
               ))}
             </select>
