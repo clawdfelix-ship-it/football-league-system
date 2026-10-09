@@ -20,10 +20,14 @@ export async function getAuthContext(): Promise<AuthContext | null> {
     username?: unknown;
     name?: unknown;
     email?: unknown;
+    mustChangePassword?: unknown;
   } | null;
 
   const role = normalizeRole(user?.role);
   if (!role) return null;
+  // Forced-password-change sessions must not retain mutation access to APIs or
+  // server actions; middleware only protects page navigations.
+  if (user?.mustChangePassword === true) return null;
   // AuthContext exposes only admin/manager; 'user' is treated as unauthenticated
   // for mutation scopes (consistent with existing route guards).
   if (role !== ROLES.ADMIN && role !== ROLES.MANAGER) return null;
