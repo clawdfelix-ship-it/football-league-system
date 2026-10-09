@@ -264,6 +264,8 @@ export function MatchList({
 }
 
 export function MatchForm() {
+  const [isCustomVenue, setIsCustomVenue] = useState(false);
+
   const handleSubmitMatch = async (formData: FormData) => {
     const homeTeam = formData.get('homeTeam')?.toString().trim() ?? '';
     const awayTeam = formData.get('awayTeam')?.toString().trim() ?? '';
@@ -349,10 +351,33 @@ export function MatchForm() {
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1">
             <label className="text-sm font-medium text-zinc-800 dark:text-zinc-200">Venue</label>
-            <input name="venue" list="venues" className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100" placeholder="Select or type venue" />
-            <datalist id="venues">
-              {VENUES.map(v => <option key={v} value={v} />)}
-            </datalist>
+            {isCustomVenue ? (
+              <div className="flex gap-2">
+                <input
+                  name="venue"
+                  autoFocus
+                  className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100"
+                  placeholder="輸入自定義場地"
+                />
+                <button
+                  type="button"
+                  onClick={() => setIsCustomVenue(false)}
+                  className="shrink-0 rounded-xl border border-zinc-200 dark:border-zinc-800 px-3 py-2 text-xs text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                >
+                  返回清單
+                </button>
+              </div>
+            ) : (
+              <select
+                name="venue"
+                onChange={(e) => { if (e.target.value === '__custom__') setIsCustomVenue(true); }}
+                className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100"
+              >
+                <option value="">Select Venue</option>
+                {VENUES.map(v => <option key={v} value={v}>{v}</option>)}
+                <option value="__custom__">自定義… (Custom venue)</option>
+              </select>
+            )}
           </div>
           <div className="space-y-1">
             <label className="text-sm font-medium text-zinc-800 dark:text-zinc-200">Round</label>
