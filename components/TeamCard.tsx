@@ -292,7 +292,7 @@ export function TeamCard({ team, players }: TeamCardProps) {
                     {captain.email && (
                       <div className="flex items-center gap-2 ml-5">
                         <span className="text-zinc-400 flex-shrink-0">📧</span>
-                        <a href={`mailto:${captain.email}`} onClick={e => e.stopPropagation()} className="text-xs text-blue-600 hover:underline truncate">{captain.email}</a>
+                        <a href={`mailto:${captain.email}`} onClick={e => e.stopPropagation()} className="-my-1 py-1 text-xs text-blue-600 hover:underline break-all">{captain.email}</a>
                         <CopyButton value={captain.email} label="領隊電郵" />
                       </div>
                     )}

@@ -138,15 +138,15 @@ export default async function AdminPage() {
     <div className="min-h-screen bg-zinc-50 font-sans text-zinc-900 dark:bg-black dark:text-zinc-50">
       <main className="mx-auto flex max-w-3xl flex-col gap-8 px-4 py-10 sm:px-6 lg:px-8">
         <header className="flex flex-col gap-2">
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
             <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
               {isAdmin ? 'League Administration' : 'Team Manager Dashboard'}
             </h1>
-            <div className="flex flex-col items-end gap-1">
+            <div className="flex flex-col items-start gap-1 sm:items-end">
               <div className="text-sm text-zinc-500">
                 Logged in as {username}
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center justify-start gap-2 sm:justify-end sm:gap-3">
                 {isAdmin && <GenerateManagerAccountsButton />}
                 <FixDbButton />
                 <SignOutButton />
