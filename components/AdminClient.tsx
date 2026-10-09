@@ -17,11 +17,11 @@ interface Match {
 }
 
 const VENUES = [
+  '跑馬地遊樂場 3 號場 (Happy Valley Recreation Ground No. 3)',
   '跑馬地遊樂場 8 號場 (Happy Valley Recreation Ground No. 8)',
   '中山紀念公園 (Sun Yat Sen Memorial Park)',
   '鰂魚涌公園 1 號場 (Quarry Bay Park No. 1, near Taikoo Shing)',
-  '鰂魚涌公園 2 號場 (Quarry Bay Park No. 2, near Quarry Bay Station)',
-  'TBC'
+  '鰂魚涌公園 2 號場 (Quarry Bay Park No. 2, near Quarry Bay Station)'
 ];
 
 export function MatchList({ 
