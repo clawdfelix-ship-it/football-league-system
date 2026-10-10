@@ -147,8 +147,18 @@ export async function getRequestTenant(): Promise<RequestTenant> {
   };
 }
 
-/** Convenience: just the league id to scope a query. Defaults safely to 1. */
+/**
+ * League id to scope a query against.
+ *
+ * - servable tenant (incl. default host / outside-request / single-tenant)
+ *   -> its concrete league id (founding league #1 today)
+ * - unknown subdomain / suspended / platform host -> 0, which matches no rows.
+ *   This is deliberate defence-in-depth: a host that is not a real, servable
+ *   league must never silently read league #1's data. Pages additionally call
+ *   notFound()/a suspended notice via getRequestTenant() (wired in Phase 3
+ *   when wildcard subdomains exist), but even a page that forgets gets 0 rows.
+ */
 export async function getRequestLeagueId(): Promise<number> {
   const t = await getRequestTenant();
-  return t.servable ? t.leagueId : DEFAULT_LEAGUE_ID;
+  return t.servable ? t.leagueId : 0;
 }
