@@ -1,37 +1,63 @@
 import { db } from '@/lib/db';
 import { announcements, matchPlayerGoals, matches, players, teams as teamsTable } from '@/lib/schema';
-import { asc, desc, eq, inArray, or, sql } from 'drizzle-orm';
+import { asc, desc, eq, inArray, or, sql, and } from 'drizzle-orm';
+import { getRequestLeagueId } from './tenant/context';
+
+// Resolve the league a query should run against. Explicit leagueId (e.g. from
+// a tested function or a provisioning script) wins; otherwise the per-request
+// tenant context decides, which itself safely defaults to the founding league
+// outside a request scope. Today every row is league #1, so behaviour is
+// unchanged; this is the seam that isolates data once more leagues exist.
+async function resolveLeagueId(leagueId?: number): Promise<number> {
+  return typeof leagueId === 'number' && Number.isFinite(leagueId) && leagueId > 0
+    ? leagueId
+    : await getRequestLeagueId();
+}
 
 // Resolve a team's display name to its teams.id (case/whitespace insensitive).
 // Returns null when the name does not match a known team — callers keep the
 // legacy string column intact and leave the *_id column NULL (never throws),
 // which matches the FK's ON DELETE SET NULL semantics.
-export async function resolveTeamId(teamName: string | null | undefined): Promise<number | null> {
+export async function resolveTeamId(
+  teamName: string | null | undefined,
+  leagueId?: number
+): Promise<number | null> {
   const normalized = (teamName ?? '').trim();
   if (!normalized) return null;
+  const lid = await resolveLeagueId(leagueId);
   const [row] = await db
     .select({ id: teamsTable.id })
     .from(teamsTable)
-    .where(sql`LOWER(TRIM(${teamsTable.name})) = LOWER(TRIM(${normalized}))`)
+    .where(
+      and(
+        eq(teamsTable.leagueId, lid),
+        sql`LOWER(TRIM(${teamsTable.name})) = LOWER(TRIM(${normalized}))`
+      )
+    )
     .limit(1);
   return row?.id ?? null;
 }
 
 
-export async function listMatches(status?: 'scheduled' | 'finished' | 'tbc') {
+export async function listMatches(status?: 'scheduled' | 'finished' | 'tbc', leagueId?: number) {
+  const lid = await resolveLeagueId(leagueId);
   if (status === 'scheduled') {
     return await db
       .select()
       .from(matches)
-      .where(or(eq(matches.status, 'scheduled'), eq(matches.status, 'tbc')))
+      .where(and(eq(matches.leagueId, lid), or(eq(matches.status, 'scheduled'), eq(matches.status, 'tbc'))))
       .orderBy(asc(matches.date));
   }
 
   if (status) {
-    return await db.select().from(matches).where(eq(matches.status, status)).orderBy(desc(matches.date));
+    return await db.select().from(matches)
+      .where(and(eq(matches.leagueId, lid), eq(matches.status, status)))
+      .orderBy(desc(matches.date));
   }
 
-  return await db.select().from(matches).orderBy(desc(matches.date));
+  return await db.select().from(matches)
+    .where(eq(matches.leagueId, lid))
+    .orderBy(desc(matches.date));
 }
 
 export async function createMatch(input: {
@@ -43,15 +69,18 @@ export async function createMatch(input: {
   venue?: string | null;
   status?: 'scheduled' | 'finished' | 'tbc' | null;
   round?: string | null;
+  leagueId?: number;
 }) {
+  const lid = await resolveLeagueId(input.leagueId);
   const now = new Date();
   const [homeTeamId, awayTeamId] = await Promise.all([
-    resolveTeamId(input.homeTeam),
-    resolveTeamId(input.awayTeam),
+    resolveTeamId(input.homeTeam, lid),
+    resolveTeamId(input.awayTeam, lid),
   ]);
   const [row] = await db
     .insert(matches)
     .values({
+      leagueId: lid,
       homeTeam: input.homeTeam,
       awayTeam: input.awayTeam,
       homeTeamId,
@@ -81,14 +110,16 @@ export async function updateMatchById(
     venue?: string | null;
     status?: 'scheduled' | 'finished' | 'tbc' | null;
     round?: string | null;
-  }
+  },
+  leagueId?: number
 ) {
+  const lid = await resolveLeagueId(leagueId);
   const now = new Date();
   // Keep FK columns in sync when a team name is changed.
   const resolvedHome =
-    input.homeTeam !== undefined ? { homeTeamId: await resolveTeamId(input.homeTeam) } : {};
+    input.homeTeam !== undefined ? { homeTeamId: await resolveTeamId(input.homeTeam, lid) } : {};
   const resolvedAway =
-    input.awayTeam !== undefined ? { awayTeamId: await resolveTeamId(input.awayTeam) } : {};
+    input.awayTeam !== undefined ? { awayTeamId: await resolveTeamId(input.awayTeam, lid) } : {};
   const [row] = await db
     .update(matches)
     .set({
@@ -97,45 +128,61 @@ export async function updateMatchById(
       ...resolvedAway,
       updatedAt: now,
     })
-    .where(eq(matches.id, id))
+    .where(and(eq(matches.id, id), eq(matches.leagueId, lid)))
     .returning();
 
   return row ?? null;
 }
 
-export async function deleteMatchById(id: number) {
-  const [row] = await db.delete(matches).where(eq(matches.id, id)).returning();
+export async function deleteMatchById(id: number, leagueId?: number) {
+  const lid = await resolveLeagueId(leagueId);
+  const [row] = await db.delete(matches)
+    .where(and(eq(matches.id, id), eq(matches.leagueId, lid)))
+    .returning();
   return row ?? null;
 }
 
-export async function deleteAllMatches() {
-  return await db.delete(matches).returning();
+export async function deleteAllMatches(leagueId?: number) {
+  const lid = await resolveLeagueId(leagueId);
+  return await db.delete(matches).where(eq(matches.leagueId, lid)).returning();
 }
 
-export async function getMatchById(id: number) {
-  const [row] = await db.select().from(matches).where(eq(matches.id, id));
+export async function getMatchById(id: number, leagueId?: number) {
+  const lid = await resolveLeagueId(leagueId);
+  const [row] = await db.select().from(matches)
+    .where(and(eq(matches.id, id), eq(matches.leagueId, lid)));
   return row ?? null;
 }
 
-export async function listTeamSettings() {
+export async function listTeamSettings(leagueId?: number) {
+  const lid = await resolveLeagueId(leagueId);
   return await db
     .select({
       id: teamsTable.id,
       name: teamsTable.name,
       homeKitColor: teamsTable.homeKitColor,
       awayKitColor: teamsTable.awayKitColor,
+      shortName: teamsTable.shortName,
+      nameZh: teamsTable.nameZh,
+      colorGradient: teamsTable.colorGradient,
+      leagueId: teamsTable.leagueId,
       createdAt: teamsTable.createdAt,
       updatedAt: teamsTable.updatedAt,
     })
     .from(teamsTable)
+    .where(eq(teamsTable.leagueId, lid))
     .orderBy(asc(teamsTable.name));
 }
 
-export async function upsertTeamSettings(input: {
-  name: string;
-  homeKitColor: string;
-  awayKitColor: string;
-}) {
+export async function upsertTeamSettings(
+  input: {
+    name: string;
+    homeKitColor: string;
+    awayKitColor: string;
+  },
+  leagueId?: number
+) {
+  const lid = await resolveLeagueId(leagueId);
   const now = new Date();
   const [row] = await db
     .insert(teamsTable)
@@ -143,11 +190,12 @@ export async function upsertTeamSettings(input: {
       name: input.name,
       homeKitColor: input.homeKitColor,
       awayKitColor: input.awayKitColor,
+      leagueId: lid,
       createdAt: now,
       updatedAt: now,
     })
     .onConflictDoUpdate({
-      target: teamsTable.name,
+      target: [teamsTable.leagueId, teamsTable.name],
       set: {
         homeKitColor: input.homeKitColor,
         awayKitColor: input.awayKitColor,
@@ -159,6 +207,7 @@ export async function upsertTeamSettings(input: {
       name: teamsTable.name,
       homeKitColor: teamsTable.homeKitColor,
       awayKitColor: teamsTable.awayKitColor,
+      leagueId: teamsTable.leagueId,
       createdAt: teamsTable.createdAt,
       updatedAt: teamsTable.updatedAt,
     });
@@ -166,26 +215,39 @@ export async function upsertTeamSettings(input: {
   return row ?? null;
 }
 
-export async function listAnnouncements() {
-  return await db.select().from(announcements).orderBy(asc(announcements.date));
+export async function listAnnouncements(leagueId?: number) {
+  const lid = await resolveLeagueId(leagueId);
+  return await db.select().from(announcements)
+    .where(eq(announcements.leagueId, lid))
+    .orderBy(asc(announcements.date));
 }
 
-export async function listPlayers() {
+export async function listPlayers(leagueId?: number) {
+  const lid = await resolveLeagueId(leagueId);
   return await db
     .select()
     .from(players)
+    .where(eq(players.leagueId, lid))
     .orderBy(asc(players.team), asc(players.jerseyNumber), asc(players.name));
 }
 
-export async function listPlayersByTeam(teamName: string) {
-  return await db.select().from(players).where(eq(players.team, teamName)).orderBy(asc(players.jerseyNumber));
+export async function listPlayersByTeam(teamName: string, leagueId?: number) {
+  const lid = await resolveLeagueId(leagueId);
+  return await db.select().from(players)
+    .where(and(eq(players.leagueId, lid), eq(players.team, teamName)))
+    .orderBy(asc(players.jerseyNumber));
 }
 
-export async function createAnnouncement(input: { title?: string | null; content: string; date: Date }) {
+export async function createAnnouncement(
+  input: { title?: string | null; content: string; date: Date },
+  leagueId?: number
+) {
+  const lid = await resolveLeagueId(leagueId);
   const now = new Date();
   const [row] = await db
     .insert(announcements)
     .values({
+      leagueId: lid,
       title: input.title ?? null,
       content: input.content,
       date: input.date,
@@ -196,8 +258,11 @@ export async function createAnnouncement(input: { title?: string | null; content
   return row ?? null;
 }
 
-export async function deleteAnnouncementById(id: number) {
-  const [row] = await db.delete(announcements).where(eq(announcements.id, id)).returning();
+export async function deleteAnnouncementById(id: number, leagueId?: number) {
+  const lid = await resolveLeagueId(leagueId);
+  const [row] = await db.delete(announcements)
+    .where(and(eq(announcements.id, id), eq(announcements.leagueId, lid)))
+    .returning();
   return row ?? null;
 }
 
@@ -211,7 +276,8 @@ export type PublicPlayerRow = {
   status: string | null;
 };
 
-export async function listPublicPlayers(): Promise<PublicPlayerRow[]> {
+export async function listPublicPlayers(leagueId?: number): Promise<PublicPlayerRow[]> {
+  const lid = await resolveLeagueId(leagueId);
   return await db
     .select({
       id: players.id,
@@ -223,6 +289,7 @@ export async function listPublicPlayers(): Promise<PublicPlayerRow[]> {
       status: players.status,
     })
     .from(players)
+    .where(eq(players.leagueId, lid))
     .orderBy(asc(players.team), asc(players.jerseyNumber), asc(players.name));
 }
 
@@ -243,9 +310,11 @@ export async function createPlayer(input: {
   notes?: string;
   photoUrl?: string;
   identityPrefix?: string;
+  leagueId?: number;
 }) {
+  const lid = await resolveLeagueId(input.leagueId);
   const now = new Date();
-  const teamId = await resolveTeamId(input.team);
+  const teamId = await resolveTeamId(input.team, lid);
   const [row] = await db
     .insert(players)
     .values({
@@ -254,6 +323,7 @@ export async function createPlayer(input: {
       position: input.position,
       team: input.team,
       teamId,
+      leagueId: lid,
       age: input.age,
       nationality: input.nationality ?? null,
       height: input.height ?? null,
@@ -273,13 +343,18 @@ export async function createPlayer(input: {
   return row ?? null;
 }
 
-export async function getPlayerTeamById(id: number): Promise<string | null> {
-  const [row] = await db.select({ team: players.team }).from(players).where(eq(players.id, id));
+export async function getPlayerTeamById(id: number, leagueId?: number): Promise<string | null> {
+  const lid = await resolveLeagueId(leagueId);
+  const [row] = await db.select({ team: players.team }).from(players)
+    .where(and(eq(players.id, id), eq(players.leagueId, lid)));
   return row?.team ?? null;
 }
 
-export async function deletePlayerById(id: number) {
-  const [row] = await db.delete(players).where(eq(players.id, id)).returning();
+export async function deletePlayerById(id: number, leagueId?: number) {
+  const lid = await resolveLeagueId(leagueId);
+  const [row] = await db.delete(players)
+    .where(and(eq(players.id, id), eq(players.leagueId, lid)))
+    .returning();
   return row ?? null;
 }
 
@@ -293,11 +368,13 @@ export async function updatePlayerById(
     phoneNumber?: string | null;
     email?: string | null;
     identityPrefix?: string | null;
-  }
+  },
+  leagueId?: number
 ) {
+  const lid = await resolveLeagueId(leagueId);
   const now = new Date();
   // Keep FK column in sync when the team name is changed.
-  const resolvedTeam = input.team !== undefined ? { teamId: await resolveTeamId(input.team) } : {};
+  const resolvedTeam = input.team !== undefined ? { teamId: await resolveTeamId(input.team, lid) } : {};
   const [row] = await db
     .update(players)
     .set({
@@ -305,12 +382,13 @@ export async function updatePlayerById(
       ...resolvedTeam,
       updatedAt: now,
     })
-    .where(eq(players.id, id))
+    .where(and(eq(players.id, id), eq(players.leagueId, lid)))
     .returning();
   return row ?? null;
 }
 
-export async function setPlayerPhotoUrlById(id: number, url: string) {
+export async function setPlayerPhotoUrlById(id: number, url: string, leagueId?: number) {
+  const lid = await resolveLeagueId(leagueId);
   const now = new Date();
   const [row] = await db
     .update(players)
@@ -318,12 +396,13 @@ export async function setPlayerPhotoUrlById(id: number, url: string) {
       photoUrl: url,
       updatedAt: now,
     })
-    .where(eq(players.id, id))
+    .where(and(eq(players.id, id), eq(players.leagueId, lid)))
     .returning();
   return row ?? null;
 }
 
-export async function listScorers() {
+export async function listScorers(leagueId?: number) {
+  const lid = await resolveLeagueId(leagueId);
   const rows = await db
     .select({
       playerId: players.id,
@@ -335,6 +414,7 @@ export async function listScorers() {
     .from(matchPlayerGoals)
     .innerJoin(players, eq(matchPlayerGoals.playerId, players.id))
     .innerJoin(matches, eq(matchPlayerGoals.matchId, matches.id))
+    .where(eq(matchPlayerGoals.leagueId, lid))
     .groupBy(players.id, players.name, players.team)
     .orderBy(desc(sql`sum(${matchPlayerGoals.goals})`), players.name);
 
@@ -348,7 +428,8 @@ export type MatchGoalEntry = {
   goals: number;
 };
 
-export async function listMatchGoalEntries(matchId: number): Promise<MatchGoalEntry[]> {
+export async function listMatchGoalEntries(matchId: number, leagueId?: number): Promise<MatchGoalEntry[]> {
+  const lid = await resolveLeagueId(leagueId);
   const rows = await db
     .select({
       playerId: matchPlayerGoals.playerId,
@@ -358,21 +439,24 @@ export async function listMatchGoalEntries(matchId: number): Promise<MatchGoalEn
     })
     .from(matchPlayerGoals)
     .innerJoin(players, eq(matchPlayerGoals.playerId, players.id))
-    .where(eq(matchPlayerGoals.matchId, matchId))
+    .where(and(eq(matchPlayerGoals.matchId, matchId), eq(matchPlayerGoals.leagueId, lid)))
     .orderBy(asc(players.team), asc(players.name));
   return rows;
 }
 
 export async function replaceMatchGoalEntries(
   matchId: number,
-  entries: Array<{ playerId: number; goals: number }>
+  entries: Array<{ playerId: number; goals: number }>,
+  leagueId?: number
 ) {
-  await db.delete(matchPlayerGoals).where(eq(matchPlayerGoals.matchId, matchId));
+  const lid = await resolveLeagueId(leagueId);
+  await db.delete(matchPlayerGoals)
+    .where(and(eq(matchPlayerGoals.matchId, matchId), eq(matchPlayerGoals.leagueId, lid)));
   const filtered = entries.filter((e) => Number.isFinite(e.goals) && e.goals > 0);
   if (filtered.length === 0) return [];
   return await db
     .insert(matchPlayerGoals)
-    .values(filtered.map((e) => ({ matchId, playerId: e.playerId, goals: e.goals })))
+    .values(filtered.map((e) => ({ matchId, playerId: e.playerId, goals: e.goals, leagueId: lid })))
     .returning();
 }
 

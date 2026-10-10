@@ -1,8 +1,11 @@
 import { withAuth } from 'next-auth/middleware';
 import { NextURL } from 'next/dist/server/web/next-url';
+import { NextResponse } from 'next/server';
+import { resolveHost } from '@/lib/tenant/resolve-host';
+import { buildTenantRequestHeaders } from '@/lib/tenant/headers';
 
 /**
- * Route protection.
+ * Route protection + tenant resolution.
  *
  * Public pages (home/standings, fixtures, teams, players, scorers, overview,
  * head-to-head, contacts, register, pdf) are viewable by anyone — this is a
@@ -13,6 +16,11 @@ import { NextURL } from 'next/dist/server/web/next-url';
  *
  * Additionally, any signed-in user flagged mustChangePassword is redirected
  * to /change-password until they set their own password.
+ *
+ * Multi-tenant (Phase 2): on every request we resolve the league from the host
+ * (`{slug}.zenex-sports.com`) and forward it via internal headers. Inbound
+ * spoofed headers are stripped in buildTenantRequestHeaders before the trusted
+ * values are written, so clients cannot select another tenant.
  */
 const PROTECTED_PREFIXES = [
   '/admin',
@@ -46,7 +54,11 @@ export default withAuth(
       url.search = '';
       return Response.redirect(url);
     }
-    return undefined;
+
+    // Attach the resolved tenant to the request forwarded to the origin.
+    const resolved = resolveHost(req.headers.get('host'));
+    const headers = buildTenantRequestHeaders(resolved, req.headers);
+    return NextResponse.next({ request: { headers } });
   },
   {
     callbacks: {
