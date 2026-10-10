@@ -1,4 +1,5 @@
 import { pgTable, serial, varchar, integer, timestamp, text, uniqueIndex, jsonb, index } from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
 
 // ============================================================
 // Multi-tenant foundation (migration 0010)
@@ -177,6 +178,44 @@ export type Player = typeof players.$inferSelect;
 export type NewPlayer = typeof players.$inferInsert;
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
+// ============================================================
+// League provisioning applications (migration 0011, Phase 3)
+// Self-serve sign-up queue reviewed by a platform admin.
+// ============================================================
+export const leagueApplications = pgTable(
+  'league_applications',
+  {
+    id: serial('id').primaryKey(),
+    leagueName: varchar('league_name', { length: 200 }).notNull(),
+    contactName: varchar('contact_name', { length: 150 }).notNull(),
+    contactEmail: varchar('contact_email', { length: 200 }).notNull(),
+    contactPhone: varchar('contact_phone', { length: 50 }),
+    sportType: varchar('sport_type', { length: 30 }).notNull().default('football'),
+    teamCountEst: integer('team_count_est'),
+    notes: text('notes'),
+    requestedSlug: varchar('requested_slug', { length: 80 }),
+    // pending | in_review | approved | rejected | withdrawn
+    status: varchar('status', { length: 20 }).notNull().default('pending'),
+    reviewNotes: text('review_notes'),
+    reviewedBy: integer('reviewed_by'),
+    reviewedAt: timestamp('reviewed_at', { withTimezone: true }),
+    // Set once provisioned; DB UNIQUE guarantees one application -> <=1 league.
+    leagueId: integer('league_id'),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    statusIdx: index('idx_league_applications_status').on(table.status, table.createdAt),
+    // One active application per email; re-apply allowed after reject/withdraw.
+    activeEmailUnique: uniqueIndex('league_applications_active_email_key')
+      .on(table.contactEmail)
+      .where(sql`status IN ('pending','in_review','approved')`),
+  })
+);
+
+export type LeagueApplication = typeof leagueApplications.$inferSelect;
+export type NewLeagueApplication = typeof leagueApplications.$inferInsert;
+
 export type Match = typeof matches.$inferSelect;
 export type NewMatch = typeof matches.$inferInsert;
 export type Announcement = typeof announcements.$inferSelect;
