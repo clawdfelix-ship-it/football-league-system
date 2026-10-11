@@ -26,6 +26,16 @@ export type Match = {
 
 type FilterMode = 'all' | 'upcoming' | 'finished';
 
+// Pure comparator hoisted to module scope so the React Compiler treats it as
+// stable. Defining it inside the component made the upcoming/finished useMemos
+// reference a component-scope value absent from their dep array, which tripped
+// react-hooks/preserve-manual-memoization ("memoization could not be preserved").
+function byDateDesc(a: Match, b: Match) {
+  const ta = a.date ? new Date(a.date).getTime() : 0;
+  const tb = b.date ? new Date(b.date).getTime() : 0;
+  return tb - ta;
+}
+
 export default function FixturesClient(props: {
   matches: Match[];
   teams: Record<string, Team>;
@@ -60,25 +70,17 @@ export default function FixturesClient(props: {
 
   const upcoming = useMemo(() => {
     return matches
-      .filter((m) => m.status !== 'finished')
-      .filter((m) => (round ? m.round === round : true))
+      .filter((m) => m.status !== 'finished' && (!round || m.round === round))
       .slice()
       .sort(byDateDesc);
   }, [matches, round]);
 
   const finished = useMemo(() => {
     return matches
-      .filter((m) => m.status === 'finished')
-      .filter((m) => (round ? m.round === round : true))
+      .filter((m) => m.status === 'finished' && (!round || m.round === round))
       .slice()
       .sort(byDateDesc);
   }, [matches, round]);
-
-  function byDateDesc(a: Match, b: Match) {
-    const ta = a.date ? new Date(a.date).getTime() : 0;
-    const tb = b.date ? new Date(b.date).getTime() : 0;
-    return tb - ta;
-  }
 
   const counts = useMemo(() => {
     let upcoming = 0;
