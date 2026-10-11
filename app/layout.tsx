@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Noto_Sans_TC } from "next/font/google";
 import ClientLayout from "@/components/ClientLayout";
+import TenantGate from "@/components/tenant/TenantGate";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -34,7 +35,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${notoSansTC.variable} antialiased`}
       >
-        <ClientLayout>{children}</ClientLayout>
+        <ClientLayout>
+          <TenantGate>{children}</TenantGate>
+        </ClientLayout>
       </body>
     </html>
   );
