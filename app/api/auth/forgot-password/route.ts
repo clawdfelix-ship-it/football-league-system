@@ -8,6 +8,7 @@ import { passwordResetTokens } from '@/lib/schema';
 import { sendMail, isMailConfigured } from '@/lib/mail/mailer';
 import { passwordResetEmail } from '@/lib/mail/templates';
 import { getRequestLeagueId } from '@/lib/tenant/context';
+import { whereLeagueMatchesOrLegacyDefault } from '@/lib/tenant/legacy-default-league';
 
 const EXPIRES_MINUTES = 30;
 
@@ -66,7 +67,7 @@ export async function POST(request: Request) {
   const [dbUser] = await db
     .select({ id: users.id, username: users.username })
     .from(users)
-    .where(and(eq(users.email, email), eq(users.leagueId, lid)));
+    .where(and(eq(users.email, email), whereLeagueMatchesOrLegacyDefault(users.leagueId, lid)));
 
   if (!dbUser) {
     return genericSuccess;

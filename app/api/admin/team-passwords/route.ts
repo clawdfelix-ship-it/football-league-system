@@ -13,6 +13,10 @@ import { TEAMS } from '@/lib/constants';
 import { sendMail } from '@/lib/mail/mailer';
 import { passwordResetByAdminEmail } from '@/lib/mail/templates';
 import { getRequestLeagueId } from '@/lib/tenant/context';
+import {
+  isLeagueMemberOrLegacyDefault,
+  whereLeagueMatchesOrLegacyDefault,
+} from '@/lib/tenant/legacy-default-league';
 
 /**
  * Admin-only endpoint to manage per-team manager passwords.
@@ -105,11 +109,11 @@ export async function POST(request: Request) {
 
     if (existing) {
       // Global-unique email owned by another league: never overwrite it here.
-      if ((existing.leagueId ?? 1) !== lid) continue;
+      if (!isLeagueMemberOrLegacyDefault(existing.leagueId, lid)) continue;
       await db
         .update(users)
         .set({ passwordHash, mustChangePassword: now, passwordChangedAt: null })
-        .where(and(eq(users.id, existing.id), eq(users.leagueId, lid)));
+        .where(and(eq(users.id, existing.id), whereLeagueMatchesOrLegacyDefault(users.leagueId, lid)));
     } else {
       await db.insert(users).values({
         email,
@@ -192,14 +196,14 @@ export async function PUT(request: Request) {
   }
 
   // Global-unique email owned by another league: do not touch it.
-  if ((existing.leagueId ?? 1) !== lid) {
+  if (!isLeagueMemberOrLegacyDefault(existing.leagueId, lid)) {
     return fail(404, 'NOT_FOUND', 'No account for that email');
   }
 
   await db
     .update(users)
     .set({ passwordHash, mustChangePassword: now, passwordChangedAt: null })
-    .where(and(eq(users.id, existing.id), eq(users.leagueId, lid)));
+    .where(and(eq(users.id, existing.id), whereLeagueMatchesOrLegacyDefault(users.leagueId, lid)));
 
   void audit({
     action: 'admin.manager_account.generate',

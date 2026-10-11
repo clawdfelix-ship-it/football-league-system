@@ -14,6 +14,10 @@ import { audit } from '@/lib/auth/audit-log';
 import { sendMail } from '@/lib/mail/mailer';
 import { accountCreatedEmail } from '@/lib/mail/templates';
 import { getRequestLeagueId } from '@/lib/tenant/context';
+import {
+  isLeagueMemberOrLegacyDefault,
+  whereLeagueMatchesOrLegacyDefault,
+} from '@/lib/tenant/legacy-default-league';
 
 function sixDigits() {
   return String(randomInt(0, 1_000_000)).padStart(6, '0');
@@ -119,7 +123,7 @@ export async function POST(request: Request) {
           if (existing) {
             // Global-unique email belongs to another league: never overwrite
             // that account's password from a different tenant host.
-            if ((existing.leagueId ?? 1) !== lid) {
+            if (!isLeagueMemberOrLegacyDefault(existing.leagueId, lid)) {
               updatedEmails.push(email);
               continue;
             }
@@ -130,7 +134,7 @@ export async function POST(request: Request) {
                 role: 'manager',
                 username: existing.username || makeUsername(team, email),
               })
-              .where(and(eq(users.email, email), eq(users.leagueId, lid)));
+              .where(and(eq(users.email, email), whereLeagueMatchesOrLegacyDefault(users.leagueId, lid)));
             updatedEmails.push(email);
             continue;
           }
@@ -178,7 +182,7 @@ export async function POST(request: Request) {
         if (existing) {
           // Global-unique email owned by another league: never reset that
           // account's password or bind it here. Skip even with regenerate.
-          if ((existing.leagueId ?? 1) !== lid) {
+          if (!isLeagueMemberOrLegacyDefault(existing.leagueId, lid)) {
             skipped.push({ team, name, email });
             continue;
           }
@@ -195,7 +199,7 @@ export async function POST(request: Request) {
               role: 'manager',
               username: existing.username || makeUsername(team, email),
             })
-            .where(and(eq(users.email, email), eq(users.leagueId, lid)));
+            .where(and(eq(users.email, email), whereLeagueMatchesOrLegacyDefault(users.leagueId, lid)));
           created.push({ team, name, email, password });
           continue;
         }

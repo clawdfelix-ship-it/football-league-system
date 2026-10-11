@@ -10,6 +10,7 @@ import { and, eq } from 'drizzle-orm';
 import { hashPassword } from '@/lib/auth/password';
 import { audit } from '@/lib/auth/audit-log';
 import { DEFAULT_LEAGUE_ID } from '@/lib/tenant/config';
+import { whereLeagueMatchesOrLegacyDefault } from '@/lib/tenant/legacy-default-league';
 
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
@@ -60,7 +61,7 @@ export async function POST(request: Request) {
       leagueId: users.leagueId,
     })
     .from(users)
-    .where(and(eq(users.email, email), eq(users.leagueId, sessionLeagueId)));
+    .where(and(eq(users.email, email), whereLeagueMatchesOrLegacyDefault(users.leagueId, sessionLeagueId)));
 
   if (!dbUser) {
     return fail(404, 'NOT_FOUND', 'Account not found');
@@ -97,7 +98,7 @@ export async function POST(request: Request) {
       mustChangePassword: null,
       passwordChangedAt: new Date(),
     })
-    .where(and(eq(users.id, dbUser.id), eq(users.leagueId, sessionLeagueId)));
+    .where(and(eq(users.id, dbUser.id), whereLeagueMatchesOrLegacyDefault(users.leagueId, sessionLeagueId)));
 
   void audit({
     action: 'admin.manager_account.generate', // reuse category

@@ -5,6 +5,7 @@ import { passwordResetTokens, users } from '@/lib/schema';
 import { and, eq } from 'drizzle-orm';
 import { createHash } from 'crypto';
 import { getRequestLeagueId } from '@/lib/tenant/context';
+import { whereLeagueMatchesOrLegacyDefault } from '@/lib/tenant/legacy-default-league';
 
 const EXPIRES_MS = 30 * 60 * 1000;
 const MIN_LENGTH = 8;
@@ -81,7 +82,7 @@ export async function POST(request: Request) {
       passwordChangedAt: now,
       mustChangePassword: null,
     })
-    .where(and(eq(users.id, row.userId), eq(users.leagueId, row.leagueId ?? lid)));
+    .where(and(eq(users.id, row.userId), whereLeagueMatchesOrLegacyDefault(users.leagueId, row.leagueId ?? lid)));
 
   await db
     .update(passwordResetTokens)
