@@ -67,7 +67,7 @@ export function uniqueLeagueSlug(
   taken: ReadonlySet<string> | Iterable<string>
 ): string {
   const takenSet = taken instanceof Set ? taken : new Set(taken);
-  let slug = slugifyLeagueName(desired).slice(0, 63);
+  const slug = slugifyLeagueName(desired).slice(0, 63);
   if (!takenSet.has(slug)) return slug;
   for (let n = 2; n < 10000; n++) {
     const suffix = `-${n}`;
