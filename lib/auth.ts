@@ -10,6 +10,7 @@ import { timingSafeEqual } from 'crypto';
 import { getManagerMapping } from '@/lib/auth/load-manager-mapping';
 import { rehashIfLegacy } from '@/lib/auth/password';
 import { resolveLeagueIdForHost } from '@/lib/tenant/resolve-league.server';
+import { isPlatformAdminEmail } from '@/lib/tenant/platform-admin';
 
 /**
  * How often (seconds) to re-validate the session's role/team against the DB
@@ -125,14 +126,27 @@ export const authOptions: NextAuthOptions = {
             : null;
         const hostLeagueId = await resolveLeagueIdForHost(rawHost);
 
-        // 1. Super Admin Check — platform-wide principal, valid on every host.
-        const adminEmail = process.env.ADMIN_EMAIL;
+        // 1. Platform Admin Check — platform-wide principal, valid on every host.
+        // Two equivalent identities are accepted:
+        //   (a) the legacy single ADMIN_EMAIL env, or
+        //   (b) ANY email allow-listed in PLATFORM_ADMIN_EMAILS (e.g. a personal
+        //       gmail the operator actually uses).
+        // Both authenticate with the shared ADMIN_PASSWORD. There is no users row
+        // (the JWT callback exempts role==='admin' from DB revalidation).
         const adminPassword = process.env.ADMIN_PASSWORD;
+        const legacyAdminEmail = (process.env.ADMIN_EMAIL || '').toLowerCase();
+        const isAllowListed = isPlatformAdminEmail(inputEmail);
+        const isLegacyAdmin =
+          Boolean(legacyAdminEmail) && inputEmail === legacyAdminEmail;
 
-        if (adminEmail && adminPassword && inputEmail === adminEmail.toLowerCase() && safeEqualString(credentials.password, adminPassword)) {
+        if (
+          adminPassword &&
+          (isAllowListed || isLegacyAdmin) &&
+          safeEqualString(credentials.password, adminPassword)
+        ) {
           return {
             id: 'admin',
-            email: adminEmail,
+            email: inputEmail,
             username: 'Admin',
             role: 'admin',
             leagueId: 0,
