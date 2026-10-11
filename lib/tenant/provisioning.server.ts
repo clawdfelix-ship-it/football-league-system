@@ -28,6 +28,7 @@ import {
 } from './provisioning';
 import { invalidateLeagueDirectory } from './leagues';
 import { trialEndsFrom } from './config';
+import { ensureTenantCert } from './vercel-tls';
 
 export type SubmitApplicationInput = {
   leagueName: string;
@@ -162,6 +163,8 @@ export type ProvisionResult = {
   created: boolean;
   league: { id: number; slug: string; name: string };
   applicationId: number;
+  /** Best-effort TLS provisioning outcome for the tenant hostname. */
+  cert?: import('./vercel-tls').CertResult;
 };
 
 /**
@@ -249,7 +252,17 @@ export async function provisionApprovedApplication(
     .where(eq(leagueApplications.id, id));
 
   await invalidateLeagueDirectory();
-  return { created: true, league, applicationId: id };
+
+  // Best-effort TLS for the new tenant hostname. External DNS (GoDaddy) means
+  // Vercel cannot mint a wildcard cert, so we request a single-host cert via
+  // HTTP-01 (validated through the wildcard CNAME). Never fail provisioning
+  // over a certificate hiccup — the cert can be issued later.
+  const cert = await ensureTenantCert(slug);
+  if (!cert.ok && !cert.skipped) {
+    console.warn(`[tenant] cert issue pending for ${slug}: ${cert.error}`);
+  }
+
+  return { created: true, league, applicationId: id, cert };
 }
 
 /**
