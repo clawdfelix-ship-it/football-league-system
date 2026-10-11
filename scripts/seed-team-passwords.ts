@@ -31,6 +31,7 @@ import { inArray } from 'drizzle-orm';
 import { TEAM_CONTACTS } from '../lib/team-contacts';
 import { db } from '../lib/db';
 import { users } from '../lib/schema';
+import { DEFAULT_LEAGUE_ID } from '../lib/tenant/config';
 
 function makePassword(): string {
   // 12 chars, uppercase letters + digits, no 0/O/1/I confusion.
@@ -103,6 +104,7 @@ async function main() {
         passwordHash,
         role: 'manager',
         mustChangePassword: now,
+        leagueId: DEFAULT_LEAGUE_ID,
       });
 
       issuedPasswords.push({ team: teamBlock.team, email, password });
