@@ -3,6 +3,8 @@ import {
   slugifyLeagueName,
   uniqueLeagueSlug,
   isValidLeagueSlug,
+  isReservedSlug,
+  isValidContactEmail,
   canTransitionApplication,
   assertApplicationTransition,
   canProvision,
@@ -51,6 +53,35 @@ describe('uniqueLeagueSlug', () => {
     const s = uniqueLeagueSlug(long, new Set([slugifyOk(long)]));
     expect(s.length).toBeLessThanOrEqual(63);
     function slugifyOk(v: string) { return 'x'.repeat(63); }
+  });
+});
+
+describe('isReservedSlug', () => {
+  it('blocks platform hostnames (case/space insensitive)', () => {
+    expect(isReservedSlug('admin')).toBe(true);
+    expect(isReservedSlug('  WWW ')).toBe(true);
+    expect(isReservedSlug('API')).toBe(true);
+    expect(isReservedSlug('console')).toBe(true);
+  });
+  it('allows ordinary league slugs', () => {
+    expect(isReservedSlug('hkbankleague2026')).toBe(false);
+    expect(isReservedSlug('summer-cup')).toBe(false);
+    expect(isReservedSlug('')).toBe(false);
+    expect(isReservedSlug(null)).toBe(false);
+  });
+});
+
+describe('isValidContactEmail', () => {
+  it('accepts normal addresses', () => {
+    expect(isValidContactEmail('felix@example.com')).toBe(true);
+    expect(isValidContactEmail('  A.B+tag@sub.example.co.UK ')).toBe(true);
+  });
+  it('rejects malformed / old weak checks', () => {
+    expect(isValidContactEmail('not-an-email')).toBe(false);
+    expect(isValidContactEmail('a@b')).toBe(false); // no dot in domain
+    expect(isValidContactEmail('a b@example.com')).toBe(false);
+    expect(isValidContactEmail('@example.com')).toBe(false);
+    expect(isValidContactEmail('')).toBe(false);
   });
 });
 

@@ -60,22 +60,24 @@ export async function POST(request: Request) {
   const bcrypt = await import('bcryptjs');
   const passwordHash = await bcrypt.hash(password, 10);
 
-  // 交易：更新密碼 + 標記 token 已用 + 清除 must_change_password（因為用戶自己設咗新密）
-  await db.transaction(async (tx) => {
-    await tx
-      .update(users)
-      .set({
-        passwordHash,
-        passwordChangedAt: now,
-        mustChangePassword: null,
-      })
-      .where(eq(users.id, row.userId));
+  // NOTE: drizzle-orm/neon-http has no interactive db.transaction() (it throws
+  // "No transactions support in neon-http driver"). These two updates are
+  // independent one-row statements; the token is single-use and verified above,
+  // so run them sequentially. Worst case (crash between them) the same token can
+  // be replayed once, which simply re-applies the caller's own new password.
+  await db
+    .update(users)
+    .set({
+      passwordHash,
+      passwordChangedAt: now,
+      mustChangePassword: null,
+    })
+    .where(eq(users.id, row.userId));
 
-    await tx
-      .update(passwordResetTokens)
-      .set({ usedAt: now })
-      .where(eq(passwordResetTokens.id, row.id));
-  });
+  await db
+    .update(passwordResetTokens)
+    .set({ usedAt: now })
+    .where(eq(passwordResetTokens.id, row.id));
 
   return ok({ message: 'Password updated. You can now sign in.' });
 }

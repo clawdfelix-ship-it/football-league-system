@@ -17,6 +17,26 @@ export function isValidLeagueSlug(slug: string | null | undefined): boolean {
   return Boolean(slug && SLUG_RE.test(slug) && !slug.includes('--'));
 }
 
+// Hostnames the platform reserves for itself. A league may never claim these as
+// a subdomain (would collide with the apex / console / www / api surfaces).
+// Keep in sync with PLATFORM_HOSTS in lib/tenant/config.ts.
+export const RESERVED_SLUGS: ReadonlySet<string> = new Set([
+  'www', 'admin', 'platform', 'console', 'api', 'app', 'mail',
+  'login', 'auth', 'billing', 'status', 'support', 'help', 'docs',
+  'zenex', 'system', 'root', 'ns1', 'ns2',
+]);
+
+export function isReservedSlug(slug: string | null | undefined): boolean {
+  return Boolean(slug && RESERVED_SLUGS.has(slug.trim().toLowerCase()));
+}
+
+// Pragmatic email shape check (RFC-full validation is not worth it). Requires
+// exactly one @, non-empty local and domain, and a dot in the domain.
+export function isValidContactEmail(email: string | null | undefined): boolean {
+  const value = (email ?? '').trim().toLowerCase();
+  return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(value) && value.length <= 200;
+}
+
 /**
  * Turn an arbitrary display name into a URL/subdomain-safe slug.
  * - transliterates nothing fancy; strips accents via NFKD

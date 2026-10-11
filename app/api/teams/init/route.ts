@@ -15,15 +15,22 @@ export async function POST() {
       return fail(403, 'FORBIDDEN', 'Forbidden');
     }
 
-    // Create teams table manually using raw SQL
+    // Create teams table manually using raw SQL. After multi-tenant migration
+// 0010 the unique key is (league_id, name), not name alone; this bootstrap
+// creates the current-shape table and scopes seed rows to the request league.
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS teams (
         id SERIAL PRIMARY KEY,
-        name VARCHAR(100) NOT NULL UNIQUE,
+        name VARCHAR(100) NOT NULL,
+        league_id INTEGER NOT NULL DEFAULT 1 REFERENCES leagues(id) ON DELETE CASCADE,
         home_kit_color VARCHAR(20) DEFAULT 'white',
         away_kit_color VARCHAR(20) DEFAULT 'black',
+        short_name VARCHAR(20),
+        name_zh VARCHAR(200),
+        color_gradient VARCHAR(100),
         created_at TIMESTAMP DEFAULT NOW(),
-        updated_at TIMESTAMP DEFAULT NOW()
+        updated_at TIMESTAMP DEFAULT NOW(),
+        UNIQUE(league_id, name)
       )
     `);
 
@@ -41,11 +48,13 @@ export async function POST() {
     ];
 
     let inserted = 0;
+    const { getRequestLeagueId } = await import('@/lib/tenant/context');
+    const leagueId = await getRequestLeagueId();
     for (const team of initialTeams) {
       await db.execute(sql`
-        INSERT INTO teams (name, home_kit_color, away_kit_color)
-        VALUES (${team.name}, ${team.homeKitColor}, ${team.awayKitColor})
-        ON CONFLICT (name) DO UPDATE SET
+        INSERT INTO teams (league_id, name, home_kit_color, away_kit_color)
+        VALUES (${leagueId}, ${team.name}, ${team.homeKitColor}, ${team.awayKitColor})
+        ON CONFLICT (league_id, name) DO UPDATE SET
           home_kit_color = EXCLUDED.home_kit_color,
           away_kit_color = EXCLUDED.away_kit_color,
           updated_at = NOW()

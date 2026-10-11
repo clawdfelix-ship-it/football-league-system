@@ -1,12 +1,22 @@
-import { unstable_cache } from 'next/cache';
+import { revalidateTag, unstable_cache } from 'next/cache';
 import { getManyMatchKitOverrides } from './matchKitOverrides.server';
 import { listMatches, listTeamSettings } from './queries';
 import { getRequestLeagueId } from './tenant/context';
 
-// 公開頁共用嘅快取標籤：任何賽果/球衣色改動都 revalidateTag 佢
+// 公開頁共用嘅全域快取標籤：只留俾「影響全部租戶」嘅平台級操作。
+// 一般租戶寫入請用 revalidateFixturesForLeague()（精準踢自己 league）。
 export const FIXTURES_CACHE_TAG = 'fixtures';
 // Per-league tag for precise invalidation once multiple tenants exist.
 export const fixturesLeagueTag = (leagueId: number) => `fixtures-league:${leagueId}`;
+
+// 只失效單一租戶嘅 fixtures 快取（唔會廣播踢走其他 league）。
+export async function revalidateFixturesForLeague(leagueId?: number) {
+  const lid =
+    typeof leagueId === 'number' && Number.isFinite(leagueId) && leagueId > 0
+      ? leagueId
+      : await getRequestLeagueId();
+  revalidateTag(fixturesLeagueTag(lid), 'max');
+}
 
 export type FixturesTeam = {
   name: string;
@@ -34,7 +44,8 @@ export type FixturesData = {
 
 // 整個賽程頁數據包快取（**按 league 分開快取**，避免跨租戶食到對方數據）。
 // - 正常訪問 → 直接返該聯賽嘅快取（秒開，唔使等 Neon cold start）
-// - 管理員改嘢 → 各 mutation 行 revalidateTag(FIXTURES_CACHE_TAG, 'max')，下次先重建
+// - 管理員改嘢 → 各 mutation 行 revalidateFixturesForLeague()（只踢自己 league）；
+//   FIXTURES_CACHE_TAG 留俾影響全部租戶嘅平台級操作。
 // - revalidate: 300 做安全網（即使漏咗 invalidate，最多 5 分鐘舊數據）
 async function buildFixturesData(leagueId: number): Promise<FixturesData> {
   const teamRows = await listTeamSettings(leagueId);
@@ -67,9 +78,12 @@ async function buildFixturesData(leagueId: number): Promise<FixturesData> {
 }
 
 export async function getFixturesData(leagueId?: number) {
-  // Explicit id wins; otherwise derive from the per-request tenant (defaults
-  // safely to the founding league outside a request / on vercel.app).
-  const lid = typeof leagueId === 'number' ? leagueId : await getRequestLeagueId();
+  // Explicit positive id wins; 0 / NaN / negative fall through to the
+  // per-request tenant (unknown host resolves to 0 -> its own empty slot).
+  const lid =
+    typeof leagueId === 'number' && Number.isFinite(leagueId) && leagueId > 0
+      ? leagueId
+      : await getRequestLeagueId();
   const cached = unstable_cache(
     async () => buildFixturesData(lid),
     ['fixtures-data', String(lid)],

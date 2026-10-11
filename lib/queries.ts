@@ -298,7 +298,7 @@ export async function createPlayer(input: {
   jerseyNumber: number;
   position: string;
   team: string;
-  age: number;
+  age?: number;
   nationality?: string;
   height?: number;
   weight?: number;
@@ -324,7 +324,7 @@ export async function createPlayer(input: {
       team: input.team,
       teamId,
       leagueId: lid,
-      age: input.age,
+      age: input.age ?? null,
       nationality: input.nationality ?? null,
       height: input.height ?? null,
       weight: input.weight ?? null,
@@ -460,11 +460,15 @@ export async function replaceMatchGoalEntries(
     .returning();
 }
 
-export async function getPlayersByIds(ids: number[]) {
+export async function getPlayersByIds(ids: number[], leagueId?: number) {
+  // SCOPED: a tenant may only resolve its OWN players. Without the league_id
+  // predicate an admin on league A could submit league B player ids in the
+  // goals endpoint (existence check passes -> cross-tenant FK noise).
+  const lid = await resolveLeagueId(leagueId);
   const unique = Array.from(new Set(ids)).filter((n) => Number.isFinite(n) && n > 0);
   if (unique.length === 0) return [];
   return await db
     .select({ id: players.id, team: players.team })
     .from(players)
-    .where(inArray(players.id, unique));
+    .where(and(eq(players.leagueId, lid), inArray(players.id, unique)));
 }

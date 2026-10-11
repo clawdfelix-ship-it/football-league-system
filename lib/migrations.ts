@@ -205,6 +205,7 @@ export async function createMatchKitOverridesTable() {
       match_id INTEGER NOT NULL,
       team_name VARCHAR(100) NOT NULL,
       kit_color VARCHAR(20) NOT NULL,
+      league_id INTEGER NOT NULL DEFAULT 1 REFERENCES leagues(id) ON DELETE CASCADE,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       UNIQUE(match_id, team_name)

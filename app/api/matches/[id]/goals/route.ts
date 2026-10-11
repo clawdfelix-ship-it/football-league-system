@@ -3,8 +3,7 @@ import { DeleteByIdParamSchema, MatchGoalsSchema } from '@/lib/api/schemas';
 import { zodDetails } from '@/lib/api/zod';
 import { getAuthContext } from '@/lib/authz';
 import { getMatchById, getPlayersByIds, listMatchGoalEntries, replaceMatchGoalEntries } from '@/lib/queries';
-import { revalidateTag } from 'next/cache';
-import { FIXTURES_CACHE_TAG } from '@/lib/fixtures-data';
+import { revalidateFixturesForLeague } from '@/lib/fixtures-data';
 
 function norm(v: string | null | undefined) {
   return (v ?? '').trim().toUpperCase();
@@ -110,7 +109,7 @@ export async function PUT(request: Request, ctx: { params: Promise<{ id: string 
 
   try {
     await replaceMatchGoalEntries(matchId, inputEntries);
-    revalidateTag(FIXTURES_CACHE_TAG, 'max');
+    await revalidateFixturesForLeague();
     const entries = await listMatchGoalEntries(matchId);
     return ok({ message: 'Match goals saved', entries });
   } catch (e) {

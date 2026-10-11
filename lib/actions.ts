@@ -1,16 +1,12 @@
 'use server';
 
-import { revalidateTag } from 'next/cache';
-import { db } from './db';
-import { matches, players } from './schema';
-import { eq } from 'drizzle-orm';
-import { TEAMS } from './constants';
 import { put } from '@vercel/blob';
 import { getAuthContext, getTeamNameFromTeamId } from '@/lib/authz';
-import { FIXTURES_CACHE_TAG } from '@/lib/fixtures-data';
+import { revalidateFixturesForLeague } from '@/lib/fixtures-data';
 import {
   createAnnouncement,
   createMatch,
+  createPlayer,
   deleteAllMatches,
   deleteAnnouncementById,
   deleteMatchById,
@@ -23,7 +19,6 @@ import {
   listAnnouncements,
   listMatches,
   listTeamSettings,
-  resolveTeamId,
   updateMatchById,
 } from '@/lib/queries';
 
@@ -89,8 +84,12 @@ export type TeamStanding = {
 };
 
 export async function getStandings(): Promise<TeamStanding[]> {
-  const allMatches = await db.select().from(matches);
-  
+  // SCOPED: both matches and the team seed come from the current tenant.
+  // Previously this did a bare `db.select().from(matches)` (every league's
+  // results) and seeded teams from the hard-coded TEAMS constant, which does
+  // not exist for tenant B.
+  const [allMatches, teamRows] = await Promise.all([listMatches(), listTeamSettings()]);
+
   const table = new Map<string, TeamStanding>();
 
   function ensureTeam(name: string) {
@@ -110,8 +109,8 @@ export async function getStandings(): Promise<TeamStanding[]> {
     return table.get(name)!;
   }
 
-  // Initialize all teams from constants to ensure they appear even without matches
-  for (const team of TEAMS) {
+  // Seed every team in THIS league so 0-point teams still show.
+  for (const team of teamRows) {
     ensureTeam(team.name);
   }
 
@@ -192,7 +191,7 @@ export async function addMatch(data: {
     status: data.status,
     round: data.round ?? null,
   });
-  revalidateTag(FIXTURES_CACHE_TAG, 'max');
+  await revalidateFixturesForLeague();
   return result;
 }
 
@@ -210,7 +209,7 @@ export async function updateMatch(id: number, data: {
     ...data,
     date: data.date ?? undefined,
   });
-  revalidateTag(FIXTURES_CACHE_TAG, 'max');
+  await revalidateFixturesForLeague();
   return result;
 }
 
@@ -220,7 +219,7 @@ export async function deleteMatch(id: number | string) {
     if (isNaN(numericId)) throw new Error('Invalid match ID');
     
     await deleteMatchById(numericId);
-    revalidateTag(FIXTURES_CACHE_TAG, 'max');
+    await revalidateFixturesForLeague();
     return { success: true };
   } catch (error) {
     console.error('Failed to delete match:', error);
@@ -240,7 +239,7 @@ export async function resetSeason() {
 
   try {
     const result = await deleteAllMatches();
-    revalidateTag(FIXTURES_CACHE_TAG, 'max');
+    await revalidateFixturesForLeague();
     console.log(`Deleted ${result.length} matches`);
     return result;
   } catch (error) {
@@ -299,27 +298,29 @@ export async function addPlayer(data: {
       return { success: false, message: 'Identity prefix must be 3 characters or fewer' };
     }
 
-    // Check if player number already exists for this team
-    const existingPlayer = await db.select().from(players).where(
-      eq(players.team, teamName)
-    );
-    
-    if (existingPlayer.some((p) => p.jerseyNumber === data.number)) {
+    // SCOPED duplicate-number check: only within this team IN THIS LEAGUE.
+    // Previously this scanned players across every league and the insert then
+    // silently landed on league #1 regardless of host.
+    const teamPlayers = await listPlayersByTeam(teamName);
+
+    if (teamPlayers.some((p) => p.jerseyNumber === data.number)) {
       return { success: false, message: `Player with number ${data.number} already exists for team ${teamName}` };
     }
 
-    const teamId = await resolveTeamId(teamName);
-    const res = await db.insert(players).values({
+    const player = await createPlayer({
       name: data.name,
       team: teamName,
-      teamId,
       jerseyNumber: data.number,
       position: data.position,
       identityPrefix: identityPrefix || undefined,
       email: data.email?.trim() || undefined,
-    }).returning();
-    
-    return { success: true, player: res[0] };
+    });
+
+    if (!player) {
+      return { success: false, message: 'Failed to create player' };
+    }
+
+    return { success: true, player };
   } catch (error) {
     console.error('Failed to add player:', error);
     return { success: false, message: error instanceof Error ? error.message : 'Unknown error' };

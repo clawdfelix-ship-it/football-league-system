@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { revalidateTag } from 'next/cache';
 import { createMatchKitOverridesTable } from '@/lib/migrations';
 import { getAuthContext } from '@/lib/authz';
 import { fail } from '@/lib/api/response';
-import { FIXTURES_CACHE_TAG } from '@/lib/fixtures-data';
+import { revalidateFixturesForLeague } from '@/lib/fixtures-data';
+import {
+  getMatchKitOverrides,
+  setMatchKitOverride,
+  deleteMatchKitOverride,
+} from '@/lib/matchKitOverrides.server';
+import { getMatchById } from '@/lib/queries';
 
 // 自動創建 table (如果唔存在) - 一定要有 try-catch，唔可以死
 async function ensureTableExists() {
@@ -22,7 +27,7 @@ export async function GET(
   context: { params: Promise<{ id: string }> }
 ) {
   await ensureTableExists();
-  
+
   const params = await context.params;
   try {
     const matchId = parseInt(params.id);
@@ -30,26 +35,20 @@ export async function GET(
       return NextResponse.json({ error: 'Invalid match ID' }, { status: 400 });
     }
 
-    // 動態 import，唔存在都唔會 crash
-    const { db } = await import('@/lib/db');
-    const { matchKitOverrides } = await import('@/lib/schema');
-    const { eq } = await import('drizzle-orm');
-
-    const overrides = await db
-      .select()
-      .from(matchKitOverrides)
-      .where(eq(matchKitOverrides.matchId, matchId));
-
-    // 轉成方便前端用嘅格式
-    const result: Record<string, string> = {};
-    for (const override of overrides) {
-      result[override.teamName.trim().toUpperCase()] = override.kitColor;
+    // SCOPED: the match must belong to the current league, else the scoped
+    // helpers resolve to league 0 / no rows. Previously this was an unscoped
+    // query keyed only on match_id, leaking another tenant's kit config by id.
+    const match = await getMatchById(matchId);
+    if (!match) {
+      // Do not reveal whether the id exists in another league.
+      return NextResponse.json({ matchId, overrides: {}, raw: [] });
     }
+
+    const overrides = await getMatchKitOverrides(matchId);
 
     return NextResponse.json({
       matchId,
-      overrides: result,
-      raw: overrides,
+      overrides,
     });
   } catch (error) {
     console.error('Failed to get kit overrides:', error);
@@ -74,7 +73,7 @@ export async function PUT(
   }
 
   await ensureTableExists();
-  
+
   const params = await context.params;
   try {
     const matchId = parseInt(params.id);
@@ -92,30 +91,18 @@ export async function PUT(
       );
     }
 
-    const { db } = await import('@/lib/db');
-    const { matchKitOverrides } = await import('@/lib/schema');
+    // SCOPED existence check: the match must be in THIS league. The scoped
+    // helper also stamps league_id on the written row (no more silent DEFAULT 1).
+    const match = await getMatchById(matchId);
+    if (!match) {
+      return fail(404, 'NOT_FOUND', 'Match not found in this league');
+    }
 
     const normalizedTeamName = teamName.trim().toUpperCase();
-    const now = new Date();
 
-    await db
-      .insert(matchKitOverrides)
-      .values({
-        matchId,
-        teamName: normalizedTeamName,
-        kitColor,
-        createdAt: now,
-        updatedAt: now,
-      })
-      .onConflictDoUpdate({
-        target: [matchKitOverrides.matchId, matchKitOverrides.teamName],
-        set: {
-          kitColor,
-          updatedAt: now,
-        },
-      });
+    await setMatchKitOverride(matchId, normalizedTeamName, kitColor);
 
-    revalidateTag(FIXTURES_CACHE_TAG, 'max');
+    await revalidateFixturesForLeague();
 
     return NextResponse.json({
       success: true,
@@ -146,7 +133,7 @@ export async function DELETE(
   }
 
   await ensureTableExists();
-  
+
   const params = await context.params;
   try {
     const matchId = parseInt(params.id);
@@ -164,22 +151,11 @@ export async function DELETE(
       );
     }
 
-    const { db } = await import('@/lib/db');
-    const { matchKitOverrides } = await import('@/lib/schema');
-    const { eq, and } = await import('drizzle-orm');
-
     const normalizedTeamName = teamName.trim().toUpperCase();
 
-    await db
-      .delete(matchKitOverrides)
-      .where(
-        and(
-          eq(matchKitOverrides.matchId, matchId),
-          eq(matchKitOverrides.teamName, normalizedTeamName)
-        )
-      );
+    await deleteMatchKitOverride(matchId, normalizedTeamName);
 
-    revalidateTag(FIXTURES_CACHE_TAG, 'max');
+    await revalidateFixturesForLeague();
 
     return NextResponse.json({
       success: true,

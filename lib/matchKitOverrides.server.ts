@@ -10,8 +10,12 @@ import { matchKitOverrides } from '@/lib/schema';
 import { eq, and, inArray } from 'drizzle-orm';
 import { getRequestLeagueId } from '@/lib/tenant/context';
 
+// Same strict guard as lib/queries.resolveLeagueId: an explicit positive id
+// wins; anything else (0 / NaN / negative) falls through to request context.
 function resolveLid(leagueId?: number): Promise<number> {
-  return typeof leagueId === 'number' ? Promise.resolve(leagueId) : getRequestLeagueId();
+  return typeof leagueId === 'number' && Number.isFinite(leagueId) && leagueId > 0
+    ? Promise.resolve(leagueId)
+    : getRequestLeagueId();
 }
 
 // 從 DB 獲取某場比賽嘅所有 override
@@ -74,17 +78,18 @@ export async function getMatchKitOverrideColorValue(
   try {
     const lid = await resolveLid(leagueId);
     const normalized = teamName.trim().toUpperCase();
-    const overrides = await db
+    const [override] = await db
       .select()
       .from(matchKitOverrides)
-      .where(and(eq(matchKitOverrides.matchId, matchId), eq(matchKitOverrides.leagueId, lid)));
-
-    for (const override of overrides) {
-      if (override.teamName.trim().toUpperCase() === normalized) {
-        return override.kitColor;
-      }
-    }
-    return null;
+      .where(
+        and(
+          eq(matchKitOverrides.matchId, matchId),
+          eq(matchKitOverrides.teamName, normalized),
+          eq(matchKitOverrides.leagueId, lid)
+        )
+      )
+      .limit(1);
+    return override?.kitColor ?? null;
   } catch (error) {
     console.error('Failed to get match kit override value:', error);
     return null;
