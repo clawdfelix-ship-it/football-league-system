@@ -39,3 +39,16 @@ export const DEFAULT_LEAGUE_SLUG = (
   .toLowerCase();
 
 export const DEFAULT_LEAGUE_ID = Number(process.env.DEFAULT_LEAGUE_ID ?? '1') || 1;
+
+/**
+ * Default trial window (days) stamped on a newly provisioned league.
+ * Overridable via TRIAL_DAYS; 0 or a negative value means an open-ended trial
+ * (trial_ends_at left NULL — only sensible for internal/manual provisioning).
+ */
+export const TRIAL_DAYS = Number(process.env.TRIAL_DAYS ?? '14') || 0;
+
+/** Compute the trial end timestamp for a league provisioned at `from`. */
+export function trialEndsFrom(from: Date = new Date(), days: number = TRIAL_DAYS): Date | null {
+  if (!Number.isFinite(days) || days <= 0) return null;
+  return new Date(from.getTime() + days * 24 * 60 * 60 * 1000);
+}

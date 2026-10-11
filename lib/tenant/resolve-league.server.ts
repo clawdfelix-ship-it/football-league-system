@@ -12,6 +12,7 @@
  */
 import { resolveHost } from './resolve-host';
 import { listLeagueDirectory } from './leagues';
+import { isLeagueServable } from './map-league';
 import { DEFAULT_LEAGUE_ID } from './config';
 
 export async function resolveLeagueIdForHost(
@@ -25,18 +26,16 @@ export async function resolveLeagueIdForHost(
 
   if (resolved.kind === 'default') {
     // vercel.app / localhost / unknown apex -> founding league, unless the
-    // directory says that league is suspended.
+    // directory says that league is suspended or its trial has lapsed.
     if (directory.length === 0) return DEFAULT_LEAGUE_ID;
     const founding = directory.find((l) => l.id === DEFAULT_LEAGUE_ID);
     if (!founding) return DEFAULT_LEAGUE_ID;
-    return founding.status === 'active' || founding.status === 'trial'
-      ? founding.id
-      : 0;
+    return isLeagueServable(founding) ? founding.id : 0;
   }
 
   // tenant subdomain: exact slug match only, and it must be servable.
   const slug = resolved.slug ?? '';
   const league = directory.find((l) => l.slug === slug);
   if (!league) return 0;
-  return league.status === 'active' || league.status === 'trial' ? league.id : 0;
+  return isLeagueServable(league) ? league.id : 0;
 }

@@ -27,6 +27,7 @@ import {
   type ApplicationStatus,
 } from './provisioning';
 import { invalidateLeagueDirectory } from './leagues';
+import { trialEndsFrom } from './config';
 
 export type SubmitApplicationInput = {
   leagueName: string;
@@ -212,16 +213,23 @@ export async function provisionApprovedApplication(
   const baseSlug = isReservedSlug(desired) ? `league-${desired}` : desired;
   let slug = uniqueLeagueSlug(baseSlug, taken);
 
+  // Stamp the trial window up front so a freshly provisioned league auto-closes
+  // when the trial lapses (map-league treats a past trial_ends_at as suspended).
+  const trialEndsAt = trialEndsFrom();
+
+  const leagueValues = {
+    slug,
+    name: app.leagueName.trim(),
+    sportType: app.sportType || 'football',
+    status: 'trial' as const, // new tenants start on trial; platform flips to active
+    ...(trialEndsAt ? { trialEndsAt } : {}),
+  };
+
   let league: { id: number; slug: string; name: string };
   try {
     [league] = await db
       .insert(leagues)
-      .values({
-        slug,
-        name: app.leagueName.trim(),
-        sportType: app.sportType || 'football',
-        status: 'trial', // new tenants start on trial; platform flips to active
-      })
+      .values(leagueValues)
       .returning({ id: leagues.id, slug: leagues.slug, name: leagues.name });
   } catch (err) {
     // Race: another provisioning committed the same slug between our SELECT
@@ -231,12 +239,7 @@ export async function provisionApprovedApplication(
     slug = uniqueLeagueSlug(baseSlug, retryRows.map((r) => r.slug));
     [league] = await db
       .insert(leagues)
-      .values({
-        slug,
-        name: app.leagueName.trim(),
-        sportType: app.sportType || 'football',
-        status: 'trial',
-      })
+      .values({ ...leagueValues, slug })
       .returning({ id: leagues.id, slug: leagues.slug, name: leagues.name });
   }
 

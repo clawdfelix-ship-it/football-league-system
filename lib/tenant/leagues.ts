@@ -17,7 +17,12 @@ const DIRECTORY_TAG = 'league-directory';
 const fetchDirectory = unstable_cache(
   async (): Promise<LeagueRecord[]> => {
     const rows = await db
-      .select({ id: leagues.id, slug: leagues.slug, status: leagues.status })
+      .select({
+        id: leagues.id,
+        slug: leagues.slug,
+        status: leagues.status,
+        trialEndsAt: leagues.trialEndsAt,
+      })
       .from(leagues)
       .orderBy(asc(leagues.id));
     return rows;

@@ -4,6 +4,7 @@ import { LeagueApplicationSchema } from '@/lib/api/schemas';
 import { zodDetails } from '@/lib/api/zod';
 import { getClientIp, rateLimit } from '@/lib/api/rate-limit';
 import { submitApplication, ApplicationError } from '@/lib/tenant/provisioning.server';
+import { notifyAdminsNewApplication } from '@/lib/tenant/notify.server';
 
 export const dynamic = 'force-dynamic';
 
@@ -42,6 +43,24 @@ export async function POST(request: NextRequest) {
       notes: parsed.notes || null,
       requestedSlug: parsed.requestedSlug || null,
     });
+
+    // Best-effort admin notification. Never block/fail the applicant's submit
+    // if SMTP is unconfigured or the send bounces.
+    await notifyAdminsNewApplication(
+      {
+        id: app.id,
+        leagueName: app.leagueName,
+        contactName: app.contactName,
+        contactEmail: app.contactEmail,
+        contactPhone: app.contactPhone,
+        sportType: app.sportType,
+        teamCountEst: app.teamCountEst,
+        notes: app.notes,
+        requestedSlug: app.requestedSlug,
+      },
+      request.headers.get('host')
+    );
+
     return ok(
       {
         id: app.id,

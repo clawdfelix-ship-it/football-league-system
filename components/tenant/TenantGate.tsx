@@ -30,7 +30,12 @@ export default async function TenantGate({ children }: { children: React.ReactNo
 
   // resolution.status === 'suspended'
   if (!tenant.servable && tenant.resolution?.status === 'suspended') {
-    return <SuspendedLeague slug={tenant.slug} />;
+    return (
+      <SuspendedLeague
+        slug={tenant.slug}
+        reason={tenant.resolution.reason ?? 'status'}
+      />
+    );
   }
 
   return <>{children}</>;
