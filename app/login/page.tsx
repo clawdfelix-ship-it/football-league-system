@@ -2,7 +2,7 @@
 
 import type { FormEvent } from 'react';
 import { useEffect, useState } from 'react';
-import { signIn, useSession } from 'next-auth/react';
+import { signIn, useSession, getSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/context/LanguageContext';
 
@@ -21,6 +21,11 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!session) return;
+    if (session.user?.isPlatform || session.user?.role === 'admin') {
+      // Platform principal → the cross-tenant console, never a league admin.
+      router.replace('/platform');
+      return;
+    }
     if (session.user?.role === 'user') {
       router.replace('/');
       return;
@@ -43,7 +48,16 @@ export default function LoginPage() {
       if (result?.error) {
         setError(t('電郵、密碼錯誤，或此 manager 帳號未綁定球隊。', 'Wrong email or password, or this manager account is not linked to a team.'));
       } else if (result?.ok) {
-        router.push('/admin');
+        // The client `session` state is often stale immediately after sign-in,
+        // so fetch the fresh session to route by the real principal.
+        const fresh = await getSession();
+        const dest =
+          fresh?.user?.isPlatform || fresh?.user?.role === 'admin'
+            ? '/platform'
+            : fresh?.user?.role === 'user'
+              ? '/'
+              : '/admin';
+        router.push(dest);
         router.refresh();
       }
     } catch {
