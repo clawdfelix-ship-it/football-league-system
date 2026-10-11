@@ -100,3 +100,20 @@ export const MatchGoalsSchema = z.object({
     )
     .default([]),
 });
+
+// Public self-serve league application (Phase 3b).
+export const LeagueApplicationSchema = z.object({
+  leagueName: z.string().trim().min(2).max(200),
+  contactName: z.string().trim().min(1).max(150),
+  contactEmail: z.string().trim().email().max(200),
+  contactPhone: z.string().trim().max(50).optional().or(z.literal('')),
+  sportType: z.string().trim().max(30).optional(),
+  teamCountEst: z.coerce.number().int().min(0).max(9999).optional(),
+  notes: z.string().trim().max(4000).optional().or(z.literal('')),
+  requestedSlug: z
+    .string()
+    .trim()
+    .max(80)
+    .optional()
+    .or(z.literal('')),
+});

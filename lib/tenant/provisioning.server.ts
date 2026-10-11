@@ -143,6 +143,20 @@ export async function setApplicationStatus(
   return row;
 }
 
+/**
+ * Update only the review notes WITHOUT moving the state machine (a same-status
+ * write through setApplicationStatus would be rejected as a self-transition).
+ * Does not stamp reviewed_at so a pending application stays unreviewed.
+ */
+export async function setApplicationReviewNotes(id: number, notes: string | null) {
+  const [row] = await db
+    .update(leagueApplications)
+    .set({ reviewNotes: notes, updatedAt: new Date() })
+    .where(eq(leagueApplications.id, id))
+    .returning();
+  return row;
+}
+
 export type ProvisionResult = {
   created: boolean;
   league: { id: number; slug: string; name: string };

@@ -95,6 +95,11 @@ export const APPLICATION_STATUSES: ReadonlySet<ApplicationStatus> = new Set([
   'withdrawn',
 ]);
 
+/** Runtime type guard for an unknown status value (API boundaries). */
+export function isApplicationStatus(value: unknown): value is ApplicationStatus {
+  return typeof value === 'string' && APPLICATION_STATUSES.has(value as ApplicationStatus);
+}
+
 // Allowed forward/side transitions. Approval is terminal (provisioning runs
 // once, guarded separately by the unique league_id on the application).
 const TRANSITIONS: Record<ApplicationStatus, ReadonlySet<ApplicationStatus>> = {

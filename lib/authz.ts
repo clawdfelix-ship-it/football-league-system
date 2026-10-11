@@ -2,6 +2,7 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { TEAMS } from '@/lib/constants';
 import { ROLES, normalizeRole, type Role } from '@/lib/auth/roles';
+import { isPlatformAdminEmail } from '@/lib/tenant/platform-admin';
 
 export type { Role } from '@/lib/auth/roles';
 
@@ -44,4 +45,17 @@ export function getTeamNameFromTeamId(teamId: number | undefined): string | null
   if (!team) return null;
   if (team.name === 'DEMO') return null;
   return team.name;
+}
+
+/**
+ * Platform-admin guard for the SaaS console / provisioning routes. Unlike the
+ * league-scoped getAuthContext() (an 'admin' who manages ONE league), this
+ * checks the signed-in user's email against PLATFORM_ADMIN_EMAILS. Returns the
+ * platform admin's email, or null (unauthenticated / not allow-listed).
+ */
+export async function getPlatformAdmin(): Promise<{ email: string } | null> {
+  const session = await getServerSession(authOptions);
+  const email = (session?.user as { email?: unknown } | null)?.email;
+  if (typeof email !== 'string' || !isPlatformAdminEmail(email)) return null;
+  return { email: email.trim().toLowerCase() };
 }
