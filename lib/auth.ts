@@ -1,6 +1,7 @@
-import { NextAuthOptions } from 'next-auth';
+import type { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { TEAMS } from '@/lib/constants';
+import { DEFAULT_LEAGUE_ID } from '@/lib/tenant/config';
 import { db } from '@/lib/db';
 import { users } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
@@ -8,6 +9,7 @@ import bcrypt from 'bcryptjs';
 import { timingSafeEqual } from 'crypto';
 import { getManagerMapping } from '@/lib/auth/load-manager-mapping';
 import { rehashIfLegacy } from '@/lib/auth/password';
+import { resolveLeagueIdForHost } from '@/lib/tenant/resolve-league.server';
 
 /**
  * How often (seconds) to re-validate the session's role/team against the DB
@@ -45,6 +47,9 @@ interface CustomUser {
   role: 'admin' | 'manager' | 'user';
   teamId?: number; // Index in TEAMS array
   mustChangePassword?: boolean;
+  // >0 = bound to one league; 0 = platform-wide principal.
+  leagueId?: number;
+  isPlatform?: boolean;
 }
 
 export function resolveManagerTeamId(email: string): number | null {
@@ -100,14 +105,27 @@ export const authOptions: NextAuthOptions = {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" }
       },
-      async authorize(credentials) {
+      async authorize(credentials, req) {
         if (!credentials?.email || !credentials?.password) {
           return null;
         }
 
         const inputEmail = credentials.email.toLowerCase();
 
-        // 1. Super Admin Check
+        // Resolve the concrete league this request host serves. /api/auth is
+        // excluded from the middleware matcher, so we parse the raw Host here
+        // rather than trusting a header. 0 = platform host (no league data).
+        // next-auth v4 passes req.headers as a web Headers object (get-only).
+        const reqHeaders = req?.headers as unknown as
+          | { get?: (name: string) => string | null }
+          | undefined;
+        const rawHost =
+          typeof reqHeaders?.get === 'function'
+            ? reqHeaders.get('host')
+            : null;
+        const hostLeagueId = await resolveLeagueIdForHost(rawHost);
+
+        // 1. Super Admin Check — platform-wide principal, valid on every host.
         const adminEmail = process.env.ADMIN_EMAIL;
         const adminPassword = process.env.ADMIN_PASSWORD;
 
@@ -116,7 +134,9 @@ export const authOptions: NextAuthOptions = {
             id: 'admin',
             email: adminEmail,
             username: 'Admin',
-            role: 'admin'
+            role: 'admin',
+            leagueId: 0,
+            isPlatform: true,
           };
         }
         
@@ -132,11 +152,25 @@ export const authOptions: NextAuthOptions = {
               role: users.role,
               passwordHash: users.passwordHash,
               mustChangePassword: users.mustChangePassword,
+              leagueId: users.leagueId,
             })
             .from(users)
             .where(eq(users.email, inputEmail));
 
           if (dbUser) {
+            // Tenant isolation: a league account may only authenticate on its
+            // OWN league host. On the platform host (0) league users are
+            // rejected — only platform principals belong there. Users with a
+            // NULL league_id (legacy/unscoped) are confined to the founding
+            // league host until backfilled, so they can never reach a new tenant.
+            const userLeagueId = dbUser.leagueId ?? DEFAULT_LEAGUE_ID;
+            if (hostLeagueId === 0 || userLeagueId !== hostLeagueId) {
+              console.warn(
+                `[auth] tenant mismatch: email=${inputEmail} userLeague=${userLeagueId} hostLeague=${hostLeagueId}`
+              );
+              return null;
+            }
+
             const ok = await bcrypt.compare(credentials.password, dbUser.passwordHash);
             if (!ok) return null;
 
@@ -176,6 +210,7 @@ export const authOptions: NextAuthOptions = {
                 role: 'manager',
                 teamId: teamIndex,
                 mustChangePassword: mustChange,
+                leagueId: userLeagueId,
               };
             }
 
@@ -186,6 +221,7 @@ export const authOptions: NextAuthOptions = {
                 username: dbUser.username,
                 role: 'user',
                 mustChangePassword: mustChange,
+                leagueId: userLeagueId,
               };
             }
 
@@ -199,8 +235,14 @@ export const authOptions: NextAuthOptions = {
         // Gated on MANAGER_PASSWORD env var so it ONLY works if the admin explicitly
         // sets it (typically for the very first deploy before running the seed script).
         // After seed-team-passwords.ts is run, every manager has a DB row and falls
-        // through the dbUser branch above instead of this one.
-        if (TEAM_PASSWORD && safeEqualString(credentials.password, TEAM_PASSWORD)) {
+        // through the dbUser branch above instead of this one. These env-mapped
+        // managers belong to the founding league (hard-coded TEAMS), so the path is
+        // only available on that league's host — never on a new tenant or platform.
+        if (
+          TEAM_PASSWORD &&
+          hostLeagueId === DEFAULT_LEAGUE_ID &&
+          safeEqualString(credentials.password, TEAM_PASSWORD)
+        ) {
           const teamIndex = MANAGER_EMAILS[inputEmail];
           if (teamIndex !== undefined) {
             const team = TEAMS[teamIndex];
@@ -212,6 +254,7 @@ export const authOptions: NextAuthOptions = {
               role: 'manager',
               teamId: teamIndex,
               mustChangePassword: true, // force password set on first login
+              leagueId: DEFAULT_LEAGUE_ID,
             };
           }
         }
@@ -231,6 +274,8 @@ export const authOptions: NextAuthOptions = {
         token.role = customUser.role;
         token.teamId = customUser.teamId;
         token.mustChangePassword = customUser.mustChangePassword;
+        token.leagueId = customUser.leagueId;
+        token.isPlatform = customUser.isPlatform ?? customUser.leagueId === 0;
         return token;
       }
 
@@ -248,7 +293,11 @@ export const authOptions: NextAuthOptions = {
       if (shouldRecheck && email && token.role !== 'admin') {
         try {
           const [dbUser] = await db
-            .select({ role: users.role, must: users.mustChangePassword })
+            .select({
+              role: users.role,
+              must: users.mustChangePassword,
+              leagueId: users.leagueId,
+            })
             .from(users)
             .where(eq(users.email, email.toLowerCase()));
 
@@ -258,6 +307,12 @@ export const authOptions: NextAuthOptions = {
           }
           if (dbUser.role !== token.role) {
             console.warn(`[auth] JWT role drift for ${email}; revoking session.`);
+            return null as unknown as typeof token;
+          }
+          // Tenant binding must not have moved to another league.
+          const dbLeagueId = dbUser.leagueId ?? DEFAULT_LEAGUE_ID;
+          if (typeof token.leagueId === 'number' && dbLeagueId !== token.leagueId) {
+            console.warn(`[auth] JWT league drift for ${email}; revoking session.`);
             return null as unknown as typeof token;
           }
           if (
@@ -284,6 +339,8 @@ export const authOptions: NextAuthOptions = {
         session.user.role = token.role;
         session.user.teamId = token.teamId;
         session.user.mustChangePassword = token.mustChangePassword;
+        session.user.leagueId = token.leagueId;
+        session.user.isPlatform = token.isPlatform ?? token.leagueId === 0;
       }
       return session;
     }

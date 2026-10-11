@@ -4,6 +4,7 @@ import { db } from '@/lib/db';
 import { passwordResetTokens, users } from '@/lib/schema';
 import { and, eq } from 'drizzle-orm';
 import { createHash } from 'crypto';
+import { getRequestLeagueId } from '@/lib/tenant/context';
 
 const EXPIRES_MS = 30 * 60 * 1000;
 const MIN_LENGTH = 8;
@@ -40,12 +41,20 @@ export async function POST(request: Request) {
 
   const tokenHash = hashToken(token);
 
+  // The reset token is single-tenant; the host league must match the league
+  // the token was issued for (a token must not reset a password cross-tenant).
+  const lid = await getRequestLeagueId();
+
   const [row] = await db
     .select()
     .from(passwordResetTokens)
-    .where(and(eq(passwordResetTokens.tokenHash, tokenHash)));
+    .where(eq(passwordResetTokens.tokenHash, tokenHash));
 
   if (!row) {
+    return fail(400, 'INVALID_TOKEN', 'This reset link is invalid. Please request a new one.');
+  }
+  if (row.leagueId !== null && row.leagueId !== undefined && lid > 0 && row.leagueId !== lid) {
+    // Token belongs to another league/host — treat as invalid, do not reveal more.
     return fail(400, 'INVALID_TOKEN', 'This reset link is invalid. Please request a new one.');
   }
   if (row.usedAt) {
@@ -72,7 +81,7 @@ export async function POST(request: Request) {
       passwordChangedAt: now,
       mustChangePassword: null,
     })
-    .where(eq(users.id, row.userId));
+    .where(and(eq(users.id, row.userId), eq(users.leagueId, row.leagueId ?? lid)));
 
   await db
     .update(passwordResetTokens)

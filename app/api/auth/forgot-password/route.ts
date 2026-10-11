@@ -2,11 +2,12 @@ import { ok, fail } from '@/lib/api/response';
 import { getClientIp, rateLimit } from '@/lib/api/rate-limit';
 import { db } from '@/lib/db';
 import { users } from '@/lib/schema';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { createHash, randomBytes } from 'crypto';
 import { passwordResetTokens } from '@/lib/schema';
 import { sendMail, isMailConfigured } from '@/lib/mail/mailer';
 import { passwordResetEmail } from '@/lib/mail/templates';
+import { getRequestLeagueId } from '@/lib/tenant/context';
 
 const EXPIRES_MINUTES = 30;
 
@@ -14,9 +15,15 @@ function hashToken(raw: string): string {
   return createHash('sha256').update(raw).digest('hex');
 }
 
-function buildResetUrl(rawToken: string): string {
-  const base = process.env.APP_BASE_URL || 'https://football-league-system-zenex.vercel.app';
-  return `${base.replace(/\/$/, '')}/reset-password?token=${encodeURIComponent(rawToken)}`;
+function buildResetUrl(rawToken: string, requestHost?: string | null): string {
+  // Prefer the requesting host so the link lands on the same tenant. Only
+  // accept https-capable public hosts; fall back to the configured base url.
+  const host = (requestHost || '').trim().toLowerCase();
+  const origin =
+    host && !/^localhost|127\.0\.0\.1|\.local(:|$)/.test(host)
+      ? `https://${host.split(',')[0].trim()}`
+      : (process.env.APP_BASE_URL || 'https://football-league-system-zenex.vercel.app').replace(/\/$/, '');
+  return `${origin}/reset-password?token=${encodeURIComponent(rawToken)}`;
 }
 
 export async function POST(request: Request) {
@@ -44,13 +51,22 @@ export async function POST(request: Request) {
     return fail(503, 'MAIL_UNAVAILABLE', 'Password reset is temporarily unavailable. Please contact the administrator.');
   }
 
+  // Tenant scope: only issue a reset for an account in this host's league.
+  const lid = await getRequestLeagueId();
+
   // 不論帳號存在與否都回傳相同訊息，防被用嚟探測邊個 email 有註冊
   const genericSuccess = ok({ message: 'If the account exists, a reset email has been sent.' });
+
+  // On the platform host (0) there are no league accounts; return the generic
+  // response without probing any tenant.
+  if (lid <= 0) {
+    return genericSuccess;
+  }
 
   const [dbUser] = await db
     .select({ id: users.id, username: users.username })
     .from(users)
-    .where(eq(users.email, email));
+    .where(and(eq(users.email, email), eq(users.leagueId, lid)));
 
   if (!dbUser) {
     return genericSuccess;
@@ -66,9 +82,11 @@ export async function POST(request: Request) {
       userId: dbUser.id,
       tokenHash,
       expiresAt,
+      leagueId: lid,
     });
 
-    const url = buildResetUrl(rawToken);
+    const requestHost = request.headers.get('host');
+    const url = buildResetUrl(rawToken, requestHost);
     const msg = passwordResetEmail({
       name: null,
       url,

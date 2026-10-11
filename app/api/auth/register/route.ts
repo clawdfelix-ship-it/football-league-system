@@ -4,6 +4,7 @@ import { RegisterSchema } from '@/lib/api/schemas';
 import { zodDetails } from '@/lib/api/zod';
 import { getClientIp, rateLimit } from '@/lib/api/rate-limit';
 import { createUser, getUserByEmail } from '@/lib/users-new';
+import { getRequestLeagueId } from '@/lib/tenant/context';
 
 export async function POST(request: NextRequest) {
   try {
@@ -28,13 +29,19 @@ export async function POST(request: NextRequest) {
     const email = input.email.toLowerCase();
     const username = input.username;
     const password = input.password;
-    
+
+    // Public registration creates an account in the host's league only.
+    const lid = await getRequestLeagueId();
+    if (lid <= 0) {
+      return fail(400, 'NO_TENANT', '無法在此主機註冊聯賽帳號');
+    }
+
     const exists = await getUserByEmail(email);
     if (exists) {
       return fail(409, 'EMAIL_TAKEN', '此電郵已被註冊');
     }
-    
-    const user = await createUser({ email, username, password });
+
+    const user = await createUser({ email, username, password, leagueId: lid });
     
     // 返回不包含敏感信息的用戶數據
     return ok(

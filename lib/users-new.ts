@@ -57,9 +57,15 @@ export async function createUser(userData: {
   username: string;
   password: string;
   role?: 'admin' | 'user';
+  // Tenant binding. Required for safety: callers must resolve the host league
+  // first. 0 (platform host) is not allowed for a league account.
+  leagueId?: number;
 }): Promise<User> {
   try {
-    // 檢查郵箱是否已存在
+    if (typeof userData.leagueId !== 'number' || userData.leagueId <= 0) {
+      throw new Error('無法創建用戶：缺少聯賽綁定');
+    }
+    // 檢查郵箱是否已存在 (global-unique email)
     const existingUser = await getUserByEmail(userData.email);
     if (existingUser) {
       throw new Error('郵箱已被使用');
@@ -79,6 +85,7 @@ export async function createUser(userData: {
       username: userData.username,
       passwordHash,
       role: userData.role || 'user',
+      leagueId: userData.leagueId,
     };
 
     const [newUser] = await db.insert(users).values(newUserData).returning();

@@ -7,12 +7,13 @@ import { authOptions } from '@/lib/auth';
 import { TEAM_CONTACTS } from '@/lib/team-contacts';
 import { db } from '@/lib/db';
 import { users } from '@/lib/schema';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
 import { randomInt } from 'crypto';
 import { audit } from '@/lib/auth/audit-log';
 import { sendMail } from '@/lib/mail/mailer';
 import { accountCreatedEmail } from '@/lib/mail/templates';
+import { getRequestLeagueId } from '@/lib/tenant/context';
 
 function sixDigits() {
   return String(randomInt(0, 1_000_000)).padStart(6, '0');
@@ -64,6 +65,13 @@ export async function POST(request: Request) {
       return fail(403, 'FORBIDDEN', 'Forbidden');
     }
 
+    // League accounts are created for the host's league only. On the platform
+    // console host (lid 0) there is no league to bind managers to.
+    const lid = await getRequestLeagueId();
+    if (lid <= 0) {
+      return fail(400, 'NO_TENANT', 'No active league on this host');
+    }
+
     const actor = {
       role: 'admin' as const,
       email: session.user?.email ?? null,
@@ -104,11 +112,17 @@ export async function POST(request: Request) {
           const team = teamBlock.team;
 
           const [existing] = await db
-            .select({ email: users.email, username: users.username })
+            .select({ email: users.email, username: users.username, leagueId: users.leagueId })
             .from(users)
             .where(eq(users.email, email));
 
           if (existing) {
+            // Global-unique email belongs to another league: never overwrite
+            // that account's password from a different tenant host.
+            if ((existing.leagueId ?? 1) !== lid) {
+              updatedEmails.push(email);
+              continue;
+            }
             await db
               .update(users)
               .set({
@@ -116,7 +130,7 @@ export async function POST(request: Request) {
                 role: 'manager',
                 username: existing.username || makeUsername(team, email),
               })
-              .where(eq(users.email, email));
+              .where(and(eq(users.email, email), eq(users.leagueId, lid)));
             updatedEmails.push(email);
             continue;
           }
@@ -126,6 +140,7 @@ export async function POST(request: Request) {
             username: makeUsername(team, email),
             passwordHash,
             role: 'manager',
+            leagueId: lid,
           });
           createdEmails.push(email);
         }
@@ -156,11 +171,17 @@ export async function POST(request: Request) {
         const name = captain.name;
 
       const [existing] = await db
-        .select({ email: users.email, username: users.username })
+        .select({ email: users.email, username: users.username, leagueId: users.leagueId })
         .from(users)
         .where(eq(users.email, email));
 
         if (existing) {
+          // Global-unique email owned by another league: never reset that
+          // account's password or bind it here. Skip even with regenerate.
+          if ((existing.leagueId ?? 1) !== lid) {
+            skipped.push({ team, name, email });
+            continue;
+          }
           if (!regenerate) {
             skipped.push({ team, name, email });
             continue;
@@ -174,7 +195,7 @@ export async function POST(request: Request) {
               role: 'manager',
               username: existing.username || makeUsername(team, email),
             })
-            .where(eq(users.email, email));
+            .where(and(eq(users.email, email), eq(users.leagueId, lid)));
           created.push({ team, name, email, password });
           continue;
         }
@@ -187,6 +208,7 @@ export async function POST(request: Request) {
           username: makeUsername(team, email),
           passwordHash,
           role: 'manager',
+          leagueId: lid,
         });
 
         created.push({ team, name, email, password });

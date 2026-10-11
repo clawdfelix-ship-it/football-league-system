@@ -6,12 +6,13 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { users } from '@/lib/schema';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { hashPassword } from '@/lib/auth/password';
 import { audit } from '@/lib/auth/audit-log';
 import { TEAMS } from '@/lib/constants';
 import { sendMail } from '@/lib/mail/mailer';
 import { passwordResetByAdminEmail } from '@/lib/mail/templates';
+import { getRequestLeagueId } from '@/lib/tenant/context';
 
 /**
  * Admin-only endpoint to manage per-team manager passwords.
@@ -58,6 +59,12 @@ export async function POST(request: Request) {
 
   const actor = { role: 'admin' as const, email: session.user.email ?? null, username: null };
 
+  // League manager passwords are managed for the host's league only.
+  const lid = await getRequestLeagueId();
+  if (lid <= 0) {
+    return fail(400, 'NO_TENANT', 'No active league on this host');
+  }
+
   let raw: unknown;
   try {
     raw = await request.json();
@@ -92,15 +99,17 @@ export async function POST(request: Request) {
     if (!captain.email) continue;
     const email = captain.email.toLowerCase();
     const [existing] = await db
-      .select({ id: users.id })
+      .select({ id: users.id, leagueId: users.leagueId })
       .from(users)
       .where(eq(users.email, email));
 
     if (existing) {
+      // Global-unique email owned by another league: never overwrite it here.
+      if ((existing.leagueId ?? 1) !== lid) continue;
       await db
         .update(users)
         .set({ passwordHash, mustChangePassword: now, passwordChangedAt: null })
-        .where(eq(users.id, existing.id));
+        .where(and(eq(users.id, existing.id), eq(users.leagueId, lid)));
     } else {
       await db.insert(users).values({
         email,
@@ -108,6 +117,7 @@ export async function POST(request: Request) {
         passwordHash,
         role: 'manager',
         mustChangePassword: now,
+        leagueId: lid,
       });
     }
     affectedEmails.push(email);
@@ -150,6 +160,12 @@ export async function PUT(request: Request) {
 
   const actor = { role: 'admin' as const, email: session.user.email ?? null, username: null };
 
+  // Only reset a manager belonging to the host's league.
+  const lid = await getRequestLeagueId();
+  if (lid <= 0) {
+    return fail(400, 'NO_TENANT', 'No active league on this host');
+  }
+
   let input: { email: string };
   try {
     input = TeamPasswordResetSchema.parse(await request.json());
@@ -167,7 +183,7 @@ export async function PUT(request: Request) {
   const now = new Date();
 
   const [existing] = await db
-    .select({ id: users.id, role: users.role, username: users.username })
+    .select({ id: users.id, role: users.role, username: users.username, leagueId: users.leagueId })
     .from(users)
     .where(eq(users.email, input.email));
 
@@ -175,10 +191,15 @@ export async function PUT(request: Request) {
     return fail(404, 'NOT_FOUND', 'No account for that email');
   }
 
+  // Global-unique email owned by another league: do not touch it.
+  if ((existing.leagueId ?? 1) !== lid) {
+    return fail(404, 'NOT_FOUND', 'No account for that email');
+  }
+
   await db
     .update(users)
     .set({ passwordHash, mustChangePassword: now, passwordChangedAt: null })
-    .where(eq(users.id, existing.id));
+    .where(and(eq(users.id, existing.id), eq(users.leagueId, lid)));
 
   void audit({
     action: 'admin.manager_account.generate',

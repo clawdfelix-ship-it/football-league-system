@@ -6,9 +6,10 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { users } from '@/lib/schema';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { hashPassword } from '@/lib/auth/password';
 import { audit } from '@/lib/auth/audit-log';
+import { DEFAULT_LEAGUE_ID } from '@/lib/tenant/config';
 
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
@@ -44,14 +45,22 @@ export async function POST(request: Request) {
     return fail(400, 'VALIDATION_ERROR', 'Invalid request body', zodDetails(e));
   }
 
+  // Defense-in-depth: the session is already host-bound, but also constrain
+  // the row to the session's league so a same-email row elsewhere can't be hit.
+  const sessionLeagueId =
+    typeof session.user?.leagueId === 'number' && session.user.leagueId > 0
+      ? session.user.leagueId
+      : DEFAULT_LEAGUE_ID;
+
   const [dbUser] = await db
     .select({
       id: users.id,
       role: users.role,
       passwordHash: users.passwordHash,
+      leagueId: users.leagueId,
     })
     .from(users)
-    .where(eq(users.email, email));
+    .where(and(eq(users.email, email), eq(users.leagueId, sessionLeagueId)));
 
   if (!dbUser) {
     return fail(404, 'NOT_FOUND', 'Account not found');
@@ -88,7 +97,7 @@ export async function POST(request: Request) {
       mustChangePassword: null,
       passwordChangedAt: new Date(),
     })
-    .where(eq(users.id, dbUser.id));
+    .where(and(eq(users.id, dbUser.id), eq(users.leagueId, sessionLeagueId)));
 
   void audit({
     action: 'admin.manager_account.generate', // reuse category

@@ -3,6 +3,8 @@ import { authOptions } from '@/lib/auth';
 import { TEAMS } from '@/lib/constants';
 import { ROLES, normalizeRole, type Role } from '@/lib/auth/roles';
 import { isPlatformAdminEmail } from '@/lib/tenant/platform-admin';
+import { getRequestLeagueId } from '@/lib/tenant/context';
+import { DEFAULT_LEAGUE_ID } from '@/lib/tenant/config';
 
 export type { Role } from '@/lib/auth/roles';
 
@@ -11,6 +13,9 @@ export type AuthContext = {
   teamId?: number;
   username?: string;
   email?: string;
+  /** >0 = bound league; 0 = platform-wide principal. */
+  leagueId?: number;
+  isPlatform?: boolean;
 };
 
 export async function getAuthContext(): Promise<AuthContext | null> {
@@ -21,6 +26,8 @@ export async function getAuthContext(): Promise<AuthContext | null> {
     username?: unknown;
     name?: unknown;
     email?: unknown;
+    leagueId?: unknown;
+    isPlatform?: unknown;
   } | null;
 
   const role = normalizeRole(user?.role);
@@ -29,6 +36,26 @@ export async function getAuthContext(): Promise<AuthContext | null> {
   // for mutation scopes (consistent with existing route guards).
   if (role !== ROLES.ADMIN && role !== ROLES.MANAGER) return null;
 
+  // ---- Host/tenant binding (Phase 5) ----
+  // Platform principals (env super admin / allow-listed platform admin) carry
+  // leagueId 0 / isPlatform and may operate on any league host. A league-bound
+  // session must match the host's league. Legacy tokens minted before this
+  // deploy have no leagueId: confine them to the founding league so they can
+  // never reach a newly provisioned tenant.
+  const hostLid = await getRequestLeagueId();
+  const isPlatform = user?.isPlatform === true || user?.leagueId === 0;
+  const sessionLid =
+    typeof user?.leagueId === 'number' && user.leagueId > 0
+      ? user.leagueId
+      : DEFAULT_LEAGUE_ID;
+
+  if (!isPlatform && sessionLid !== hostLid) {
+    console.warn(
+      `[authz] host/session league mismatch (host=${hostLid}, session=${sessionLid}); denying.`
+    );
+    return null;
+  }
+
   return {
     role,
     teamId: typeof user?.teamId === 'number' ? user.teamId : undefined,
@@ -36,6 +63,8 @@ export async function getAuthContext(): Promise<AuthContext | null> {
       (typeof user?.username === 'string' ? user.username : undefined) ??
       (typeof user?.name === 'string' ? user.name : undefined),
     email: typeof user?.email === 'string' ? user.email : undefined,
+    leagueId: isPlatform ? 0 : sessionLid,
+    isPlatform,
   };
 }
 
