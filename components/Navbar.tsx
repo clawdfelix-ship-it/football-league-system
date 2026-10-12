@@ -138,6 +138,13 @@ export default function Navbar() {
               {t(item.zh, item.en)}
             </Link>
           ))}
+          <Link
+            href="/apply"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="block mt-1 rounded-lg bg-white/15 px-3 py-2 text-sm font-semibold text-white hover:bg-white/25 transition-colors"
+          >
+            {t('申請成為聯賽', 'Run your league')}
+          </Link>
         </div>
       )}
     </nav>

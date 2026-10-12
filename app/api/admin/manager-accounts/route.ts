@@ -8,16 +8,12 @@ import { TEAM_CONTACTS } from '@/lib/team-contacts';
 import { db } from '@/lib/db';
 import { users } from '@/lib/schema';
 import { and, eq } from 'drizzle-orm';
-import bcrypt from 'bcryptjs';
-import { randomInt } from 'crypto';
 import { audit } from '@/lib/auth/audit-log';
+import { hashPassword } from '@/lib/auth/password';
+import { generateTempPassword } from '@/lib/auth/temp-password';
 import { sendMail } from '@/lib/mail/mailer';
 import { accountCreatedEmail } from '@/lib/mail/templates';
 import { getRequestLeagueId } from '@/lib/tenant/context';
-
-function sixDigits() {
-  return String(randomInt(0, 1_000_000)).padStart(6, '0');
-}
 
 function makeUsername(team: string, email: string) {
   const local = email.split('@')[0] || email;
@@ -101,7 +97,7 @@ export async function POST(request: Request) {
         return fail(500, 'CONFIG_ERROR', 'MANAGER_PASSWORD is not configured on the server');
       }
 
-      const passwordHash = await bcrypt.hash(sharedPassword, 10);
+      const passwordHash = await hashPassword(sharedPassword);
       const updatedEmails: string[] = [];
       const createdEmails: string[] = [];
 
@@ -186,22 +182,23 @@ export async function POST(request: Request) {
             skipped.push({ team, name, email });
             continue;
           }
-          const password = `${team}${sixDigits()}`;
-          const passwordHash = await bcrypt.hash(password, 10);
+          const password = generateTempPassword();
+          const passwordHash = await hashPassword(password);
           await db
             .update(users)
             .set({
               passwordHash,
               role: 'manager',
               username: existing.username || makeUsername(team, email),
+              mustChangePassword: new Date(),
             })
             .where(and(eq(users.email, email), eq(users.leagueId, lid)));
           created.push({ team, name, email, password });
           continue;
         }
 
-        const password = `${team}${sixDigits()}`;
-        const passwordHash = await bcrypt.hash(password, 10);
+        const password = generateTempPassword();
+        const passwordHash = await hashPassword(password);
 
         await db.insert(users).values({
           email,
@@ -209,6 +206,7 @@ export async function POST(request: Request) {
           passwordHash,
           role: 'manager',
           leagueId: lid,
+          mustChangePassword: new Date(),
         });
 
         created.push({ team, name, email, password });

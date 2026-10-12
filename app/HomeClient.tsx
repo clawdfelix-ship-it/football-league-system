@@ -388,7 +388,9 @@ export default function HomeClient(props: {
                       <tr>
                         <td colSpan={12} className="px-6 py-8 text-center text-slate-500">
                           {upcomingFixtures.length === 0 && recentResults.length === 0
-                            ? t('數據庫未初始化，請執行 /api/init-db', 'Database not initialized. Please run /api/init-db')
+                            ? process.env.NODE_ENV !== 'production'
+                              ? t('數據庫未初始化，請執行 /api/init-db', 'Database not initialized. Please run /api/init-db')
+                              : t('賽果即將公佈。', 'Results will be available soon.')
                             : t('暫時未有積分榜數據。', 'No standings data available yet.')}
                         </td>
                       </tr>

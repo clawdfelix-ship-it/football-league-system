@@ -73,6 +73,9 @@ export default function Footer() {
           <div className="border-t border-slate-800 pt-6 mt-6 text-xs text-slate-500 flex justify-between items-center">
             <p>&copy; {new Date().getFullYear()} ZENEX-SPORTS LeagueCenter. All rights reserved.</p>
             <div className="flex gap-4">
+              <Link href="/apply" className="hover:text-white transition-colors">
+                {isZh ? '開辦你的聯賽' : 'Run your league'}
+              </Link>
               <Link href="/privacy-policy" className="hover:text-white transition-colors">
                 {isZh ? '私隱政策' : 'Privacy Policy'}
               </Link>

@@ -2,8 +2,9 @@ import { fail, ok } from '@/lib/api/response';
 import { getClientIp, rateLimit } from '@/lib/api/rate-limit';
 import { db } from '@/lib/db';
 import { passwordResetTokens, users } from '@/lib/schema';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, isNull, ne } from 'drizzle-orm';
 import { createHash } from 'crypto';
+import { hashPassword } from '@/lib/auth/password';
 import { getRequestLeagueId } from '@/lib/tenant/context';
 
 const EXPIRES_MS = 30 * 60 * 1000;
@@ -41,9 +42,13 @@ export async function POST(request: Request) {
 
   const tokenHash = hashToken(token);
 
-  // The reset token is single-tenant; the host league must match the league
-  // the token was issued for (a token must not reset a password cross-tenant).
+  // The token is strictly single-tenant: the host league must match the
+  // league the token was issued for. Platform/unknown host (lid <= 0) is
+  // rejected outright (fail-closed; audit F7/P2-1).
   const lid = await getRequestLeagueId();
+  if (lid <= 0) {
+    return fail(400, 'INVALID_TOKEN', 'This reset link is invalid. Please request a new one.');
+  }
 
   const [row] = await db
     .select()
@@ -53,8 +58,9 @@ export async function POST(request: Request) {
   if (!row) {
     return fail(400, 'INVALID_TOKEN', 'This reset link is invalid. Please request a new one.');
   }
-  if (row.leagueId !== null && row.leagueId !== undefined && lid > 0 && row.leagueId !== lid) {
-    // Token belongs to another league/host — treat as invalid, do not reveal more.
+  if (row.leagueId !== lid) {
+    // Token belongs to another league/host, or is a platform-host token.
+    // Treat as invalid, do not reveal more.
     return fail(400, 'INVALID_TOKEN', 'This reset link is invalid. Please request a new one.');
   }
   if (row.usedAt) {
@@ -65,9 +71,7 @@ export async function POST(request: Request) {
   }
 
   const now = new Date();
-  // 動態 import bcryptjs（同現有認證一致）
-  const bcrypt = await import('bcryptjs');
-  const passwordHash = await bcrypt.hash(password, 10);
+  const passwordHash = await hashPassword(password);
 
   // NOTE: drizzle-orm/neon-http has no interactive db.transaction() (it throws
   // "No transactions support in neon-http driver"). These two updates are
@@ -87,6 +91,19 @@ export async function POST(request: Request) {
     .update(passwordResetTokens)
     .set({ usedAt: now })
     .where(eq(passwordResetTokens.id, row.id));
+
+  // Invalidate any other unused tokens for the same user so an older reset
+  // email can't be replayed after the password was changed (audit F7).
+  await db
+    .update(passwordResetTokens)
+    .set({ usedAt: now })
+    .where(
+      and(
+        eq(passwordResetTokens.userId, row.userId),
+        ne(passwordResetTokens.id, row.id),
+        isNull(passwordResetTokens.usedAt)
+      )
+    );
 
   return ok({ message: 'Password updated. You can now sign in.' });
 }
