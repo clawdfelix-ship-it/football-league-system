@@ -18,6 +18,15 @@ function errorText(e: unknown) {
   }
 }
 
+export function hasDuplicatePlayerIds(entries: Array<{ playerId: number }>) {
+  const seen = new Set<number>();
+  for (const entry of entries) {
+    if (seen.has(entry.playerId)) return true;
+    seen.add(entry.playerId);
+  }
+  return false;
+}
+
 export const dynamic = 'force-dynamic';
 
 export async function GET(_: Request, ctx: { params: Promise<{ id: string }> }) {
@@ -72,9 +81,12 @@ export async function PUT(request: Request, ctx: { params: Promise<{ id: string 
   const awayTeam = norm(match.awayTeam);
 
   const inputEntries = (body.entries ?? []).filter((e) => e.goals > 0);
+  if (hasDuplicatePlayerIds(inputEntries)) {
+    return fail(400, 'VALIDATION_ERROR', 'Duplicate player entries are not allowed');
+  }
   const playerIds = inputEntries.map((e) => e.playerId);
   const players = await getPlayersByIds(playerIds);
-  if (players.length !== Array.from(new Set(playerIds)).length) {
+  if (players.length !== playerIds.length) {
     return fail(400, 'VALIDATION_ERROR', 'One or more players do not exist');
   }
 

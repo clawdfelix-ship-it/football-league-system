@@ -1,8 +1,7 @@
-import { TEAMS } from '@/lib/constants';
 import { ok, fail } from '@/lib/api/response';
 import { getClientIp, rateLimit } from '@/lib/api/rate-limit';
 import { getAuthContext } from '@/lib/authz';
-import { deleteAllMatches } from '@/lib/queries';
+import { deleteAllMatches, listTeamNames } from '@/lib/queries';
 import { audit } from '@/lib/auth/audit-log';
 
 export const revalidate = 3600;
@@ -10,7 +9,7 @@ export const revalidate = 3600;
 export async function GET() {
   try {
     return ok({
-      teams: TEAMS.filter((t) => t.name !== 'DEMO').map((t) => t.name),
+      teams: await listTeamNames(),
     });
   } catch {
     return fail(500, 'INTERNAL_ERROR', 'Failed to list teams');

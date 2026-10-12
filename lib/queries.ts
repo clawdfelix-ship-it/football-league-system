@@ -38,6 +38,17 @@ export async function resolveTeamId(
   return row?.id ?? null;
 }
 
+export async function listTeamNames(leagueId?: number): Promise<string[]> {
+  const lid = await resolveLeagueId(leagueId);
+  if (lid <= 0) return [];
+  const rows = await db
+    .select({ name: teamsTable.name })
+    .from(teamsTable)
+    .where(eq(teamsTable.leagueId, lid))
+    .orderBy(asc(teamsTable.name));
+  return rows.map((row) => row.name).filter((name) => name !== 'DEMO');
+}
+
 
 export async function listMatches(status?: 'scheduled' | 'finished' | 'tbc', leagueId?: number) {
   const lid = await resolveLeagueId(leagueId);
