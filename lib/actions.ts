@@ -32,6 +32,21 @@ function normalizeTeamName(teamName: string | null | undefined) {
   return (teamName ?? '').trim().toUpperCase();
 }
 
+/**
+ * Enforce league-admin (or platform principal) for mutating server actions.
+ * Server actions are reachable by direct POST regardless of whether the admin
+ * RSC UI was rendered — the middleware/page guard alone is NOT enough. Mirrors
+ * the guard resetSeason already had (broken-access-control fix, 2026-10-12).
+ * Throws (rejected action) when there is no valid league/admin session.
+ */
+async function requireLeagueAdmin(action: string) {
+  const auth = await getAuthContext();
+  if (!auth || auth.role !== 'admin') {
+    throw new Error(`Forbidden: admin only (${action})`);
+  }
+  return auth;
+}
+
 async function getPlayerMutationScope() {
   const auth = await getAuthContext();
   if (!auth) {
@@ -181,6 +196,7 @@ export async function addMatch(data: {
   status: 'scheduled' | 'finished' | 'tbc';
   round?: string;
 }) {
+  await requireLeagueAdmin('addMatch');
   const result = await createMatch({
     homeTeam: data.homeTeam,
     awayTeam: data.awayTeam,
@@ -205,6 +221,7 @@ export async function updateMatch(id: number, data: {
   status?: 'scheduled' | 'finished' | 'tbc';
   round?: string;
 }) {
+  await requireLeagueAdmin('updateMatch');
   const result = await updateMatchById(id, {
     ...data,
     date: data.date ?? undefined,
@@ -214,6 +231,7 @@ export async function updateMatch(id: number, data: {
 }
 
 export async function deleteMatch(id: number | string) {
+  await requireLeagueAdmin('deleteMatch');
   try {
     const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
     if (isNaN(numericId)) throw new Error('Invalid match ID');
@@ -483,6 +501,7 @@ export async function addAnnouncement(data: {
   content: string;
   date: Date;
 }) {
+  await requireLeagueAdmin('addAnnouncement');
   try {
     const announcement = await createAnnouncement({
       title: data.title ?? null,
@@ -499,6 +518,7 @@ export async function addAnnouncement(data: {
 }
 
 export async function deleteAnnouncement(id: number) {
+  await requireLeagueAdmin('deleteAnnouncement');
   try {
     await deleteAnnouncementById(id);
     return { success: true };
