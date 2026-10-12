@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import LanguageToggle from './LanguageToggle';
 import Logo from './Logo';
 import { useLanguage } from '@/context/LanguageContext';
+import { PLATFORM_APPLY_URL } from '@/lib/tenant/platform-url';
 
 type NavItem = { href: string; zh: string; en: string; hash?: string };
 
@@ -138,13 +139,13 @@ export default function Navbar() {
               {t(item.zh, item.en)}
             </Link>
           ))}
-          <Link
-            href="/apply"
+          <a
+            href={PLATFORM_APPLY_URL}
             onClick={() => setIsMobileMenuOpen(false)}
             className="block mt-1 rounded-lg bg-white/15 px-3 py-2 text-sm font-semibold text-white hover:bg-white/25 transition-colors"
           >
             {t('申請成為聯賽', 'Run your league')}
-          </Link>
+          </a>
         </div>
       )}
     </nav>

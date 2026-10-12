@@ -46,20 +46,17 @@ export async function POST(request: NextRequest) {
 
     // Best-effort admin notification. Never block/fail the applicant's submit
     // if SMTP is unconfigured or the send bounces.
-    await notifyAdminsNewApplication(
-      {
-        id: app.id,
-        leagueName: app.leagueName,
-        contactName: app.contactName,
-        contactEmail: app.contactEmail,
-        contactPhone: app.contactPhone,
-        sportType: app.sportType,
-        teamCountEst: app.teamCountEst,
-        notes: app.notes,
-        requestedSlug: app.requestedSlug,
-      },
-      request.headers.get('host')
-    );
+    await notifyAdminsNewApplication({
+      id: app.id,
+      leagueName: app.leagueName,
+      contactName: app.contactName,
+      contactEmail: app.contactEmail,
+      contactPhone: app.contactPhone,
+      sportType: app.sportType,
+      teamCountEst: app.teamCountEst,
+      notes: app.notes,
+      requestedSlug: app.requestedSlug,
+    });
 
     // Best-effort confirmation email to the applicant.
     await notifyApplicantReceived({
