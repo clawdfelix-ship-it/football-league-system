@@ -4,7 +4,7 @@ import { LeagueApplicationSchema } from '@/lib/api/schemas';
 import { zodDetails } from '@/lib/api/zod';
 import { getClientIp, rateLimit } from '@/lib/api/rate-limit';
 import { submitApplication, ApplicationError } from '@/lib/tenant/provisioning.server';
-import { notifyAdminsNewApplication } from '@/lib/tenant/notify.server';
+import { notifyAdminsNewApplication, notifyApplicantReceived } from '@/lib/tenant/notify.server';
 
 export const dynamic = 'force-dynamic';
 
@@ -60,6 +60,13 @@ export async function POST(request: NextRequest) {
       },
       request.headers.get('host')
     );
+
+    // Best-effort confirmation email to the applicant.
+    await notifyApplicantReceived({
+      contactName: app.contactName,
+      contactEmail: app.contactEmail,
+      leagueName: app.leagueName,
+    });
 
     return ok(
       {

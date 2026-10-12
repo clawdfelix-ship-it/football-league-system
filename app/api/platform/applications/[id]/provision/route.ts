@@ -3,8 +3,10 @@ import { ok, fail } from '@/lib/api/response';
 import { getPlatformAdmin } from '@/lib/authz';
 import {
   provisionApprovedApplication,
+  getApplication,
   ApplicationError,
 } from '@/lib/tenant/provisioning.server';
+import { notifyApplicantProvisioned } from '@/lib/tenant/notify.server';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,6 +29,24 @@ export async function POST(_request: NextRequest, context: Params) {
 
   try {
     const result = await provisionApprovedApplication(applicationId);
+
+    // Best-effort 'your league is live' email with the tenant URL.
+    try {
+      const app = await getApplication(applicationId);
+      if (app) {
+        await notifyApplicantProvisioned(
+          {
+            contactName: app.contactName,
+            contactEmail: app.contactEmail,
+            leagueName: result.league.name,
+          },
+          result.league.slug
+        );
+      }
+    } catch (mailErr) {
+      console.error('[console] provisioned notice failed:', mailErr);
+    }
+
     return ok(result, { status: result.created ? 201 : 200 });
   } catch (e) {
     if (e instanceof ApplicationError) {

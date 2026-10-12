@@ -7,6 +7,14 @@
  */
 import { sendMail, isMailConfigured } from '@/lib/mail/mailer';
 import { platformAdminEmails } from './platform-admin';
+import {
+  applicationReceivedEmail,
+  applicationUnderReviewEmail,
+  applicationApprovedEmail,
+  applicationRejectedEmail,
+  leagueProvisionedEmail,
+} from '@/lib/mail/templates';
+import { TRIAL_DAYS } from './config';
 
 export type ApplicationNotice = {
   id: number;
@@ -115,4 +123,78 @@ export async function notifyAdminsNewApplication(
     console.error('[mail] admin application notice failed:', e);
     return false;
   }
+}
+
+/* ── Applicant-facing lifecycle notifications ──────────────────────────── */
+
+export type ApplicantNotice = {
+  contactName: string | null;
+  contactEmail: string;
+  leagueName: string;
+};
+
+async function sendApplicant(
+  to: string,
+  built: { subject: string; html: string; text: string }
+): Promise<boolean> {
+  if (!isMailConfigured()) {
+    console.warn('[mail] skipping applicant notice (mail unconfigured)');
+    return false;
+  }
+  try {
+    await sendMail({ to, subject: built.subject, html: built.html, text: built.text });
+    return true;
+  } catch (e) {
+    // Never block the console state transition on a mail failure.
+    console.error('[mail] applicant notice failed:', e);
+    return false;
+  }
+}
+
+export async function notifyApplicantReceived(input: ApplicantNotice): Promise<boolean> {
+  return sendApplicant(
+    input.contactEmail,
+    applicationReceivedEmail({ name: input.contactName, leagueName: input.leagueName })
+  );
+}
+
+export async function notifyApplicantStatus(
+  input: ApplicantNotice,
+  status: 'in_review' | 'approved' | 'rejected',
+  reviewNotes?: string | null
+): Promise<boolean> {
+  const name = input.contactName;
+  if (status === 'in_review') {
+    return sendApplicant(
+      input.contactEmail,
+      applicationUnderReviewEmail({ name, leagueName: input.leagueName })
+    );
+  }
+  if (status === 'approved') {
+    return sendApplicant(
+      input.contactEmail,
+      applicationApprovedEmail({ name, leagueName: input.leagueName })
+    );
+  }
+  return sendApplicant(
+    input.contactEmail,
+    applicationRejectedEmail({ name, leagueName: input.leagueName, reason: reviewNotes ?? null })
+  );
+}
+
+export async function notifyApplicantProvisioned(
+  input: ApplicantNotice,
+  slug: string
+): Promise<boolean> {
+  const base = process.env.TENANT_BASE_DOMAIN || 'zenex-sports.com';
+  const url = `https://${slug}.${base}`;
+  return sendApplicant(
+    input.contactEmail,
+    leagueProvisionedEmail({
+      name: input.contactName,
+      leagueName: input.leagueName,
+      url,
+      trialDays: TRIAL_DAYS,
+    })
+  );
 }

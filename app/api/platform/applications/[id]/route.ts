@@ -9,6 +9,7 @@ import {
   ApplicationError,
 } from '@/lib/tenant/provisioning.server';
 import { isApplicationStatus } from '@/lib/tenant/provisioning';
+import { notifyApplicantStatus } from '@/lib/tenant/notify.server';
 import { z } from 'zod';
 
 export const dynamic = 'force-dynamic';
@@ -57,6 +58,20 @@ export async function PATCH(request: NextRequest, context: Params) {
         null,
         parsed.reviewNotes ?? null
       );
+
+      // Best-effort applicant email for the forward statuses they care about.
+      if (parsed.status === 'in_review' || parsed.status === 'approved' || parsed.status === 'rejected') {
+        await notifyApplicantStatus(
+          {
+            contactName: existing.contactName,
+            contactEmail: existing.contactEmail,
+            leagueName: existing.leagueName,
+          },
+          parsed.status,
+          row.reviewNotes
+        );
+      }
+
       return ok({
         id: row.id,
         status: row.status,
