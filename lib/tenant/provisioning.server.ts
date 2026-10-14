@@ -5,17 +5,21 @@
  *   submitApplication()             -> pending row (one active per email)
  *   setApplicationStatus()          -> platform admin moves the state machine
  *   provisionApprovedApplication()  -> idempotently creates the `leagues` row,
- *                                      links it to the application, busts cache
+ *                                      links it to the application, busts cache,
+ *                                      and mints the organiser's league-scoped
+ *                                      owner login (role='admin' + league_id).
  *
- * NOTE: creating the organiser's *owner login* is intentionally deferred to
- * Phase 5 (RBAC). Today users.role is only global 'admin'|'manager'; minting an
- * 'admin' here would hand the new organiser super-admin over every league. We
- * create the league only, and Phase 5 adds a league-scoped role
- * (platform_admin / league_admin / manager) + the owner account.
+ * Owner login: a users row with role='admin' and league_id set. Login is
+ * host-bound (lib/auth), so this admin can only reach its own league and is
+ * rejected on the platform host / other tenants — it is NOT a super-admin.
+ * The one-time password is returned exactly once for the welcome email and is
+ * never stored in plaintext (only the bcrypt hash is persisted).
  */
 import { db } from '@/lib/db';
-import { leagueApplications, leagues } from '@/lib/schema';
+import { leagueApplications, leagues, users } from '@/lib/schema';
 import { and, asc, eq, inArray } from 'drizzle-orm';
+import { hashPassword } from '@/lib/auth/password';
+import { generateTempPassword } from '@/lib/auth/temp-password';
 import {
   assertApplicationTransition,
   canProvision,
@@ -24,6 +28,7 @@ import {
   isValidLeagueSlug,
   slugifyLeagueName,
   uniqueLeagueSlug,
+  uniqueOwnerUsername,
   type ApplicationStatus,
 } from './provisioning';
 import { invalidateLeagueDirectory } from './leagues';
@@ -165,7 +170,69 @@ export type ProvisionResult = {
   applicationId: number;
   /** Best-effort TLS provisioning outcome for the tenant hostname. */
   cert?: import('./vercel-tls').CertResult;
+  /** The organiser's league-scoped owner login. */
+  owner: {
+    email: string;
+    username: string;
+    /** Present ONLY for a freshly minted account; null if the account already existed. */
+    tempPassword: string | null;
+    created: boolean;
+  };
 };
+
+/**
+ * Ensure the organiser has exactly one league-scoped owner login
+ * (role='admin', league_id = league.id) for their contact email.
+ * Idempotent: a re-provision returns the existing account and does NOT reset
+ * its password (tempPassword: null). The plaintext temp password is returned
+ * only once, when the account is first created, for the welcome email.
+ */
+async function ensureLeagueOwner(
+  league: { id: number; slug: string; name: string },
+  contactEmail: string
+): Promise<{ email: string; username: string; tempPassword: string | null; created: boolean }> {
+  const email = contactEmail.trim().toLowerCase();
+
+  const [existing] = await db
+    .select({
+      id: users.id,
+      email: users.email,
+      username: users.username,
+      role: users.role,
+      leagueId: users.leagueId,
+    })
+    .from(users)
+    .where(eq(users.email, email));
+
+  if (existing) {
+    // Account exists. Make sure it is bound to THIS league as an admin. We do
+    // not touch passwords or other leagues here; if the email is bound to a
+    // different league, leave it untouched and surface for the operator.
+    if (existing.role === 'admin' && existing.leagueId === league.id) {
+      return { email, username: existing.username, tempPassword: null, created: false };
+    }
+    throw new ApplicationError(
+      `Owner email ${email} already exists (role=${existing.role}, league=${existing.leagueId ?? 'null'}); cannot auto-create owner`
+    );
+  }
+
+  const nameRows = await db.select({ username: users.username }).from(users);
+  const taken = new Set(nameRows.map((r) => r.username));
+  const username = uniqueOwnerUsername(league.slug, taken);
+  const tempPassword = generateTempPassword();
+  const passwordHash = await hashPassword(tempPassword);
+
+  await db.insert(users).values({
+    email,
+    username,
+    passwordHash,
+    role: 'admin',
+    leagueId: league.id,
+    mustChangePassword: new Date(),
+  });
+
+  return { email, username, tempPassword, created: true };
+}
 
 /**
  * Create the league for an approved application. IDEMPOTENT: if the
@@ -184,14 +251,17 @@ export async function provisionApprovedApplication(
     );
   }
 
-  // Already provisioned -> idempotent no-op.
+  // Already provisioned -> league already exists. Still make sure the owner
+  // login exists (a prior run could have created the league but failed before
+  // minting the owner), then return without re-creating anything.
   if (app.leagueId != null) {
     const [existing] = await db
       .select({ id: leagues.id, slug: leagues.slug, name: leagues.name })
       .from(leagues)
       .where(eq(leagues.id, app.leagueId));
     if (existing) {
-      return { created: false, league: existing, applicationId: id };
+      const owner = await ensureLeagueOwner(existing, app.contactEmail);
+      return { created: false, league: existing, applicationId: id, owner };
     }
   }
 
@@ -251,6 +321,13 @@ export async function provisionApprovedApplication(
     .set({ leagueId: league.id, updatedAt: new Date() })
     .where(eq(leagueApplications.id, id));
 
+  // Mint the organiser's league-scoped owner login. The temp password is
+  // surfaced once in ProvisionResult.owner for the welcome email. If this
+  // throws (e.g. owner email already used by another league), provisioning
+  // surfaces the error; the league row exists and a corrected re-run is
+  // idempotent (the early-return path re-enters ensureLeagueOwner).
+  const owner = await ensureLeagueOwner(league, app.contactEmail);
+
   await invalidateLeagueDirectory();
 
   // Best-effort TLS for the new tenant hostname. External DNS (GoDaddy) means
@@ -262,7 +339,7 @@ export async function provisionApprovedApplication(
     console.warn(`[tenant] cert issue pending for ${slug}: ${cert.error}`);
   }
 
-  return { created: true, league, applicationId: id, cert };
+  return { created: true, league, applicationId: id, cert, owner };
 }
 
 /**

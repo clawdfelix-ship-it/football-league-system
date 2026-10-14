@@ -192,6 +192,43 @@ export function leagueProvisionedEmail(params: {
   return { subject, html: wrap(subject, body), text };
 }
 
+/** 聯賽主辦（owner）帳號已建立＋網站已開通（含臨時密碼） */
+export function leagueOwnerWelcomeEmail(params: {
+  name: string | null;
+  leagueName: string;
+  email: string;
+  tempPassword: string;
+  loginUrl: string;
+  trialDays: number;
+}): { subject: string; html: string; text: string } {
+  const hi = params.name ? `${params.name}，你好：` : '你好：';
+  const subject = `你嘅聯賽管理帳號已開通：${params.leagueName}`;
+  const trialLine = params.trialDays > 0
+    ? `<p style="margin:0 0 12px;">帳號包含 <strong>${params.trialDays} 日免費試用</strong>，我哋會喺試用完結前同你聯絡後續安排。</p>`
+    : '';
+  const body = `
+    <p style="margin:0 0 12px;">${hi}</p>
+    <p style="margin:0 0 12px;">你開辦嘅聯賽「<strong>${escHtml(params.leagueName)}</strong>」網站同<strong>聯賽管理後台</strong>已經準備好。你可以登入管理球隊、球員、賽程同賽果。</p>
+    <table role="presentation" cellpadding="0" cellspacing="0" style="margin:4px 0 14px;width:100%;">
+      <tr><td style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px 16px;font-size:14px;">
+        <div style="margin-bottom:6px;"><strong>登入電郵：</strong>${escHtml(params.email)}</div>
+        <div style="margin-bottom:6px;"><strong>臨時密碼：</strong><span style="font-family:Menlo,monospace;color:${ACCENT};">${escHtml(params.tempPassword)}</span></div>
+        <div style="font-size:13px;color:#64748b;word-break:break-all;">管理後台登入：${escHtml(params.loginUrl)}</div>
+      </td></tr>
+    </table>
+    ${button(params.loginUrl, '進入管理後台')}
+    ${trialLine}
+    <p style="margin:16px 0 0;font-size:13px;color:#64748b;">為保障帳號安全，首次登入後系統會要求你設定一個新密碼。此密碼只發送一次，請妥善保存。</p>`;
+  const text =
+    `你嘅聯賽「${params.leagueName}」管理帳號已開通。\n` +
+    `登入電郵：${params.email}\n` +
+    `臨時密碼：${params.tempPassword}\n` +
+    `管理後台：${params.loginUrl}\n` +
+    (params.trialDays > 0 ? `帳號包含 ${params.trialDays} 日免費試用。\n` : '') +
+    `首次登入後請即更改密碼。`;
+  return { subject, html: wrap(subject, body), text };
+}
+
 /** A：帳號密碼已由管理員重設 */
 export function passwordResetByAdminEmail(params: {
   name: string | null;

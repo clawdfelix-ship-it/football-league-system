@@ -210,6 +210,34 @@ export const authOptions: NextAuthOptions = {
 
             const mustChange = Boolean(dbUser.mustChangePassword);
 
+            // League-scoped admin (the organiser/owner who manages THIS league).
+            // Distinct from the env platform super-admin handled above (which
+            // carries isPlatform=true / leagueId=0 and works on every host).
+            // Fail-closed: a DB admin must be explicitly bound to a real league
+            // (leagueId > 0). A NULL/unscoped admin row is never accepted here
+            // even on the founding-league host — platform-wide access comes only
+            // through the env allow-list principal above.
+            if (dbUser.role === 'admin') {
+              if (
+                typeof dbUser.leagueId !== 'number' ||
+                dbUser.leagueId <= 0
+              ) {
+                console.warn(
+                  `[auth] refusing league-admin login for unscoped admin: email=${inputEmail}`
+                );
+                return null;
+              }
+              return {
+                id: `league-admin-${dbUser.id}`,
+                email: dbUser.email,
+                username: dbUser.username,
+                role: 'admin',
+                mustChangePassword: mustChange,
+                leagueId: dbUser.leagueId,
+                isPlatform: false,
+              };
+            }
+
             if (dbUser.role === 'manager') {
               const teamIndex = resolveManagerTeamId(inputEmail);
               if (teamIndex === null) {
@@ -296,15 +324,18 @@ export const authOptions: NextAuthOptions = {
       // Re-validate the session against the DB so role/team changes or account
       // deletion take effect without waiting for the (30-day) JWT to expire.
       // Runs on explicit `update()` or once the token is older than
-      // JWT_RECHECK_INTERVAL. The env-based super admin has no users row, so it
-      // is exempt; returning null discards the token and forces re-login.
+      // JWT_RECHECK_INTERVAL. The env-based platform super admin has no users
+      // row (isPlatform=true), so it is exempt; a DB league-scoped admin IS a
+      // real users row and must be re-validated like managers.
       const now = Math.floor(Date.now() / 1000);
       const lastCheck = typeof token.iat === 'number' ? token.iat : now;
       const email = typeof token.email === 'string' ? token.email : null;
+      const isPlatformPrincipal =
+        token.isPlatform === true || token.leagueId === 0;
       const shouldRecheck =
         trigger === 'update' || now - lastCheck > JWT_RECHECK_INTERVAL;
 
-      if (shouldRecheck && email && token.role !== 'admin') {
+      if (shouldRecheck && email && !isPlatformPrincipal) {
         try {
           const [dbUser] = await db
             .select({
@@ -321,6 +352,18 @@ export const authOptions: NextAuthOptions = {
           }
           if (dbUser.role !== token.role) {
             console.warn(`[auth] JWT role drift for ${email}; revoking session.`);
+            return null as unknown as typeof token;
+          }
+          // Defense in depth, mirroring the login branch: a DB league admin
+          // must be explicitly bound to a real league (leagueId > 0). An
+          // unscoped/NULL admin token is revoked here even though the login
+          // path already refuses to mint one.
+          if (
+            dbUser.role === 'admin' &&
+            token.isPlatform !== true &&
+            (typeof dbUser.leagueId !== 'number' || dbUser.leagueId <= 0)
+          ) {
+            console.warn(`[auth] JWT unscoped league admin for ${email}; revoking.`);
             return null as unknown as typeof token;
           }
           // Tenant binding must not have moved to another league.

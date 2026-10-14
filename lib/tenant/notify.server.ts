@@ -13,6 +13,7 @@ import {
   applicationApprovedEmail,
   applicationRejectedEmail,
   leagueProvisionedEmail,
+  leagueOwnerWelcomeEmail,
 } from '@/lib/mail/templates';
 import { TRIAL_DAYS } from './config';
 
@@ -187,4 +188,40 @@ export async function notifyApplicantProvisioned(
       trialDays: TRIAL_DAYS,
     })
   );
+}
+
+/**
+ * Owner onboarding email: league is live AND the organiser's admin login
+ * (one-time temp password) is ready. `tempPassword` is included ONLY on the
+ * freshly-minted account; callers must pass null on idempotent re-runs.
+ */
+export async function notifyLeagueOwnerWelcome(input: {
+  contactName: string | null;
+  contactEmail: string;
+  leagueName: string;
+  ownerEmail: string;
+  tempPassword: string;
+  slug: string;
+}): Promise<boolean> {
+  if (!isMailConfigured()) {
+    console.warn('[mail] skipping owner welcome (mail unconfigured)');
+    return false;
+  }
+  const base = process.env.TENANT_BASE_DOMAIN || 'zenex-sports.com';
+  const loginUrl = `https://${input.slug}.${base}/login`;
+  try {
+    const built = leagueOwnerWelcomeEmail({
+      name: input.contactName,
+      leagueName: input.leagueName,
+      email: input.ownerEmail,
+      tempPassword: input.tempPassword,
+      loginUrl,
+      trialDays: TRIAL_DAYS,
+    });
+    await sendMail({ to: input.contactEmail, subject: built.subject, html: built.html, text: built.text });
+    return true;
+  } catch (e) {
+    console.error('[mail] owner welcome failed:', e);
+    return false;
+  }
 }

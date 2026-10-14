@@ -6,7 +6,10 @@ import {
   getApplication,
   ApplicationError,
 } from '@/lib/tenant/provisioning.server';
-import { notifyApplicantProvisioned } from '@/lib/tenant/notify.server';
+import {
+  notifyApplicantProvisioned,
+  notifyLeagueOwnerWelcome,
+} from '@/lib/tenant/notify.server';
 
 export const dynamic = 'force-dynamic';
 
@@ -30,24 +33,43 @@ export async function POST(_request: NextRequest, context: Params) {
   try {
     const result = await provisionApprovedApplication(applicationId);
 
-    // Best-effort 'your league is live' email with the tenant URL.
+    // Best-effort onboarding email. A freshly minted owner account gets the
+    // login credentials email (temp password shown once); an idempotent
+    // re-run (account already existed) gets the plain 'your league is live'
+    // email instead so we never re-send an old password.
     try {
       const app = await getApplication(applicationId);
       if (app) {
-        await notifyApplicantProvisioned(
-          {
+        if (result.owner.created && result.owner.tempPassword) {
+          await notifyLeagueOwnerWelcome({
             contactName: app.contactName,
             contactEmail: app.contactEmail,
             leagueName: result.league.name,
-          },
-          result.league.slug
-        );
+            ownerEmail: result.owner.email,
+            tempPassword: result.owner.tempPassword,
+            slug: result.league.slug,
+          });
+        } else {
+          await notifyApplicantProvisioned(
+            {
+              contactName: app.contactName,
+              contactEmail: app.contactEmail,
+              leagueName: result.league.name,
+            },
+            result.league.slug
+          );
+        }
       }
     } catch (mailErr) {
       console.error('[console] provisioned notice failed:', mailErr);
     }
 
-    return ok(result, { status: result.created ? 201 : 200 });
+    // Never echo the one-time password back through the API response.
+    const { owner, ...rest } = result;
+    return ok(
+      { ...rest, owner: { email: owner.email, username: owner.username, created: owner.created } },
+      { status: result.created ? 201 : 200 }
+    );
   } catch (e) {
     if (e instanceof ApplicationError) {
       const status = /not found/i.test(e.message) ? 404 : 409;

@@ -5,6 +5,7 @@ import {
   applicationApprovedEmail,
   applicationRejectedEmail,
   leagueProvisionedEmail,
+  leagueOwnerWelcomeEmail,
 } from '@/lib/mail/templates';
 
 describe('applicant lifecycle email templates', () => {
@@ -75,5 +76,36 @@ describe('applicant lifecycle email templates', () => {
     ]) {
       expect(m.html).not.toContain('<img');
     }
+  });
+});
+
+describe('leagueOwnerWelcomeEmail', () => {
+  const base = {
+    name: 'Felix',
+    leagueName: 'Acme Cup',
+    email: 'boss@acme.example',
+    tempPassword: 'ABC-234-XYZ-999',
+    loginUrl: 'https://acme-cup.zenex-sports.com/login',
+  };
+
+  it('includes credentials, login url and first-login warning', () => {
+    const m = leagueOwnerWelcomeEmail({ ...base, trialDays: 14 });
+    expect(m.subject).toContain('Acme Cup');
+    expect(m.html).toContain('boss@acme.example');
+    expect(m.html).toContain('ABC-234-XYZ-999');
+    expect(m.html).toContain('https://acme-cup.zenex-sports.com/login');
+    expect(m.text).toContain('ABC-234-XYZ-999');
+    expect(m.html).toContain('14');
+  });
+
+  it('escapes credentials so a hostile value cannot inject HTML', () => {
+    const m = leagueOwnerWelcomeEmail({
+      ...base,
+      leagueName: '<script>x</script>',
+      tempPassword: '<b>x</b>',
+      trialDays: 0,
+    });
+    expect(m.html).not.toContain('<script>');
+    expect(m.html).not.toContain('<b>x</b>');
   });
 });

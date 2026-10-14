@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   slugifyLeagueName,
   uniqueLeagueSlug,
+  uniqueOwnerUsername,
   isValidLeagueSlug,
   isReservedSlug,
   isValidContactEmail,
@@ -50,9 +51,9 @@ describe('uniqueLeagueSlug', () => {
   });
   it('stays within 63 chars even with suffix', () => {
     const long = 'x'.repeat(70);
-    const s = uniqueLeagueSlug(long, new Set([slugifyOk(long)]));
+    const s = uniqueLeagueSlug(long, new Set([slugifyOk()]));
     expect(s.length).toBeLessThanOrEqual(63);
-    function slugifyOk(v: string) { return 'x'.repeat(63); }
+    function slugifyOk() { return 'x'.repeat(63); }
   });
 });
 
@@ -108,5 +109,22 @@ describe('application state machine', () => {
   });
   it('assert returns target on legal transition', () => {
     expect(assertApplicationTransition('pending', 'approved')).toBe('approved');
+  });
+});
+
+describe('uniqueOwnerUsername', () => {
+  it('builds {slug}-owner from the slug', () => {
+    expect(uniqueOwnerUsername('acme-cup', new Set())).toBe('acme-cup-owner');
+  });
+
+  it('appends an incrementing suffix when the base is taken', () => {
+    const taken = new Set(['acme-cup-owner', 'acme-cup-owner-2']);
+    expect(uniqueOwnerUsername('acme-cup', taken)).toBe('acme-cup-owner-3');
+  });
+
+  it('caps the username at 50 chars even for a long slug', () => {
+    const name = uniqueOwnerUsername('a'.repeat(80), new Set());
+    expect(name.length).toBeLessThanOrEqual(50);
+    expect(name.endsWith('-owner')).toBe(true);
   });
 });
