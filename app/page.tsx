@@ -1,9 +1,28 @@
+import type { Metadata } from 'next';
 import HomeClient from '@/app/HomeClient';
+import PlatformLanding from '@/components/platform/PlatformLanding';
+import { getRequestTenant } from '@/lib/tenant/context';
 import { listAnnouncements, listMatches, listTeamSettings } from '@/lib/queries';
 import { iso } from '@/lib/serialize';
 import type { PublicAnnouncement } from '@/lib/public-types';
 
 export const dynamic = 'force-dynamic';
+
+export async function generateMetadata(): Promise<Metadata> {
+  const tenant = await getRequestTenant();
+  if (tenant.isPlatform) {
+    return {
+      title: 'ZENEX Sports | 聯賽管理平台',
+      description:
+        '為你的足球聯賽開一個專屬網站：賽程、賽果、積分榜、球隊管理一應俱全，中英對照，開箱即用。',
+    };
+  }
+  // Default HKBL metadata (matches the root layout) for tenant hosts.
+  return {
+    title: 'Hong Kong Bank League 2026 | 香港銀行足球聯賽',
+    description: 'ZENEX SPORTS 合作夥伴 - 香港銀行足球聯賽2026官方資訊平台',
+  };
+}
 
 type HomeMatch = {
   id: number;
@@ -20,6 +39,15 @@ type HomeMatch = {
 };
 
 export default async function Home() {
+  // Platform host (e.g. platform.zenex-sports.com) serves the SaaS marketing
+  // landing — never the HKBL fixtures/standings data. League queries on this
+  // host resolve to league 0 anyway, but rendering the tenant UI here would
+  // show an empty, HKBL-branded shell.
+  const tenant = await getRequestTenant();
+  if (tenant.isPlatform) {
+    return <PlatformLanding />;
+  }
+
   let initial: {
     teamSettings: Array<{ name: string; homeKitColor: string; awayKitColor: string }>;
     fixtures: HomeMatch[];
