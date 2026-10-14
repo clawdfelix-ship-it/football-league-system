@@ -1,16 +1,21 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
-import { PLATFORM_APPLY_URL, PLATFORM_CONSOLE_URL } from '@/lib/tenant/platform-url';
+import LanguageToggle from '@/components/LanguageToggle';
 
 /**
  * SaaS marketing landing rendered ONLY on the platform host (e.g.
  * platform.zenex-sports.com/). League tenants render their own fixtures /
- * standings homepage instead — see app/page.tsx host branching.
+ * standings homepage instead — see app/page.tsx host branch.
  *
  * Self-contained chrome (its own header/footer) so it never inherits the
  * league-specific Navbar or the "Hong Kong Bank League" branding.
+ *
+ * All internal links are RELATIVE paths: this component only renders on the
+ * platform host, so /apply and /platform resolve there without a full-page
+ * reload (client navigation) and work on local/preview hosts too.
  */
 
 type Feature = { zh: string; en: string; descZh: string; descEn: string; icon: string };
@@ -78,27 +83,28 @@ export default function PlatformLanding() {
       <header className="sticky top-0 z-30 border-b border-zinc-200/60 bg-zinc-900 text-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
           <div className="flex items-center gap-2.5">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.png" alt="ZENEX" className="h-9 w-9 object-contain" draggable={false} />
+            <Image src="/logo.png" alt="" width={36} height={36} className="h-9 w-9 object-contain" draggable={false} priority />
             <span className="text-lg font-bold tracking-wide">ZENEX Sports</span>
           </div>
-          <nav className="flex items-center gap-2 sm:gap-3">
+          <nav className="flex items-center gap-2 sm:gap-3" aria-label={t('平台導覽', 'Platform navigation')}>
+            <LanguageToggle />
             <Link
               href="/login"
-              className="rounded-lg px-3 py-1.5 text-sm font-medium text-white/85 hover:bg-white/10"
+              className="rounded-lg px-3 py-2 text-sm font-medium text-white/85 hover:bg-white/10"
             >
               {t('登入', 'Sign in')}
             </Link>
-            <a
-              href={PLATFORM_APPLY_URL}
-              className="rounded-lg bg-white px-3.5 py-1.5 text-sm font-semibold text-zinc-900 transition-colors hover:bg-zinc-200"
+            <Link
+              href="/apply"
+              className="rounded-lg bg-white px-3.5 py-2 text-sm font-semibold text-zinc-900 transition-colors hover:bg-zinc-200"
             >
               {t('開辦聯賽', 'Start a league')}
-            </a>
+            </Link>
           </nav>
         </div>
       </header>
 
+      <main id="main-content">
       {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-b from-zinc-900 via-zinc-900 to-zinc-800 text-white">
         <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
@@ -116,12 +122,12 @@ export default function PlatformLanding() {
               )}
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <a
-                href={PLATFORM_APPLY_URL}
+              <Link
+                href="/apply"
                 className="inline-flex items-center justify-center rounded-lg bg-white px-6 py-3 text-base font-semibold text-zinc-900 transition-colors hover:bg-zinc-200"
               >
                 {t('免費申請開辦', 'Apply to start')}
-              </a>
+              </Link>
               <Link
                 href="/login"
                 className="inline-flex items-center justify-center rounded-lg border border-white/25 px-6 py-3 text-base font-semibold text-white transition-colors hover:bg-white/10"
@@ -150,7 +156,10 @@ export default function PlatformLanding() {
               key={f.en}
               className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
             >
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-zinc-100 text-2xl dark:bg-zinc-800">
+              <div
+                className="flex h-11 w-11 items-center justify-center rounded-xl bg-zinc-100 text-2xl dark:bg-zinc-800"
+                aria-hidden="true"
+              >
                 {f.icon}
               </div>
               <h3 className="mt-4 text-base font-semibold">{t(f.zh, f.en)}</h3>
@@ -187,14 +196,14 @@ export default function PlatformLanding() {
             {t('立即申請，簡單幾步即可擁有專屬聯賽網站。', 'Apply now and get your dedicated league site in just a few steps.')}
           </p>
           <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <a
-              href={PLATFORM_APPLY_URL}
+            <Link
+              href="/apply"
               className="inline-flex items-center justify-center rounded-lg bg-white px-6 py-3 text-base font-semibold text-zinc-900 transition-colors hover:bg-zinc-200"
             >
               {t('申請開辦', 'Start your league')}
-            </a>
+            </Link>
             <Link
-              href={PLATFORM_CONSOLE_URL}
+              href="/platform"
               className="text-sm font-medium text-zinc-300 hover:text-white"
             >
               {t('平台管理員入口 →', 'Platform admin →')}
@@ -202,6 +211,7 @@ export default function PlatformLanding() {
           </div>
         </div>
       </section>
+      </main>
 
       {/* Footer */}
       <footer className="border-t border-zinc-200 bg-white py-8 text-center text-xs text-zinc-500 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-400">

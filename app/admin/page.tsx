@@ -1,14 +1,16 @@
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { redirect } from 'next/navigation';
+import Link from 'next/link';
+import { getRequestTenant } from '@/lib/tenant/context';
 import { getMatches, getTeamPlayers, getAnnouncements, getAllPlayers, getTeamKitSettingsMap } from '@/lib/actions';
 import { MatchForm, ResetButton } from '@/components/AdminClient';
 import { PlayerContactList } from '@/components/PlayerContactList';
 import { CollapsibleSection } from '@/components/CollapsibleSection';
 import { UpcomingFixtures } from '@/components/UpcomingFixtures';
 import { MatchResults } from '@/components/MatchResults';
-import Link from 'next/link';
 import { TEAMS } from '@/lib/constants';
+import { KitColorManager } from '@/components/KitColorManager';
 import { PlayerManager } from '@/app/admin/match-sheet/[teamId]/PlayerManager';
 import SignOutButton from '@/components/SignOutButton';
 import FixDbButton from '@/components/FixDbButton';
@@ -18,7 +20,6 @@ import type { Player, Announcement } from '@/lib/schema';
 import { AnnouncementManager } from '@/components/AnnouncementManager';
 import { TEAM_CONTACTS } from '@/lib/team-contacts';
 import { TeamCard } from '@/components/TeamCard';
-import { KitColorManager } from '@/components/KitColorManager';
 
 // Type from Database (Drizzle returns Date object for timestamp)
 interface DbMatch {
@@ -53,6 +54,39 @@ export default async function AdminPage() {
 
   if (!session) {
     redirect('/login');
+  }
+
+  // Host guard (symmetric with app/platform/page.tsx): the league admin
+  // console only exists on a league tenant host. On the platform host every
+  // league-scoped query resolves to leagueId 0, so a league admin/manager who
+  // signed in here would otherwise see an empty/broken console. Platform
+  // principals are redirected to their cross-tenant console by /login.
+  const tenant = await getRequestTenant();
+  if (tenant.isPlatform) {
+    return (
+      <main className="min-h-[70vh] flex items-center justify-center px-4 py-16">
+        <div className="max-w-md w-full text-center bg-white rounded-2xl shadow-lg border border-slate-200 p-8">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-amber-50 text-xl">
+            ⚠️
+          </div>
+          <h1 className="text-xl font-bold text-slate-900">呢度係平台主機</h1>
+          <p className="mt-2 text-sm text-slate-600">
+            聯賽後台只可以喺你所屬聯賽嘅專屬網址開啟。請到該網址再登入，平台管理員請前往
+            {` `}
+            <Link href="/platform" className="text-blue-600 hover:underline">
+              平台控制台
+            </Link>
+            。
+          </p>
+          <Link
+            href="/"
+            className="mt-6 inline-block text-sm font-semibold text-slate-700 hover:underline"
+          >
+            ← 返回主頁
+          </Link>
+        </div>
+      </main>
+    );
   }
 
   let scheduledMatches: SerializedMatch[] = [];
