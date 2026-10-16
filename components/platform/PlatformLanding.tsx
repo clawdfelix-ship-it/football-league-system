@@ -109,6 +109,130 @@ const STEPS = [
   { zh: '開始管理聯賽', en: 'Run your league' },
 ];
 
+
+
+/* ------------------------------------------------------------------ */
+/* Hand-drawn line icons (stroke=currentColor, inherit colour/size)    */
+/* ------------------------------------------------------------------ */
+
+type IconProps = { className?: string };
+
+const base = {
+  fill: 'none',
+  stroke: 'currentColor',
+  strokeWidth: 1.7,
+  strokeLinecap: 'round' as const,
+  strokeLinejoin: 'round' as const,
+  viewBox: '0 0 24 24',
+};
+
+const IconStandings = ({ className }: IconProps) => (
+  <svg {...base} className={className} aria-hidden="true">
+    <path d="M4 5h16M4 12h16M4 19h16" />
+    <circle cx="8" cy="5" r="1.6" />
+    <circle cx="16" cy="12" r="1.6" />
+    <circle cx="10" cy="19" r="1.6" />
+  </svg>
+);
+
+const IconCalendar = ({ className }: IconProps) => (
+  <svg {...base} className={className} aria-hidden="true">
+    <rect x="3.5" y="5" width="17" height="15" rx="2.5" />
+    <path d="M3.5 9.5h17M8 3v4M16 3v4" />
+    <path d="M8.5 14l2 2 3.5-3.5" />
+  </svg>
+);
+
+const IconUsers = ({ className }: IconProps) => (
+  <svg {...base} className={className} aria-hidden="true">
+    <circle cx="9" cy="8.5" r="3" />
+    <path d="M3.5 19.5c0-3 2.5-4.8 5.5-4.8s5.5 1.8 5.5 4.8" />
+    <path d="M16 6.2a3 3 0 0 1 0 5.2M17.5 14.9c2 .6 3.2 2.1 3.2 4.3" />
+  </svg>
+);
+
+const IconLanguage = ({ className }: IconProps) => (
+  <svg {...base} className={className} aria-hidden="true">
+    <path d="M4 5h7M7.5 5v0c0 3.2-1.4 6-4 7.7M5 9.5c.9 2 2.5 3.6 4.4 4.5" />
+    <path d="M13 19l3.2-7.5L19.5 19M14.4 16.4h3.7" />
+  </svg>
+);
+
+const IconPhone = ({ className }: IconProps) => (
+  <svg {...base} className={className} aria-hidden="true">
+    <rect x="7" y="2.5" width="10" height="19" rx="2.5" />
+    <path d="M10.5 5.5h3M11 18.6h2" />
+  </svg>
+);
+
+const IconDoc = ({ className }: IconProps) => (
+  <svg {...base} className={className} aria-hidden="true">
+    <path d="M7 3.5h7l4 4V20.5H7z" />
+    <path d="M14 3.5V8h4M9.5 12.5h6M9.5 15.5h6" />
+  </svg>
+);
+
+const IconShieldCheck = ({ className }: IconProps) => (
+  <svg {...base} className={className} aria-hidden="true">
+    <path d="M12 3l7 3v5c0 4.5-3 8-7 9.5C8 19 5 15.5 5 11V6z" />
+    <path d="M9 11.5l2.2 2.2L15.5 9.5" />
+  </svg>
+);
+
+const IconKey = ({ className }: IconProps) => (
+  <svg {...base} className={className} aria-hidden="true">
+    <circle cx="8" cy="8" r="4" />
+    <path d="M11 11l8 8M16.5 16.5l1.8-1.8M18.7 18.7l1.6-1.6" />
+  </svg>
+);
+
+const IconWhistle = ({ className }: IconProps) => (
+  <svg {...base} className={className} aria-hidden="true">
+    <path d="M3 9h11a4 4 0 1 1-4 4H7a4 4 0 0 1-4-4z" />
+    <path d="M14 9l6-2.5M14 9l5 1.6M7.5 9V6" />
+  </svg>
+);
+
+const IconTrophy = ({ className }: IconProps) => (
+  <svg {...base} className={className} aria-hidden="true">
+    <path d="M7 4h10v4a5 5 0 0 1-10 0z" />
+    <path d="M7 5H4v2a3 3 0 0 0 3 3M17 5h3v2a3 3 0 0 1-3 3M12 13v4M8.5 20h7M10 17h4l.5 3h-5z" />
+  </svg>
+);
+
+const IconBall = ({ className }: IconProps) => (
+  <svg {...base} className={className} aria-hidden="true">
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 7.5l3.8 2.8-1.5 4.4H9.7l-1.5-4.4z" />
+    <path d="M12 3v4.5M20.6 9.2l-4.8 1.1M18.2 18.4l-3.9-2.9M5.8 18.4l3.9-2.9M3.4 9.2l4.8 1.1" />
+  </svg>
+);
+
+const IconGlobe = ({ className }: IconProps) => (
+  <svg {...base} className={className} aria-hidden="true">
+    <circle cx="12" cy="12" r="9" />
+    <path d="M3 12h18M12 3c2.5 2.4 3.8 5.6 3.8 9s-1.3 6.6-3.8 9c-2.5-2.4-3.8-5.6-3.8-9S9.5 5.4 12 3z" />
+  </svg>
+);
+
+const IconBolt = ({ className }: IconProps) => (
+  <svg {...base} className={className} aria-hidden="true">
+    <path d="M13 2L4 14h6.5L10 22l9-12.5h-6.5z" />
+  </svg>
+);
+
+const FEATURE_ICONS = [IconStandings, IconCalendar, IconUsers, IconLanguage, IconPhone];
+const STEP_ICONS = [IconDoc, IconShieldCheck, IconKey, IconWhistle];
+
+/* Compact trust / included-feature strip under the hero. */
+const INCLUDED = [
+  { icon: IconGlobe, zh: '專屬網址', en: 'Own subdomain' },
+  { icon: IconBolt, zh: '即時更新', en: 'Live updates' },
+  { icon: IconShieldCheck, zh: '帳號權限', en: 'Roles & access' },
+  { icon: IconTrophy, zh: '積分運算', en: 'Auto standings' },
+  { icon: IconLanguage, zh: '中英雙語', en: 'Bilingual' },
+];
+
 /* ------------------------------------------------------------------ */
 /* Reveal-on-scroll (transform + opacity only, reduced-motion aware)  */
 /* ------------------------------------------------------------------ */
@@ -454,6 +578,25 @@ export default function PlatformLanding() {
           </div>
         </section>
 
+        {/* Included / trust strip */}
+        <section className="border-b border-slate-200 bg-white">
+          <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
+            <ul className="grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-3 lg:grid-cols-5">
+              {INCLUDED.map((f) => {
+                const Icon = f.icon;
+                return (
+                  <li key={f.en} className="flex items-center gap-2.5 text-slate-700">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#1a237e]/10 text-[#1a237e]">
+                      <Icon className="h-5 w-5" />
+                    </span>
+                    <span className="text-[13px] font-medium leading-tight">{t(f.zh, f.en)}</span>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </section>
+
         {/* Match-night photo gallery */}
         <section className="border-b border-slate-200 bg-slate-950 py-20 sm:py-24">
           <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14">
@@ -497,44 +640,54 @@ export default function PlatformLanding() {
           </Reveal>
 
           <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {BENTO.map((b, i) => (
-              <Reveal key={b.titleEn} delay={(i % 3) * 80} className={b.span}>
-                <article
-                  className={`group relative flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-xl hover:shadow-slate-900/5 ${
-                    b.image ? 'min-h-[340px]' : ''
-                  }`}
-                >
-                  {b.image ? (
-                    <>
-                      <div className="relative flex-1 overflow-hidden bg-slate-100">
-                        <Image
-                          src={b.image}
-                          alt=""
-                          width={b.image.includes('mobile') ? 390 : 1440}
-                          height={b.image.includes('mobile') ? 844 : 900}
-                          className={`absolute ${b.imageClassName} h-auto rounded-lg border border-slate-200 object-cover shadow-lg transition-transform duration-500 group-hover:scale-[1.03]`}
-                        />
+            {BENTO.map((b, i) => {
+              const Icon = FEATURE_ICONS[i] ?? IconBall;
+              return (
+                <Reveal key={b.titleEn} delay={(i % 3) * 80} className={b.span}>
+                  <article
+                    className={`group relative flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-xl hover:shadow-slate-900/5 ${
+                      b.image ? 'min-h-[340px]' : ''
+                    }`}
+                  >
+                    {b.image ? (
+                      <>
+                        <div className="relative flex-1 overflow-hidden bg-slate-100">
+                          {/* Floating icon chip so even image cards carry the icon system */}
+                          <span className="absolute left-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-xl bg-white/90 text-[#1a237e] shadow-md ring-1 ring-slate-900/5 backdrop-blur transition-transform duration-300 group-hover:scale-110">
+                            <Icon className="h-5 w-5" />
+                          </span>
+                          <Image
+                            src={b.image}
+                            alt=""
+                            width={b.image.includes('mobile') ? 390 : 1440}
+                            height={b.image.includes('mobile') ? 844 : 900}
+                            className={`absolute ${b.imageClassName} h-auto rounded-lg border border-slate-200 object-cover shadow-lg transition-transform duration-500 group-hover:scale-[1.03]`}
+                          />
+                        </div>
+                        <div className="border-t border-slate-100 p-5">
+                          <h3 className="text-base font-semibold text-slate-900">{t(b.titleZh, b.titleEn)}</h3>
+                          <p className="mt-1 text-sm leading-relaxed text-slate-500">{t(b.bodyZh, b.bodyEn)}</p>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="flex flex-1 flex-col p-6">
+                        <span
+                          className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#1a237e] to-[#3949ab] text-white shadow-md shadow-[#1a237e]/25 transition-transform duration-300 group-hover:scale-110"
+                        >
+                          <Icon className="h-6 w-6" />
+                          <span
+                            aria-hidden="true"
+                            className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-emerald-400 ring-2 ring-white"
+                          />
+                        </span>
+                        <h3 className="mt-4 text-base font-semibold text-slate-900">{t(b.titleZh, b.titleEn)}</h3>
+                        <p className="mt-1.5 text-sm leading-relaxed text-slate-500">{t(b.bodyZh, b.bodyEn)}</p>
                       </div>
-                      <div className="border-t border-slate-100 p-5">
-                        <h3 className="text-base font-semibold text-slate-900">{t(b.titleZh, b.titleEn)}</h3>
-                        <p className="mt-1 text-sm leading-relaxed text-slate-500">{t(b.bodyZh, b.bodyEn)}</p>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="flex flex-1 flex-col p-6">
-                      <span
-                        aria-hidden="true"
-                        className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#1a237e]/10 text-[#1a237e] transition-transform duration-300 group-hover:scale-110"
-                      >
-                        <span className="h-2.5 w-2.5 rounded-sm bg-current" />
-                      </span>
-                      <h3 className="mt-4 text-base font-semibold text-slate-900">{t(b.titleZh, b.titleEn)}</h3>
-                      <p className="mt-1.5 text-sm leading-relaxed text-slate-500">{t(b.bodyZh, b.bodyEn)}</p>
-                    </div>
-                  )}
-                </article>
-              </Reveal>
-            ))}
+                    )}
+                  </article>
+                </Reveal>
+              );
+            })}
           </div>
         </section>
 
@@ -546,17 +699,31 @@ export default function PlatformLanding() {
                 {t('四步開通', 'Live in four steps')}
               </h2>
             </Reveal>
-            <ol className="mt-10 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-slate-200 bg-slate-200 sm:grid-cols-2 lg:grid-cols-4">
-              {STEPS.map((s, i) => (
-                <li key={s.en} className="bg-white">
-                  <Reveal delay={i * 80}>
-                    <div className="flex h-full flex-col gap-3 p-6">
-                      <span className="text-sm font-bold text-[#1a237e]">0{i + 1}</span>
-                      <p className="text-[15px] font-medium leading-snug text-slate-900">{t(s.zh, s.en)}</p>
-                    </div>
-                  </Reveal>
-                </li>
-              ))}
+            <ol className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {STEPS.map((s, i) => {
+                const StepIcon = STEP_ICONS[i] ?? IconBall;
+                return (
+                  <li key={s.en} className="relative rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-900/5">
+                    {/* connector arrow on desktop */}
+                    {i < STEPS.length - 1 && (
+                      <span aria-hidden="true" className="absolute -right-3 top-1/2 z-10 hidden h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full bg-white text-slate-300 ring-1 ring-slate-200 lg:flex">
+                        →
+                      </span>
+                    )}
+                    <Reveal delay={i * 80}>
+                      <div className="flex h-full flex-col gap-3">
+                        <div className="flex items-center gap-3">
+                          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#1a237e]/10 text-[#1a237e]">
+                            <StepIcon className="h-6 w-6" />
+                          </span>
+                          <span className="text-2xl font-extrabold tracking-tight text-slate-200">0{i + 1}</span>
+                        </div>
+                        <p className="text-[15px] font-medium leading-snug text-slate-900">{t(s.zh, s.en)}</p>
+                      </div>
+                    </Reveal>
+                  </li>
+                );
+              })}
             </ol>
           </div>
         </section>
