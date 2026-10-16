@@ -224,6 +224,46 @@ const IconBolt = ({ className }: IconProps) => (
 const FEATURE_ICONS = [IconStandings, IconCalendar, IconUsers, IconLanguage, IconPhone];
 const STEP_ICONS = [IconDoc, IconShieldCheck, IconKey, IconWhistle];
 
+/* Sticky-scroll story: left copy scrolls past, right photo crossfades. */
+const STORY = [
+  {
+    src: '/platform/gallery/match-7.jpg',
+    kickerZh: '開季',
+    kickerEn: 'Kick-off',
+    titleZh: '賽程一鍵公佈',
+    titleEn: 'Publish the whole season at once',
+    bodyZh: '對賽、時間、場地排好，球員打開手機就見到自己球隊嘅每一場。',
+    bodyEn: 'Fixtures, kick-offs and venues laid out so every player sees their run-in on their phone.',
+  },
+  {
+    src: '/platform/gallery/match-5.jpg',
+    kickerZh: '比賽夜',
+    kickerEn: 'Match night',
+    titleZh: '入完波即刻出賽果',
+    titleEn: 'Post a score, standings move',
+    bodyZh: '球場上入個比數，積分榜、得失球、排名即時自動更新。',
+    bodyEn: 'Enter the final whistle score and points, goal difference and rank update instantly.',
+  },
+  {
+    src: '/platform/gallery/match-3.jpg',
+    kickerZh: '球隊',
+    kickerEn: 'Clubs',
+    titleZh: '每隊自己管陣容',
+    titleEn: 'Every club owns its squad',
+    bodyZh: '球隊有獨立帳號，自己報陣、更新球員，聯賽專心做聯賽。',
+    bodyEn: 'Each club gets a login to submit the line-up and keep profiles current — the league runs the league.',
+  },
+  {
+    src: '/platform/gallery/match-6.jpg',
+    kickerZh: '頒獎',
+    kickerEn: 'Trophy',
+    titleZh: '成季回憶一頁收藏',
+    titleEn: 'A whole season in one place',
+    bodyZh: '賽果、積分、大合照全部留低，下一季又係一個新故事。',
+    bodyEn: 'Results, tables and the line-up photos stay together — then next season starts a new story.',
+  },
+];
+
 /* Compact trust / included-feature strip under the hero. */
 const INCLUDED = [
   { icon: IconGlobe, zh: '專屬網址', en: 'Own subdomain' },
@@ -356,6 +396,244 @@ function HeroBackdrop() {
         }}
       />
     </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* 3D tilt browser mockup — follows pointer/touch with spring-back and  */
+/* a moving radial sheen. DOM-synced, reduced-motion + no-JS safe.      */
+/* ------------------------------------------------------------------ */
+
+function TiltMockup({ t }: { t: (zh: string, en: string) => string }) {
+  const frameRef = useRef<HTMLDivElement | null>(null);
+  const innerRef = useRef<HTMLDivElement | null>(null);
+  const sheenRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const frame = frameRef.current;
+    const inner = innerRef.current;
+    if (!frame || !inner) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    // Fine pointers (mouse) only; touch tilt feels jittery on mobile.
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+    let raf = 0;
+    let targetRx = 0;
+    let targetRy = 0;
+    let rx = 0;
+    let ry = 0;
+
+    const render = () => {
+      // Critically-damped follow (spring-back toward the target, incl. 0).
+      rx += (targetRx - rx) * 0.12;
+      ry += (targetRy - ry) * 0.12;
+      inner.style.transform = `perspective(1100px) rotateX(${rx.toFixed(3)}deg) rotateY(${ry.toFixed(3)}deg)`;
+      if (Math.abs(targetRx - rx) > 0.05 || Math.abs(targetRy - ry) > 0.05 || targetRx !== 0) {
+        raf = requestAnimationFrame(render);
+      } else {
+        inner.style.transform = 'perspective(1100px) rotateX(0deg) rotateY(0deg)';
+      }
+    };
+    const kick = () => {
+      if (!raf) raf = requestAnimationFrame(render);
+    };
+
+    const onMove = (e: PointerEvent) => {
+      const r = frame.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width; // 0..1
+      const py = (e.clientY - r.top) / r.height;
+      targetRy = (px - 0.5) * 14; // rotateY
+      targetRx = (0.5 - py) * 12; // rotateX
+      if (sheenRef.current) {
+        sheenRef.current.style.background = `radial-gradient(420px circle at ${px * 100}% ${py * 100}%, rgba(255,255,255,0.22), rgba(255,255,255,0) 60%)`;
+        sheenRef.current.style.opacity = '1';
+      }
+      kick();
+    };
+    const onLeave = () => {
+      targetRx = 0;
+      targetRy = 0;
+      if (sheenRef.current) sheenRef.current.style.opacity = '0';
+      kick();
+    };
+
+    frame.addEventListener('pointermove', onMove);
+    frame.addEventListener('pointerleave', onLeave);
+    return () => {
+      frame.removeEventListener('pointermove', onMove);
+      frame.removeEventListener('pointerleave', onLeave);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  return (
+    <div ref={frameRef} className="relative [perspective:1100px]">
+      <div aria-hidden="true" className="absolute -inset-4 -z-10 rounded-[28px] bg-gradient-to-tr from-[#1a237e]/40 to-transparent blur-2xl" />
+      <div
+        ref={innerRef}
+        className="overflow-hidden rounded-2xl border border-white/15 bg-white shadow-2xl shadow-black/40 ring-1 ring-black/20 transition-transform duration-200 will-change-transform [transform-style:preserve-3d]"
+      >
+        <div className="flex items-center gap-1.5 border-b border-slate-200 bg-slate-50 px-4 py-3">
+          <span className="h-3 w-3 rounded-full bg-[#ff5f57]" />
+          <span className="h-3 w-3 rounded-full bg-[#febc2e]" />
+          <span className="h-3 w-3 rounded-full bg-[#28c840]" />
+          <span className="ml-3 hidden truncate rounded-md bg-white px-3 py-1 text-[11px] text-slate-400 ring-1 ring-slate-200 sm:block">
+            hkbankleague2026.zenex-sports.com
+          </span>
+        </div>
+        <div className="relative">
+          <Image
+            src="/platform/screen-home.png"
+            alt={t('真實聯賽網站預覽', 'Preview of a live league site')}
+            width={1440}
+            height={900}
+            priority
+            className="block h-auto w-full"
+          />
+          {/* moving sheen over the screenshot (doesn't block pointer) */}
+          <div
+            ref={sheenRef}
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300"
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Sticky-scroll story — left copy steps past, right photo crossfades  */
+/* (flip-book). Scroll-driven via IO; reduced-motion/no-JS shows all.   */
+/* ------------------------------------------------------------------ */
+
+function StorySection({ t }: { t: (zh: string, en: string) => string }) {
+  const imgsRef = useRef<(HTMLDivElement | null)[]>([]);
+  const dotsRef = useRef<(HTMLButtonElement | null)[]>([]);
+  const blocksRef = useRef<(HTMLLIElement | null)[]>([]);
+
+  useEffect(() => {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduced) return; // leave every image visible / let copy stack plainly
+    const setActive = (i: number) => {
+      imgsRef.current.forEach((el, j) => {
+        if (el) el.style.opacity = j === i ? '1' : '0';
+      });
+      dotsRef.current.forEach((el, j) => {
+        if (el) {
+          el.setAttribute('aria-current', j === i ? 'true' : 'false');
+          el.dataset.active = j === i ? 'true' : 'false';
+        }
+      });
+    };
+    const io = new IntersectionObserver(
+      (entries) => {
+        // Pick the most-visible step currently crossing the viewport centre.
+        let best: { i: number; r: number } | null = null;
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            const i = Number((e.target as HTMLElement).dataset.i);
+            const r = e.intersectionRatio;
+            if (!best || r > best.r) best = { i, r };
+          }
+        }
+        if (best) setActive(best.i);
+      },
+      // Trigger around the vertical centre so the swap feels pinned.
+      { rootMargin: '-45% 0px -45% 0px', threshold: [0, 0.25, 0.5, 1] }
+    );
+    blocksRef.current.forEach((el) => el && io.observe(el));
+    return () => io.disconnect();
+  }, []);
+
+  return (
+    <section className="bg-white">
+      <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-24">
+        <Reveal>
+          <span className="text-xs font-bold uppercase tracking-widest text-[#1a237e]">
+            {t('一個球季', 'A season on the platform')}
+          </span>
+          <h2 className="mt-3 max-w-2xl text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+            {t('由開季第一場，到捧盃那一晚', 'From the first fixture to the night they lift it')}
+          </h2>
+        </Reveal>
+
+        <div className="mt-12 grid gap-10 lg:grid-cols-2 lg:gap-16">
+          {/* Left: scroll copy steps (the sticky rail is on the right) */}
+          <ol className="flex flex-col">
+            {STORY.map((s, i) => (
+              <li
+                key={s.titleEn}
+                data-i={i}
+                ref={(el) => {
+                  blocksRef.current[i] = el;
+                }}
+                className="flex min-h-[46vh] flex-col justify-center border-b border-slate-100 py-10 last:border-b-0 lg:min-h-[52vh]"
+              >
+                <span className="text-sm font-bold text-[#1a237e]">
+                  {t(s.kickerZh, s.kickerEn)}
+                </span>
+                <h3 className="mt-2 text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
+                  {t(s.titleZh, s.titleEn)}
+                </h3>
+                <p className="mt-3 max-w-md text-[15px] leading-relaxed text-slate-600">
+                  {t(s.bodyZh, s.bodyEn)}
+                </p>
+              </li>
+            ))}
+          </ol>
+
+          {/* Right: pinned crossfading photo */}
+          <div className="relative hidden lg:block">
+            <div className="sticky top-24 overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 shadow-xl shadow-slate-900/10">
+              <div className="relative aspect-[4/3]">
+                {STORY.map((s, i) => (
+                  <div
+                    key={s.src}
+                    ref={(el) => {
+                      imgsRef.current[i] = el;
+                    }}
+                    className="absolute inset-0 transition-opacity duration-700 ease-out motion-reduce:transition-none"
+                    style={{ opacity: i === 0 ? 1 : 0 }}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={s.src} alt="" loading={i === 0 ? 'eager' : 'lazy'} className="h-full w-full object-cover" />
+                  </div>
+                ))}
+                {/* subtle brand scrim + dots */}
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/35 via-transparent to-transparent" />
+                <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2">
+                  {STORY.map((s, i) => (
+                    <button
+                      key={s.src}
+                      type="button"
+                      ref={(el) => {
+                        dotsRef.current[i] = el;
+                      }}
+                      data-active={i === 0 ? 'true' : 'false'}
+                      aria-current={i === 0 ? 'true' : 'false'}
+                      aria-label={`Story step ${i + 1}`}
+                      tabIndex={-1}
+                      className="h-2 cursor-default rounded-full bg-white/50 transition-all duration-300 data-[active=true]:w-6 data-[active=true]:bg-white"
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile/tablet: images inline with each step instead of sticky */}
+          <div className="-mt-2 flex flex-col gap-8 lg:hidden">
+            {STORY.map((s, i) => (
+              <div key={s.src} className="overflow-hidden rounded-2xl border border-slate-200 shadow-sm">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={s.src} alt="" loading={i === 0 ? 'eager' : 'lazy'} className="aspect-[4/3] w-full object-cover" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -551,29 +829,9 @@ export default function PlatformLanding() {
               </Reveal>
             </div>
 
-            {/* Real product preview, framed like a browser window */}
+            {/* Real product preview — 3D tilt browser mockup */}
             <Reveal delay={160} className="relative">
-              <div className="relative">
-                <div aria-hidden="true" className="absolute -inset-4 -z-10 rounded-[28px] bg-gradient-to-tr from-[#1a237e]/40 to-transparent blur-2xl" />
-                <div className="overflow-hidden rounded-2xl border border-white/15 bg-white shadow-2xl shadow-black/40 ring-1 ring-black/20">
-                  <div className="flex items-center gap-1.5 border-b border-slate-200 bg-slate-50 px-4 py-3">
-                    <span className="h-3 w-3 rounded-full bg-[#ff5f57]" />
-                    <span className="h-3 w-3 rounded-full bg-[#febc2e]" />
-                    <span className="h-3 w-3 rounded-full bg-[#28c840]" />
-                    <span className="ml-3 hidden truncate rounded-md bg-white px-3 py-1 text-[11px] text-slate-400 ring-1 ring-slate-200 sm:block">
-                      hkbankleague2026.zenex-sports.com
-                    </span>
-                  </div>
-                  <Image
-                    src="/platform/screen-home.png"
-                    alt={t('真實聯賽網站預覽', 'Preview of a live league site')}
-                    width={1440}
-                    height={900}
-                    priority
-                    className="block h-auto w-full"
-                  />
-                </div>
-              </div>
+              <TiltMockup t={t} />
             </Reveal>
           </div>
         </section>
@@ -691,6 +949,9 @@ export default function PlatformLanding() {
           </div>
         </section>
 
+        {/* Sticky flip-book story: kick-off → trophy */}
+        <StorySection t={t} />
+
         {/* How it works — vertical-stack layout family, numbered */}
         <section className="border-y border-slate-200 bg-slate-50">
           <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
@@ -728,11 +989,23 @@ export default function PlatformLanding() {
           </div>
         </section>
 
-        {/* Final CTA */}
+        {/* Final CTA — rotating conic glow border */}
         <section className="bg-white">
           <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
             <Reveal>
-              <div className="overflow-hidden rounded-3xl bg-[#1a237e] px-6 py-14 text-center sm:px-12 sm:py-16">
+              <div className="group relative rounded-3xl p-px">
+                {/* Rotating conic border + breathing glow (decorative, pause-safe) */}
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute -inset-2 -z-10 rounded-[28px] opacity-60 blur-2xl transition-opacity duration-500 group-hover:opacity-90 motion-reverse:animate-none"
+                  style={{ background: 'conic-gradient(from 0deg, rgba(26,35,126,0.0), rgba(96,130,255,0.55), rgba(26,35,126,0.0) 35%)', animation: 'zenex-spin 7s linear infinite' }}
+                />
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 rounded-3xl"
+                  style={{ padding: 1.5, background: 'conic-gradient(from 0deg, rgba(255,255,255,0.06), rgba(140,165,255,0.9), rgba(255,255,255,0.06) 30%)', WebkitMask: 'linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)', WebkitMaskComposite: 'xor', maskComposite: 'exclude', animation: 'zenex-spin 6s linear infinite' }}
+                />
+                <div className="relative overflow-hidden rounded-3xl bg-[#1a237e] px-6 py-14 text-center sm:px-12 sm:py-16">
                 <h2 className="text-balance text-2xl font-bold tracking-tight text-white sm:text-3xl">
                   {t('準備好開辦你的聯賽？', 'Ready to launch your league?')}
                 </h2>
@@ -754,6 +1027,7 @@ export default function PlatformLanding() {
                     {t('平台管理員入口', 'Platform admin')}
                   </Link>
                 </div>
+                </div>
               </div>
             </Reveal>
           </div>
@@ -774,6 +1048,20 @@ export default function PlatformLanding() {
           </div>
         </div>
       </footer>
+
+      {/* Component-scoped keyframes for the CTA rotating glow border. */}
+      <style jsx global>{`
+        @keyframes zenex-spin {
+          to {
+            transform: rotate(360deg);
+          }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          [style*='zenex-spin'] {
+            animation: none !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }
