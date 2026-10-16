@@ -36,7 +36,7 @@ const HERO = {
 };
 
 const STATS = [
-  { n: '9', labelZh: '支球隊同場管理', labelEn: 'clubs managed live' },
+  { n: '多', labelZh: '支球隊同時管理', labelEn: 'clubs managed together' },
   { n: '2', labelZh: '語言一鍵切換', labelEn: 'languages, one toggle' },
   { n: '1', labelZh: '個聯賽一個獨立網址', labelEn: 'dedicated subdomain per league' },
 ];
