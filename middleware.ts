@@ -30,8 +30,21 @@ const PROTECTED_PREFIXES = [
   '/init-teams',
 ];
 
+// Paths where a signed-in user flagged mustChangePassword must first change
+// their password. /platform is intentionally NOT in PROTECTED_PREFIXES (its
+// page renders a friendly "platform admin required" card to anonymous users),
+// but a signed-in principal with a stale temporary password must still be
+// forced through the change flow before operating the console (audit P1).
+const FORCE_PASSWORD_CHANGE_PREFIXES = [...PROTECTED_PREFIXES, '/platform'];
+
 function isProtected(pathname: string): boolean {
   return PROTECTED_PREFIXES.some(
+    (p) => pathname === p || pathname.startsWith(`${p}/`) || pathname.startsWith(`${p}?`)
+  );
+}
+
+function requiresPasswordChange(pathname: string): boolean {
+  return FORCE_PASSWORD_CHANGE_PREFIXES.some(
     (p) => pathname === p || pathname.startsWith(`${p}/`) || pathname.startsWith(`${p}?`)
   );
 }
@@ -46,7 +59,7 @@ export default withAuth(
     if (
       token &&
       must &&
-      isProtected(path) &&
+      requiresPasswordChange(path) &&
       !path.startsWith('/change-password')
     ) {
       const url = req.nextUrl.clone();

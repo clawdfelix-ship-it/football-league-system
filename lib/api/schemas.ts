@@ -55,21 +55,31 @@ export const DeleteByIdParamSchema = z.object({
   id: z.coerce.number().int().positive(),
 });
 
+// Single password policy shared by register / reset / change flows.
+// 8+ chars with at least one letter and one digit. (Was: register min 6 with
+// no complexity, reset/change min 8 — inconsistent; audit F10/P2-5.)
+export const PasswordSchema = z
+  .string()
+  .min(8, 'Password must be at least 8 characters')
+  .max(200)
+  .refine((v) => /[A-Za-z]/.test(v), 'Password must contain a letter')
+  .refine((v) => /[0-9]/.test(v), 'Password must contain a number');
+
 export const RegisterSchema = z.object({
   email: z.string().trim().email(),
   username: z.string().trim().min(2).max(50),
-  password: z.string().min(6).max(200),
+  password: PasswordSchema,
 });
 
 export const ChangePasswordSchema = z.object({
   currentPassword: z.string().min(1),
-  newPassword: z.string().min(8).max(200),
+  newPassword: PasswordSchema,
 });
 
 export const ChangePasswordFirstTimeSchema = z
   .object({
-    newPassword: z.string().min(8).max(200),
-    confirmPassword: z.string().min(8).max(200),
+    newPassword: PasswordSchema,
+    confirmPassword: PasswordSchema,
   })
   .refine((v) => v.newPassword === v.confirmPassword, {
     message: 'Passwords do not match',
@@ -78,7 +88,7 @@ export const ChangePasswordFirstTimeSchema = z
 
 export const TeamPasswordSetSchema = z.object({
   team: NonEmptyString,
-  password: z.string().min(8).max(200),
+  password: PasswordSchema,
 });
 
 export const TeamPasswordResetSchema = z.object({

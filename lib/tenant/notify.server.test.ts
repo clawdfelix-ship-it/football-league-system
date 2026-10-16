@@ -22,40 +22,13 @@ beforeEach(() => {
 });
 
 describe('consoleUrl', () => {
-  it('uses the apex platform domain for a tenant subdomain', () => {
-    expect(consoleUrl('summer-cup.zenex-sports.com')).toBe(
-      'https://zenex-sports.com/platform'
-    );
-  });
-
-  it('strips www and scheme/path', () => {
-    expect(consoleUrl('https://www.zenex-sports.com/some/path')).toBe(
-      'https://zenex-sports.com/platform'
-    );
-  });
-
-  it('keeps vercel/localhost hosts at /platform on that host', () => {
-    expect(consoleUrl('football-x.vercel.app')).toBe(
-      'https://football-x.vercel.app/platform'
-    );
-    expect(consoleUrl('localhost:3000')).toBe('https://localhost:3000/platform');
-  });
-
-  it('falls back to the configured apex when host is absent', () => {
-    process.env.TENANT_BASE_DOMAIN = 'games.example.org';
-    expect(consoleUrl(null)).toBe('https://games.example.org/platform');
-  });
-
-  it('honours TENANT_BASE_DOMAIN override for matching subdomains', () => {
-    process.env.TENANT_BASE_DOMAIN = 'games.example.org';
-    expect(consoleUrl('acme.games.example.org')).toBe(
-      'https://games.example.org/platform'
-    );
+  it('always points at the dedicated platform host (apex/www are Shopify)', () => {
+    expect(consoleUrl()).toBe('https://platform.zenex-sports.com/platform');
   });
 });
 
 describe('applicationNoticeEmail', () => {
-  const msg = applicationNoticeEmail(notice, 'summer-cup.zenex-sports.com');
+  const msg = applicationNoticeEmail(notice);
 
   it('builds a subject with the league name', () => {
     expect(msg.subject).toContain('Summer Cup');
@@ -67,33 +40,31 @@ describe('applicationNoticeEmail', () => {
     expect(msg.text).toContain('+852 9123 4567');
     expect(msg.text).toContain('summer-cup');
     expect(msg.text).toContain('Weeknight league');
-    expect(msg.text).toContain('https://zenex-sports.com/platform');
+    expect(msg.text).toContain('https://platform.zenex-sports.com/platform');
   });
 
-  it('renders an HTML body linking to the console', () => {
-    expect(msg.html).toContain('https://zenex-sports.com/platform');
+  it('renders an HTML body linking to the platform console', () => {
+    expect(msg.html).toContain('https://platform.zenex-sports.com/platform');
     expect(msg.html).toContain('Summer Cup');
   });
 
   it('escapes HTML-significant characters in user input', () => {
-    const xss = applicationNoticeEmail(
-      { ...notice, leagueName: '<script>x</script>', notes: '<b>hi</b>' },
-      'x.zenex-sports.com'
-    );
+    const xss = applicationNoticeEmail({
+      ...notice,
+      leagueName: '<script>x</script>',
+      notes: '<b>hi</b>',
+    });
     expect(xss.html).not.toContain('<script>');
     expect(xss.html).toContain('&lt;script&gt;');
   });
 
   it('omits optional blank fields without printing "undefined"', () => {
-    const minimal = applicationNoticeEmail(
-      {
-        id: 7,
-        leagueName: 'Bare Cup',
-        contactName: 'Pat',
-        contactEmail: 'pat@example.com',
-      },
-      null
-    );
+    const minimal = applicationNoticeEmail({
+      id: 7,
+      leagueName: 'Bare Cup',
+      contactName: 'Pat',
+      contactEmail: 'pat@example.com',
+    });
     expect(minimal.html).not.toContain('undefined');
     expect(minimal.text).not.toContain('undefined');
     expect(minimal.text).toContain('Bare Cup');

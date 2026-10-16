@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { ok, fail } from '@/lib/api/response';
 import { getClientIp, rateLimit } from '@/lib/api/rate-limit';
-import { getAuthContext } from '@/lib/authz';
+import { getPlatformAdmin } from '@/lib/authz';
 import { initializeDatabase } from '@/lib/migrations';
 import { db } from '@/lib/db';
 import { sql } from 'drizzle-orm';
@@ -16,14 +16,16 @@ export async function POST(request: NextRequest) {
     const rl = rateLimit(`init-db:${ip}`, { limit: 5, windowMs: 10 * 60 * 1000 });
     if (!rl.allowed) return fail(429, 'RATE_LIMITED', 'Too many requests');
 
-    const auth = await getAuthContext();
-    const isAdminSession = auth?.role === 'admin';
+    // Platform-only: this performs GLOBAL schema DDL affecting every league.
+    // A league-scoped admin (role='admin' bound to one league) must NOT pass,
+    // so we use getPlatformAdmin() rather than a bare role==='admin' check.
+    const platformAdmin = await getPlatformAdmin();
 
     const adminSecret = process.env.ADMIN_SECRET;
     const authHeader = request.headers.get('authorization');
     const providedSecret = authHeader?.replace(/^Bearer\s+/i, '').trim();
     const isSecretOk = Boolean(adminSecret && providedSecret && providedSecret === adminSecret);
-    if (!isAdminSession && !isSecretOk) {
+    if (!platformAdmin && !isSecretOk) {
       return fail(401, 'UNAUTHENTICATED', 'Unauthorized');
     }
     // 1. 初始化資料庫表結構

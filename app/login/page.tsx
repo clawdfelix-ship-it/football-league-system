@@ -21,8 +21,9 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!session) return;
-    if (session.user?.isPlatform || session.user?.role === 'admin') {
-      // Platform principal → the cross-tenant console, never a league admin.
+    if (session.user?.isPlatform) {
+      // Platform principal only → the cross-tenant console. A league-scoped
+      // admin (role='admin', isPlatform=false) stays on its own /admin.
       router.replace('/platform');
       return;
     }
@@ -51,12 +52,11 @@ export default function LoginPage() {
         // The client `session` state is often stale immediately after sign-in,
         // so fetch the fresh session to route by the real principal.
         const fresh = await getSession();
-        const dest =
-          fresh?.user?.isPlatform || fresh?.user?.role === 'admin'
-            ? '/platform'
-            : fresh?.user?.role === 'user'
-              ? '/'
-              : '/admin';
+        const dest = fresh?.user?.isPlatform
+          ? '/platform'
+          : fresh?.user?.role === 'user'
+            ? '/'
+            : '/admin';
         router.push(dest);
         router.refresh();
       }

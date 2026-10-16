@@ -133,3 +133,24 @@ export function assertApplicationTransition(
 export function canProvision(status: ApplicationStatus): boolean {
   return status === 'approved';
 }
+
+/**
+ * Build a unique username for a league owner (users.username is globally
+ * UNIQUE, max 50 chars). Shape is `{slug}-owner`, with the slug truncated to
+ * leave room for the suffix and any collision number, e.g.
+ *   acme-cup -> acme-cup-owner
+ *   <80 chars> -> aaaa…(44)-owner -> aaaa…(42)-owner-2 on collision
+ */
+export function uniqueOwnerUsername(slug: string, taken: ReadonlySet<string>): string {
+  const build = (suffix: string): string => {
+    const room = 50 - suffix.length;
+    return `${slug.slice(0, Math.max(1, room))}${suffix}`;
+  };
+  let candidate = build('-owner');
+  let n = 2;
+  while (taken.has(candidate)) {
+    candidate = build(`-owner-${n}`);
+    n += 1;
+  }
+  return candidate;
+}

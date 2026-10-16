@@ -8,6 +8,7 @@ import { db } from '@/lib/db';
 import { users } from '@/lib/schema';
 import { and, eq } from 'drizzle-orm';
 import { hashPassword } from '@/lib/auth/password';
+import { generateTempPassword } from '@/lib/auth/temp-password';
 import { audit } from '@/lib/auth/audit-log';
 import { TEAMS } from '@/lib/constants';
 import { sendMail } from '@/lib/mail/mailer';
@@ -173,12 +174,7 @@ export async function PUT(request: Request) {
     return fail(400, 'VALIDATION_ERROR', 'Invalid request body', zodDetails(e));
   }
 
-  const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let raw = '';
-  for (let i = 0; i < 12; i++) {
-    raw += alphabet[Math.floor(Math.random() * alphabet.length)];
-  }
-  const newPassword = `${raw.slice(0, 3)}-${raw.slice(3, 6)}-${raw.slice(6, 9)}-${raw.slice(9, 12)}`;
+  const newPassword = generateTempPassword();
   const passwordHash = await hashPassword(newPassword);
   const now = new Date();
 

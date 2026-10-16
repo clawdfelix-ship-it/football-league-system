@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 export default function ChangePasswordPage() {
   const { data: session, status, update } = useSession();
   const router = useRouter();
+  const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [busy, setBusy] = useState(false);
@@ -29,8 +30,8 @@ export default function ChangePasswordPage() {
       setError('Passwords do not match');
       return;
     }
-    if (newPassword.length < 8) {
-      setError('Password must be at least 8 characters');
+    if (newPassword.length < 8 || !/[A-Za-z]/.test(newPassword) || !/[0-9]/.test(newPassword)) {
+      setError('Password must be at least 8 characters and contain letters and a number');
       return;
     }
     setBusy(true);
@@ -41,7 +42,7 @@ export default function ChangePasswordPage() {
         body: JSON.stringify(
           isForced
             ? { newPassword, confirmPassword }
-            : { currentPassword: '', newPassword, confirmPassword }
+            : { currentPassword, newPassword, confirmPassword }
         ),
       });
       const json = await res.json();
@@ -62,7 +63,9 @@ export default function ChangePasswordPage() {
       }
       setTimeout(() => {
         // Hard navigation with the refreshed cookie -> middleware lets them through.
-        window.location.href = '/manager-dashboard';
+        // Route by role: platform admins return to /platform, everyone else /admin.
+        const isPlatformRole = Boolean(session?.user?.isPlatform);
+        window.location.href = isPlatformRole ? '/platform' : '/admin';
       }, 800);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Network error');
@@ -90,6 +93,21 @@ export default function ChangePasswordPage() {
         </p>
 
         <form onSubmit={onSubmit} className="mt-6 space-y-4">
+          {!isForced && (
+            <div>
+              <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                Current password
+              </label>
+              <input
+                type="password"
+                autoComplete="current-password"
+                required
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-800"
+              />
+            </div>
+          )}
           <div>
             <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
               New password

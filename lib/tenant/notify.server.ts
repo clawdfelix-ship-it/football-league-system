@@ -7,6 +7,15 @@
  */
 import { sendMail, isMailConfigured } from '@/lib/mail/mailer';
 import { platformAdminEmails } from './platform-admin';
+import {
+  applicationReceivedEmail,
+  applicationUnderReviewEmail,
+  applicationApprovedEmail,
+  applicationRejectedEmail,
+  leagueProvisionedEmail,
+  leagueOwnerWelcomeEmail,
+} from '@/lib/mail/templates';
+import { TRIAL_DAYS } from './config';
 
 export type ApplicationNotice = {
   id: number;
@@ -33,25 +42,16 @@ const row = (label: string, value: string | number | null | undefined) =>
     label
   )}</td><td style="padding:4px 0;color:#0f172a">${esc(value == null ? '' : String(value))}</td></tr>`;
 
-/** Platform console URL — best effort from the request host is preferred. */
-export function consoleUrl(host?: string | null): string {
-  if (host) {
-    const raw = host.trim().toLowerCase();
-    if (raw) {
-      const base = raw.replace(/^https?:\/\//, '').replace(/\/.*$/, '');
-      const apex = base.startsWith('www.') ? base.slice(4) : base;
-      // League tenants live on {slug}.zenex-sports.com; the console is apex.
-      const apexDomain = process.env.TENANT_BASE_DOMAIN || 'zenex-sports.com';
-      if (base.endsWith(apexDomain)) return `https://${apexDomain}/platform`;
-      // vercel preview / localhost — console sits at root /platform.
-      return `https://${base}/platform`;
-    }
-  }
-  return `https://${process.env.TENANT_BASE_DOMAIN || 'zenex-sports.com'}/platform`;
+/** Platform console URL. Always uses the dedicated platform host because the
+ * apex/www point at Shopify, not Vercel (audit 2026-10-12). */
+import { PLATFORM_PUBLIC_URL } from './config';
+
+export function consoleUrl(): string {
+  return `${PLATFORM_PUBLIC_URL}/platform`;
 }
 
-export function applicationNoticeEmail(input: ApplicationNotice, host?: string | null) {
-  const url = consoleUrl(host);
+export function applicationNoticeEmail(input: ApplicationNotice) {
+  const url = consoleUrl();
   const html = `
   <div style="font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;max-width:560px;margin:0 auto;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden">
     <div style="background:#1d4ed8;color:#fff;padding:18px 24px">
@@ -99,8 +99,7 @@ export function applicationNoticeEmail(input: ApplicationNotice, host?: string |
  * failure so the public application endpoint stays available.
  */
 export async function notifyAdminsNewApplication(
-  input: ApplicationNotice,
-  host?: string | null
+  input: ApplicationNotice
 ): Promise<boolean> {
   const recipients = [...platformAdminEmails()];
   if (recipients.length === 0 || !isMailConfigured()) {
@@ -108,11 +107,121 @@ export async function notifyAdminsNewApplication(
     return false;
   }
   try {
-    const { subject, html, text } = applicationNoticeEmail(input, host);
+    const { subject, html, text } = applicationNoticeEmail(input);
     await sendMail({ to: recipients, replyTo: input.contactEmail, subject, html, text });
     return true;
   } catch (e) {
     console.error('[mail] admin application notice failed:', e);
+    return false;
+  }
+}
+
+/* ── Applicant-facing lifecycle notifications ──────────────────────────── */
+
+export type ApplicantNotice = {
+  contactName: string | null;
+  contactEmail: string;
+  leagueName: string;
+};
+
+async function sendApplicant(
+  to: string,
+  built: { subject: string; html: string; text: string }
+): Promise<boolean> {
+  if (!isMailConfigured()) {
+    console.warn('[mail] skipping applicant notice (mail unconfigured)');
+    return false;
+  }
+  try {
+    await sendMail({ to, subject: built.subject, html: built.html, text: built.text });
+    return true;
+  } catch (e) {
+    // Never block the console state transition on a mail failure.
+    console.error('[mail] applicant notice failed:', e);
+    return false;
+  }
+}
+
+export async function notifyApplicantReceived(input: ApplicantNotice): Promise<boolean> {
+  return sendApplicant(
+    input.contactEmail,
+    applicationReceivedEmail({ name: input.contactName, leagueName: input.leagueName })
+  );
+}
+
+export async function notifyApplicantStatus(
+  input: ApplicantNotice,
+  status: 'in_review' | 'approved' | 'rejected',
+  reviewNotes?: string | null
+): Promise<boolean> {
+  const name = input.contactName;
+  if (status === 'in_review') {
+    return sendApplicant(
+      input.contactEmail,
+      applicationUnderReviewEmail({ name, leagueName: input.leagueName })
+    );
+  }
+  if (status === 'approved') {
+    return sendApplicant(
+      input.contactEmail,
+      applicationApprovedEmail({ name, leagueName: input.leagueName })
+    );
+  }
+  return sendApplicant(
+    input.contactEmail,
+    applicationRejectedEmail({ name, leagueName: input.leagueName, reason: reviewNotes ?? null })
+  );
+}
+
+export async function notifyApplicantProvisioned(
+  input: ApplicantNotice,
+  slug: string
+): Promise<boolean> {
+  const base = process.env.TENANT_BASE_DOMAIN || 'zenex-sports.com';
+  const url = `https://${slug}.${base}`;
+  return sendApplicant(
+    input.contactEmail,
+    leagueProvisionedEmail({
+      name: input.contactName,
+      leagueName: input.leagueName,
+      url,
+      trialDays: TRIAL_DAYS,
+    })
+  );
+}
+
+/**
+ * Owner onboarding email: league is live AND the organiser's admin login
+ * (one-time temp password) is ready. `tempPassword` is included ONLY on the
+ * freshly-minted account; callers must pass null on idempotent re-runs.
+ */
+export async function notifyLeagueOwnerWelcome(input: {
+  contactName: string | null;
+  contactEmail: string;
+  leagueName: string;
+  ownerEmail: string;
+  tempPassword: string;
+  slug: string;
+}): Promise<boolean> {
+  if (!isMailConfigured()) {
+    console.warn('[mail] skipping owner welcome (mail unconfigured)');
+    return false;
+  }
+  const base = process.env.TENANT_BASE_DOMAIN || 'zenex-sports.com';
+  const loginUrl = `https://${input.slug}.${base}/login`;
+  try {
+    const built = leagueOwnerWelcomeEmail({
+      name: input.contactName,
+      leagueName: input.leagueName,
+      email: input.ownerEmail,
+      tempPassword: input.tempPassword,
+      loginUrl,
+      trialDays: TRIAL_DAYS,
+    });
+    await sendMail({ to: input.contactEmail, subject: built.subject, html: built.html, text: built.text });
+    return true;
+  } catch (e) {
+    console.error('[mail] owner welcome failed:', e);
     return false;
   }
 }
