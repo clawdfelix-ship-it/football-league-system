@@ -331,35 +331,18 @@ function GallerySlider({ t }: { t: (zh: string, en: string) => string }) {
 /* ------------------------------------------------------------------ */
 
 function SiteHeader({ t }: { t: (zh: string, en: string) => string }) {
-  const ref = useRef<HTMLElement | null>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const onScroll = () => {
-      if (window.scrollY > 24) el.dataset.scrolled = 'true';
-      else delete el.dataset.scrolled;
-    };
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
   return (
-    <header
-      ref={ref}
-      className="sticky top-0 z-30 border-b border-transparent transition-colors duration-300 data-[scrolled=true]:border-white/10 data-[scrolled=true]:bg-slate-950/80 data-[scrolled=true]:backdrop-blur-md"
-    >
+    <header className="sticky top-0 z-30 bg-[#1a237e] text-white shadow-md">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
         <Link href="/" className="flex items-center gap-2.5">
-          <Image src="/logo.png" alt="" width={32} height={32} className="h-8 w-8 object-contain drop-shadow" draggable={false} priority />
+          <Image src="/logo.png" alt="" width={32} height={32} className="h-8 w-8 object-contain" draggable={false} priority />
           <span className="text-[17px] font-bold tracking-tight text-white">ZENEX Sports</span>
         </Link>
         <nav className="flex items-center gap-1.5 sm:gap-2" aria-label={t('平台導覽', 'Platform navigation')}>
           <LanguageToggle />
           <Link
             href="/login"
-            className="hidden rounded-lg px-3 py-2 text-sm font-medium text-slate-200 transition-colors hover:bg-white/10 hover:text-white sm:inline-flex"
+            className="hidden rounded-lg px-3 py-2 text-sm font-medium text-blue-100 transition-colors hover:bg-white/10 hover:text-white sm:inline-flex"
           >
             {t(HERO.secondaryZh, HERO.secondaryEn)}
           </Link>
