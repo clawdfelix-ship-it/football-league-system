@@ -79,7 +79,7 @@ function ResetPasswordForm() {
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e] focus:border-transparent transition"
+          className="field h-11 rounded-xl bg-slate-50"
           placeholder={t('最少 8 位，含字母及數字', 'At least 8 chars, with letters and numbers')}
           required
         />
@@ -93,14 +93,14 @@ function ResetPasswordForm() {
           type="password"
           value={confirm}
           onChange={(e) => setConfirm(e.target.value)}
-          className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e] focus:border-transparent transition"
+          className="field h-11 rounded-xl bg-slate-50"
           placeholder={t('再輸入一次', 'Enter it again')}
           required
         />
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+        <div className="alert-error rounded-xl">
           {error}
         </div>
       )}
@@ -108,7 +108,7 @@ function ResetPasswordForm() {
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-[#1a237e] text-white font-bold py-3 px-4 rounded-xl hover:bg-[#283593] focus:outline-none focus:ring-2 focus:ring-[#1a237e] focus:ring-offset-2 focus:ring-offset-white disabled:opacity-50 disabled:cursor-not-allowed transition"
+        className="btn-primary w-full h-11 rounded-xl font-bold"
       >
         {loading ? t('設定中...', 'Setting...') : t('設定新密碼', 'Set new password')}
       </button>
@@ -120,12 +120,12 @@ export default function ResetPasswordPage() {
   const { t } = useLanguage();
   return (
     <div className="min-h-screen bg-[#1a237e] bg-gradient-to-b from-[#1a237e] to-[#283593] flex items-center justify-center px-4 py-12">
-      <div className="max-w-md w-full">
+      <div className="auth-container">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">ZENEX-SPORTS LeagueCenter</h1>
           <p className="text-blue-200">{t('重設密碼', 'Reset Password')}</p>
         </div>
-        <div className="bg-white border border-slate-200 rounded-2xl shadow-2xl p-8">
+        <div className="card p-8 shadow-2xl">
           <Suspense fallback={<p className="text-sm text-slate-400">{t('載入中…', 'Loading...')}</p>}>
             <ResetPasswordForm />
           </Suspense>

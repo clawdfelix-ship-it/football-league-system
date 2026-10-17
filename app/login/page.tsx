@@ -98,7 +98,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-[#1a237e] bg-gradient-to-b from-[#1a237e] to-[#283593] flex items-center justify-center px-4 py-12">
-      <div className="max-w-md w-full">
+      <div className="auth-container">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">ZENEX-SPORTS LeagueCenter</h1>
           <p className="text-blue-200">
@@ -106,7 +106,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-2xl shadow-2xl p-8">
+        <div className="card p-8 shadow-2xl">
           {mode === 'login' ? (
             <form onSubmit={handleLogin} className="space-y-6">
               <div>
@@ -118,7 +118,7 @@ export default function LoginPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e] focus:border-transparent transition"
+                  className="field h-11 rounded-xl bg-slate-50"
                   placeholder="you@example.com"
                   required
                 />
@@ -146,14 +146,14 @@ export default function LoginPage() {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e] focus:border-transparent transition"
+                  className="field h-11 rounded-xl bg-slate-50"
                   placeholder="••••••••"
                   required
                 />
               </div>
 
               {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+                <div className="alert-error rounded-xl">
                   {error}
                 </div>
               )}
@@ -161,7 +161,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#1a237e] text-white font-bold py-3 px-4 rounded-xl hover:bg-[#283593] focus:outline-none focus:ring-2 focus:ring-[#1a237e] focus:ring-offset-2 focus:ring-offset-white disabled:opacity-50 disabled:cursor-not-allowed transition duration-200"
+                className="btn-primary w-full h-11 rounded-xl font-bold"
               >
                 {loading ? t('登入中...', 'Signing in...') : t('登入', 'Login')}
               </button>
@@ -180,19 +180,19 @@ export default function LoginPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e] focus:border-transparent transition"
+                  className="field h-11 rounded-xl bg-slate-50"
                   placeholder="you@example.com"
                   required
                 />
               </div>
 
               {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+                <div className="alert-error rounded-xl">
                   {error}
                 </div>
               )}
               {notice && (
-                <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl text-sm">
+                <div className="alert-success rounded-xl">
                   {notice}
                 </div>
               )}
@@ -200,7 +200,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#1a237e] text-white font-bold py-3 px-4 rounded-xl hover:bg-[#283593] focus:outline-none focus:ring-2 focus:ring-[#1a237e] focus:ring-offset-2 focus:ring-offset-white disabled:opacity-50 disabled:cursor-not-allowed transition duration-200"
+                className="btn-primary w-full h-11 rounded-xl font-bold"
               >
                 {loading ? t('發送中...', 'Sending...') : t('發送重設連結', 'Send reset link')}
               </button>

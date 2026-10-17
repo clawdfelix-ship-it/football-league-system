@@ -73,7 +73,7 @@ export default function ApplyPage() {
         </div>
 
         {status === 'done' ? (
-          <div className="bg-white rounded-2xl shadow-2xl p-8 text-center">
+          <div className="card p-8 text-center shadow-2xl">
             <div className="text-4xl mb-4" aria-hidden="true">✅</div>
             <h2 className="text-xl font-bold text-slate-900 mb-2">
               {t('已收到申請', 'Application received')}
@@ -94,7 +94,7 @@ export default function ApplyPage() {
         ) : (
           <form
             onSubmit={submit}
-            className="bg-white rounded-2xl shadow-2xl p-8 space-y-4"
+            className="card p-8 space-y-4 shadow-2xl"
           >
             <Field label={t('聯賽名稱 *', 'League name *')}>
               <input
@@ -160,12 +160,12 @@ export default function ApplyPage() {
                 value={form.notes}
                 onChange={set('notes')}
                 maxLength={4000}
-                className={inputCls}
+                className="field py-2.5"
               />
             </Field>
 
             {status === 'error' && (
-              <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">
+              <p className="alert-error">
                 {message}
               </p>
             )}
@@ -173,7 +173,7 @@ export default function ApplyPage() {
             <button
               type="submit"
               disabled={status === 'submitting'}
-              className="w-full bg-[#1a237e] text-white py-3 rounded-xl font-bold hover:bg-[#283593] disabled:opacity-60 transition"
+              className="btn-primary w-full h-11 rounded-xl font-bold disabled:opacity-60"
             >
               {status === 'submitting'
                 ? t('提交中…', 'Submitting…')
@@ -192,8 +192,7 @@ export default function ApplyPage() {
   );
 }
 
-const inputCls =
-  'w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e] [&:-webkit-autofill]:[-webkit-text-fill-color:#0f172a] [&:-webkit-autofill]:[-webkit-box-shadow:0_0_0_1000px_#fff_inset]';
+const inputCls = 'field h-11';
 
 function Field({
   label,
