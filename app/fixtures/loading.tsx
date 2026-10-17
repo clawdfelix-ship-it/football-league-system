@@ -3,12 +3,12 @@
 export default function FixturesLoading() {
   return (
     <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans">
-      <header className="bg-[#1a237e] bg-gradient-to-b from-[#1a237e] to-[#283593] text-white pt-16 pb-24 px-6 text-center">
-        <div className="mx-auto h-14 w-48 rounded-lg bg-white/20 animate-pulse" />
+      <header className="bg-[#1a237e] bg-gradient-to-b from-[#1a237e] to-[#283593] pt-14 pb-20 text-white sm:pt-16 sm:pb-24 px-4 sm:px-6">
+        <div className="mx-auto h-12 w-48 rounded-lg bg-white/20 animate-pulse" />
         <div className="mx-auto mt-3 h-5 w-56 rounded bg-white/10 animate-pulse" />
       </header>
 
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 -mt-16 pb-20">
+      <main className="page-container -mt-16 pb-20">
         <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-3 mb-4 flex gap-3">
           <div className="h-11 w-24 rounded-full bg-slate-100 animate-pulse" />
           <div className="h-11 w-24 rounded-full bg-slate-100 animate-pulse" />

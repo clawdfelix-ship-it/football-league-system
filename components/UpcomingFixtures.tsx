@@ -267,37 +267,37 @@ export function UpcomingFixtures({
             </div>
 
             {editingMatch === match.id ? (
-              <form action={(formData) => handleUpdateMatch(match.id, formData)} className="mt-2 p-3 bg-white rounded border border-blue-200 grid gap-3">
+              <form action={(formData) => handleUpdateMatch(match.id, formData)} className="mt-2 rounded-lg border border-slate-200 bg-slate-50 p-3 grid gap-3">
                 <div className="grid grid-cols-2 gap-2">
                   <div>
                     <label className="text-xs font-medium text-slate-700">Date</label>
-                    <input name="date" type="date" defaultValue={match.date ? match.date.split('T')[0] : ''} className="w-full border rounded px-2 py-1 text-sm bg-white text-slate-900" />
+                    <input name="date" type="date" defaultValue={match.date ? match.date.split('T')[0] : ''} className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25" />
                   </div>
                   <div>
                     <label className="text-xs font-medium text-slate-700">Time</label>
-                    <input name="time" type="time" defaultValue={match.date ? new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : ''} className="w-full border rounded px-2 py-1 text-sm bg-white text-slate-900" />
+                    <input name="time" type="time" defaultValue={match.date ? new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : ''} className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25" />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
                     <label className="text-xs font-medium text-slate-700">Home Score</label>
-                    <input name="homeScore" type="number" defaultValue={match.homeScore ?? ''} className="w-full border rounded px-2 py-1 text-sm bg-white text-slate-900" />
+                    <input name="homeScore" type="number" defaultValue={match.homeScore ?? ''} className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25" />
                   </div>
                   <div>
                     <label className="text-xs font-medium text-slate-700">Away Score</label>
-                    <input name="awayScore" type="number" defaultValue={match.awayScore ?? ''} className="w-full border rounded px-2 py-1 text-sm bg-white text-slate-900" />
+                    <input name="awayScore" type="number" defaultValue={match.awayScore ?? ''} className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25" />
                   </div>
                 </div>
                 <div>
                   <label className="text-xs font-medium text-slate-700">Venue</label>
-                  <input name="venue" list="fixtures-venues" defaultValue={match.venue || ''} className="w-full border rounded px-2 py-1 text-sm bg-white text-slate-900" />
+                  <input name="venue" list="fixtures-venues" defaultValue={match.venue || ''} className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25" />
                   <datalist id="fixtures-venues">
                     {VENUES.map(v => <option key={v} value={v} />)}
                   </datalist>
                 </div>
                 <div>
                   <label className="text-xs font-medium text-slate-700">Round</label>
-                  <select name="round" defaultValue={match.round || ''} className="w-full border rounded px-2 py-1 text-sm bg-white text-slate-900">
+                  <select name="round" defaultValue={match.round || ''} className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25">
                     <option value="">Select Round</option>
                     {Array.from({ length: 14 }, (_, i) => i + 1).map(num => (
                       <option key={num} value={`Round ${num}`}>Round {num}</option>
@@ -306,13 +306,13 @@ export function UpcomingFixtures({
                 </div>
                 <div>
                   <label className="text-xs font-medium text-slate-700">Status</label>
-                  <select name="status" defaultValue={match.status || 'scheduled'} className="w-full border rounded px-2 py-1 text-sm bg-white text-slate-900">
+                  <select name="status" defaultValue={match.status || 'scheduled'} className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25">
                     <option value="scheduled">Scheduled</option>
                     <option value="tbc">TBC</option>
                     <option value="finished">Finished</option>
                   </select>
                 </div>
-                <button type="submit" className="bg-blue-600 text-white text-xs py-1.5 rounded hover:bg-blue-700 transition-colors">Update Result</button>
+                <button type="submit" className="btn-primary h-auto rounded px-3 py-1.5 text-xs">Update Result</button>
               </form>
             ) : (
               <div className="text-right font-mono text-sm font-bold text-slate-400">

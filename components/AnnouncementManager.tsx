@@ -127,7 +127,7 @@ export function AnnouncementManager({
           <button 
             type="submit" 
             disabled={isSubmitting}
-            className="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 transition-colors disabled:opacity-50"
+            className="btn-primary w-full h-11"
           >
             {isSubmitting ? 'Publishing...' : 'Publish Announcement'}
           </button>

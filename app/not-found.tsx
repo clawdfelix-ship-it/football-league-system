@@ -19,7 +19,7 @@ export default function NotFound() {
         </p>
         <Link
           href="https://zenex-sports.com"
-          className="mt-6 inline-block rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
+          className="btn-primary mt-6"
         >
           返回主平台
         </Link>

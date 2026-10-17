@@ -55,7 +55,7 @@ export default function SuspendedLeague({
         </p>
         <Link
           href="mailto:hello@zenex-sports.com?subject=League%20access%20support"
-          className="mt-6 inline-block rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
+          className="btn-primary mt-6"
         >
           {isTrial ? '聯絡管理員續訂' : '聯絡管理員'}
         </Link>
