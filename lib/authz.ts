@@ -26,6 +26,7 @@ export async function getAuthContext(): Promise<AuthContext | null> {
     username?: unknown;
     name?: unknown;
     email?: unknown;
+    mustChangePassword?: unknown;
     leagueId?: unknown;
     isPlatform?: unknown;
   } | null;
@@ -35,6 +36,9 @@ export async function getAuthContext(): Promise<AuthContext | null> {
   // AuthContext exposes only admin/manager; 'user' is treated as unauthenticated
   // for mutation scopes (consistent with existing route guards).
   if (role !== ROLES.ADMIN && role !== ROLES.MANAGER) return null;
+  if (user?.mustChangePassword === true) {
+    return null;
+  }
 
   // ---- Host/tenant binding (Phase 5) ----
   // Platform principals (env super admin / allow-listed platform admin) carry

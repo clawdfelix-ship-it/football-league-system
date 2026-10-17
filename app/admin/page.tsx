@@ -1,7 +1,6 @@
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { getMatches, getTeamPlayers, getAnnouncements, getAllPlayers, getTeamKitSettingsMap } from '@/lib/actions';
+import { getAuthContext } from '@/lib/authz';
 import { MatchForm, ResetButton } from '@/components/AdminClient';
 import { PlayerContactList } from '@/components/PlayerContactList';
 import { CollapsibleSection } from '@/components/CollapsibleSection';
@@ -49,9 +48,8 @@ interface SerializedMatch {
 export const dynamic = 'force-dynamic';
 
 export default async function AdminPage() {
-  const session = await getServerSession(authOptions);
-
-  if (!session) {
+  const auth = await getAuthContext();
+  if (!auth) {
     redirect('/login');
   }
 
@@ -104,13 +102,9 @@ export default async function AdminPage() {
     dbError = "Database schema mismatch. Please click 'Fix Database Schema' button.";
   }
 
-  const username = session.user?.username || session.user?.name || 'Admin';
-  const role = session.user?.role || 'manager';
-  const teamId = session.user?.teamId;
-
-  if (role === 'user') {
-    redirect('/');
-  }
+  const username = auth.username || 'Admin';
+  const role = auth.role;
+  const teamId = auth.teamId;
 
   const isAdmin = role === 'admin';
   const isManager = role === 'manager';
