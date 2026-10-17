@@ -124,7 +124,7 @@ export default function MatchKitOverrideEditor({
   };
 
   if (loading) {
-    return <div className="text-sm text-gray-500 p-4">載入中...</div>;
+    return <div className="text-sm text-slate-500 p-4">載入中...</div>;
   }
 
   return (

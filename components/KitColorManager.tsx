@@ -92,14 +92,14 @@ export function KitColorManager({ teamName }: KitColorManagerProps) {
 
   if (loading) {
     return (
-      <div className="text-center py-4 text-sm text-gray-500">
+      <div className="text-center py-4 text-sm text-slate-500">
         載入中...
       </div>
     );
   }
 
   return (
-    <div className="border border-slate-200 rounded-xl p-4 bg-gray-50">
+    <div className="border border-slate-200 rounded-xl p-4 bg-slate-50">
       <h3 className="text-sm font-semibold text-slate-700 mb-4 flex items-center gap-2">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="12" cy="12" r="10"/>
@@ -151,7 +151,7 @@ export function KitColorManager({ teamName }: KitColorManagerProps) {
           className={`
             w-full py-2 px-4 rounded-lg text-sm font-semibold text-white transition-all
             ${saving || !canSave
-              ? 'bg-gray-400 cursor-not-allowed' 
+              ? 'bg-slate-400 cursor-not-allowed' 
               : 'bg-blue-600 hover:bg-blue-700 shadow-sm hover:shadow-md'}
           `}
         >

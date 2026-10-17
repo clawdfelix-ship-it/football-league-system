@@ -26,7 +26,7 @@ export default function KitColorPicker({ label, value, onChange }: KitColorPicke
               onClick={() => onChange(color.value)}
               className={`
                 relative w-full aspect-square rounded-lg border-2 transition-all
-                ${isSelected ? 'border-blue-600 scale-110 shadow-lg' : 'border-gray-300 hover:border-gray-400'}
+                ${isSelected ? 'border-blue-600 scale-110 shadow-lg' : 'border-slate-300 hover:border-slate-400'}
               `}
               style={isSplit ? {
                 background: `linear-gradient(135deg, ${color.hex} 50%, ${color.hex2} 50%)`,
@@ -46,7 +46,7 @@ export default function KitColorPicker({ label, value, onChange }: KitColorPicke
           );
         })}
       </div>
-      <p className="text-xs text-gray-500 mt-1">
+      <p className="text-xs text-slate-500 mt-1">
         已選擇：<span className="font-medium">{getKitColorInfo(value).label}</span>
       </p>
     </div>
