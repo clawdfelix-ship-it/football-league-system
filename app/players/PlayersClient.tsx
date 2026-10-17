@@ -3,6 +3,7 @@
 import { Suspense, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import HomeLayout from '@/components/HomeLayout';
+import PageHero from '@/components/PageHero';
 import { useLanguage } from '@/context/LanguageContext';
 import type { PublicPlayer } from '@/lib/public-types';
 import { TEAMS } from '@/lib/constants';
@@ -68,12 +69,7 @@ function PlayersPageInner(props: { initialPlayers: PublicPlayer[] }) {
   return (
     <HomeLayout>
       <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans">
-        <header className="bg-[#1a237e] bg-gradient-to-b from-[#1a237e] to-[#283593] text-white pt-16 pb-20 px-6 text-center">
-          <h2 className="text-5xl font-black italic mb-2 tracking-tight">{title}</h2>
-          <p className="text-blue-200 text-base font-light tracking-widest uppercase">
-            Hong Kong Bank League 2026
-          </p>
-        </header>
+        <PageHero title={title} subtitle="Hong Kong Bank League 2026" />
 
         <main className="page-container -mt-16 pb-20">
           {/* 搜尋框 */}

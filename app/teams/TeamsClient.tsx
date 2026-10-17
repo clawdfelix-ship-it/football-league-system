@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import HomeLayout from '@/components/HomeLayout';
+import PageHero from '@/components/PageHero';
 import { useLanguage } from '@/context/LanguageContext';
 import type { PublicPlayer } from '@/lib/public-types';
 
@@ -22,13 +23,11 @@ export default function TeamsClient(props: { initialTeams: TeamInfo[] }) {
   return (
     <HomeLayout>
       <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans">
-        <header className="bg-[#1a237e] bg-gradient-to-b from-[#1a237e] to-[#283593] text-white pt-16 pb-24 px-6 text-center">
-          <h2 className="text-6xl font-black italic mb-2 tracking-tight">{t('球隊', 'TEAMS')}</h2>
-          <p className="text-blue-200 text-lg font-light tracking-widest uppercase">
-            Hong Kong Bank League 2026 | {t('香港銀行足球聯賽', 'Hong Kong Bank Football League')}
-          </p>
-          <p className="text-yellow-400 text-lg font-bold mt-2">ZENEX SPORTS</p>
-        </header>
+        <PageHero
+          title={t('球隊', 'TEAMS')}
+          subtitle={`Hong Kong Bank League 2026 | ${t('香港銀行足球聯賽', 'Hong Kong Bank Football League')}`}
+          footer={<p className="text-yellow-400 text-base font-bold tracking-widest mt-3">ZENEX SPORTS</p>}
+        />
 
         <main className="page-container -mt-16 pb-20">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

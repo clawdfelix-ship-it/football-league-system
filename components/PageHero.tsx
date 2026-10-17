@@ -13,12 +13,15 @@ export default function PageHero({
   subtitle,
   center = true,
   children,
+  footer,
 }: {
   title: ReactNode;
   subtitle?: ReactNode;
   center?: boolean;
   /** Extra content rendered above the title (e.g. logo). */
   children?: ReactNode;
+  /** Extra content rendered below the subtitle (e.g. partner line). */
+  footer?: ReactNode;
 }) {
   return (
     <header
@@ -35,6 +38,7 @@ export default function PageHero({
           {subtitle}
         </p>
       ) : null}
+      {footer}
     </header>
   );
 }
