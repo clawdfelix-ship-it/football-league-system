@@ -116,6 +116,57 @@ select:-webkit-autofill {
 }
 
 /* =============================================
+   Shared design tokens — single alignment baseline across the app.
+   Use these instead of one-off max-w/px/card/control classes.
+   ============================================= */
+@layer components {
+  /* Page content column: one width (72rem), one gutter (16→24px). */
+  .page-container {
+    @apply mx-auto w-full max-w-6xl px-4 sm:px-6;
+  }
+  /* Narrower column for single-column admin / long-form pages. */
+  .page-container-narrow {
+    @apply mx-auto w-full max-w-3xl px-4 sm:px-6 lg:px-8;
+  }
+  /* Auth / centered card column. */
+  .auth-container {
+    @apply mx-auto w-full max-w-md;
+  }
+
+  /* Standard white surface card. */
+  .card {
+    @apply rounded-2xl border border-slate-200 bg-white shadow-lg;
+  }
+  .card-sub {
+    @apply rounded-xl border border-slate-200 bg-white;
+  }
+
+  /* Form controls — one height, radius, border and focus ring. */
+  .field {
+    @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 shadow-sm transition focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25;
+  }
+  .field-label {
+    @apply mb-1.5 block text-sm font-medium text-slate-700;
+  }
+
+  /* Buttons. */
+  .btn-primary {
+    @apply inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-[#1a237e] px-4 text-sm font-semibold text-white transition hover:bg-[#283593] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/40 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-secondary {
+    @apply inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25 active:scale-[0.98];
+  }
+
+  /* Alerts. */
+  .alert-error {
+    @apply rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700;
+  }
+  .alert-success {
+    @apply rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700;
+  }
+}
+
+/* =============================================
    Reduced motion：用戶要求少啲動畫時，關閉非必要過渡/動畫，
    但保留狀態變化（即時跳切）同層級。符合 WCAG 2.3.3。
    ============================================= */

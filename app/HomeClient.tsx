@@ -319,7 +319,7 @@ export default function HomeClient(props: {
             Partnered with ZENEX SPORTS | {t('香港銀行足球聯賽2026', 'Hong Kong Bank Football League 2026')}
           </p>
         </header>
-        <main className="max-w-6xl mx-auto px-6 -mt-16 pb-20">
+        <main className="page-container -mt-16 pb-20">
           <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200 p-8">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
@@ -344,7 +344,7 @@ export default function HomeClient(props: {
           </p>
         </header>
 
-        <div className="max-w-6xl mx-auto px-6 -mt-16 pb-20">
+        <div className="page-container -mt-16 pb-20">
           <section id="standings" className="mb-12">
             <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200">
               <div className="bg-slate-900 text-white px-8 py-5 flex justify-between items-center">

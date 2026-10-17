@@ -55,51 +55,51 @@ export default function ChangeManagerPasswordForm() {
   };
 
   return (
-    <form onSubmit={onSubmit} className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 sm:p-6">
+    <form onSubmit={onSubmit} className="card p-4 sm:p-6">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold">更改密碼</h2>
-        <div className={`text-xs ${status === 'success' ? 'text-green-500' : status === 'error' ? 'text-red-500' : 'text-zinc-500'}`}>
+        <div className={`text-xs ${status === 'success' ? 'text-green-500' : status === 'error' ? 'text-red-500' : 'text-slate-500'}`}>
           {status === 'loading' ? '更新中...' : message}
         </div>
       </div>
 
       <div className="grid gap-3">
         <label className="grid gap-1">
-          <span className="text-xs font-medium text-zinc-600 dark:text-zinc-300">目前密碼</span>
+          <span className="text-xs font-medium text-slate-600">目前密碼</span>
           <input
             type="password"
             value={currentPassword}
             onChange={(e) => setCurrentPassword(e.target.value)}
-            className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-400 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50"
+            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25"
           />
         </label>
 
         <label className="grid gap-1">
-          <span className="text-xs font-medium text-zinc-600 dark:text-zinc-300">新密碼</span>
+          <span className="text-xs font-medium text-slate-600">新密碼</span>
           <input
             type="password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
             minLength={8}
-            className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-400 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50"
+            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25"
           />
-          <span className="text-xs text-zinc-500 dark:text-zinc-400">最少 8 個字元，建議使用獨立強密碼。</span>
+          <span className="text-xs text-slate-500">最少 8 個字元，建議使用獨立強密碼。</span>
         </label>
 
         <label className="grid gap-1">
-          <span className="text-xs font-medium text-zinc-600 dark:text-zinc-300">確認新密碼</span>
+          <span className="text-xs font-medium text-slate-600">確認新密碼</span>
           <input
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-400 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50"
+            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25"
           />
         </label>
 
         <button
           type="submit"
           disabled={status === 'loading'}
-          className="mt-2 inline-flex items-center justify-center rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-slate-800 disabled:opacity-60"
+          className="mt-2 btn-primary h-auto rounded-xl py-2.5 disabled:opacity-60"
         >
           更新密碼
         </button>

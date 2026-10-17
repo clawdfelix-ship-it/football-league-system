@@ -1,6 +1,7 @@
 'use client';
 
 import HomeLayout from '@/components/HomeLayout';
+import PageHero from '@/components/PageHero';
 import { useLanguage } from '@/context/LanguageContext';
 
 export default function OverviewPage() {
@@ -9,16 +10,13 @@ export default function OverviewPage() {
 
   return (
     <HomeLayout>
-      <div className="min-h-screen bg-white text-slate-900 font-sans">
-        <header className="bg-slate-900 text-white py-12 px-6 text-center">
-          <h1 className="text-4xl md:text-5xl font-black italic mb-4">Hong Kong Bank League 2026</h1>
-          <p className="text-xl md:text-2xl text-blue-200 font-light tracking-wide uppercase">Partnered with ZENEX SPORTS</p>
-          <p className="mt-2 text-lg text-gray-400">
-            {isZh ? '香港銀行足球聯賽 2026（ZENEX SPORTS 合作夥伴）' : 'Hong Kong Bank Football League 2026'}
-          </p>
-        </header>
+      <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans">
+        <PageHero
+          title="Hong Kong Bank League 2026"
+          subtitle="Partnered with ZENEX SPORTS"
+        />
 
-        <main className="max-w-4xl mx-auto px-6 py-12 space-y-12">
+        <main className="page-container-narrow -mt-16 pb-20 space-y-8 sm:space-y-12">
           
           {/* Mission Statement */}
           <section className="text-center bg-blue-50 p-8 rounded-2xl border border-blue-100">

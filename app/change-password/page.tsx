@@ -76,42 +76,38 @@ export default function ChangePasswordPage() {
 
   if (status === 'loading') {
     return (
-      <div className="flex min-h-screen items-center justify-center text-zinc-500">Loading…</div>
+      <div className="flex min-h-screen items-center justify-center bg-[#1a237e] text-blue-100">Loading…</div>
     );
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4 dark:bg-zinc-950">
-      <div className="w-full max-w-md rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-        <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
+    <div className="flex min-h-screen items-center justify-center bg-[#1a237e] bg-gradient-to-b from-[#1a237e] to-[#283593] px-4 py-12">
+      <div className="auth-container rounded-2xl border border-slate-200 bg-white p-8 shadow-2xl">
+        <h1 className="text-2xl font-bold text-slate-900">
           {isForced ? 'Set your password' : 'Change password'}
         </h1>
-        <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="mt-2 text-sm text-slate-500">
           {isForced
             ? 'You must set a new password before continuing. The temporary password you used to log in is no longer valid.'
             : 'Enter your current password and a new password.'}
         </p>
 
-        <form onSubmit={onSubmit} className="mt-6 space-y-4">
+        <form onSubmit={onSubmit} className="mt-6 space-y-5">
           {!isForced && (
             <div>
-              <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                Current password
-              </label>
+              <label className="field-label">Current password</label>
               <input
                 type="password"
                 autoComplete="current-password"
                 required
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
-                className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-800"
+                className="field"
               />
             </div>
           )}
           <div>
-            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-              New password
-            </label>
+            <label className="field-label">New password</label>
             <input
               type="password"
               autoComplete="new-password"
@@ -119,14 +115,12 @@ export default function ChangePasswordPage() {
               minLength={8}
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-800"
+              className="field"
             />
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-              Confirm new password
-            </label>
+            <label className="field-label">Confirm new password</label>
             <input
               type="password"
               autoComplete="new-password"
@@ -134,27 +128,17 @@ export default function ChangePasswordPage() {
               minLength={8}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-800"
+              className="field"
             />
           </div>
 
-          {error ? (
-            <div className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950/40 dark:text-red-300">
-              {error}
-            </div>
-          ) : null}
+          {error ? <div className="alert-error">{error}</div> : null}
 
           {done ? (
-            <div className="rounded-md bg-emerald-50 px-3 py-2 text-sm text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
-              Password updated. Redirecting…
-            </div>
+            <div className="alert-success">Password updated. Redirecting…</div>
           ) : null}
 
-          <button
-            type="submit"
-            disabled={busy || done}
-            className="w-full rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-zinc-800 disabled:opacity-60 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
-          >
+          <button type="submit" disabled={busy || done} className="btn-primary w-full">
             {busy ? 'Saving…' : 'Save new password'}
           </button>
         </form>

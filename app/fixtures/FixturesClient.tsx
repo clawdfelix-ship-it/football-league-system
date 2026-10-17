@@ -343,7 +343,7 @@ export default function FixturesClient(props: {
           </p>
         </header>
 
-        <main className="max-w-5xl mx-auto px-4 sm:px-6 -mt-16 pb-20">
+        <main className="page-container -mt-16 pb-20">
           {/* 篩選列 */}
           <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-3 mb-4 flex flex-col sm:flex-row sm:items-center gap-3">
             <div className="sm:ml-auto flex items-center gap-2">

@@ -75,7 +75,7 @@ function PlayersPageInner(props: { initialPlayers: PublicPlayer[] }) {
           </p>
         </header>
 
-        <main className="max-w-5xl mx-auto px-4 sm:px-6 -mt-10 pb-20">
+        <main className="page-container -mt-16 pb-20">
           {/* 搜尋框 */}
           <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-3 mb-3">
             <div className="relative">

@@ -101,13 +101,13 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
     <div className="space-y-6">
       {/* Player List */}
       {players.length > 0 && (
-        <div className="rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 overflow-hidden">
-          <div className="bg-slate-50 dark:bg-slate-900 px-4 py-3 border-b border-zinc-200 dark:border-zinc-800">
+        <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+          <div className="bg-slate-50 px-4 py-3 border-b border-slate-200">
             <h3 className="font-semibold text-sm">Team Roster ({players.length})</h3>
           </div>
-          <div className="divide-y divide-zinc-100 dark:divide-zinc-800 max-h-[400px] overflow-y-auto">
+          <div className="divide-y divide-slate-100 max-h-[400px] overflow-y-auto">
             {players.map((player) => (
-              <div key={player.id} className="flex items-center justify-between p-3 hover:bg-slate-50 dark:hover:bg-slate-900/50">
+              <div key={player.id} className="flex items-center justify-between p-3 hover:bg-slate-50">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-gray-100 overflow-hidden flex-shrink-0 border border-gray-200 relative group">
                     {player.photoUrl ? (
@@ -153,49 +153,49 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
           <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
             <form 
               onSubmit={handleSubmit}
-              className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 shadow-2xl max-w-md w-full space-y-5 text-white"
+              className="bg-white border border-slate-200 rounded-2xl p-6 shadow-2xl max-w-md w-full space-y-5 text-slate-900"
             >
-              <div className="flex justify-between items-center border-b border-zinc-800 pb-4">
-                <h3 className="text-xl font-bold text-white">Add New Player</h3>
+              <div className="flex justify-between items-center border-b border-slate-100 pb-4">
+                <h3 className="text-xl font-bold text-slate-900">Add New Player</h3>
                 <button 
                   type="button" 
                   onClick={() => setIsAdding(false)}
-                  className="text-zinc-400 hover:text-white"
+                  className="text-slate-400 hover:text-slate-700"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
               </div>
               
               <div className="space-y-2">
-                <label className="text-sm font-medium text-zinc-300">Name</label>
+                <label className="text-sm font-medium text-slate-700">Name</label>
                 <input 
                   name="name" 
                   required 
-                  className="w-full border border-zinc-700 bg-zinc-800 rounded-lg px-3 py-2 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600"
+                  className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e]/30 focus:border-[#1a237e]"
                   placeholder="Player Name"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-zinc-300">Jersey No.</label>
+                  <label className="text-sm font-medium text-slate-700">Jersey No.</label>
                   <input 
                     name="number" 
                     type="number" 
                     required 
                     min="0"
                     max="99"
-                    className="w-full border border-zinc-700 bg-zinc-800 rounded-lg px-3 py-2 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600"
+                    className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e]/30 focus:border-[#1a237e]"
                     placeholder="0-99"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-zinc-300">Position</label>
+                  <label className="text-sm font-medium text-slate-700">Position</label>
                   <select 
                     name="position" 
                     required 
-                    className="w-full border border-zinc-700 bg-zinc-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-zinc-600 appearance-none"
+                    className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#1a237e]/30 focus:border-[#1a237e] appearance-none"
                   >
                     <option value="FW">Forward (FW)</option>
                     <option value="MF">Midfielder (MF)</option>
@@ -206,34 +206,34 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-zinc-300">HKID (First 3 chars)</label>
+                <label className="text-sm font-medium text-slate-700">HKID (First 3 chars)</label>
                 <input 
                   name="identityPrefix"
                   required
                   maxLength={3}
-                  className="w-full border border-zinc-700 bg-zinc-800 rounded-lg px-3 py-2 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 uppercase"
+                  className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e]/30 focus:border-[#1a237e] uppercase"
                   placeholder="e.g. A12"
                 />
-                <p className="text-xs text-zinc-500">Only the first 3 characters are required for verification.</p>
+                <p className="text-xs text-slate-400">Only the first 3 characters are required for verification.</p>
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-zinc-300">Email (Optional)</label>
+                <label className="text-sm font-medium text-slate-700">Email (Optional)</label>
                 <input 
                   name="email"
                   type="email"
-                  className="w-full border border-zinc-700 bg-zinc-800 rounded-lg px-3 py-2 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600"
+                  className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e]/30 focus:border-[#1a237e]"
                   placeholder="player@example.com"
                 />
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-zinc-300">Photo (Optional)</label>
+                <label className="text-sm font-medium text-slate-700">Photo (Optional)</label>
                 <input 
                   name="photo"
                   type="file" 
                   accept="image/*"
-                  className="w-full border border-zinc-700 bg-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-300 file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-zinc-700 file:text-white hover:file:bg-zinc-600"
+                  className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-sm text-slate-600 file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200"
                 />
               </div>
 
@@ -241,14 +241,14 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
                 <button
                   type="button"
                   onClick={() => setIsAdding(false)}
-                  className="flex-1 px-4 py-2.5 border border-zinc-700 bg-transparent text-white rounded-lg hover:bg-zinc-800 font-medium transition-colors"
+                  className="flex-1 btn-secondary h-auto py-2.5 font-medium"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="flex-1 px-4 py-2.5 bg-white text-black rounded-lg hover:bg-zinc-200 disabled:opacity-50 font-bold transition-colors"
+                  className="flex-1 btn-primary h-auto py-2.5 font-bold disabled:opacity-50"
                 >
                   {isLoading ? 'Adding...' : 'Add Player'}
                 </button>
@@ -258,7 +258,7 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
         ) : (
           <button
             onClick={() => setIsAdding(true)}
-            className="w-full bg-zinc-900 text-white px-4 py-3 rounded-xl font-bold shadow hover:bg-zinc-800 flex items-center justify-center gap-2 transition-colors border border-zinc-800"
+            className="w-full btn-primary h-auto rounded-xl py-3 font-bold shadow flex items-center justify-center gap-2"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 5v14M5 12h14"/>
@@ -273,33 +273,33 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
           <form
             onSubmit={handleEditSubmit}
-            className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 shadow-2xl max-w-md w-full space-y-5 text-white"
+            className="bg-white border border-slate-200 rounded-2xl p-6 shadow-2xl max-w-md w-full space-y-5 text-slate-900"
           >
-            <div className="flex justify-between items-center border-b border-zinc-800 pb-4">
-              <h3 className="text-xl font-bold text-white">Edit Player</h3>
+            <div className="flex justify-between items-center border-b border-slate-100 pb-4">
+              <h3 className="text-xl font-bold text-slate-900">Edit Player</h3>
               <button
                 type="button"
                 onClick={() => setEditingPlayer(null)}
-                className="text-zinc-400 hover:text-white"
+                className="text-slate-400 hover:text-slate-700"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
               </button>
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-zinc-300">Name</label>
+              <label className="text-sm font-medium text-slate-700">Name</label>
               <input
                 name="name"
                 required
                 defaultValue={editingPlayer.name}
-                className="w-full border border-zinc-700 bg-zinc-800 rounded-lg px-3 py-2 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600"
+                className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e]/30 focus:border-[#1a237e]"
                 placeholder="Player Name"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-zinc-300">Jersey No.</label>
+                <label className="text-sm font-medium text-slate-700">Jersey No.</label>
                 <input
                   name="number"
                   type="number"
@@ -307,18 +307,18 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
                   min="0"
                   max="99"
                   defaultValue={editingPlayer.jerseyNumber ?? undefined}
-                  className="w-full border border-zinc-700 bg-zinc-800 rounded-lg px-3 py-2 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600"
+                  className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e]/30 focus:border-[#1a237e]"
                   placeholder="0-99"
                 />
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-zinc-300">Position</label>
+                <label className="text-sm font-medium text-slate-700">Position</label>
                 <select
                   name="position"
                   required
                   defaultValue={editingPlayer.position ?? 'FW'}
-                  className="w-full border border-zinc-700 bg-zinc-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-zinc-600 appearance-none"
+                  className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#1a237e]/30 focus:border-[#1a237e] appearance-none"
                 >
                   <option value="FW">Forward (FW)</option>
                   <option value="MF">Midfielder (MF)</option>
@@ -329,36 +329,36 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-zinc-300">HKID (First 3 chars)</label>
+              <label className="text-sm font-medium text-slate-700">HKID (First 3 chars)</label>
               <input
                 name="identityPrefix"
                 required
                 maxLength={3}
                 defaultValue={editingPlayer.identityPrefix || ''}
-                className="w-full border border-zinc-700 bg-zinc-800 rounded-lg px-3 py-2 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 uppercase"
+                className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e]/30 focus:border-[#1a237e] uppercase"
                 placeholder="e.g. A12"
               />
-              <p className="text-xs text-zinc-500">Only the first 3 characters are required for verification.</p>
+              <p className="text-xs text-slate-400">Only the first 3 characters are required for verification.</p>
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-zinc-300">Email (Optional)</label>
+              <label className="text-sm font-medium text-slate-700">Email (Optional)</label>
               <input
                 name="email"
                 type="email"
                 defaultValue={editingPlayer.email || ''}
-                className="w-full border border-zinc-700 bg-zinc-800 rounded-lg px-3 py-2 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600"
+                className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e]/30 focus:border-[#1a237e]"
                 placeholder="player@example.com"
               />
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-zinc-300">Phone (Optional)</label>
+              <label className="text-sm font-medium text-slate-700">Phone (Optional)</label>
               <input
                 name="phoneNumber"
                 type="tel"
                 defaultValue={editingPlayer.phoneNumber || ''}
-                className="w-full border border-zinc-700 bg-zinc-800 rounded-lg px-3 py-2 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600"
+                className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e]/30 focus:border-[#1a237e]"
                 placeholder="+852 XXXX XXXX"
               />
             </div>
@@ -367,14 +367,14 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
               <button
                 type="button"
                 onClick={() => setEditingPlayer(null)}
-                className="flex-1 px-4 py-2.5 border border-zinc-700 bg-transparent text-white rounded-lg hover:bg-zinc-800 font-medium transition-colors"
+                className="flex-1 btn-secondary h-auto py-2.5 font-medium"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isLoading}
-                className="flex-1 px-4 py-2.5 bg-white text-black rounded-lg hover:bg-zinc-200 disabled:opacity-50 font-bold transition-colors"
+                className="flex-1 btn-primary h-auto py-2.5 font-bold disabled:opacity-50"
               >
                 {isLoading ? 'Saving...' : 'Save Changes'}
               </button>

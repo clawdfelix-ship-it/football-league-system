@@ -21,7 +21,7 @@ export default function ContactsPage() {
           </p>
         </header>
 
-        <main className="max-w-5xl mx-auto px-6 -mt-6 pb-20">
+        <main className="page-container -mt-16 pb-20">
           <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200">
             <div className="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
               <div className="font-bold">{t('官方聯絡電郵', 'Official Emails')}</div>

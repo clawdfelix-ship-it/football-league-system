@@ -30,14 +30,14 @@ export default function TeamsClient(props: { initialTeams: TeamInfo[] }) {
           <p className="text-yellow-400 text-lg font-bold mt-2">ZENEX SPORTS</p>
         </header>
 
-        <main className="max-w-7xl mx-auto px-6 -mt-16 pb-20">
+        <main className="page-container -mt-16 pb-20">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {teams.map((team) => (
               <div
                 key={team.name}
                 className="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200 hover:shadow-2xl transition-all hover:-translate-y-1"
               >
-                <div className="bg-slate-700 p-6 text-center border-b-4 border-slate-500">
+                <div className="bg-[#1a237e] p-6 text-center border-b-4 border-[#283593]">
                   <div className="mb-4">
                     <div className="w-16 h-16 mx-auto bg-white rounded-full flex items-center justify-center border-2 border-slate-300 shadow-md">
                       <span
@@ -54,7 +54,7 @@ export default function TeamsClient(props: { initialTeams: TeamInfo[] }) {
                 <div className="p-4">
                   <div className="flex justify-between items-center mb-3">
                     <span className="text-sm text-gray-500">{t('球員', 'Players')}</span>
-                    <span className="bg-yellow-400 text-blue-900 px-3 py-1 rounded-full text-sm font-bold">
+                    <span className="bg-yellow-500 text-black px-3 py-1 rounded-full text-sm font-bold">
                       {team.playerCount} {t('人', '')}
                     </span>
                   </div>

@@ -76,31 +76,31 @@ export function MatchList({
 
   return (
     <>
-      <section className="rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 p-4 shadow-sm sm:p-6">
-        <h2 className="text-lg font-semibold mb-4 text-zinc-900 dark:text-zinc-100">Upcoming Fixtures</h2>
+      <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+        <h2 className="text-lg font-semibold mb-4 text-slate-900">Upcoming Fixtures</h2>
         <div className="space-y-3 mb-8">
           {scheduledMatches.length === 0 ? (
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">No upcoming fixtures.</p>
+            <p className="text-sm text-slate-500">No upcoming fixtures.</p>
           ) : (
             scheduledMatches.map((match) => (
-              <div key={match.id} className="flex flex-col gap-3 rounded-xl border border-zinc-100 dark:border-zinc-800 bg-blue-50/50 dark:bg-zinc-900 p-3">
+              <div key={match.id} className="flex flex-col gap-3 rounded-xl border border-slate-100 bg-blue-50/50 p-3">
                 <div className="flex items-center justify-between">
                   <div className="text-sm">
-                    <div className="font-semibold text-zinc-900 dark:text-zinc-100">{match.homeTeam} vs {match.awayTeam}</div>
-                    <div className="text-xs text-zinc-500 dark:text-zinc-400">
+                    <div className="font-semibold text-slate-900">{match.homeTeam} vs {match.awayTeam}</div>
+                    <div className="text-xs text-slate-500">
                       {match.date ? new Date(match.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) + ' (' + new Date(match.date).toLocaleDateString('en-GB', { weekday: 'short' }) + ')' : 'TBC'} {match.date ? new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : ''} • {match.venue || 'TBC'} {match.round ? `• ${match.round}` : ''}
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <button 
                       onClick={() => setEditingMatch(editingMatch === match.id ? null : match.id)}
-                      className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-1 rounded hover:bg-blue-200 dark:hover:bg-blue-900/50"
+                      className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded hover:bg-blue-200"
                     >
                       {editingMatch === match.id ? 'Cancel' : 'Edit'}
                     </button>
                     <button 
                       onClick={() => handleDeleteMatch(match.id)}
-                      className="text-xs bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 px-2 py-1 rounded hover:bg-red-200 dark:hover:bg-red-900/50"
+                      className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded hover:bg-red-200"
                     >
                       Delete
                     </button>
@@ -108,37 +108,37 @@ export function MatchList({
                 </div>
                 
                 {editingMatch === match.id ? (
-                  <form action={(formData) => handleUpdateMatch(match.id, formData)} className="mt-2 p-3 bg-white dark:bg-zinc-900 rounded border border-blue-200 dark:border-zinc-700 grid gap-3">
+                  <form action={(formData) => handleUpdateMatch(match.id, formData)} className="mt-2 rounded-lg border border-slate-200 bg-slate-50 p-3 grid gap-3">
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Date</label>
-                        <input name="date" type="date" defaultValue={match.date ? match.date.split('T')[0] : ''} className="w-full border dark:border-zinc-700 rounded px-2 py-1 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100" />
+                        <label className="text-xs font-medium text-slate-700">Date</label>
+                        <input name="date" type="date" defaultValue={match.date ? match.date.split('T')[0] : ''} className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25" />
                       </div>
                       <div>
-                        <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Time</label>
-                        <input name="time" type="time" defaultValue={match.date ? new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : ''} className="w-full border dark:border-zinc-700 rounded px-2 py-1 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100" />
+                        <label className="text-xs font-medium text-slate-700">Time</label>
+                        <input name="time" type="time" defaultValue={match.date ? new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : ''} className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25" />
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Home Score</label>
-                        <input name="homeScore" type="number" defaultValue={match.homeScore ?? ''} className="w-full border dark:border-zinc-700 rounded px-2 py-1 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100" />
+                        <label className="text-xs font-medium text-slate-700">Home Score</label>
+                        <input name="homeScore" type="number" defaultValue={match.homeScore ?? ''} className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25" />
                       </div>
                       <div>
-                        <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Away Score</label>
-                        <input name="awayScore" type="number" defaultValue={match.awayScore ?? ''} className="w-full border dark:border-zinc-700 rounded px-2 py-1 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100" />
+                        <label className="text-xs font-medium text-slate-700">Away Score</label>
+                        <input name="awayScore" type="number" defaultValue={match.awayScore ?? ''} className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25" />
                       </div>
                     </div>
                     <div>
-                      <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Venue</label>
-                      <input name="venue" list="venues" defaultValue={match.venue || ''} className="w-full border dark:border-zinc-700 rounded px-2 py-1 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100" />
+                      <label className="text-xs font-medium text-slate-700">Venue</label>
+                      <input name="venue" list="venues" defaultValue={match.venue || ''} className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25" />
                       <datalist id="venues">
                         {VENUES.map(v => <option key={v} value={v} />)}
                       </datalist>
                     </div>
                     <div>
-                      <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Round</label>
-                      <select name="round" defaultValue={match.round || ''} className="w-full border dark:border-zinc-700 rounded px-2 py-1 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100">
+                      <label className="text-xs font-medium text-slate-700">Round</label>
+                      <select name="round" defaultValue={match.round || ''} className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25">
                         <option value="">Select Round</option>
                         {Array.from({ length: 14 }, (_, i) => i + 1).map(num => (
                           <option key={num} value={`Round ${num}`}>Round {num}</option>
@@ -146,20 +146,20 @@ export function MatchList({
                       </select>
                     </div>
                     <div>
-                      <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Status</label>
-                      <select name="status" defaultValue={match.status || 'scheduled'} className="w-full border dark:border-zinc-700 rounded px-2 py-1 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100">
+                      <label className="text-xs font-medium text-slate-700">Status</label>
+                      <select name="status" defaultValue={match.status || 'scheduled'} className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25">
                         <option value="scheduled">Scheduled</option>
                         <option value="tbc">TBC</option>
                         <option value="finished">Finished</option>
                       </select>
                     </div>
                     <div className="flex gap-2">
-                      <button type="button" className="bg-zinc-200 text-zinc-700 text-xs py-1.5 px-3 rounded hover:bg-zinc-300 transition-colors" onClick={() => setEditingMatch(null)}>Cancel</button>
-                      <button type="submit" className="bg-blue-600 text-white text-xs py-1.5 px-3 rounded hover:bg-blue-700 transition-colors">Confirm Update</button>
+                      <button type="button" className="btn-secondary h-auto rounded-md px-3 py-1.5 text-xs" onClick={() => setEditingMatch(null)}>Cancel</button>
+                      <button type="submit" className="btn-primary h-auto rounded-md px-3 py-1.5 text-xs">Confirm Update</button>
                     </div>
                   </form>
                 ) : (
-                  <div className="text-right font-mono text-sm font-bold text-zinc-400 dark:text-zinc-600">
+                  <div className="text-right font-mono text-sm font-bold text-slate-400">
                     VS
                   </div>
                 )}
@@ -168,30 +168,30 @@ export function MatchList({
           )}
         </div>
 
-        <h2 className="text-lg font-semibold mb-4 pt-4 border-t border-zinc-100 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100">Match Results</h2>
+        <h2 className="text-lg font-semibold mb-4 pt-4 border-t border-slate-100 text-slate-900">Match Results</h2>
         <div className="space-y-3">
           {finishedMatches.length === 0 ? (
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">No finished matches.</p>
+            <p className="text-sm text-slate-500">No finished matches.</p>
           ) : (
             finishedMatches.map((match) => (
-              <div key={match.id} className="flex flex-col gap-3 rounded-xl border border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 p-3">
+              <div key={match.id} className="flex flex-col gap-3 rounded-xl border border-slate-100 bg-slate-50 p-3">
                 <div className="flex items-center justify-between">
                   <div className="text-sm">
-                    <div className="font-semibold text-zinc-900 dark:text-zinc-100">{match.homeTeam} vs {match.awayTeam}</div>
-                    <div className="text-xs text-zinc-500 dark:text-zinc-400">
+                    <div className="font-semibold text-slate-900">{match.homeTeam} vs {match.awayTeam}</div>
+                    <div className="text-xs text-slate-500">
                       {match.date ? new Date(match.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) + ' (' + new Date(match.date).toLocaleDateString('en-GB', { weekday: 'short' }) + ')' : 'TBC'} {match.date ? new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : ''} • {match.venue || 'TBC'} {match.round ? `• ${match.round}` : ''}
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <button 
                       onClick={() => setEditingMatch(editingMatch === match.id ? null : match.id)}
-                      className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-1 rounded hover:bg-blue-200 dark:hover:bg-blue-900/50"
+                      className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded hover:bg-blue-200"
                     >
                       {editingMatch === match.id ? 'Cancel' : 'Edit'}
                     </button>
                     <button 
                       onClick={() => handleDeleteMatch(match.id)}
-                      className="text-xs bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 px-2 py-1 rounded hover:bg-red-200 dark:hover:bg-red-900/50"
+                      className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded hover:bg-red-200"
                     >
                       Delete
                     </button>
@@ -199,37 +199,37 @@ export function MatchList({
                 </div>
                 
                 {editingMatch === match.id ? (
-                  <form action={(formData) => handleUpdateMatch(match.id, formData)} className="mt-2 p-3 bg-white dark:bg-zinc-900 rounded border border-blue-200 dark:border-zinc-700 grid gap-3">
+                  <form action={(formData) => handleUpdateMatch(match.id, formData)} className="mt-2 rounded-lg border border-slate-200 bg-slate-50 p-3 grid gap-3">
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Date</label>
-                        <input name="date" type="date" defaultValue={match.date ? match.date.split('T')[0] : ''} className="w-full border dark:border-zinc-700 rounded px-2 py-1 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100" />
+                        <label className="text-xs font-medium text-slate-700">Date</label>
+                        <input name="date" type="date" defaultValue={match.date ? match.date.split('T')[0] : ''} className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25" />
                       </div>
                       <div>
-                        <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Time</label>
-                        <input name="time" type="time" defaultValue={match.date ? new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : ''} className="w-full border dark:border-zinc-700 rounded px-2 py-1 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100" />
+                        <label className="text-xs font-medium text-slate-700">Time</label>
+                        <input name="time" type="time" defaultValue={match.date ? new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : ''} className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25" />
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Home Score</label>
-                        <input name="homeScore" type="number" defaultValue={match.homeScore ?? ''} className="w-full border dark:border-zinc-700 rounded px-2 py-1 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100" />
+                        <label className="text-xs font-medium text-slate-700">Home Score</label>
+                        <input name="homeScore" type="number" defaultValue={match.homeScore ?? ''} className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25" />
                       </div>
                       <div>
-                        <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Away Score</label>
-                        <input name="awayScore" type="number" defaultValue={match.awayScore ?? ''} className="w-full border dark:border-zinc-700 rounded px-2 py-1 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100" />
+                        <label className="text-xs font-medium text-slate-700">Away Score</label>
+                        <input name="awayScore" type="number" defaultValue={match.awayScore ?? ''} className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25" />
                       </div>
                     </div>
                     <div>
-                      <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Venue</label>
-                      <input name="venue" list="venues" defaultValue={match.venue || ''} className="w-full border dark:border-zinc-700 rounded px-2 py-1 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100" />
+                      <label className="text-xs font-medium text-slate-700">Venue</label>
+                      <input name="venue" list="venues" defaultValue={match.venue || ''} className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25" />
                       <datalist id="venues">
                         {VENUES.map(v => <option key={v} value={v} />)}
                       </datalist>
                     </div>
                     <div>
-                      <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Round</label>
-                      <select name="round" defaultValue={match.round || ''} className="w-full border dark:border-zinc-700 rounded px-2 py-1 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100">
+                      <label className="text-xs font-medium text-slate-700">Round</label>
+                      <select name="round" defaultValue={match.round || ''} className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25">
                         <option value="">Select Round</option>
                         {Array.from({ length: 14 }, (_, i) => i + 1).map(num => (
                           <option key={num} value={`Round ${num}`}>Round {num}</option>
@@ -237,20 +237,20 @@ export function MatchList({
                       </select>
                     </div>
                     <div>
-                      <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Status</label>
-                      <select name="status" defaultValue={match.status || 'scheduled'} className="w-full border dark:border-zinc-700 rounded px-2 py-1 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100">
+                      <label className="text-xs font-medium text-slate-700">Status</label>
+                      <select name="status" defaultValue={match.status || 'scheduled'} className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25">
                         <option value="scheduled">Scheduled</option>
                         <option value="tbc">TBC</option>
                         <option value="finished">Finished</option>
                       </select>
                     </div>
                     <div className="flex gap-2">
-                      <button type="button" className="bg-zinc-200 text-zinc-700 text-xs py-1.5 px-3 rounded hover:bg-zinc-300 transition-colors" onClick={() => setEditingMatch(null)}>Cancel</button>
-                      <button type="submit" className="bg-blue-600 text-white text-xs py-1.5 px-3 rounded hover:bg-blue-700 transition-colors">Confirm Update</button>
+                      <button type="button" className="btn-secondary h-auto rounded-md px-3 py-1.5 text-xs" onClick={() => setEditingMatch(null)}>Cancel</button>
+                      <button type="submit" className="btn-primary h-auto rounded-md px-3 py-1.5 text-xs">Confirm Update</button>
                     </div>
                   </form>
                 ) : (
-                  <div className="text-right font-mono text-sm font-bold text-zinc-900 dark:text-zinc-100">
+                  <div className="text-right font-mono text-sm font-bold text-slate-900">
                     {match.homeScore} - {match.awayScore}
                   </div>
                 )}
@@ -306,13 +306,13 @@ export function MatchForm() {
   };
 
   return (
-    <section className="rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 p-4 shadow-sm sm:p-6">
-      <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Add Match</h2>
+    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+      <h2 className="text-lg font-semibold text-slate-900">Add Match</h2>
       <form action={handleSubmitMatch} className="mt-4 space-y-4">
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1">
-            <label className="text-sm font-medium text-zinc-800 dark:text-zinc-200">Home team</label>
-            <select name="homeTeam" required className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100">
+            <label className="text-sm font-medium text-slate-800">Home team</label>
+            <select name="homeTeam" required className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25">
               <option value="">Select Home Team</option>
               {TEAMS.map(team => (
                 <option key={team.name} value={team.name}>{team.name}</option>
@@ -320,8 +320,8 @@ export function MatchForm() {
             </select>
           </div>
           <div className="space-y-1">
-            <label className="text-sm font-medium text-zinc-800 dark:text-zinc-200">Away team</label>
-            <select name="awayTeam" required className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100">
+            <label className="text-sm font-medium text-slate-800">Away team</label>
+            <select name="awayTeam" required className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25">
               <option value="">Select Away Team</option>
               {TEAMS.map(team => (
                 <option key={team.name} value={team.name}>{team.name}</option>
@@ -332,37 +332,37 @@ export function MatchForm() {
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1">
-            <label className="text-sm font-medium text-zinc-800 dark:text-zinc-200">Status</label>
-            <select name="status" className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100">
+            <label className="text-sm font-medium text-slate-800">Status</label>
+            <select name="status" className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25">
               <option value="scheduled">Scheduled (Fixture)</option>
               <option value="tbc">TBC</option>
               <option value="finished">Finished (Result)</option>
             </select>
           </div>
           <div className="space-y-1">
-            <label className="text-sm font-medium text-zinc-800 dark:text-zinc-200">Match date</label>
+            <label className="text-sm font-medium text-slate-800">Match date</label>
             <div className="flex gap-2">
-              <input name="date" type="date" className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100" />
-              <input name="time" type="time" className="w-32 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100" />
+              <input name="date" type="date" className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25" />
+              <input name="time" type="time" className="w-36 shrink-0 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25" />
             </div>
           </div>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1">
-            <label className="text-sm font-medium text-zinc-800 dark:text-zinc-200">Venue</label>
+            <label className="text-sm font-medium text-slate-800">Venue</label>
             {isCustomVenue ? (
               <div className="flex gap-2">
                 <input
                   name="venue"
                   autoFocus
-                  className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100"
+                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25"
                   placeholder="輸入自定義場地"
                 />
                 <button
                   type="button"
                   onClick={() => setIsCustomVenue(false)}
-                  className="shrink-0 rounded-xl border border-zinc-200 dark:border-zinc-800 px-3 py-2 text-xs text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                  className="shrink-0 rounded-xl border border-slate-200 px-3 py-2 text-xs text-slate-600 hover:bg-slate-100 transition-colors"
                 >
                   返回清單
                 </button>
@@ -371,7 +371,7 @@ export function MatchForm() {
               <select
                 name="venue"
                 onChange={(e) => { if (e.target.value === '__custom__') setIsCustomVenue(true); }}
-                className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100"
+                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25"
               >
                 <option value="">Select Venue</option>
                 {VENUES.map(v => <option key={v} value={v}>{v}</option>)}
@@ -380,8 +380,8 @@ export function MatchForm() {
             )}
           </div>
           <div className="space-y-1">
-            <label className="text-sm font-medium text-zinc-800 dark:text-zinc-200">Round</label>
-            <select name="round" className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100">
+            <label className="text-sm font-medium text-slate-800">Round</label>
+            <select name="round" className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25">
               <option value="">Select Round</option>
               {Array.from({ length: 14 }, (_, i) => i + 1).map(num => (
                 <option key={num} value={`Round ${num}`}>Round {num}</option>
@@ -392,16 +392,16 @@ export function MatchForm() {
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1">
-            <label className="text-sm font-medium text-zinc-800 dark:text-zinc-200">Home score</label>
-            <input name="homeScore" type="number" min="0" className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100" />
+            <label className="text-sm font-medium text-slate-800">Home score</label>
+            <input name="homeScore" type="number" min="0" className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25" />
           </div>
           <div className="space-y-1">
-            <label className="text-sm font-medium text-zinc-800 dark:text-zinc-200">Away score</label>
-            <input name="awayScore" type="number" min="0" className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100" />
+            <label className="text-sm font-medium text-slate-800">Away score</label>
+            <input name="awayScore" type="number" min="0" className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25" />
           </div>
         </div>
 
-        <button type="submit" className="w-full rounded-xl bg-slate-900 dark:bg-slate-800 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-slate-800 dark:hover:bg-slate-700 transition-colors">
+        <button type="submit" className="btn-primary w-full h-auto rounded-xl py-2.5">
           Submit Match
         </button>
       </form>
@@ -424,11 +424,11 @@ export function ResetButton() {
   };
 
   return (
-    <section className="rounded-2xl border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/20 p-4 shadow-sm sm:p-6">
-      <h2 className="text-lg font-semibold text-red-700 dark:text-red-400">Danger Zone</h2>
+    <section className="rounded-2xl border border-red-200 bg-red-50 p-4 shadow-sm sm:p-6">
+      <h2 className="text-lg font-semibold text-red-700">Danger Zone</h2>
       <button
         onClick={handleResetSeason}
-        className="mt-4 rounded-xl bg-red-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-700 transition-colors"
+        className="mt-4 inline-flex h-auto items-center justify-center rounded-xl bg-red-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-700 transition-colors"
       >
         Reset Season Data
       </button>

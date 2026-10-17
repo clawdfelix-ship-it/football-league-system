@@ -89,8 +89,8 @@ export default function ConsoleClient() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 px-4 py-10">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-slate-50 py-10">
+      <div className="page-container-narrow">
         <header className="mb-6 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-slate-900">平台控制台</h1>
@@ -98,14 +98,14 @@ export default function ConsoleClient() {
           </div>
           <button
             onClick={() => void load()}
-            className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium hover:bg-slate-100"
+            className="btn-secondary h-8 rounded-lg px-3 py-1.5 text-sm font-medium"
           >
             重新整理
           </button>
         </header>
 
         {error && (
-          <div className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
+          <div className="alert-error mb-4">
             {error}
           </div>
         )}

@@ -10,8 +10,8 @@ export default function Footer() {
   const isZh = language === 'zh';
 
   return (
-    <footer className="bg-slate-900 text-slate-300 py-12 px-6 mt-auto">
-      <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12">
+    <footer className="bg-slate-900 text-slate-300 py-12 mt-auto">
+      <div className="page-container grid md:grid-cols-2 gap-12">
         <div>
           <h3 className="text-white text-xl font-bold mb-4 tracking-tight">
             {isZh ? 'Zenex 是什麼' : 'What is Zenex'}

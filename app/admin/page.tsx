@@ -169,15 +169,15 @@ export default async function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-50 font-sans text-zinc-900 dark:bg-black dark:text-zinc-50">
-      <main className="mx-auto flex max-w-3xl flex-col gap-8 px-4 py-10 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+      <main className="page-container-narrow flex flex-col gap-8 py-10">
         <header className="flex flex-col gap-2">
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
             <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
               {isAdmin ? 'League Administration' : 'Team Manager Dashboard'}
             </h1>
             <div className="flex flex-col items-start gap-1 sm:items-end">
-              <div className="text-sm text-zinc-500">
+              <div className="text-sm text-slate-500">
                 Logged in as {username}
               </div>
               <div className="flex flex-wrap items-center justify-start gap-2 sm:justify-end sm:gap-3">
@@ -187,7 +187,7 @@ export default async function AdminPage() {
               </div>
             </div>
           </div>
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          <p className="text-sm text-slate-600">
             {isAdmin 
               ? 'Manage fixtures, results, and league settings.' 
               : 'Access your team\'s match sheets and resources.'}
@@ -203,14 +203,14 @@ export default async function AdminPage() {
         {isManager && teamId !== undefined && (
           <section className="space-y-6">
             {/* Quick Actions Card */}
-            <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
+            <div className="card p-6">
               <h2 className="text-lg font-semibold mb-4">Team Management</h2>
               <div className="space-y-4">
                 <PlayerManager teamName={TEAMS[teamId].name} players={teamPlayers} />
                 
                 <Link 
                   href={`/admin/match-sheet/${teamId}`}
-                  className="flex items-center justify-center gap-2 w-full rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-slate-800 transition-colors"
+                  className="btn-primary w-full h-auto rounded-xl py-3"
                   target="_blank"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -224,7 +224,7 @@ export default async function AdminPage() {
             </div>
 
             {/* Kit Color Settings */}
-            <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
+            <div className="card p-6">
               <h2 className="text-lg font-semibold mb-4">Kit Colors</h2>
               <KitColorManager teamName={TEAMS[teamId].name} />
             </div>
@@ -237,31 +237,31 @@ export default async function AdminPage() {
         {isAdmin && (
           <>
             {/* Team Match Sheets Section for Admin */}
-            <section className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 sm:p-6">
+            <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
               <h2 className="text-lg font-semibold mb-4">Squad List</h2>
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 {TEAMS.map((team, index) => (
                   <Link 
                     key={team.name}
                     href={`/admin/match-sheet/${index}`}
-                    className="flex flex-col items-center justify-center gap-2 rounded-xl border border-zinc-100 bg-zinc-50 p-4 text-center transition hover:bg-zinc-100 hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+                    className="flex flex-col items-center justify-center gap-2 rounded-xl border border-slate-100 bg-slate-50 p-4 text-center transition hover:bg-slate-100 hover:shadow-sm"
                     target="_blank"
                   >
-                    <div className="text-lg font-black px-4 py-2 rounded-lg bg-zinc-700 text-white">
+                    <div className="text-lg font-black px-4 py-2 rounded-lg bg-slate-700 text-white">
                       {team.shortName}
                     </div>
-                    <div className="text-xs text-zinc-500 dark:text-zinc-400">
+                    <div className="text-xs text-slate-500">
                       {team.nameZh}
                     </div>
                   </Link>
                 ))}
                 <Link
                   href="/admin/match-sheet/demo"
-                  className="flex flex-col items-center justify-center gap-2 rounded-xl border border-zinc-100 bg-zinc-50 p-4 text-center transition hover:bg-zinc-100 hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+                  className="flex flex-col items-center justify-center gap-2 rounded-xl border border-slate-100 bg-slate-50 p-4 text-center transition hover:bg-slate-100 hover:shadow-sm"
                   target="_blank"
                 >
-                  <div className="text-lg font-black px-4 py-2 rounded-lg bg-zinc-700 text-white">DEMO</div>
-                  <div className="text-xs text-zinc-500 dark:text-zinc-400">Real Madrid</div>
+                  <div className="text-lg font-black px-4 py-2 rounded-lg bg-slate-700 text-white">DEMO</div>
+                  <div className="text-xs text-slate-500">Real Madrid</div>
                 </Link>
               </div>
             </section>
@@ -270,7 +270,7 @@ export default async function AdminPage() {
             <section className="space-y-3">
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold">⚽ 球隊管理</h2>
-                <div className="text-xs text-zinc-500 dark:text-zinc-400">{TEAM_CONTACTS.length} 支球隊</div>
+                <div className="text-xs text-slate-500">{TEAM_CONTACTS.length} 支球隊</div>
               </div>
               {TEAM_CONTACTS.map((team) => (
                 <TeamCard key={team.team} team={team} players={allPlayers} />

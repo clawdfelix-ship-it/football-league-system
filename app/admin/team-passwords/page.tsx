@@ -108,12 +108,12 @@ export default function AdminTeamPasswordsPage() {
   }
 
   if (status === 'loading') {
-    return <div className="p-8 text-zinc-500">Loading…</div>;
+    return <div className="p-8 text-slate-500">Loading…</div>;
   }
   if (status === 'unauthenticated' || session?.user?.role !== 'admin') {
     return (
       <div className="p-8">
-        <div className="rounded-lg border border-amber-300 bg-amber-50 p-4 text-amber-800 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
+        <div className="rounded-lg border border-amber-300 bg-amber-50 p-4 text-amber-800">
           Admin access required.
         </div>
       </div>
@@ -123,31 +123,31 @@ export default function AdminTeamPasswordsPage() {
   const teams = TEAMS.filter((t) => t.name !== 'DEMO');
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="page-container-narrow py-10">
       <header className="mb-6">
-        <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
+        <h1 className="text-2xl font-semibold text-slate-900">
           Team Manager Passwords
         </h1>
-        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="mt-1 text-sm text-slate-500">
           Issue per-team passwords. Each manager will be forced to set a new password on first
           login. Plaintext is wiped from this page after {revealCountdown}s.
         </p>
       </header>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <section className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-          <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-100">Set per-team password</h2>
-          <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+        <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h2 className="text-lg font-medium text-slate-900">Set per-team password</h2>
+          <p className="mt-1 text-xs text-slate-500">
             Set the same password for all captain emails of a team. Leave password blank to auto-generate.
           </p>
           <form onSubmit={onSubmit} className="mt-4 space-y-4">
             <div>
-              <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Team</label>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Team</label>
               <select
                 value={team}
                 onChange={(e) => setTeam(e.target.value)}
                 required
-                className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-800"
+                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25"
               >
                 <option value="">— select team —</option>
                 {teams.map((t) => (
@@ -158,7 +158,7 @@ export default function AdminTeamPasswordsPage() {
               </select>
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+              <label className="mb-1 block text-sm font-medium text-slate-700">
                 Password (optional)
               </label>
               <input
@@ -166,27 +166,27 @@ export default function AdminTeamPasswordsPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="leave blank to generate"
-                className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-800"
+                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25"
               />
             </div>
             <button
               type="submit"
               disabled={busy || !team}
-              className="w-full rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-zinc-800 disabled:opacity-60 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+              className="btn-primary w-full h-auto rounded-md py-2 text-sm font-medium disabled:opacity-60"
             >
               {busy ? 'Setting…' : 'Set team password'}
             </button>
           </form>
         </section>
 
-        <section className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-          <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-100">Reset single manager</h2>
-          <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+        <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h2 className="text-lg font-medium text-slate-900">Reset single manager</h2>
+          <p className="mt-1 text-xs text-slate-500">
             Generate a new password for one manager email.
           </p>
           <form onSubmit={onReset} className="mt-4 space-y-4">
             <div>
-              <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+              <label className="mb-1 block text-sm font-medium text-slate-700">
                 Manager email
               </label>
               <input
@@ -195,13 +195,13 @@ export default function AdminTeamPasswordsPage() {
                 value={resetEmail}
                 onChange={(e) => setResetEmail(e.target.value)}
                 placeholder="manager@example.com"
-                className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-800"
+                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25"
               />
             </div>
             <button
               type="submit"
               disabled={busy || !resetEmail}
-              className="w-full rounded-md bg-amber-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-amber-700 disabled:opacity-60"
+              className="w-full inline-flex h-auto items-center justify-center rounded-md bg-amber-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-amber-700 disabled:opacity-60 transition-colors"
             >
               {busy ? 'Resetting…' : 'Generate new password'}
             </button>
@@ -210,47 +210,47 @@ export default function AdminTeamPasswordsPage() {
       </div>
 
       {error ? (
-        <div className="mt-6 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950/40 dark:text-red-300">
+        <div className="mt-6 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
           {error}
         </div>
       ) : null}
       {success ? (
-        <div className="mt-6 rounded-md bg-emerald-50 px-3 py-2 text-sm text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
+        <div className="mt-6 rounded-md bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
           {success}
         </div>
       ) : null}
 
       {(issued.length > 0 || resetIssued) && (
-        <section className="mt-8 rounded-xl border border-amber-300 bg-amber-50 p-6 shadow-sm dark:border-amber-800 dark:bg-amber-950/30">
+        <section className="mt-8 rounded-xl border border-amber-300 bg-amber-50 p-6 shadow-sm">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-lg font-medium text-amber-900 dark:text-amber-100">
+            <h2 className="text-lg font-medium text-amber-900">
               ⚠️ Plaintext passwords — copy NOW
             </h2>
             {revealCountdown > 0 ? (
-              <span className="text-sm text-amber-700 dark:text-amber-300">
+              <span className="text-sm text-amber-700">
                 Auto-wipe in {revealCountdown}s
               </span>
             ) : (
-              <span className="text-sm text-amber-700 dark:text-amber-300">Wiped</span>
+              <span className="text-sm text-amber-700">Wiped</span>
             )}
           </div>
-          <ul className="space-y-1 font-mono text-sm text-amber-900 dark:text-amber-100">
+          <ul className="space-y-1 font-mono text-sm text-amber-900">
             {issued.map((it, i) => (
               <li key={i}>
                 {revealCountdown > 0 ? (
                   <>
-                    <span className="font-semibold">{it.team}</span> / {it.email} → <span className="rounded bg-amber-100 px-1 dark:bg-amber-900/50">{it.password}</span>
+                    <span className="font-semibold">{it.team}</span> / {it.email} → <span className="rounded bg-amber-100 px-1">{it.password}</span>
                   </>
                 ) : (
                   <>
-                    <span className="font-semibold">{it.team}</span> / {it.email} → <span className="text-amber-700/50 dark:text-amber-400/50">[wiped]</span>
+                    <span className="font-semibold">{it.team}</span> / {it.email} → <span className="text-amber-700/50">[wiped]</span>
                   </>
                 )}
               </li>
             ))}
             {resetIssued && (revealCountdown > 0 ? (
               <li>
-                <span className="font-semibold">reset</span> / {resetIssued.email} → <span className="rounded bg-amber-100 px-1 dark:bg-amber-900/50">{resetIssued.password}</span>
+                <span className="font-semibold">reset</span> / {resetIssued.email} → <span className="rounded bg-amber-100 px-1">{resetIssued.password}</span>
               </li>
             ) : null)}
           </ul>
