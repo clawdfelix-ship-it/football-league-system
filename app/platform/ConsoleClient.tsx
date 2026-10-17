@@ -135,7 +135,7 @@ export default function ConsoleClient() {
                         {a.status}
                       </span>
                       {a.leagueId != null && (
-                        <span className="rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-semibold text-indigo-700">
+                        <span className="rounded-full bg-[#1a237e]/10 px-2 py-0.5 text-xs font-semibold text-[#1a237e]">
                           league #{a.leagueId}
                         </span>
                       )}
@@ -215,7 +215,7 @@ function Btn({
     slate: 'border-slate-300 bg-white text-slate-700 hover:bg-slate-100',
     green: 'border-green-600 bg-green-600 text-white hover:bg-green-700',
     red: 'border-red-600 bg-red-600 text-white hover:bg-red-700',
-    indigo: 'border-indigo-600 bg-indigo-600 text-white hover:bg-indigo-700',
+    indigo: 'border-[#1a237e] bg-[#1a237e] text-white hover:bg-[#283593]',
   };
   return (
     <button
