@@ -320,10 +320,10 @@ export default function HomeClient(props: {
           </p>
         </header>
         <main className="page-container -mt-16 pb-20">
-          <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200 p-8">
+          <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-200 p-8">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-              <p className="text-gray-500">{t('載入中…', 'Loading...')}</p>
+              <p className="text-slate-500">{t('載入中…', 'Loading...')}</p>
             </div>
           </div>
         </main>
@@ -346,7 +346,7 @@ export default function HomeClient(props: {
 
         <div className="page-container -mt-16 pb-20">
           <section id="standings" className="mb-12">
-            <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200">
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-200">
               <div className="bg-slate-900 text-white px-8 py-5 flex justify-between items-center">
                 <h3 className="text-xl font-bold tracking-tight">{t('積分榜 2026', 'League Table 2026')}</h3>
                 <button
@@ -481,7 +481,7 @@ export default function HomeClient(props: {
           </section>
 
           <section id="matches" className="grid md:grid-cols-2 gap-8">
-            <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200">
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-200">
               <div className="bg-green-600 text-white px-8 py-5 flex items-center justify-between">
                 <h3 className="text-xl font-bold tracking-tight">{t('近期賽事', 'Upcoming Fixtures')}</h3>
                 {fixturesLastUpdatedAt && (
@@ -500,7 +500,7 @@ export default function HomeClient(props: {
               </div>
               <div className="p-6 space-y-5">
                 {upcomingFixtures.length === 0 ? (
-                  <p className="text-center text-gray-500">{t('沒有近期賽事', 'No upcoming fixtures.')}</p>
+                  <p className="text-center text-slate-500">{t('沒有近期賽事', 'No upcoming fixtures.')}</p>
                 ) : (
                   upcomingFixtures.map((match) => (
                     <div
@@ -564,13 +564,13 @@ export default function HomeClient(props: {
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200">
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-200">
               <div className="bg-red-600 text-white px-8 py-5">
                 <h3 className="text-xl font-bold tracking-tight">{t('最近結果', 'Recent Results')}</h3>
               </div>
               <div className="p-6 space-y-4">
                 {recentResults.length === 0 ? (
-                  <p className="text-center text-gray-500">{t('沒有最近結果', 'No recent results.')}</p>
+                  <p className="text-center text-slate-500">{t('沒有最近結果', 'No recent results.')}</p>
                 ) : (
                   <>
                     {(showAllResults ? recentResults : recentResults.slice(0, 5)).map((match) => (
@@ -617,7 +617,7 @@ export default function HomeClient(props: {
 
           {announcements.length > 0 && (
             <section id="announcements" className="mt-12">
-              <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200">
+              <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-200">
                 <div className="bg-slate-900 text-white px-8 py-5 flex items-center justify-between">
                   <h3 className="text-xl font-bold tracking-tight">{t('場地公告', 'Venue Announcements')}</h3>
                   {announcementsLastUpdatedAt && (

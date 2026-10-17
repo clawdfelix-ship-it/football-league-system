@@ -40,7 +40,7 @@ export default function FixDbButton() {
   }
 
   return (
-    <span className={`text-xs ${status === 'success' ? 'text-green-500' : status === 'error' ? 'text-red-500' : 'text-zinc-500'}`}>
+    <span className={`text-xs ${status === 'success' ? 'text-green-500' : status === 'error' ? 'text-red-500' : 'text-slate-500'}`}>
       {status === 'loading' ? 'Updating...' : message}
     </span>
   );

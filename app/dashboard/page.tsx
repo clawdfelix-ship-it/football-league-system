@@ -50,29 +50,29 @@ export default async function DashboardPage() {
   return (
     <HomeLayout>
       <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans">
-        <header className="bg-[#1a237e] bg-gradient-to-b from-[#1a237e] to-[#283593] text-white pt-16 pb-24 px-6 text-center">
-          <h2 className="text-6xl font-black italic mb-2 tracking-tight">DASHBOARD</h2>
-          <p className="text-blue-200 text-lg font-light tracking-widest uppercase">League Statistics & Analytics</p>
+        <header className="bg-[#1a237e] bg-gradient-to-b from-[#1a237e] to-[#283593] text-white pt-14 pb-20 sm:pt-16 sm:pb-24 px-4 sm:px-6 text-center">
+          <h2 className="font-black italic mb-2 tracking-[-0.02em] leading-[1.05] text-balance text-[clamp(1.9rem,7vw,3.75rem)]">DASHBOARD</h2>
+          <p className="text-blue-200 font-light tracking-widest uppercase text-[clamp(0.7rem,2.6vw,1.125rem)]">League Statistics &amp; Analytics</p>
         </header>
 
-        <main className="max-w-6xl mx-auto px-6 -mt-16 pb-20">
+        <main className="page-container -mt-16 pb-20">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {/* 總覽卡片 */}
             <div className="bg-white rounded-2xl shadow-lg p-6 border border-slate-200">
               <div className="text-3xl font-bold text-[#1a237e]">{totalPlayers}</div>
-              <div className="text-sm text-gray-600 mt-1">總球員數</div>
+              <div className="text-sm text-slate-600 mt-1">總球員數</div>
             </div>
             <div className="bg-white rounded-2xl shadow-lg p-6 border border-slate-200">
               <div className="text-3xl font-bold text-green-600">{activePlayers}</div>
-              <div className="text-sm text-gray-600 mt-1">活躍球員</div>
+              <div className="text-sm text-slate-600 mt-1">活躍球員</div>
             </div>
             <div className="bg-white rounded-2xl shadow-lg p-6 border border-slate-200">
               <div className="text-3xl font-bold text-red-600">{injuredPlayers}</div>
-              <div className="text-sm text-gray-600 mt-1">受傷球員</div>
+              <div className="text-sm text-slate-600 mt-1">受傷球員</div>
             </div>
             <div className="bg-white rounded-2xl shadow-lg p-6 border border-slate-200">
               <div className="text-3xl font-bold text-yellow-600">{suspendedPlayers}</div>
-              <div className="text-sm text-gray-600 mt-1">停賽球員</div>
+              <div className="text-sm text-slate-600 mt-1">停賽球員</div>
             </div>
           </div>
 
@@ -82,15 +82,15 @@ export default async function DashboardPage() {
               <h3 className="text-xl font-bold text-slate-800 mb-4">球隊統計</h3>
               <div className="space-y-3">
                 {teamStats.map(team => (
-                  <div key={team.team} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div key={team.team} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
                     <div className="flex items-center gap-3">
                       <div className="w-3 h-3 bg-[#1a237e] rounded-full"></div>
                       <span className="font-medium">{team.team}</span>
                     </div>
                     <div className="flex items-center gap-4 text-sm">
-                      <span className="text-gray-600">共 {team.count} 人</span>
+                      <span className="text-slate-600">共 {team.count} 人</span>
                       <span className="text-green-600">活躍 {team.active}</span>
-                      <span className="text-gray-500">平均 {team.avgAge} 歲</span>
+                      <span className="text-slate-500">平均 {team.avgAge} 歲</span>
                     </div>
                   </div>
                 ))}
@@ -102,7 +102,7 @@ export default async function DashboardPage() {
               <h3 className="text-xl font-bold text-slate-800 mb-4">位置分布</h3>
               <div className="space-y-3">
                 {Object.entries(positionStats).map(([position, count]) => (
-                  <div key={position} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div key={position} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
                     <span className="font-medium">{position}</span>
                     <span className="text-[#1a237e] font-bold">{count} 人</span>
                   </div>
@@ -115,7 +115,7 @@ export default async function DashboardPage() {
               <h3 className="text-xl font-bold text-slate-800 mb-4">年齡分布</h3>
               <div className="space-y-3">
                 {Object.entries(ageGroups).map(([range, count]) => (
-                  <div key={range} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div key={range} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
                     <span className="font-medium">{range} 歲</span>
                     <span className="text-purple-600 font-bold">{count} 人</span>
                   </div>
@@ -139,9 +139,9 @@ export default async function DashboardPage() {
                   <span className="font-medium text-yellow-800">停賽</span>
                   <span className="text-yellow-600 font-bold">{suspendedPlayers} 人</span>
                 </div>
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <span className="font-medium text-gray-800">非活躍</span>
-                  <span className="text-gray-600 font-bold">{inactivePlayers} 人</span>
+                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                  <span className="font-medium text-slate-800">非活躍</span>
+                  <span className="text-slate-600 font-bold">{inactivePlayers} 人</span>
                 </div>
               </div>
             </div>

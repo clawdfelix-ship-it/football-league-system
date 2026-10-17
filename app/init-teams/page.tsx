@@ -47,13 +47,13 @@ export default function InitTeamsPage() {
 
   return (
     <HomeLayout>
-      <div className="min-h-screen bg-gray-50 py-12 px-6">
+      <div className="min-h-screen bg-slate-50 py-12 px-6">
         <div className="max-w-2xl mx-auto">
           <div className="bg-white rounded-2xl shadow-xl p-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">
               🎨 球隊球衣顏色初始化
             </h1>
-            <p className="text-gray-600 mb-8">
+            <p className="text-slate-600 mb-8">
               初始化球隊數據庫，設置各隊嘅主場同客場球衣顏色
             </p>
 
@@ -62,7 +62,7 @@ export default function InitTeamsPage() {
               <button
                 onClick={handleCheck}
                 disabled={status === 'loading'}
-                className="w-full py-3 px-6 rounded-lg font-semibold bg-gray-100 hover:bg-gray-200 text-gray-800 transition-colors disabled:opacity-50"
+                className="w-full py-3 px-6 rounded-lg font-semibold bg-slate-100 hover:bg-slate-200 text-slate-800 transition-colors disabled:opacity-50"
               >
                 {status === 'loading' ? '檢查中...' : '檢查數據庫狀態'}
               </button>
@@ -81,7 +81,7 @@ export default function InitTeamsPage() {
                 <div className={`p-4 rounded-lg text-sm whitespace-pre-line ${
                   status === 'success' ? 'bg-green-50 text-green-800 border border-green-200' :
                   status === 'error' ? 'bg-red-50 text-red-800 border border-red-200' :
-                  'bg-gray-50 text-gray-800 border border-gray-200'
+                  'bg-slate-50 text-slate-800 border border-slate-200'
                 }`}>
                   {message}
                 </div>

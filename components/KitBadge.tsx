@@ -48,7 +48,7 @@ export function KitColorPicker({ label = '', value, onChange }: KitColorPickerPr
   return (
     <div className="space-y-2">
       {label && (
-        <label className="text-xs font-medium text-zinc-600 block">{label}</label>
+        <label className="text-xs font-medium text-slate-600 block">{label}</label>
       )}
       <div className="flex flex-wrap gap-2">
         {KIT_COLORS.map((color) => {

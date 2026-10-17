@@ -35,7 +35,7 @@ export default function TeamsClient(props: { initialTeams: TeamInfo[] }) {
             {teams.map((team) => (
               <div
                 key={team.name}
-                className="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200 hover:shadow-2xl transition-all hover:-translate-y-1"
+                className="bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-200 hover:shadow-2xl transition-all hover:-translate-y-1"
               >
                 <div className="bg-[#1a237e] p-6 text-center border-b-4 border-[#283593]">
                   <div className="mb-4">
@@ -53,7 +53,7 @@ export default function TeamsClient(props: { initialTeams: TeamInfo[] }) {
 
                 <div className="p-4">
                   <div className="flex justify-between items-center mb-3">
-                    <span className="text-sm text-gray-500">{t('球員', 'Players')}</span>
+                    <span className="text-sm text-slate-500">{t('球員', 'Players')}</span>
                     <span className="bg-yellow-500 text-black px-3 py-1 rounded-full text-sm font-bold">
                       {team.playerCount} {t('人', '')}
                     </span>
@@ -67,13 +67,13 @@ export default function TeamsClient(props: { initialTeams: TeamInfo[] }) {
                             <span className="bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded text-xs font-bold">
                               #{player.jerseyNumber ?? '-'}
                             </span>
-                            <span className="text-gray-700">{player.name}</span>
+                            <span className="text-slate-700">{player.name}</span>
                           </div>
-                          <span className="text-xs text-gray-400">{player.position || '-'}</span>
+                          <span className="text-xs text-slate-400">{player.position || '-'}</span>
                         </div>
                       ))
                     ) : (
-                      <p className="text-center text-gray-400 text-sm py-2">{t('暫無球員', 'No players')}</p>
+                      <p className="text-center text-slate-400 text-sm py-2">{t('暫無球員', 'No players')}</p>
                     )}
                   </div>
 

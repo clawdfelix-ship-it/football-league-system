@@ -104,7 +104,7 @@ export default function TermsOfServicePage() {
         </header>
 
         <main className="max-w-3xl mx-auto px-6 -mt-6 pb-20">
-          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 p-6 md:p-10">
+          <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-6 md:p-10">
             <p className="text-xs text-slate-400 mb-8">
               {t('最後更新：', 'Last updated: ')}
               {updated}

@@ -35,10 +35,10 @@ function CopyButton({ value, label }: { value: string; label: string }) {
     <button
       onClick={handleCopy}
       title={`複製 ${label}`}
-      className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-700 dark:hover:bg-zinc-600 text-[10px] font-mono text-zinc-600 dark:text-zinc-300 transition-colors flex-shrink-0"
+      className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-200 hover:bg-slate-300 text-[10px] font-mono text-slate-600 transition-colors flex-shrink-0"
     >
       <span className="max-w-[90px] truncate">{value}</span>
-      <span className="text-zinc-400 flex-shrink-0">
+      <span className="text-slate-400 flex-shrink-0">
         {copied ? (
           <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-green-600">
             <polyline points="20 6 9 17 4 12"></polyline>
@@ -59,12 +59,12 @@ function PlayerRow({ player, onEdit }: { player: Player; onEdit: (player: Player
   const hasEmail = !!player.email;
 
   return (
-    <div className="flex items-center justify-between gap-2 py-1.5 px-2 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800/50 transition-colors">
+    <div className="flex items-center justify-between gap-2 py-1.5 px-2 rounded-md hover:bg-slate-100 transition-colors">
       <div className="flex items-center gap-2 min-w-0 flex-1">
-        <div className="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center flex-shrink-0">
-          <span className="text-[10px] font-black text-slate-700 dark:text-slate-200">#{player.jerseyNumber ?? '—'}</span>
+        <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0">
+          <span className="text-[10px] font-black text-slate-700">#{player.jerseyNumber ?? '—'}</span>
         </div>
-        <span className="text-xs font-medium text-zinc-800 dark:text-zinc-100 truncate">{player.name}</span>
+        <span className="text-xs font-medium text-slate-800 truncate">{player.name}</span>
       </div>
       <div className="flex items-center gap-1 flex-shrink-0">
         {hasPhone ? (
@@ -75,7 +75,7 @@ function PlayerRow({ player, onEdit }: { player: Player; onEdit: (player: Player
         ) : null}
         <button
           onClick={(e) => { e.stopPropagation(); onEdit(player); }}
-          className="text-xs p-1 rounded hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors"
+          className="text-xs p-1 rounded hover:bg-slate-200 text-slate-400 hover:text-slate-600 transition-colors"
           title="編輯球員"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -120,29 +120,29 @@ function EditPlayerModal({ player, onClose, onSaved }: { player: Player; onClose
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
       <form
         onSubmit={handleSubmit}
-        className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 shadow-2xl max-w-md w-full space-y-5 text-white"
+        className="bg-white border border-slate-200 rounded-2xl p-6 shadow-2xl max-w-md w-full space-y-5 text-slate-900"
       >
-        <div className="flex justify-between items-center border-b border-zinc-800 pb-4">
-          <h3 className="text-xl font-bold text-white">編輯球員</h3>
-          <button type="button" onClick={onClose} className="text-zinc-400 hover:text-white">
+        <div className="flex justify-between items-center border-b border-slate-100 pb-4">
+          <h3 className="text-xl font-bold text-slate-900">編輯球員</h3>
+          <button type="button" onClick={onClose} className="text-slate-400 hover:text-slate-700">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
           </button>
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-zinc-300">姓名</label>
+          <label className="text-sm font-medium text-slate-700">姓名</label>
           <input
             name="name"
             defaultValue={player.name}
             required
-            className="w-full border border-zinc-700 bg-zinc-800 rounded-lg px-3 py-2 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600"
+            className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e]/30 focus:border-[#1a237e]"
             placeholder="球員姓名"
           />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <label className="text-sm font-medium text-zinc-300">球衣號碼</label>
+            <label className="text-sm font-medium text-slate-700">球衣號碼</label>
             <input
               name="number"
               type="number"
@@ -150,17 +150,17 @@ function EditPlayerModal({ player, onClose, onSaved }: { player: Player; onClose
               min="0"
               max="99"
               defaultValue={player.jerseyNumber ?? ''}
-              className="w-full border border-zinc-700 bg-zinc-800 rounded-lg px-3 py-2 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600"
+              className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e]/30 focus:border-[#1a237e]"
               placeholder="0-99"
             />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-medium text-zinc-300">位置</label>
+            <label className="text-sm font-medium text-slate-700">位置</label>
             <select
               name="position"
               required
               defaultValue={player.position ?? ''}
-              className="w-full border border-zinc-700 bg-zinc-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-zinc-600 appearance-none"
+              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25 appearance-none"
             >
               <option value="GK">守門員 (GK)</option>
               <option value="DF">後衛 (DF)</option>
@@ -171,34 +171,34 @@ function EditPlayerModal({ player, onClose, onSaved }: { player: Player; onClose
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-zinc-300">身份證明 (前3位)</label>
+          <label className="text-sm font-medium text-slate-700">身份證明 (前3位)</label>
           <input
             name="identityPrefix"
             maxLength={3}
             defaultValue={player.identityPrefix ?? ''}
-            className="w-full border border-zinc-700 bg-zinc-800 rounded-lg px-3 py-2 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 uppercase"
+            className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e]/30 focus:border-[#1a237e] uppercase"
             placeholder="例如 A12"
           />
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-zinc-300">電話</label>
+          <label className="text-sm font-medium text-slate-700">電話</label>
           <input
             name="phoneNumber"
             type="tel"
             defaultValue={player.phoneNumber ?? ''}
-            className="w-full border border-zinc-700 bg-zinc-800 rounded-lg px-3 py-2 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600"
+            className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e]/30 focus:border-[#1a237e]"
             placeholder="電話號碼"
           />
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-zinc-300">電郵</label>
+          <label className="text-sm font-medium text-slate-700">電郵</label>
           <input
             name="email"
             type="email"
             defaultValue={player.email ?? ''}
-            className="w-full border border-zinc-700 bg-zinc-800 rounded-lg px-3 py-2 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600"
+            className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e]/30 focus:border-[#1a237e]"
             placeholder="電郵地址"
           />
         </div>
@@ -207,14 +207,14 @@ function EditPlayerModal({ player, onClose, onSaved }: { player: Player; onClose
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 px-4 py-2.5 border border-zinc-700 bg-transparent text-white rounded-lg hover:bg-zinc-800 font-medium transition-colors"
+            className="flex-1 btn-secondary h-auto py-2.5 font-medium"
           >
             取消
           </button>
           <button
             type="submit"
             disabled={isLoading}
-            className="flex-1 px-4 py-2.5 bg-white text-black rounded-lg hover:bg-zinc-200 disabled:opacity-50 font-bold transition-colors"
+            className="flex-1 btn-primary h-auto py-2.5 font-bold disabled:opacity-50"
           >
             {isLoading ? '儲存中...' : '儲存'}
           </button>
@@ -232,26 +232,26 @@ export function TeamCard({ team, players }: TeamCardProps) {
   const teamPlayers = players.filter(p => p.team === team.team);
 
   return (
-    <div className="rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 overflow-hidden transition-all hover:shadow-md">
+    <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden transition-all hover:shadow-md">
       {/* Card Header */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-between gap-3 p-4 text-left hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-colors"
+        className="w-full flex items-center justify-between gap-3 p-4 text-left hover:bg-slate-50 transition-colors"
       >
         <div className="flex items-center gap-3 min-w-0">
           <div className={`w-3.5 h-3.5 rounded-full bg-gradient-to-br ${team.color} flex-shrink-0`} />
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <span className="font-black text-zinc-900 dark:text-zinc-100 text-base">{team.shortName}</span>
-              <span className="text-xs text-zinc-400">({team.teamZh})</span>
+              <span className="font-black text-slate-900 text-base">{team.shortName}</span>
+              <span className="text-xs text-slate-400">({team.teamZh})</span>
             </div>
-            <div className="text-xs text-zinc-400 mt-0.5">
+            <div className="text-xs text-slate-400 mt-0.5">
               <span>{teamPlayers.length} 人</span>
             </div>
           </div>
         </div>
         <div className={`flex-shrink-0 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`}>
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-zinc-400">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-400">
             <polyline points="6 9 12 15 18 9"></polyline>
           </svg>
         </div>
@@ -259,18 +259,18 @@ export function TeamCard({ team, players }: TeamCardProps) {
 
       {/* Expanded Content */}
       <div className={`overflow-hidden transition-all duration-300 ease-in-out ${expanded ? 'max-h-[4000px] opacity-100' : 'max-h-0 opacity-0'}`}>
-        <div className="px-4 pb-4 border-t border-zinc-100 dark:border-zinc-800 space-y-4">
+        <div className="px-4 pb-4 border-t border-slate-100 space-y-4">
           {/* 1. 基本資料 */}
           <div className="mt-4">
             <div className="flex items-center gap-1.5 mb-2">
-              <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">領隊</span>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">領隊</span>
             </div>
-            <div className="bg-zinc-50 dark:bg-zinc-900 rounded-xl p-3 space-y-2">
+            <div className="bg-slate-50 rounded-xl p-3 space-y-2">
               {team.captains.map((captain, index) => (
                 <div key={index} className="flex items-center gap-2 text-sm">
-                  <span className="text-zinc-400 w-10 flex-shrink-0 text-xs">{index + 1}.</span>
-                  <span className="font-medium text-zinc-800 dark:text-zinc-100">{captain.name}</span>
-                  <span className="text-zinc-400 text-xs">({captain.email ?? '—'})</span>
+                  <span className="text-slate-400 w-10 flex-shrink-0 text-xs">{index + 1}.</span>
+                  <span className="font-medium text-slate-800">{captain.name}</span>
+                  <span className="text-slate-400 text-xs">({captain.email ?? '—'})</span>
                 </div>
               ))}
             </div>
@@ -280,27 +280,27 @@ export function TeamCard({ team, players }: TeamCardProps) {
           {team.captains.length > 0 && (
             <div>
               <div className="flex items-center gap-1.5 mb-2">
-                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">教練</span>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">教練</span>
               </div>
-              <div className="bg-zinc-50 dark:bg-zinc-900 rounded-xl p-3 space-y-2">
+              <div className="bg-slate-50 rounded-xl p-3 space-y-2">
                 {team.captains.map((captain, index) => (
                   <div key={index}>
                     <div className="flex items-center gap-2 text-sm">
-                      <span className="text-zinc-400 flex-shrink-0">{index + 1}.</span>
-                      <span className="font-medium text-zinc-800 dark:text-zinc-100">{captain.name}</span>
+                      <span className="text-slate-400 flex-shrink-0">{index + 1}.</span>
+                      <span className="font-medium text-slate-800">{captain.name}</span>
                     </div>
                     {captain.email && (
                       <div className="flex items-center gap-2 ml-5">
-                        <span className="text-zinc-400 flex-shrink-0">📧</span>
+                        <span className="text-slate-400 flex-shrink-0">📧</span>
                         <a href={`mailto:${captain.email}`} onClick={e => e.stopPropagation()} className="-my-1 py-1 text-xs text-blue-600 hover:underline break-all">{captain.email}</a>
                         <CopyButton value={captain.email} label="領隊電郵" />
                       </div>
                     )}
                   </div>
                 ))}
-                <div className="flex items-center gap-2 pt-1 border-t border-zinc-200 dark:border-zinc-700">
+                <div className="flex items-center gap-2 pt-1 border-t border-slate-200">
                   {team.captains[0]?.email && (
-                    <a href={`mailto:${team.captains[0].email}`} onClick={e => e.stopPropagation()} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-xs font-medium transition-colors">
+                    <a href={`mailto:${team.captains[0].email}`} onClick={e => e.stopPropagation()} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs font-medium transition-colors">
                       📧 發郵件領隊
                     </a>
                   )}
@@ -314,13 +314,13 @@ export function TeamCard({ team, players }: TeamCardProps) {
           <div>
             <button
               onClick={(e) => { e.stopPropagation(); setPlayersExpanded(!playersExpanded); }}
-              className="w-full flex items-center justify-between p-3 bg-zinc-50 dark:bg-zinc-900 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+              className="w-full flex items-center justify-between p-3 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors"
             >
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">球員列表</span>
-                <span className="text-[10px] bg-slate-900 text-white dark:bg-white dark:text-slate-900 px-1.5 py-0.5 rounded-full font-bold">{teamPlayers.length}</span>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">球員列表</span>
+                <span className="text-[10px] bg-slate-900 text-white px-1.5 py-0.5 rounded-full font-bold">{teamPlayers.length}</span>
               </div>
-              <div className={`flex items-center gap-1 text-[10px] text-zinc-500 transition-transform duration-200 ${playersExpanded ? 'rotate-180' : ''}`}>
+              <div className={`flex items-center gap-1 text-[10px] text-slate-500 transition-transform duration-200 ${playersExpanded ? 'rotate-180' : ''}`}>
                 <span>{playersExpanded ? '收起' : '展開'}</span>
                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="6 9 12 15 18 9"></polyline>
@@ -330,15 +330,15 @@ export function TeamCard({ team, players }: TeamCardProps) {
 
             <div className={`overflow-hidden transition-all duration-300 ease-in-out ${playersExpanded ? 'max-h-[2000px] mt-2' : 'max-h-0'}`}>
               {teamPlayers.length === 0 ? (
-                <div className="text-center py-6 text-sm text-zinc-400">暫無球員資料</div>
+                <div className="text-center py-6 text-sm text-slate-400">暫無球員資料</div>
               ) : (
-                <div className="bg-zinc-50 dark:bg-zinc-900 rounded-xl overflow-hidden">
-                  <div className="flex items-center justify-between gap-2 py-1.5 px-2 border-b border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800/50">
+                <div className="bg-slate-50 rounded-xl overflow-hidden">
+                  <div className="flex items-center justify-between gap-2 py-1.5 px-2 border-b border-slate-200 bg-slate-100">
                     <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <span className="text-[9px] font-bold text-zinc-400 uppercase w-10 flex-shrink-0">號碼</span>
-                      <span className="text-[9px] font-bold text-zinc-400 uppercase">球員</span>
+                      <span className="text-[9px] font-bold text-slate-400 uppercase w-10 flex-shrink-0">號碼</span>
+                      <span className="text-[9px] font-bold text-slate-400 uppercase">球員</span>
                     </div>
-                    <div className="flex items-center gap-1.5 text-[9px] font-bold text-zinc-400 uppercase flex-shrink-0">
+                    <div className="flex items-center gap-1.5 text-[9px] font-bold text-slate-400 uppercase flex-shrink-0">
                       <span className="w-3.5 text-center">電</span>
                       <span className="w-3.5 text-center">郵</span>
                       <span className="w-3.5 text-center">編</span>

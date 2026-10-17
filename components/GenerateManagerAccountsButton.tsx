@@ -74,13 +74,13 @@ export default function GenerateManagerAccountsButton() {
         </button>
         <button
           onClick={() => run(true, 'random')}
-          className="-my-1 py-1 text-[11px] text-zinc-400 hover:text-zinc-300 underline underline-offset-2"
+          className="-my-1 py-1 text-[11px] text-slate-400 hover:text-slate-300 underline underline-offset-2"
         >
           Regenerate Passwords
         </button>
         <button
           onClick={() => run(false, 'shared')}
-          className="text-[11px] text-zinc-400 hover:text-zinc-300 underline underline-offset-2"
+          className="text-[11px] text-slate-400 hover:text-slate-300 underline underline-offset-2"
         >
           Set Shared Password
         </button>
@@ -89,7 +89,7 @@ export default function GenerateManagerAccountsButton() {
   }
 
   if (status === 'loading') {
-    return <span className="text-xs text-zinc-500">Generating...</span>;
+    return <span className="text-xs text-slate-500">Generating...</span>;
   }
 
   if (status === 'error') {
@@ -102,20 +102,20 @@ export default function GenerateManagerAccountsButton() {
     <div className="text-right">
       <div className="text-xs text-green-500">{message}</div>
       {output ? (
-        <pre className="mt-2 max-w-[520px] whitespace-pre-wrap break-words rounded-lg border border-zinc-200 bg-white p-3 text-[11px] text-zinc-900 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100">
+        <pre className="mt-2 max-w-[520px] whitespace-pre-wrap break-words rounded-lg border border-slate-200 bg-white p-3 text-[11px] text-slate-900">
           {output}
         </pre>
       ) : null}
       {created.length > 0 && (
-        <pre className="mt-2 max-w-[520px] whitespace-pre-wrap break-words rounded-lg border border-zinc-200 bg-white p-3 text-[11px] text-zinc-900 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100">
+        <pre className="mt-2 max-w-[520px] whitespace-pre-wrap break-words rounded-lg border border-slate-200 bg-white p-3 text-[11px] text-slate-900">
           {lines}
         </pre>
       )}
       {created.length === 0 && (
-        <div className="mt-2 text-xs text-zinc-500">No new accounts created.</div>
+        <div className="mt-2 text-xs text-slate-500">No new accounts created.</div>
       )}
       {skipped.length > 0 && (
-        <div className="mt-2 text-[11px] text-zinc-500">
+        <div className="mt-2 text-[11px] text-slate-500">
           Skipped: {skipped.length}
         </div>
       )}

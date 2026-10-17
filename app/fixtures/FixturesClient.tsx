@@ -139,30 +139,30 @@ export default function FixturesClient(props: {
                             {match.homeScore ?? 0}-{match.awayScore ?? 0}
                           </span>
                         ) : (
-                          <span className="text-sm font-bold text-gray-400">VS</span>
+                          <span className="text-sm font-bold text-slate-400">VS</span>
                         )}
                       </div>
 
                       {/* 主隊 */}
                       <div className="flex items-center gap-2.5">
                         <div
-                          className="w-9 h-9 rounded-full border-2 border-gray-300 shadow-sm flex-shrink-0"
+                          className="w-9 h-9 rounded-full border-2 border-slate-300 shadow-sm flex-shrink-0"
                           style={{ backgroundColor: homeColor.hex }}
                           title={`${t('主場球衣', 'Home kit')}：${homeColor.label}`}
                         />
                         <span className="flex-1 min-w-0 text-base font-bold text-slate-800 truncate">{match.homeTeam}</span>
-                        <span className="text-xs text-gray-400">{t('主場', 'Home')}</span>
+                        <span className="text-xs text-slate-400">{t('主場', 'Home')}</span>
                       </div>
 
                       {/* 客隊 */}
                       <div className="flex items-center gap-2.5">
                         <div
-                          className="w-9 h-9 rounded-full border-2 border-gray-300 shadow-sm flex-shrink-0"
+                          className="w-9 h-9 rounded-full border-2 border-slate-300 shadow-sm flex-shrink-0"
                           style={{ backgroundColor: awayColor.hex }}
                           title={`${t('客場球衣', 'Away kit')}：${awayColor.label}`}
                         />
                         <span className="flex-1 min-w-0 text-base font-bold text-slate-800 truncate">{match.awayTeam}</span>
-                        <span className="text-xs text-gray-400">{t('客場', 'Away')}</span>
+                        <span className="text-xs text-slate-400">{t('客場', 'Away')}</span>
                       </div>
 
                       {/* 場地：核心短名一行，點擊開地圖 */}
@@ -229,9 +229,9 @@ export default function FixturesClient(props: {
                           {match.homeTeam}
                         </div>
                         <div className="flex items-center justify-end gap-2">
-                          <span className="text-sm text-gray-500">{t('主場', 'Home')}</span>
+                          <span className="text-sm text-slate-500">{t('主場', 'Home')}</span>
                           <div
-                            className="w-12 h-12 rounded-full border-2 border-gray-300 shadow-sm"
+                            className="w-12 h-12 rounded-full border-2 border-slate-300 shadow-sm"
                             style={{ backgroundColor: homeColor.hex }}
                             title={`${t('主場球衣', 'Home kit')}：${homeColor.label}`}
                           />
@@ -245,9 +245,9 @@ export default function FixturesClient(props: {
                             {match.homeScore ?? 0} - {match.awayScore ?? 0}
                           </div>
                         ) : (
-                          <div className="text-2xl font-bold text-gray-400">VS</div>
+                          <div className="text-2xl font-bold text-slate-400">VS</div>
                         )}
-                        <div className="text-sm text-gray-500 mt-2 text-center">
+                        <div className="text-sm text-slate-500 mt-2 text-center">
                           <div>
                             {match.date
                               ? new Date(match.date).toLocaleDateString('en-GB', {
@@ -321,11 +321,11 @@ export default function FixturesClient(props: {
                         </div>
                         <div className="flex items-center justify-start gap-2">
                           <div
-                            className="w-12 h-12 rounded-full border-2 border-gray-300 shadow-sm"
+                            className="w-12 h-12 rounded-full border-2 border-slate-300 shadow-sm"
                             style={{ backgroundColor: awayColor.hex }}
                             title={`${t('客場球衣', 'Away kit')}：${awayColor.label}`}
                           />
-                          <span className="text-sm text-gray-500">{t('客場', 'Away')}</span>
+                          <span className="text-sm text-slate-500">{t('客場', 'Away')}</span>
                         </div>
                       </div>
                     </div>

@@ -29,7 +29,7 @@ export default function OverviewPage() {
 
           {/* League Overview */}
           <section>
-            <div className="flex items-center gap-4 mb-6 border-b border-gray-200 pb-2">
+            <div className="flex items-center gap-4 mb-6 border-b border-slate-200 pb-2">
               <div className="bg-[#1a237e] w-2 h-8"></div>
               <h2 className="text-2xl font-bold text-slate-900">
                 {isZh ? '賽事簡介' : 'League Overview'}
@@ -40,7 +40,7 @@ export default function OverviewPage() {
                 <span className="font-bold">
                   {isZh ? '• 雙循環聯賽制' : '• Double round-robin'}
                 </span>
-                <span className="text-gray-600">
+                <span className="text-slate-600">
                   {isZh ? '每場 60 分鐘（上下半場各 30 分鐘，中場休息 10 分鐘）' : '60 minutes per match (two 30-min halves, 10-min halftime)'}
                 </span>
               </li>
@@ -49,7 +49,7 @@ export default function OverviewPage() {
                 <span className="font-bold">
                   {isZh ? '• 9 隊參賽，8 人制' : '• 9 teams, 8-a-side'}
                 </span>
-                <span className="text-gray-600">
+                <span className="text-slate-600">
                   {isZh ? '每隊最多 30 名球員' : 'Up to 30 registered players per team'}
                 </span>
               </li>
@@ -58,7 +58,7 @@ export default function OverviewPage() {
                 <span className="font-bold">
                   {isZh ? '• 雙循環聯賽，主客場制（每隊對賽兩次）' : '• Double round-robin, home & away (each pair plays twice)'}
                 </span>
-                <span className="text-gray-600">
+                <span className="text-slate-600">
                   {isZh ? '主客場制' : 'Home & away format'}
                 </span>
               </li>
@@ -67,7 +67,7 @@ export default function OverviewPage() {
                 <span className="font-bold">
                   {isZh ? '• 執法裁判' : '• Referees'}
                 </span>
-                <span className="text-gray-600">
+                <span className="text-slate-600">
                   {isZh ? '每場兩名裁判執法' : '2 referees per match'}
                 </span>
               </li>
@@ -76,7 +76,7 @@ export default function OverviewPage() {
 
           {/* Schedule & Venues */}
           <section>
-            <div className="flex items-center gap-4 mb-6 border-b border-gray-200 pb-2">
+            <div className="flex items-center gap-4 mb-6 border-b border-slate-200 pb-2">
               <div className="bg-green-600 w-2 h-8"></div>
               <h2 className="text-2xl font-bold text-slate-900">
                 {isZh ? '賽程及場地' : 'Schedule & Venues'}
@@ -85,31 +85,31 @@ export default function OverviewPage() {
             <ul className="space-y-6 text-lg">
               <li>
                 <div className="font-bold">{isZh ? '• 賽季' : '• Season'}</div>
-                <div className="text-gray-800 mt-1">
+                <div className="text-slate-800 mt-1">
                   {isZh ? '3 月底開始，預計 12 月中結束（7-8 月休賽）' : 'Matches start at the end of March and finish no later than mid-December (excluding July and August)'}
                 </div>
               </li>
               
               <li>
                 <div className="font-bold">{isZh ? '• 主客場安排' : '• Format'}</div>
-                <div className="text-gray-800 mt-1">
+                <div className="text-slate-800 mt-1">
                   {isZh ? '主場賽事：3 月底至 6 月；客場賽事：9 月至 11 月' : 'Home matches: End of March – June; Away matches: September – November 2026'}
                 </div>
               </li>
 
               <li>
                 <div className="font-bold">{isZh ? '• 比賽時間' : '• Time'}</div>
-                <div className="text-gray-800 mt-1">
+                <div className="text-slate-800 mt-1">
                   {isZh ? '逢星期二及星期三（公眾假期除外）, 晚上 8:00 或 9:30（視乎場地安排）' : 'Matches on Tuesdays and Wednesdays (excluding public holidays), 8:00pm or 9:30pm (subject to pitch availability)'}
                 </div>
               </li>
 
               <li>
                 <div className="font-bold">{isZh ? '• 比賽場地' : '• Venues'}</div>
-                <div className="text-gray-800 mt-1">
+                <div className="text-slate-800 mt-1">
                   {isZh ? '香港島人工草地球場:' : 'HK Island artificial grass pitches:'}
                 </div>
-                <ul className="list-disc pl-6 mt-2 space-y-1 text-base text-gray-700">
+                <ul className="list-disc pl-6 mt-2 space-y-1 text-base text-slate-700">
                   <li>{isZh ? '中山紀念公園' : 'Sun Yat Sen Memorial Park'}</li>
                   <li>{isZh ? '跑馬地遊樂場 3 號場' : 'Happy Valley Recreation Ground No. 3'}</li>
                   <li>{isZh ? '跑馬地遊樂場 8 號場' : 'Happy Valley Recreation Ground No. 8'}</li>
@@ -122,7 +122,7 @@ export default function OverviewPage() {
 
           {/* Match Rules */}
           <section>
-            <div className="flex items-center gap-4 mb-6 border-b border-gray-200 pb-2">
+            <div className="flex items-center gap-4 mb-6 border-b border-slate-200 pb-2">
               <div className="bg-orange-600 w-2 h-8"></div>
               <h2 className="text-2xl font-bold text-slate-900">
                 {isZh ? '比賽規則' : 'Match Rules'}
@@ -131,28 +131,28 @@ export default function OverviewPage() {
             <ul className="space-y-6 text-lg">
               <li>
                 <div className="font-bold">{isZh ? '• 球員註冊與出場' : '• Registration'}</div>
-                <div className="text-gray-800 mt-1">
+                <div className="text-slate-800 mt-1">
                   {isZh ? '每隊球隊可註冊球員為 30 人，而每場比賽可出場球員為 16 名' : 'Each team may register up to 30 players, with a maximum of 16 players eligible to participate in each match.'}
                 </div>
               </li>
               
               <li>
                 <div className="font-bold">{isZh ? '• 越位與換人' : '• Offside & Subs'}</div>
-                <div className="text-gray-800 mt-1">
+                <div className="text-slate-800 mt-1">
                   {isZh ? '不設越位，換人無限制' : 'No offside, unlimited substitutions'}
                 </div>
               </li>
 
               <li>
                 <div className="font-bold">{isZh ? '• 裝備' : '• Equipment'}</div>
-                <div className="text-gray-800 mt-1">
+                <div className="text-slate-800 mt-1">
                   {isZh ? '球員需穿著適合比賽的裝備及統一球衣，所有球員必須佩戴護脛' : 'Players must wear proper gear and matching jerseys; all players must wear shin pads'}
                 </div>
               </li>
 
               <li>
                 <div className="font-bold">{isZh ? '• 球衣' : '• Jerseys'}</div>
-                <div className="text-gray-800 mt-1">
+                <div className="text-slate-800 mt-1">
                   {isZh ? '每隊球隊須準備主場及作客波衫各一套' : 'All teams are required to provide one set of home jerseys and one set of away jerseys'}
                 </div>
               </li>
@@ -161,8 +161,8 @@ export default function OverviewPage() {
 
           {/* Forfeits & Postponement */}
           <section className="grid md:grid-cols-2 gap-8">
-            <div className="bg-gray-50 p-6 rounded-xl border border-gray-200">
-              <h3 className="text-xl font-bold text-slate-900 mb-4 border-b border-gray-300 pb-2">
+            <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
+              <h3 className="text-xl font-bold text-slate-900 mb-4 border-b border-slate-300 pb-2">
                 {isZh ? '棄權及缺席' : 'Forfeits & Non-Appearance'}
               </h3>
               <ul className="space-y-4">
@@ -187,13 +187,13 @@ export default function OverviewPage() {
               </ul>
             </div>
 
-            <div className="bg-gray-50 p-6 rounded-xl border border-gray-200">
-              <h3 className="text-xl font-bold text-slate-900 mb-4 border-b border-gray-300 pb-2">
+            <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
+              <h3 className="text-xl font-bold text-slate-900 mb-4 border-b border-slate-300 pb-2">
                 {isZh ? '延期比賽' : 'Postponement'}
               </h3>
               <div className="space-y-2">
-                <p className="font-bold text-gray-800">{isZh ? '提前通知' : 'Advance Notice'}</p>
-                <p className="text-sm text-gray-700 leading-relaxed">
+                <p className="font-bold text-slate-800">{isZh ? '提前通知' : 'Advance Notice'}</p>
+                <p className="text-sm text-slate-700 leading-relaxed">
                   {isZh 
                     ? '球隊應該在不少於 30 日前聯絡會方有關申請休假事宜，該賽周將不會安排任何比賽。' 
                     : 'Teams are requested to advise the fixtures officer as early as possible (and at least 30 days before the event) if a special event that involves a majority of the team is planned (e.g., company dinner, weddings), the team will not be required to play a fixture on that week.'}
@@ -214,19 +214,19 @@ export default function OverviewPage() {
               <div className="space-y-4">
                 <div>
                   <div className="font-bold text-lg text-red-800">{isZh ? '以友誼為重' : 'Sportsmanship First'}</div>
-                  <div className="text-gray-700">
+                  <div className="text-slate-700">
                     {isZh ? '嚴禁粗暴或攻擊行為' : 'No aggressive or unsporting behavior'}
                   </div>
                 </div>
                 <div>
                   <div className="font-bold text-lg text-red-800">{isZh ? '隊長責任' : 'Captain\'s Responsibility'}</div>
-                  <div className="text-gray-700">
+                  <div className="text-slate-700">
                     {isZh ? '球隊隊⻑/經理需協助維持球員良好行為' : 'Team captain/manager helps ensure good conduct'}
                   </div>
                 </div>
                 <div>
                   <div className="font-bold text-lg text-red-800">{isZh ? '裁判權威' : 'Referee\'s Authority'}</div>
-                  <div className="text-gray-700">
+                  <div className="text-slate-700">
                     {isZh ? '裁判擁有最終決定權，請尊重判決' : 'Referee’s decisions are final; please respect all calls'}
                   </div>
                 </div>

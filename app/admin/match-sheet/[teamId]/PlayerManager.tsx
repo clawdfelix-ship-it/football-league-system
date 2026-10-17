@@ -109,12 +109,12 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
             {players.map((player) => (
               <div key={player.id} className="flex items-center justify-between p-3 hover:bg-slate-50">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gray-100 overflow-hidden flex-shrink-0 border border-gray-200 relative group">
+                  <div className="w-10 h-10 rounded-full bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-200 relative group">
                     {player.photoUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={player.photoUrl} alt={player.name} className="w-full h-full object-cover" />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">
+                      <div className="w-full h-full flex items-center justify-center text-xs text-slate-400">
                         {player.name.charAt(0)}
                       </div>
                     )}
@@ -125,7 +125,7 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
                   </div>
                   <div>
                     <div className="font-medium text-sm">{player.name}</div>
-                    <div className="text-xs text-gray-500">#{player.jerseyNumber} • {player.position}</div>
+                    <div className="text-xs text-slate-500">#{player.jerseyNumber} • {player.position}</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">

@@ -103,7 +103,7 @@ function PlayersPageInner(props: { initialPlayers: PublicPlayer[] }) {
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200">
+          <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-200">
             {/* 球隊分段（橫向滑動） */}
             <div className="border-b border-slate-100">
               <div className="flex gap-2 overflow-x-auto px-3 py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">

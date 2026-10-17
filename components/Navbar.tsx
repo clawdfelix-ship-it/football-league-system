@@ -48,13 +48,13 @@ export default function Navbar() {
       'text-sm font-medium rounded-full px-3 py-1.5 transition-colors',
       isActive(item)
         ? 'text-white bg-white/15'
-        : 'text-gray-300 hover:text-white hover:bg-white/5',
+        : 'text-slate-300 hover:text-white hover:bg-white/5',
     ].join(' ');
 
   const mobileLinkClass = (item: NavItem) =>
     [
       'block px-3 py-2 rounded-lg text-sm font-medium transition-colors',
-      isActive(item) ? 'text-white bg-white/15' : 'text-gray-300 hover:bg-gray-800 hover:text-white',
+      isActive(item) ? 'text-white bg-white/15' : 'text-slate-300 hover:bg-slate-800 hover:text-white',
     ].join(' ');
 
   return (
@@ -79,7 +79,7 @@ export default function Navbar() {
           <div className="flex items-center gap-3">
             <button
               onClick={() => setIsMobileMenuOpen((v) => !v)}
-              className="md:hidden p-2 rounded hover:bg-gray-800 transition-colors"
+              className="md:hidden p-2 rounded hover:bg-slate-800 transition-colors"
               aria-label="Toggle menu"
               aria-expanded={isMobileMenuOpen}
             >
@@ -96,7 +96,7 @@ export default function Navbar() {
               <button 
                 onClick={() => setIsAdminMenuOpen(!isAdminMenuOpen)}
                 onBlur={() => setTimeout(() => setIsAdminMenuOpen(false), 200)}
-                className="text-sm font-medium bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
+                className="text-sm font-medium bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
               >
                 {t('登入', 'Login')}
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform ${isAdminMenuOpen ? 'rotate-180' : ''}`}>
@@ -105,20 +105,20 @@ export default function Navbar() {
               </button>
               
               {isAdminMenuOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl overflow-hidden z-50 py-1 border border-gray-100">
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl overflow-hidden z-50 py-1 border border-slate-100">
                   <Link 
                     href="/admin" 
-                    className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 border-b border-gray-100"
+                    className="block px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 hover:text-blue-600 border-b border-slate-100"
                   >
                     <div className="font-bold">{t('球隊領隊', 'Team Manager')}</div>
-                    <div className="text-xs text-gray-500 mt-0.5">{t('管理球隊資料', 'Manage Team Data')}</div>
+                    <div className="text-xs text-slate-500 mt-0.5">{t('管理球隊資料', 'Manage Team Data')}</div>
                   </Link>
                   <Link 
                     href="/admin" 
-                    className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600"
+                    className="block px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 hover:text-blue-600"
                   >
                     <div className="font-bold">{t('賽事總管', 'League Admin')}</div>
-                    <div className="text-xs text-gray-500 mt-0.5">{t('管理賽程及結果', 'Manage League')}</div>
+                    <div className="text-xs text-slate-500 mt-0.5">{t('管理賽程及結果', 'Manage League')}</div>
                   </Link>
                 </div>
               )}

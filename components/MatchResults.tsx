@@ -168,27 +168,27 @@ export function MatchResults({ matches, allowGoals }: { matches: Match[]; allowG
   return (
     <div className="space-y-3">
       {matches.length === 0 ? (
-        <p className="text-sm text-zinc-500 dark:text-zinc-400 py-4 text-center">No finished matches.</p>
+        <p className="text-sm text-slate-500 py-4 text-center">No finished matches.</p>
       ) : (
         matches.map((match) => (
-          <div key={match.id} className="flex flex-col gap-3 rounded-xl border border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 p-3">
+          <div key={match.id} className="flex flex-col gap-3 rounded-xl border border-slate-100 bg-slate-50 p-3">
             <div className="flex items-center justify-between">
               <div className="text-sm">
-                <div className="font-semibold text-zinc-900 dark:text-zinc-100">{match.homeTeam} vs {match.awayTeam}</div>
-                <div className="text-xs text-zinc-500 dark:text-zinc-400">
+                <div className="font-semibold text-slate-900">{match.homeTeam} vs {match.awayTeam}</div>
+                <div className="text-xs text-slate-500">
                   {match.date ? new Date(match.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) + ' (' + new Date(match.date).toLocaleDateString('en-GB', { weekday: 'short' }) + ')' : 'TBC'} {match.date ? new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : ''} • {match.venue || 'TBC'} {match.round ? `• ${match.round}` : ''}
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setEditingMatch(editingMatch === match.id ? null : match.id)}
-                  className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-1 rounded hover:bg-blue-200 dark:hover:bg-blue-900/50"
+                  className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded hover:bg-blue-200"
                 >
                   {editingMatch === match.id ? 'Cancel' : 'Edit'}
                 </button>
                 <button
                   onClick={() => handleDeleteMatch(match.id)}
-                  className="text-xs bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 px-2 py-1 rounded hover:bg-red-200 dark:hover:bg-red-900/50"
+                  className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded hover:bg-red-200"
                 >
                   Delete
                 </button>
@@ -201,38 +201,38 @@ export function MatchResults({ matches, allowGoals }: { matches: Match[]; allowG
                   e.preventDefault();
                   handleUpdateMatch(match.id, new FormData(e.currentTarget));
                 }}
-                className="mt-2 p-3 bg-white dark:bg-zinc-900 rounded border border-blue-200 dark:border-zinc-700 grid gap-3"
+                className="mt-2 p-3 bg-white rounded border border-blue-200 grid gap-3"
               >
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Date</label>
-                    <input name="date" type="date" defaultValue={match.date ? match.date.split('T')[0] : ''} className="w-full border dark:border-zinc-700 rounded px-2 py-1 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100" />
+                    <label className="text-xs font-medium text-slate-700">Date</label>
+                    <input name="date" type="date" defaultValue={match.date ? match.date.split('T')[0] : ''} className="w-full border rounded px-2 py-1 text-sm bg-white text-slate-900" />
                   </div>
                   <div>
-                    <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Time</label>
-                    <input name="time" type="time" defaultValue={match.date ? new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : ''} className="w-full border dark:border-zinc-700 rounded px-2 py-1 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100" />
+                    <label className="text-xs font-medium text-slate-700">Time</label>
+                    <input name="time" type="time" defaultValue={match.date ? new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : ''} className="w-full border rounded px-2 py-1 text-sm bg-white text-slate-900" />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Home Score</label>
-                    <input name="homeScore" type="number" defaultValue={match.homeScore ?? ''} className="w-full border dark:border-zinc-700 rounded px-2 py-1 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100" />
+                    <label className="text-xs font-medium text-slate-700">Home Score</label>
+                    <input name="homeScore" type="number" defaultValue={match.homeScore ?? ''} className="w-full border rounded px-2 py-1 text-sm bg-white text-slate-900" />
                   </div>
                   <div>
-                    <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Away Score</label>
-                    <input name="awayScore" type="number" defaultValue={match.awayScore ?? ''} className="w-full border dark:border-zinc-700 rounded px-2 py-1 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100" />
+                    <label className="text-xs font-medium text-slate-700">Away Score</label>
+                    <input name="awayScore" type="number" defaultValue={match.awayScore ?? ''} className="w-full border rounded px-2 py-1 text-sm bg-white text-slate-900" />
                   </div>
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Venue</label>
-                  <input name="venue" list="results-venues" defaultValue={match.venue || ''} className="w-full border dark:border-zinc-700 rounded px-2 py-1 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100" />
+                  <label className="text-xs font-medium text-slate-700">Venue</label>
+                  <input name="venue" list="results-venues" defaultValue={match.venue || ''} className="w-full border rounded px-2 py-1 text-sm bg-white text-slate-900" />
                   <datalist id="results-venues">
                     {VENUES.map(v => <option key={v} value={v} />)}
                   </datalist>
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Round</label>
-                  <select name="round" defaultValue={match.round || ''} className="w-full border dark:border-zinc-700 rounded px-2 py-1 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100">
+                  <label className="text-xs font-medium text-slate-700">Round</label>
+                  <select name="round" defaultValue={match.round || ''} className="w-full border rounded px-2 py-1 text-sm bg-white text-slate-900">
                     <option value="">Select Round</option>
                     {Array.from({ length: 14 }, (_, i) => i + 1).map(num => (
                       <option key={num} value={`Round ${num}`}>Round {num}</option>
@@ -240,8 +240,8 @@ export function MatchResults({ matches, allowGoals }: { matches: Match[]; allowG
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Status</label>
-                  <select name="status" defaultValue={match.status || 'scheduled'} className="w-full border dark:border-zinc-700 rounded px-2 py-1 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100">
+                  <label className="text-xs font-medium text-slate-700">Status</label>
+                  <select name="status" defaultValue={match.status || 'scheduled'} className="w-full border rounded px-2 py-1 text-sm bg-white text-slate-900">
                     <option value="scheduled">Scheduled</option>
                     <option value="tbc">TBC</option>
                     <option value="finished">Finished</option>
@@ -249,16 +249,16 @@ export function MatchResults({ matches, allowGoals }: { matches: Match[]; allowG
                 </div>
 
                 {allowGoals ? (
-                  <div className="rounded border border-zinc-200 dark:border-zinc-700 p-3 grid gap-3">
+                  <div className="rounded border border-slate-200 p-3 grid gap-3">
                   <div className="flex items-center justify-between">
-                    <div className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Goals / 入球球員</div>
-                    {goalsLoading ? <div className="text-xs text-zinc-500">Loading…</div> : null}
+                    <div className="text-sm font-semibold text-slate-900">Goals / 入球球員</div>
+                    {goalsLoading ? <div className="text-xs text-slate-500">Loading…</div> : null}
                   </div>
                   {goalsError ? <div className="text-xs text-red-600">{goalsError}</div> : null}
 
                   <div className="grid md:grid-cols-2 gap-3">
                     <div className="grid gap-2">
-                      <div className="text-xs font-medium text-zinc-700 dark:text-zinc-300">{match.homeTeam}</div>
+                      <div className="text-xs font-medium text-slate-700">{match.homeTeam}</div>
                       {goals
                         .filter((g) => homePlayers.some((p) => p.id === g.playerId))
                         .map((g, idx) => (
@@ -271,7 +271,7 @@ export function MatchResults({ matches, allowGoals }: { matches: Match[]; allowG
                                   prev.map((x) => (x === g ? { ...x, playerId: nextId } : x))
                                 );
                               }}
-                              className="w-full border dark:border-zinc-700 rounded px-2 py-1 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
+                              className="w-full border rounded px-2 py-1 text-sm bg-white text-slate-900"
                             >
                               {homePlayers.map((p) => (
                                 <option key={p.id} value={p.id} disabled={p.id !== g.playerId && usedIds.has(p.id)}>
@@ -288,12 +288,12 @@ export function MatchResults({ matches, allowGoals }: { matches: Match[]; allowG
                                 const nextGoals = Number(e.target.value);
                                 setGoals((prev) => prev.map((x) => (x === g ? { ...x, goals: nextGoals } : x)));
                               }}
-                              className="w-full border dark:border-zinc-700 rounded px-2 py-1 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
+                              className="w-full border rounded px-2 py-1 text-sm bg-white text-slate-900"
                             />
                             <button
                               type="button"
                               onClick={() => setGoals((prev) => prev.filter((x) => x !== g))}
-                              className="text-xs bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 rounded"
+                              className="text-xs bg-slate-100 text-slate-700 rounded"
                             >
                               ×
                             </button>
@@ -306,14 +306,14 @@ export function MatchResults({ matches, allowGoals }: { matches: Match[]; allowG
                           if (!first) return;
                           setGoals((prev) => [...prev, { playerId: first.id, goals: 1 }]);
                         }}
-                        className="text-xs bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 px-2 py-1 rounded"
+                        className="text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded"
                       >
                         Add scorer
                       </button>
                     </div>
 
                     <div className="grid gap-2">
-                      <div className="text-xs font-medium text-zinc-700 dark:text-zinc-300">{match.awayTeam}</div>
+                      <div className="text-xs font-medium text-slate-700">{match.awayTeam}</div>
                       {goals
                         .filter((g) => awayPlayers.some((p) => p.id === g.playerId))
                         .map((g, idx) => (
@@ -326,7 +326,7 @@ export function MatchResults({ matches, allowGoals }: { matches: Match[]; allowG
                                   prev.map((x) => (x === g ? { ...x, playerId: nextId } : x))
                                 );
                               }}
-                              className="w-full border dark:border-zinc-700 rounded px-2 py-1 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
+                              className="w-full border rounded px-2 py-1 text-sm bg-white text-slate-900"
                             >
                               {awayPlayers.map((p) => (
                                 <option key={p.id} value={p.id} disabled={p.id !== g.playerId && usedIds.has(p.id)}>
@@ -343,12 +343,12 @@ export function MatchResults({ matches, allowGoals }: { matches: Match[]; allowG
                                 const nextGoals = Number(e.target.value);
                                 setGoals((prev) => prev.map((x) => (x === g ? { ...x, goals: nextGoals } : x)));
                               }}
-                              className="w-full border dark:border-zinc-700 rounded px-2 py-1 text-sm bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
+                              className="w-full border rounded px-2 py-1 text-sm bg-white text-slate-900"
                             />
                             <button
                               type="button"
                               onClick={() => setGoals((prev) => prev.filter((x) => x !== g))}
-                              className="text-xs bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 rounded"
+                              className="text-xs bg-slate-100 text-slate-700 rounded"
                             >
                               ×
                             </button>
@@ -361,7 +361,7 @@ export function MatchResults({ matches, allowGoals }: { matches: Match[]; allowG
                           if (!first) return;
                           setGoals((prev) => [...prev, { playerId: first.id, goals: 1 }]);
                         }}
-                        className="text-xs bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 px-2 py-1 rounded"
+                        className="text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded"
                       >
                         Add scorer
                       </button>
@@ -372,7 +372,7 @@ export function MatchResults({ matches, allowGoals }: { matches: Match[]; allowG
                 <button type="submit" className="bg-blue-600 text-white text-xs py-1.5 rounded hover:bg-blue-700 transition-colors">Update Result</button>
               </form>
             ) : (
-              <div className="text-right font-mono text-sm font-bold text-zinc-900 dark:text-zinc-100">
+              <div className="text-right font-mono text-sm font-bold text-slate-900">
                 {match.homeScore} - {match.awayScore}
               </div>
             )}
