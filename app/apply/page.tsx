@@ -193,7 +193,7 @@ export default function ApplyPage() {
 }
 
 const inputCls =
-  'w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a237e]';
+  'w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e] [&:-webkit-autofill]:[-webkit-text-fill-color:#0f172a] [&:-webkit-autofill]:[-webkit-box-shadow:0_0_0_1000px_#fff_inset]';
 
 function Field({
   label,
