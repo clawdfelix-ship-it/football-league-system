@@ -47,9 +47,9 @@ export default function InitTeamsPage() {
 
   return (
     <HomeLayout>
-      <div className="min-h-screen bg-slate-50 py-12 px-6">
-        <div className="max-w-2xl mx-auto">
-          <div className="bg-white rounded-2xl shadow-xl p-8">
+      <div className="min-h-screen bg-[#f8fafc]">
+        <div className="page-container-narrow py-12">
+          <div className="card p-8 shadow-xl">
             <h1 className="text-3xl font-bold text-slate-900 mb-2">
               🎨 球隊球衣顏色初始化
             </h1>
@@ -62,7 +62,7 @@ export default function InitTeamsPage() {
               <button
                 onClick={handleCheck}
                 disabled={status === 'loading'}
-                className="w-full py-3 px-6 rounded-lg font-semibold bg-slate-100 hover:bg-slate-200 text-slate-800 transition-colors disabled:opacity-50"
+                className="btn-secondary w-full h-11"
               >
                 {status === 'loading' ? '檢查中...' : '檢查數據庫狀態'}
               </button>
@@ -71,7 +71,7 @@ export default function InitTeamsPage() {
               <button
                 onClick={handleInit}
                 disabled={status === 'loading'}
-                className="w-full py-3 px-6 rounded-lg font-semibold bg-[#1a237e] hover:bg-[#283593] text-white transition-colors disabled:opacity-50"
+                className="btn-primary w-full h-11"
               >
                 {status === 'loading' ? '初始化中...' : '初始化數據庫'}
               </button>

@@ -1,6 +1,7 @@
 'use client';
 
 import HomeLayout from '@/components/HomeLayout';
+import PageHero from '@/components/PageHero';
 import { useLanguage } from '@/context/LanguageContext';
 import { TEAM_CONTACTS } from '@/lib/team-contacts';
 
@@ -12,14 +13,10 @@ export default function ContactsPage() {
   return (
     <HomeLayout>
       <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans">
-        <header className="bg-[#1a237e] bg-gradient-to-b from-[#1a237e] to-[#283593] text-white pt-10 pb-12 px-6 text-center">
-          <h2 className="text-4xl md:text-5xl font-black italic mb-2 tracking-tight">
-            {t('隊長聯絡資料', 'Captains Contacts')}
-          </h2>
-          <p className="text-blue-200 text-base font-light tracking-widest uppercase">
-            {t('香港銀行足球聯賽 2026', 'Hong Kong Bank League 2026')}
-          </p>
-        </header>
+        <PageHero
+          title={t('隊長聯絡資料', 'Captains Contacts')}
+          subtitle={t('香港銀行足球聯賽 2026', 'Hong Kong Bank League 2026')}
+        />
 
         <main className="page-container -mt-16 pb-20">
           <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-200">
