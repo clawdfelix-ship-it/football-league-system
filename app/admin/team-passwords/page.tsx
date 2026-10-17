@@ -125,7 +125,7 @@ export default function AdminTeamPasswordsPage() {
   return (
     <div className="page-container-narrow py-10">
       <header className="mb-6">
-        <h1 className="text-2xl font-semibold text-slate-900">
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900">
           Team Manager Passwords
         </h1>
         <p className="mt-1 text-sm text-slate-500">
