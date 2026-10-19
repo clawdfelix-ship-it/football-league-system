@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { addPlayer, deletePlayer, updatePlayer, uploadPlayerPhoto } from '@/lib/actions';
 import { useRouter } from 'next/navigation';
 import type { Player } from '@/lib/schema';
@@ -11,19 +11,28 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
   const [isLoading, setIsLoading] = useState(false);
   const [editingPlayer, setEditingPlayer] = useState<Player | null>(null);
 
-  // When no roster is passed in (admin no longer preloads players), fetch it once.
+  // Players are NOT loaded automatically. The manager clicks “載入球員” to
+  // fetch the roster on demand (props can still prefill it when provided).
   const [roster, setRoster] = useState<Player[]>(players);
-  const [rosterLoading, setRosterLoading] = useState<boolean>(players.length === 0);
-  useEffect(() => {
-    if (players.length > 0) { setRoster(players); return; }
-    let cancelled = false;
-    fetch('/api/players', { cache: 'no-store' })
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error('fetch failed'))))
-      .then((data) => { if (!cancelled) setRoster((data.players ?? []).filter((p: Player) => p.team === teamName)); })
-      .catch(() => { if (!cancelled) setRoster([]); })
-      .finally(() => { if (!cancelled) setRosterLoading(false); });
-    return () => { cancelled = true; };
-  }, [players, teamName]);
+  const [rosterLoading, setRosterLoading] = useState(false);
+  const [rosterLoaded, setRosterLoaded] = useState<boolean>(players.length > 0);
+
+  async function loadRoster() {
+    if (rosterLoading || rosterLoaded) return;
+    setRosterLoading(true);
+    try {
+      const res = await fetch('/api/players', { cache: 'no-store' });
+      if (res.ok) {
+        const data = await res.json();
+        setRoster((data.players ?? []).filter((p: Player) => p.team === teamName));
+      }
+    } catch {
+      setRoster([]);
+    } finally {
+      setRosterLoading(false);
+      setRosterLoaded(true);
+    }
+  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -113,16 +122,18 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
 
   return (
     <div className="space-y-6">
-      {/* Player List */}
+      {/* Player List — loaded on demand via the button below */}
       {rosterLoading ? (
         <div className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white p-6 text-slate-400">
           <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#1a237e]/20 border-t-[#1a237e]" />
           <span className="text-xs">載入球員中…</span>
         </div>
-      ) : roster.length > 0 && (
+      ) : rosterLoaded && roster.length > 0 ? (
         <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
-          <div className="bg-slate-50 px-4 py-3 border-b border-slate-200">
+          <div className="bg-slate-50 px-4 py-3 border-b border-slate-200 flex items-center justify-between">
             <h3 className="font-semibold text-sm">Team Roster ({roster.length})</h3>
+            <button type="button" onClick={() => { setRosterLoaded(false); void loadRoster(); }}
+              className="text-xs text-[#1a237e] font-medium hover:underline">重新載入</button>
           </div>
           <div className="divide-y divide-slate-100 max-h-[400px] overflow-y-auto">
             {roster.map((player) => (
@@ -164,6 +175,20 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
             ))}
           </div>
         </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => void loadRoster()}
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-slate-300 bg-white p-5 text-sm font-medium text-[#1a237e] transition hover:border-[#1a237e] hover:bg-slate-50 print:hidden"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <line x1="19" y1="8" x2="19" y2="14" />
+            <line x1="22" y1="11" x2="16" y2="11" />
+          </svg>
+          {rosterLoaded && roster.length === 0 ? '重新載入球員' : '載入球員'}
+        </button>
       )}
 
       {/* Add Button */}
