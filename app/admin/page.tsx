@@ -3,20 +3,20 @@ import { authOptions } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { getRequestTenant } from '@/lib/tenant/context';
-import { getMatches, getTeamPlayers, getAnnouncements, getAllPlayers, getTeamKitSettingsMap } from '@/lib/actions';
+import { getMatches, getAnnouncements, getTeamKitSettingsMap } from '@/lib/actions';
 import { MatchForm, ResetButton } from '@/components/AdminClient';
-import { PlayerContactList } from '@/components/PlayerContactList';
 import { CollapsibleSection } from '@/components/CollapsibleSection';
 import { UpcomingFixtures } from '@/components/UpcomingFixtures';
 import { MatchResults } from '@/components/MatchResults';
 import { TEAMS } from '@/lib/constants';
 import { KitColorManager } from '@/components/KitColorManager';
 import { PlayerManager } from '@/app/admin/match-sheet/[teamId]/PlayerManager';
+import { LazyPlayerContacts } from '@/components/LazyPlayerContacts';
 import SignOutButton from '@/components/SignOutButton';
 import FixDbButton from '@/components/FixDbButton';
 import GenerateManagerAccountsButton from '@/components/GenerateManagerAccountsButton';
 import ChangeManagerPasswordForm from '@/components/ChangeManagerPasswordForm';
-import type { Player, Announcement } from '@/lib/schema';
+import type { Announcement } from '@/lib/schema';
 import { AnnouncementManager } from '@/components/AnnouncementManager';
 import { TEAM_CONTACTS } from '@/lib/team-contacts';
 import { TeamCard } from '@/components/TeamCard';
@@ -91,8 +91,6 @@ export default async function AdminPage() {
 
   let scheduledMatches: SerializedMatch[] = [];
   let finishedMatches: SerializedMatch[] = [];
-  let teamPlayers: Player[] = [];
-  let allPlayers: Player[] = [];
   let announcements: Announcement[] = [];
   let teamKitSettingsMap: Record<string, { name: string; homeKitColor: string; awayKitColor: string }> = {};
   let dbError = null;
@@ -108,24 +106,18 @@ export default async function AdminPage() {
   const isAdmin = role === 'admin';
   const isManager = role === 'manager';
 
+  // Do NOT preload player rosters — they are lazy-fetched client-side when an
+  // admin expands a team. The admin shell mainly needs fixtures/results, so it
+  // now loads quickly instead of pulling every player on first paint.
   try {
-    // All independent reads in ONE parallel batch. Sequential Neon HTTP
-    // round-trips were the main cause of the ~1.5s+ admin TTFB on mobile.
-    const [matchesResult, announcementsResult, kitResult, playersResult] = await Promise.all([
+    const [matchesResult, announcementsResult, kitResult] = await Promise.all([
       getMatches(),
       getAnnouncements(),
       getTeamKitSettingsMap(),
-      isAdmin
-        ? getAllPlayers()
-        : isManager && teamId !== undefined
-          ? getTeamPlayers(TEAMS[teamId].name)
-          : Promise.resolve([]),
     ]);
     const allMatches = matchesResult as unknown as DbMatch[];
     announcements = announcementsResult;
     teamKitSettingsMap = kitResult;
-    if (isAdmin) allPlayers = playersResult;
-    else teamPlayers = playersResult;
 
     scheduledMatches = allMatches
       .filter(m => m.status === 'scheduled' || m.status === 'tbc')
@@ -200,7 +192,7 @@ export default async function AdminPage() {
             <div className="card p-6">
               <h2 className="text-lg font-semibold mb-4">Team Management</h2>
               <div className="space-y-4">
-                <PlayerManager teamName={TEAMS[teamId].name} players={teamPlayers} />
+                <PlayerManager teamName={TEAMS[teamId].name} />
                 
                 <Link 
                   href={`/admin/match-sheet/${teamId}`}
@@ -267,15 +259,11 @@ export default async function AdminPage() {
                 <div className="text-xs text-slate-500">{TEAM_CONTACTS.length} 支球隊</div>
               </div>
               {TEAM_CONTACTS.map((team) => (
-                <TeamCard key={team.team} team={team} players={allPlayers} />
+                <TeamCard key={team.team} team={team} />
               ))}
             </section>
 
-            <CollapsibleSection title="Player Contacts" badge={allPlayers.length} defaultExpanded={false}>
-              <div className="p-4 sm:p-6">
-                <PlayerContactList players={allPlayers} showTeamFilter />
-              </div>
-            </CollapsibleSection>
+            <LazyPlayerContacts title="Player Contacts" defaultExpanded={false} />
 
             <AnnouncementManager announcements={announcements} />
 

@@ -7,7 +7,17 @@ import { updatePlayer } from '@/lib/actions';
 
 interface TeamCardProps {
   team: TeamContact;
-  players: Player[];
+  /** Preloaded players (optional). When omitted, players are lazy-fetched on expand. */
+  players?: Player[];
+}
+
+function PlayerSpinner() {
+  return (
+    <div className="flex items-center justify-center gap-2 py-6 text-slate-400">
+      <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#1a237e]/20 border-t-[#1a237e]" />
+      <span className="text-xs">載入球員中…</span>
+    </div>
+  );
 }
 
 function CopyButton({ value, label }: { value: string; label: string }) {
@@ -224,12 +234,42 @@ function EditPlayerModal({ player, onClose, onSaved }: { player: Player; onClose
   );
 }
 
-export function TeamCard({ team, players }: TeamCardProps) {
+export function TeamCard({ team, players: initialPlayers }: TeamCardProps) {
   const [expanded, setExpanded] = useState(false);
   const [playersExpanded, setPlayersExpanded] = useState(false);
   const [editingPlayer, setEditingPlayer] = useState<Player | null>(null);
 
-  const teamPlayers = players.filter(p => p.team === team.team);
+  // Lazy-load roster: don't block the admin page on every player upfront.
+  // If the page already passed players in, use them; otherwise fetch on first expand.
+  const [allPlayers, setAllPlayers] = useState<Player[]>(initialPlayers ?? []);
+  const [playersLoading, setPlayersLoading] = useState(false);
+  const [playersLoaded, setPlayersLoaded] = useState<boolean>(Array.isArray(initialPlayers));
+
+  const teamPlayers = allPlayers.filter(p => p.team === team.team);
+
+  async function ensurePlayersLoaded() {
+    if (playersLoaded || playersLoading) return;
+    setPlayersLoading(true);
+    try {
+      const res = await fetch('/api/players', { cache: 'no-store' });
+      if (res.ok) {
+        const data = await res.json();
+        setAllPlayers(data.players ?? []);
+      }
+    } catch {
+      // silently keep empty list; UI shows “暫無球員資料”
+    } finally {
+      setPlayersLoading(false);
+      setPlayersLoaded(true);
+    }
+  }
+
+  function togglePlayers(e: React.MouseEvent) {
+    e.stopPropagation();
+    const next = !playersExpanded;
+    setPlayersExpanded(next);
+    if (next) void ensurePlayersLoaded();
+  }
 
   return (
     <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden transition-all hover:shadow-md">
@@ -313,12 +353,14 @@ export function TeamCard({ team, players }: TeamCardProps) {
           {/* 3. 球員列表 */}
           <div>
             <button
-              onClick={(e) => { e.stopPropagation(); setPlayersExpanded(!playersExpanded); }}
+              onClick={togglePlayers}
               className="w-full flex items-center justify-between p-3 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors"
             >
               <div className="flex items-center gap-2">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">球員列表</span>
-                <span className="text-[10px] bg-slate-900 text-white px-1.5 py-0.5 rounded-full font-bold">{teamPlayers.length}</span>
+                {playersLoaded && !playersLoading ? (
+                  <span className="text-[10px] bg-slate-900 text-white px-1.5 py-0.5 rounded-full font-bold">{teamPlayers.length}</span>
+                ) : null}
               </div>
               <div className={`flex items-center gap-1 text-[10px] text-slate-500 transition-transform duration-200 ${playersExpanded ? 'rotate-180' : ''}`}>
                 <span>{playersExpanded ? '收起' : '展開'}</span>
@@ -329,7 +371,9 @@ export function TeamCard({ team, players }: TeamCardProps) {
             </button>
 
             <div className={`overflow-hidden transition-all duration-300 ease-in-out ${playersExpanded ? 'max-h-[2000px] mt-2' : 'max-h-0'}`}>
-              {teamPlayers.length === 0 ? (
+              {playersLoading ? (
+                <PlayerSpinner />
+              ) : teamPlayers.length === 0 ? (
                 <div className="text-center py-6 text-sm text-slate-400">暫無球員資料</div>
               ) : (
                 <div className="bg-slate-50 rounded-xl overflow-hidden">

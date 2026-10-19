@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { addPlayer, deletePlayer, updatePlayer, uploadPlayerPhoto } from '@/lib/actions';
 import { useRouter } from 'next/navigation';
 import type { Player } from '@/lib/schema';
@@ -10,6 +10,20 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
   const [isAdding, setIsAdding] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [editingPlayer, setEditingPlayer] = useState<Player | null>(null);
+
+  // When no roster is passed in (admin no longer preloads players), fetch it once.
+  const [roster, setRoster] = useState<Player[]>(players);
+  const [rosterLoading, setRosterLoading] = useState<boolean>(players.length === 0);
+  useEffect(() => {
+    if (players.length > 0) { setRoster(players); return; }
+    let cancelled = false;
+    fetch('/api/players', { cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error('fetch failed'))))
+      .then((data) => { if (!cancelled) setRoster((data.players ?? []).filter((p: Player) => p.team === teamName)); })
+      .catch(() => { if (!cancelled) setRoster([]); })
+      .finally(() => { if (!cancelled) setRosterLoading(false); });
+    return () => { cancelled = true; };
+  }, [players, teamName]);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -100,13 +114,18 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
   return (
     <div className="space-y-6">
       {/* Player List */}
-      {players.length > 0 && (
+      {rosterLoading ? (
+        <div className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white p-6 text-slate-400">
+          <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#1a237e]/20 border-t-[#1a237e]" />
+          <span className="text-xs">載入球員中…</span>
+        </div>
+      ) : roster.length > 0 && (
         <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
           <div className="bg-slate-50 px-4 py-3 border-b border-slate-200">
-            <h3 className="font-semibold text-sm">Team Roster ({players.length})</h3>
+            <h3 className="font-semibold text-sm">Team Roster ({roster.length})</h3>
           </div>
           <div className="divide-y divide-slate-100 max-h-[400px] overflow-y-auto">
-            {players.map((player) => (
+            {roster.map((player) => (
               <div key={player.id} className="flex items-center justify-between p-3 hover:bg-slate-50">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-200 relative group">
