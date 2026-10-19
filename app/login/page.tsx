@@ -3,7 +3,6 @@
 import type { FormEvent } from 'react';
 import { useEffect, useState } from 'react';
 import { signIn, useSession, getSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/context/LanguageContext';
 
 type Mode = 'login' | 'forgot';
@@ -16,23 +15,29 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
   const { data: session, status } = useSession();
+
+  // After a client-side sign-in the new session cookie is not yet attached to
+  // the next RSC fetch, so router.push('/admin') can render the signed-out
+  // (blank) state until a manual refresh. A full-page navigation sends the
+  // fresh cookie on the very first request, so the admin renders logged-in.
+  function goAfterLogin(dest: string) {
+    window.location.assign(dest);
+  }
 
   useEffect(() => {
     if (!session) return;
     if (session.user?.isPlatform) {
-      // Platform principal only → the cross-tenant console. A league-scoped
-      // admin (role='admin', isPlatform=false) stays on its own /admin.
-      router.replace('/platform');
+      goAfterLogin('/platform');
       return;
     }
     if (session.user?.role === 'user') {
-      router.replace('/');
+      goAfterLogin('/');
       return;
     }
-    router.replace('/admin');
-  }, [router, session]);
+    goAfterLogin('/admin');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session]);
 
   const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -49,16 +54,15 @@ export default function LoginPage() {
       if (result?.error) {
         setError(t('電郵、密碼錯誤，或此 manager 帳號未綁定球隊。', 'Wrong email or password, or this manager account is not linked to a team.'));
       } else if (result?.ok) {
-        // The client `session` state is often stale immediately after sign-in,
-        // so fetch the fresh session to route by the real principal.
+        // Read the fresh session to route by the real principal, then do a full
+        // navigation so the destination server render has the auth cookie.
         const fresh = await getSession();
         const dest = fresh?.user?.isPlatform
           ? '/platform'
           : fresh?.user?.role === 'user'
             ? '/'
             : '/admin';
-        router.push(dest);
-        router.refresh();
+        goAfterLogin(dest);
       }
     } catch {
       setError(t('登入時發生錯誤，請稍後再試。', 'Something went wrong signing in. Please try again.'));
