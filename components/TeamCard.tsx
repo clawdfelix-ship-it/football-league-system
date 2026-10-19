@@ -254,7 +254,7 @@ export function TeamCard({ team, players: initialPlayers }: TeamCardProps) {
       const res = await fetch('/api/players', { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
-        setAllPlayers(data.players ?? []);
+        setAllPlayers(data?.data?.players ?? data?.players ?? []);
       }
     } catch {
       // silently keep empty list; UI shows “暫無球員資料”

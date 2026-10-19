@@ -24,7 +24,8 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
       const res = await fetch('/api/players', { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
-        setRoster((data.players ?? []).filter((p: Player) => p.team === teamName));
+        const list = data?.data?.players ?? data?.players ?? [];
+        setRoster(list.filter((p: Player) => p.team === teamName));
       }
     } catch {
       setRoster([]);

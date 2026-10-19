@@ -29,7 +29,7 @@ export function LazyPlayerContacts({
       const res = await fetch('/api/players', { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
-        setPlayers(data.players ?? []);
+        setPlayers(data?.data?.players ?? data?.players ?? []);
       }
     } catch {
       // keep empty; list shows its own empty state
