@@ -97,13 +97,36 @@ export default async function AdminPage() {
   let teamKitSettingsMap: Record<string, { name: string; homeKitColor: string; awayKitColor: string }> = {};
   let dbError = null;
 
+  // role gating that previously sat between the queries — moved up so every
+  // independent DB read can run in ONE parallel batch below.
+  const username = session.user?.username || session.user?.name || 'Admin';
+  const role = session.user?.role || 'manager';
+  const teamId = session.user?.teamId;
+  if (role === 'user') {
+    redirect('/');
+  }
+  const isAdmin = role === 'admin';
+  const isManager = role === 'manager';
+
   try {
-    // Cast to unknown first to avoid type overlap error if types differ significantly
-    // Use try-catch to prevent page crash if DB schema is outdated
-    const allMatches = (await getMatches()) as unknown as DbMatch[];
-    announcements = await getAnnouncements();
-    teamKitSettingsMap = await getTeamKitSettingsMap();
-    
+    // All independent reads in ONE parallel batch. Sequential Neon HTTP
+    // round-trips were the main cause of the ~1.5s+ admin TTFB on mobile.
+    const [matchesResult, announcementsResult, kitResult, playersResult] = await Promise.all([
+      getMatches(),
+      getAnnouncements(),
+      getTeamKitSettingsMap(),
+      isAdmin
+        ? getAllPlayers()
+        : isManager && teamId !== undefined
+          ? getTeamPlayers(TEAMS[teamId].name)
+          : Promise.resolve([]),
+    ]);
+    const allMatches = matchesResult as unknown as DbMatch[];
+    announcements = announcementsResult;
+    teamKitSettingsMap = kitResult;
+    if (isAdmin) allPlayers = playersResult;
+    else teamPlayers = playersResult;
+
     scheduledMatches = allMatches
       .filter(m => m.status === 'scheduled' || m.status === 'tbc')
       .sort((a, b) => {
@@ -138,35 +161,6 @@ export default async function AdminPage() {
     dbError = "Database schema mismatch. Please click 'Fix Database Schema' button.";
   }
 
-  const username = session.user?.username || session.user?.name || 'Admin';
-  const role = session.user?.role || 'manager';
-  const teamId = session.user?.teamId;
-
-  if (role === 'user') {
-    redirect('/');
-  }
-
-  const isAdmin = role === 'admin';
-  const isManager = role === 'manager';
-
-  // Fetch team players if is manager
-  if (isManager && teamId !== undefined) {
-    try {
-      teamPlayers = await getTeamPlayers(TEAMS[teamId].name);
-    } catch (e) {
-      console.error("Failed to fetch players:", e);
-      dbError = dbError || "Failed to fetch players. Please fix database schema.";
-    }
-  }
-
-  if (isAdmin) {
-    try {
-      allPlayers = await getAllPlayers();
-    } catch (e) {
-      console.error("Failed to fetch all players:", e);
-      dbError = dbError || "Failed to fetch players. Please fix database schema.";
-    }
-  }
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
