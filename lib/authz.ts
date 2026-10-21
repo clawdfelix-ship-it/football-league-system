@@ -2,9 +2,9 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { TEAMS } from '@/lib/constants';
 import { ROLES, normalizeRole, type Role } from '@/lib/auth/roles';
-import { isPlatformAdminEmail } from '@/lib/tenant/platform-admin';
 import { getRequestLeagueId } from '@/lib/tenant/context';
 import { DEFAULT_LEAGUE_ID } from '@/lib/tenant/config';
+import { getValidatedPlatformAdminEmail } from '@/lib/auth/platform-session';
 
 export type { Role } from '@/lib/auth/roles';
 
@@ -84,7 +84,14 @@ export function getTeamNameFromTeamId(teamId: number | undefined): string | null
  */
 export async function getPlatformAdmin(): Promise<{ email: string } | null> {
   const session = await getServerSession(authOptions);
-  const email = (session?.user as { email?: unknown } | null)?.email;
-  if (typeof email !== 'string' || !isPlatformAdminEmail(email)) return null;
-  return { email: email.trim().toLowerCase() };
+  const email = getValidatedPlatformAdminEmail(
+    (session?.user as {
+      email?: unknown;
+      role?: unknown;
+      leagueId?: unknown;
+      isPlatform?: unknown;
+    } | null) ?? null
+  );
+  if (!email) return null;
+  return { email };
 }

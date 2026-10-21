@@ -1,6 +1,6 @@
 import { db } from '@/lib/db';
 import { announcements, matchPlayerGoals, matches, players, teams as teamsTable } from '@/lib/schema';
-import { asc, desc, eq, inArray, or, sql, and } from 'drizzle-orm';
+import { asc, desc, eq, inArray, or, sql, and, notInArray } from 'drizzle-orm';
 import { getRequestLeagueId } from './tenant/context';
 
 // Resolve the league a query should run against. Explicit leagueId (e.g. from
@@ -450,14 +450,44 @@ export async function replaceMatchGoalEntries(
   leagueId?: number
 ) {
   const lid = await resolveLeagueId(leagueId);
-  await db.delete(matchPlayerGoals)
-    .where(and(eq(matchPlayerGoals.matchId, matchId), eq(matchPlayerGoals.leagueId, lid)));
   const filtered = entries.filter((e) => Number.isFinite(e.goals) && e.goals > 0);
-  if (filtered.length === 0) return [];
-  return await db
+  if (filtered.length === 0) {
+    await db.delete(matchPlayerGoals)
+      .where(and(eq(matchPlayerGoals.matchId, matchId), eq(matchPlayerGoals.leagueId, lid)));
+    return [];
+  }
+
+  const now = new Date();
+  const playerIds = Array.from(new Set(filtered.map((e) => e.playerId)));
+
+  await db
     .insert(matchPlayerGoals)
-    .values(filtered.map((e) => ({ matchId, playerId: e.playerId, goals: e.goals, leagueId: lid })))
-    .returning();
+    .values(
+      filtered.map((e) => ({
+        matchId,
+        playerId: e.playerId,
+        goals: e.goals,
+        leagueId: lid,
+        updatedAt: now,
+      }))
+    )
+    .onConflictDoUpdate({
+      target: [matchPlayerGoals.matchId, matchPlayerGoals.playerId],
+      set: {
+        goals: sql`excluded.goals`,
+        updatedAt: now,
+      },
+    });
+
+  await db.delete(matchPlayerGoals).where(
+    and(
+      eq(matchPlayerGoals.matchId, matchId),
+      eq(matchPlayerGoals.leagueId, lid),
+      notInArray(matchPlayerGoals.playerId, playerIds)
+    )
+  );
+
+  return filtered;
 }
 
 export async function getPlayersByIds(ids: number[], leagueId?: number) {
