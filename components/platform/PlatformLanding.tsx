@@ -764,6 +764,82 @@ function SiteHeader({ t }: { t: (zh: string, en: string) => string }) {
 /* Page                                                                */
 /* ------------------------------------------------------------------ */
 
+function FaqSection() {
+  const { t } = useLanguage();
+  const faqs = [
+    {
+      qZh: '要唔要自己整網站？',
+      qEn: 'Do I have to build a website myself?',
+      aZh: '唔使。平台已包含對外公開頁同管理後台，開通即有獨立子網域。',
+      aEn: 'No. The public site and admin console are included; each league gets its own subdomain on activation.',
+    },
+    {
+      qZh: '支援咩語言？',
+      qEn: 'Which languages are supported?',
+      aZh: '繁體中文同英文，全站一鍵切換，切合香港聯賽需要。',
+      aEn: 'Traditional Chinese and English, with a site-wide toggle, built for Hong Kong leagues.',
+    },
+    {
+      qZh: '積分榜會自動更新嗎？',
+      qEn: 'Does the standings table update automatically?',
+      aZh: '會。賽後輸入比數，勝和負、得失球同排名即時自動運算。',
+      aEn: 'Yes. Enter a score after a match and points, goal difference and rank are calculated instantly.',
+    },
+    {
+      qZh: '球隊可唔可以自己更新陣容？',
+      qEn: 'Can clubs update their own squads?',
+      aZh: '可以。每支球隊有獨立帳號，可自行提交陣容同球員資料。',
+      aEn: 'Yes. Each club gets its own login to submit its squad and keep player profiles current.',
+    },
+    {
+      qZh: '點樣申請開辦聯賽？',
+      qEn: 'How do I launch a league?',
+      aZh: '撳「開辦聯賽」填妥申請，大會審核後即可開通。',
+      aEn: 'Click “Start a league”, submit the application, and your site is provisioned after approval.',
+    },
+  ];
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.qZh,
+      acceptedAnswer: { '@type': 'Answer', text: f.aZh },
+    })),
+  };
+
+  return (
+    <section className="border-b border-slate-200 bg-slate-50">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <div className="mx-auto w-full max-w-3xl px-4 py-20 sm:px-6">
+        <h2 className="text-center text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+          {t('常見問題', 'Frequently asked questions')}
+        </h2>
+        <div className="mt-10 flex flex-col gap-3">
+          {faqs.map((f) => (
+            <details
+              key={f.qEn}
+              className="group rounded-2xl border border-slate-200 bg-white p-5 [&_summary::-webkit-details-marker]:hidden"
+            >
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-base font-semibold text-slate-900">
+                {t(f.qZh, f.qEn)}
+                <span className="text-slate-400 transition-transform group-open:rotate-45" aria-hidden>＋</span>
+              </summary>
+              <p className="mt-3 text-sm leading-relaxed text-slate-600">
+                {t(f.aZh, f.aEn)}
+              </p>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function PlatformLanding() {
   const { language } = useLanguage();
   const isZh = language === 'zh';
@@ -988,6 +1064,9 @@ export default function PlatformLanding() {
             </ol>
           </div>
         </section>
+
+        {/* FAQ — citation-friendly answer blocks + FAQPage schema */}
+        <FaqSection />
 
         {/* Final CTA — rotating conic glow border */}
         <section className="bg-white">

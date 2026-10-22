@@ -348,7 +348,7 @@ export default function HomeClient(props: {
           <section id="standings" className="mb-12">
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-200">
               <div className="bg-slate-900 text-white px-8 py-5 flex justify-between items-center">
-                <h3 className="text-xl font-bold tracking-tight">{t('積分榜 2026', 'League Table 2026')}</h3>
+                <h2 className="text-xl font-bold tracking-tight">{t('積分榜 2026', 'League Table 2026')}</h2>
                 <button
                   type="button"
                   onClick={refresh}
@@ -483,7 +483,7 @@ export default function HomeClient(props: {
           <section id="matches" className="grid md:grid-cols-2 gap-8">
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-200">
               <div className="bg-green-600 text-white px-8 py-5 flex items-center justify-between">
-                <h3 className="text-xl font-bold tracking-tight">{t('近期賽事', 'Upcoming Fixtures')}</h3>
+                <h2 className="text-xl font-bold tracking-tight">{t('近期賽事', 'Upcoming Fixtures')}</h2>
                 {fixturesLastUpdatedAt && (
                   <span className="text-xs text-green-100">
                     {t('最後更新', 'Last update')}:{' '}
@@ -566,7 +566,7 @@ export default function HomeClient(props: {
 
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-200">
               <div className="bg-red-600 text-white px-8 py-5">
-                <h3 className="text-xl font-bold tracking-tight">{t('最近結果', 'Recent Results')}</h3>
+                <h2 className="text-xl font-bold tracking-tight">{t('最近結果', 'Recent Results')}</h2>
               </div>
               <div className="p-6 space-y-4">
                 {recentResults.length === 0 ? (
@@ -619,7 +619,7 @@ export default function HomeClient(props: {
             <section id="announcements" className="mt-12">
               <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-200">
                 <div className="bg-slate-900 text-white px-8 py-5 flex items-center justify-between">
-                  <h3 className="text-xl font-bold tracking-tight">{t('場地公告', 'Venue Announcements')}</h3>
+                  <h2 className="text-xl font-bold tracking-tight">{t('場地公告', 'Venue Announcements')}</h2>
                   {announcementsLastUpdatedAt && (
                     <span className="text-xs text-slate-300">
                       {t('最後更新', 'Last update')}:{' '}

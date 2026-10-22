@@ -53,6 +53,13 @@ export async function invalidateLeagueDirectory(): Promise<void> {
   revalidateTag(DIRECTORY_TAG, 'default');
 }
 
+/** Full league row (display fields) by id. */
+export async function getLeagueById(id: number) {
+  if (!id) return null;
+  const [row] = await db.select().from(leagues).where(eq(leagues.id, id)).limit(1);
+  return row ?? null;
+}
+
 // Re-export for callers that only need the founding league row.
 export async function getDefaultLeague() {
   const [row] = await db.select().from(leagues).where(eq(leagues.id, 1)).limit(1);
