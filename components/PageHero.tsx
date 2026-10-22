@@ -25,12 +25,12 @@ export default function PageHero({
 }) {
   return (
     <header
-      className={`bg-[#1a237e] bg-gradient-to-b from-[#1a237e] to-[#283593] pt-14 pb-20 text-white sm:pt-16 sm:pb-24 px-4 sm:px-6 ${
+      className={`bg-[#0f172a] bg-gradient-to-b from-[#0f172a] to-[#1e293b] pt-14 pb-20 text-white sm:pt-16 sm:pb-24 px-4 sm:px-6 ${
         center ? 'text-center flex flex-col items-center' : 'text-left'
       }`}
     >
       {children}
-      <h1 className="mb-2 font-black italic leading-[1.05] tracking-[-0.02em] text-balance text-[clamp(1.9rem,7vw,3.75rem)]">
+      <h1 className="mb-2 font-black leading-[1.05] tracking-[-0.02em] text-balance text-[clamp(1.9rem,7vw,3.75rem)]">
         {title}
       </h1>
       {subtitle ? (

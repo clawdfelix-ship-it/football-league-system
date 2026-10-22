@@ -310,11 +310,11 @@ export default function HomeClient(props: {
   if (loading && !hasAnyData) {
     return (
       <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans">
-        <header className="bg-[#1a237e] bg-gradient-to-b from-[#1a237e] to-[#283593] text-white pt-14 pb-20 sm:pt-16 sm:pb-24 px-6 text-center flex flex-col items-center">
+        <header className="bg-[#0f172a] bg-gradient-to-b from-[#0f172a] to-[#1e293b] text-white pt-14 pb-20 sm:pt-16 sm:pb-24 px-6 text-center flex flex-col items-center">
           <div className="mb-5 sm:mb-6 h-24 w-24 sm:h-32 sm:w-32">
             <Logo className="h-full w-full drop-shadow-lg" />
           </div>
-          <h1 className="font-black italic mb-2 tracking-[-0.02em] leading-[1.05] text-balance text-[clamp(1.9rem,7vw,3.75rem)]">Hong Kong Bank League 2026</h1>
+          <h1 className="font-black mb-2 tracking-[-0.02em] leading-[1.05] text-balance text-[clamp(1.9rem,7vw,3.75rem)]">Hong Kong Bank League 2026</h1>
           <p className="text-blue-200 font-light tracking-widest uppercase text-[clamp(0.7rem,2.6vw,1.125rem)] text-balance">
             Partnered with ZENEX SPORTS | {t('香港銀行足球聯賽2026', 'Hong Kong Bank Football League 2026')}
           </p>
@@ -334,11 +334,11 @@ export default function HomeClient(props: {
   return (
     <HomeLayout>
       <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans">
-        <header className="bg-[#1a237e] bg-gradient-to-b from-[#1a237e] to-[#283593] text-white pt-14 pb-20 sm:pt-16 sm:pb-24 px-6 text-center flex flex-col items-center">
+        <header className="bg-[#0f172a] bg-gradient-to-b from-[#0f172a] to-[#1e293b] text-white pt-14 pb-20 sm:pt-16 sm:pb-24 px-6 text-center flex flex-col items-center">
           <div className="mb-5 sm:mb-6 h-24 w-24 sm:h-32 sm:w-32">
             <Logo className="h-full w-full drop-shadow-lg" />
           </div>
-          <h1 className="font-black italic mb-2 tracking-[-0.02em] leading-[1.05] text-balance text-[clamp(1.9rem,7vw,3.75rem)]">Hong Kong Bank League 2026</h1>
+          <h1 className="font-black mb-2 tracking-[-0.02em] leading-[1.05] text-balance text-[clamp(1.9rem,7vw,3.75rem)]">Hong Kong Bank League 2026</h1>
           <p className="text-blue-200 font-light tracking-widest uppercase text-[clamp(0.7rem,2.6vw,1.125rem)] text-balance">
             Partnered with ZENEX SPORTS | {t('香港銀行足球聯賽2026', 'Hong Kong Bank Football League 2026')}
           </p>

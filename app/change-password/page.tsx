@@ -76,12 +76,12 @@ export default function ChangePasswordPage() {
 
   if (status === 'loading') {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#1a237e] text-blue-100">Loading…</div>
+      <div className="flex min-h-screen items-center justify-center bg-[#0f172a] text-blue-100">Loading…</div>
     );
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#1a237e] bg-gradient-to-b from-[#1a237e] to-[#283593] px-4 py-12">
+    <div className="flex min-h-screen items-center justify-center bg-[#0f172a] bg-gradient-to-b from-[#0f172a] to-[#1e293b] px-4 py-12">
       <div className="auth-container rounded-2xl border border-slate-200 bg-white p-8 shadow-2xl">
         <h1 className="text-2xl font-bold text-slate-900">
           {isForced ? 'Set your password' : 'Change password'}

@@ -101,7 +101,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#1a237e] bg-gradient-to-b from-[#1a237e] to-[#283593] flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-[#0f172a] bg-gradient-to-b from-[#0f172a] to-[#1e293b] flex items-center justify-center px-4 py-12">
       <div className="auth-container">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">ZENEX-SPORTS LeagueCenter</h1>
@@ -140,7 +140,7 @@ export default function LoginPage() {
                       setError('');
                       setNotice('');
                     }}
-                    className="text-xs text-slate-500 hover:text-[#1a237e] transition"
+                    className="text-xs text-slate-500 hover:text-[#0f172a] transition"
                   >
                     {t('忘記密碼？', 'Forgot password?')}
                   </button>
@@ -216,7 +216,7 @@ export default function LoginPage() {
                   setError('');
                   setNotice('');
                 }}
-                className="w-full text-sm text-slate-500 hover:text-[#1a237e] transition"
+                className="w-full text-sm text-slate-500 hover:text-[#0f172a] transition"
               >
                 ← {t('返回登入', 'Back to login')}
               </button>

@@ -92,11 +92,11 @@ export default function InitTeamsPage() {
                 <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
                   <h3 className="font-semibold text-blue-900 mb-2">下一步：</h3>
                   <ol className="list-decimal list-inside space-y-1 text-sm text-blue-800">
-                    <li>去 <a href="/admin" className="underline hover:text-[#1a237e]">/admin</a> 登入 Team Manager</li>
+                    <li>去 <a href="/admin" className="underline hover:text-[#0f172a]">/admin</a> 登入 Team Manager</li>
                     <li>滾動到 <strong>Kit Colors</strong> 區域</li>
                     <li>選擇球隊嘅主場同客場顏色</li>
                     <li>點擊「儲存顏色設置」</li>
-                    <li>去 <a href="/overview" className="underline hover:text-[#1a237e]">/overview</a> 查看效果</li>
+                    <li>去 <a href="/overview" className="underline hover:text-[#0f172a]">/overview</a> 查看效果</li>
                   </ol>
                 </div>
               )}

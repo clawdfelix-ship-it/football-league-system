@@ -148,7 +148,7 @@ export default function HeadToHeadChart({ serverMatches }: { serverMatches: Matc
               </div>
 
               <div className="w-14 shrink-0 text-right">
-                <span className="text-sm font-black text-[#1a237e]">{r.points}</span>
+                <span className="text-sm font-black text-[#0f172a]">{r.points}</span>
                 <span className="text-[10px] text-slate-400">{tr('分', 'pts')}</span>
               </div>
               <div className="hidden sm:block w-16 shrink-0 text-right text-[11px] text-slate-500">

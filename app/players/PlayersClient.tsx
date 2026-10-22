@@ -204,7 +204,7 @@ function TeamChip(props: {
       onClick={props.onClick}
       className={`shrink-0 min-h-[44px] px-4 rounded-full text-sm font-semibold whitespace-nowrap transition active:scale-95 ${
         props.active
-          ? 'bg-[#1a237e] text-white shadow-md'
+          ? 'bg-[#0f172a] text-white shadow-md'
           : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
       }`}
     >

@@ -59,7 +59,7 @@ function ResetPasswordForm() {
         <p className="text-sm text-red-600">{t('連結無效或缺少重設憑證。', 'Invalid link or missing reset token.')}</p>
         <button
           onClick={() => router.replace('/login')}
-          className="text-sm text-slate-500 hover:text-[#1a237e]"
+          className="text-sm text-slate-500 hover:text-[#0f172a]"
         >
           {t('返回登入', 'Back to login')}
         </button>
@@ -119,7 +119,7 @@ function ResetPasswordForm() {
 export default function ResetPasswordPage() {
   const { t } = useLanguage();
   return (
-    <div className="min-h-screen bg-[#1a237e] bg-gradient-to-b from-[#1a237e] to-[#283593] flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-[#0f172a] bg-gradient-to-b from-[#0f172a] to-[#1e293b] flex items-center justify-center px-4 py-12">
       <div className="auth-container">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">ZENEX-SPORTS LeagueCenter</h1>

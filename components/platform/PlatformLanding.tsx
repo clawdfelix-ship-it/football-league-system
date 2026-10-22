@@ -12,7 +12,7 @@ import LanguageToggle from '@/components/LanguageToggle';
  * standings homepage instead, see app/page.tsx host branch.
  *
  * Design system: anti-slop landing built on Tailwind + Geist. Locked LIGHT
- * theme, single brand-blue accent (#1a237e, matching the tenant product),
+ * theme, single brand-blue accent (#0f172a, matching the tenant product),
  * asymmetric split hero with a REAL product screenshot, bento feature grid
  * with real product imagery (not six equal emoji cards). Relative links so
  * /apply and /platform resolve on the platform host with client navigation.
@@ -468,7 +468,7 @@ function TiltMockup({ t }: { t: (zh: string, en: string) => string }) {
 
   return (
     <div ref={frameRef} className="relative [perspective:1100px]">
-      <div aria-hidden="true" className="absolute -inset-4 -z-10 rounded-[28px] bg-gradient-to-tr from-[#1a237e]/40 to-transparent blur-2xl" />
+      <div aria-hidden="true" className="absolute -inset-4 -z-10 rounded-[28px] bg-gradient-to-tr from-[#0f172a]/40 to-transparent blur-2xl" />
       <div
         ref={innerRef}
         className="overflow-hidden rounded-2xl border border-white/15 bg-white shadow-2xl shadow-black/40 ring-1 ring-black/20 transition-transform duration-200 will-change-transform [transform-style:preserve-3d]"
@@ -550,7 +550,7 @@ function StorySection({ t }: { t: (zh: string, en: string) => string }) {
     <section className="bg-white">
       <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-24">
         <Reveal>
-          <span className="text-xs font-bold uppercase tracking-widest text-[#1a237e]">
+          <span className="text-xs font-bold uppercase tracking-widest text-[#0f172a]">
             {t('一個球季', 'A season on the platform')}
           </span>
           <h2 className="mt-3 max-w-2xl text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
@@ -570,7 +570,7 @@ function StorySection({ t }: { t: (zh: string, en: string) => string }) {
                 }}
                 className="flex min-h-[46vh] flex-col justify-center border-b border-slate-100 py-10 last:border-b-0 lg:min-h-[52vh]"
               >
-                <span className="text-sm font-bold text-[#1a237e]">
+                <span className="text-sm font-bold text-[#0f172a]">
                   {t(s.kickerZh, s.kickerEn)}
                 </span>
                 <h3 className="mt-2 text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
@@ -734,7 +734,7 @@ function GallerySlider({ t }: { t: (zh: string, en: string) => string }) {
 
 function SiteHeader({ t }: { t: (zh: string, en: string) => string }) {
   return (
-    <header className="sticky top-0 z-30 bg-[#1a237e] text-white shadow-md">
+    <header className="sticky top-0 z-30 bg-[#0f172a] text-white shadow-md">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
         <Link href="/" className="flex items-center gap-2.5">
           <Image src="/logo.png" alt="" width={32} height={32} className="h-8 w-8 object-contain" draggable={false} priority />
@@ -750,7 +750,7 @@ function SiteHeader({ t }: { t: (zh: string, en: string) => string }) {
           </Link>
           <Link
             href="/apply"
-            className="inline-flex items-center rounded-lg bg-white px-3.5 py-2 text-sm font-semibold text-[#1a237e] shadow-sm transition-all duration-200 hover:bg-blue-50 active:scale-[0.98]"
+            className="inline-flex items-center rounded-lg bg-white px-3.5 py-2 text-sm font-semibold text-[#0f172a] shadow-sm transition-all duration-200 hover:bg-blue-50 active:scale-[0.98]"
           >
             {t(HERO.primaryZh, HERO.primaryEn)}
           </Link>
@@ -804,7 +804,7 @@ export default function PlatformLanding() {
                 <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                   <Link
                     href="/apply"
-                    className="group inline-flex items-center justify-center gap-2 rounded-xl bg-white px-6 py-3 text-base font-semibold text-[#1a237e] shadow-lg shadow-black/20 transition-all duration-200 hover:gap-3 hover:bg-blue-50 active:scale-[0.98]"
+                    className="group inline-flex items-center justify-center gap-2 rounded-xl bg-white px-6 py-3 text-base font-semibold text-[#0f172a] shadow-lg shadow-black/20 transition-all duration-200 hover:gap-3 hover:bg-blue-50 active:scale-[0.98]"
                   >
                     {t(HERO.primaryZh, HERO.primaryEn)}
                     <span aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-0.5">→</span>
@@ -844,7 +844,7 @@ export default function PlatformLanding() {
                 const Icon = f.icon;
                 return (
                   <li key={f.en} className="flex items-center gap-2.5 text-slate-700">
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#1a237e]/10 text-[#1a237e]">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#0f172a]/10 text-[#0f172a]">
                       <Icon className="h-5 w-5" />
                     </span>
                     <span className="text-[13px] font-medium leading-tight">{t(f.zh, f.en)}</span>
@@ -871,7 +871,7 @@ export default function PlatformLanding() {
                 </p>
                 <Link
                   href="/apply"
-                  className="group mt-7 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-[#1a237e] transition-all duration-200 hover:gap-2.5 hover:bg-blue-50"
+                  className="group mt-7 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-[#0f172a] transition-all duration-200 hover:gap-2.5 hover:bg-blue-50"
                 >
                   {t(HERO.primaryZh, HERO.primaryEn)}
                   <span aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-0.5">→</span>
@@ -911,7 +911,7 @@ export default function PlatformLanding() {
                       <>
                         <div className="relative flex-1 overflow-hidden bg-slate-100">
                           {/* Floating icon chip so even image cards carry the icon system */}
-                          <span className="absolute left-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-xl bg-white/90 text-[#1a237e] shadow-md ring-1 ring-slate-900/5 backdrop-blur transition-transform duration-300 group-hover:scale-110">
+                          <span className="absolute left-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-xl bg-white/90 text-[#0f172a] shadow-md ring-1 ring-slate-900/5 backdrop-blur transition-transform duration-300 group-hover:scale-110">
                             <Icon className="h-5 w-5" />
                           </span>
                           <Image
@@ -930,7 +930,7 @@ export default function PlatformLanding() {
                     ) : (
                       <div className="flex flex-1 flex-col p-6">
                         <span
-                          className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#1a237e] to-[#3949ab] text-white shadow-md shadow-[#1a237e]/25 transition-transform duration-300 group-hover:scale-110"
+                          className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#0f172a] to-[#334155] text-white shadow-md shadow-[#0f172a]/25 transition-transform duration-300 group-hover:scale-110"
                         >
                           <Icon className="h-6 w-6" />
                           <span
@@ -974,7 +974,7 @@ export default function PlatformLanding() {
                     <Reveal delay={i * 80}>
                       <div className="flex h-full flex-col gap-3">
                         <div className="flex items-center gap-3">
-                          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#1a237e]/10 text-[#1a237e]">
+                          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#0f172a]/10 text-[#0f172a]">
                             <StepIcon className="h-6 w-6" />
                           </span>
                           <span className="text-2xl font-extrabold tracking-tight text-slate-200">0{i + 1}</span>
@@ -1005,7 +1005,7 @@ export default function PlatformLanding() {
                   className="pointer-events-none absolute inset-0 rounded-3xl"
                   style={{ padding: 1.5, background: 'conic-gradient(from 0deg, rgba(255,255,255,0.06), rgba(140,165,255,0.9), rgba(255,255,255,0.06) 30%)', WebkitMask: 'linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)', WebkitMaskComposite: 'xor', maskComposite: 'exclude', animation: 'zenex-spin 6s linear infinite' }}
                 />
-                <div className="relative overflow-hidden rounded-3xl bg-[#1a237e] px-6 py-14 text-center sm:px-12 sm:py-16">
+                <div className="relative overflow-hidden rounded-3xl bg-[#0f172a] px-6 py-14 text-center sm:px-12 sm:py-16">
                 <h2 className="text-balance text-2xl font-bold tracking-tight text-white sm:text-3xl">
                   {t('準備好開辦你的聯賽？', 'Ready to launch your league?')}
                 </h2>
@@ -1015,7 +1015,7 @@ export default function PlatformLanding() {
                 <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
                   <Link
                     href="/apply"
-                    className="group inline-flex items-center justify-center gap-2 rounded-xl bg-white px-6 py-3 text-base font-semibold text-[#1a237e] transition-all duration-200 hover:gap-3 hover:bg-blue-50 active:scale-[0.98]"
+                    className="group inline-flex items-center justify-center gap-2 rounded-xl bg-white px-6 py-3 text-base font-semibold text-[#0f172a] transition-all duration-200 hover:gap-3 hover:bg-blue-50 active:scale-[0.98]"
                   >
                     {t(HERO.primaryZh, HERO.primaryEn)}
                     <span aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-0.5">→</span>

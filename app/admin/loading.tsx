@@ -3,7 +3,7 @@ export default function AdminLoading() {
     <div className="min-h-[70vh] flex flex-col items-center justify-center gap-4 px-4 py-16">
       {/* Branded spinner */}
       <div
-        className="h-10 w-10 animate-spin rounded-full border-[3px] border-[#1a237e]/15 border-t-[#1a237e]"
+        className="h-10 w-10 animate-spin rounded-full border-[3px] border-[#0f172a]/15 border-t-[#0f172a]"
         role="status"
         aria-label="載入中"
       />

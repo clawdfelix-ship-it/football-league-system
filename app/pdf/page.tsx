@@ -11,7 +11,7 @@ export default function PdfPage() {
   return (
     <HomeLayout>
       <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans">
-        <header className="bg-[#1a237e] bg-gradient-to-b from-[#1a237e] to-[#283593] text-white pt-10 pb-12 px-6 text-center">
+        <header className="bg-[#0f172a] bg-gradient-to-b from-[#0f172a] to-[#1e293b] text-white pt-10 pb-12 px-6 text-center">
           <h2 className="text-4xl md:text-5xl font-black italic mb-2 tracking-tight">
             {t('PDF 文件', 'PDF')}
           </h2>

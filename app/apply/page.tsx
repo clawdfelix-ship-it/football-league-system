@@ -58,7 +58,7 @@ export default function ApplyPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#1a237e] bg-gradient-to-b from-[#1a237e] to-[#283593] px-4 py-12">
+    <div className="min-h-screen bg-[#0f172a] bg-gradient-to-b from-[#0f172a] to-[#1e293b] px-4 py-12">
       <div className="max-w-lg mx-auto">
         <div className="mb-6 flex justify-end">
           <LanguageToggle />
@@ -74,7 +74,11 @@ export default function ApplyPage() {
 
         {status === 'done' ? (
           <div className="card p-8 text-center shadow-2xl">
-            <div className="text-4xl mb-4" aria-hidden="true">✅</div>
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50 text-emerald-600" aria-hidden="true">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round">
+                <path d="m5 12 5 5L20 7" />
+              </svg>
+            </div>
             <h2 className="text-xl font-bold text-slate-900 mb-2">
               {t('已收到申請', 'Application received')}
             </h2>
@@ -86,7 +90,7 @@ export default function ApplyPage() {
             </p>
             <button
               onClick={() => setStatus('idle')}
-              className="text-[#1a237e] font-semibold text-sm hover:underline"
+              className="text-[#0f172a] font-semibold text-sm hover:underline"
             >
               {t('提交另一個申請', 'Submit another application')}
             </button>

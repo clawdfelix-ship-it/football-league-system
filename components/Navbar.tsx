@@ -107,7 +107,7 @@ export default function Navbar() {
               {isAdminMenuOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl overflow-hidden z-50 py-1 border border-slate-100">
                   <Link 
-                    href="/admin" 
+                    href="/manager-dashboard" 
                     className="block px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 hover:text-blue-600 border-b border-slate-100"
                   >
                     <div className="font-bold">{t('球隊領隊', 'Team Manager')}</div>

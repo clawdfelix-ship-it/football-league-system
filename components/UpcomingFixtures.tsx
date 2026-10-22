@@ -271,33 +271,33 @@ export function UpcomingFixtures({
                 <div className="grid grid-cols-2 gap-2">
                   <div>
                     <label className="text-xs font-medium text-slate-700">Date</label>
-                    <input name="date" type="date" defaultValue={match.date ? match.date.split('T')[0] : ''} className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25" />
+                    <input name="date" type="date" defaultValue={match.date ? match.date.split('T')[0] : ''} className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-900 shadow-sm focus:border-[#0f172a] focus:outline-none focus:ring-2 focus:ring-[#0f172a]/25" />
                   </div>
                   <div>
                     <label className="text-xs font-medium text-slate-700">Time</label>
-                    <input name="time" type="time" defaultValue={match.date ? new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : ''} className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25" />
+                    <input name="time" type="time" defaultValue={match.date ? new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : ''} className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-900 shadow-sm focus:border-[#0f172a] focus:outline-none focus:ring-2 focus:ring-[#0f172a]/25" />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
                     <label className="text-xs font-medium text-slate-700">Home Score</label>
-                    <input name="homeScore" type="number" defaultValue={match.homeScore ?? ''} className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25" />
+                    <input name="homeScore" type="number" defaultValue={match.homeScore ?? ''} className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-900 shadow-sm focus:border-[#0f172a] focus:outline-none focus:ring-2 focus:ring-[#0f172a]/25" />
                   </div>
                   <div>
                     <label className="text-xs font-medium text-slate-700">Away Score</label>
-                    <input name="awayScore" type="number" defaultValue={match.awayScore ?? ''} className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25" />
+                    <input name="awayScore" type="number" defaultValue={match.awayScore ?? ''} className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-900 shadow-sm focus:border-[#0f172a] focus:outline-none focus:ring-2 focus:ring-[#0f172a]/25" />
                   </div>
                 </div>
                 <div>
                   <label className="text-xs font-medium text-slate-700">Venue</label>
-                  <input name="venue" list="fixtures-venues" defaultValue={match.venue || ''} className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25" />
+                  <input name="venue" list="fixtures-venues" defaultValue={match.venue || ''} className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-900 shadow-sm focus:border-[#0f172a] focus:outline-none focus:ring-2 focus:ring-[#0f172a]/25" />
                   <datalist id="fixtures-venues">
                     {VENUES.map(v => <option key={v} value={v} />)}
                   </datalist>
                 </div>
                 <div>
                   <label className="text-xs font-medium text-slate-700">Round</label>
-                  <select name="round" defaultValue={match.round || ''} className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25">
+                  <select name="round" defaultValue={match.round || ''} className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-900 shadow-sm focus:border-[#0f172a] focus:outline-none focus:ring-2 focus:ring-[#0f172a]/25">
                     <option value="">Select Round</option>
                     {Array.from({ length: 14 }, (_, i) => i + 1).map(num => (
                       <option key={num} value={`Round ${num}`}>Round {num}</option>
@@ -306,7 +306,7 @@ export function UpcomingFixtures({
                 </div>
                 <div>
                   <label className="text-xs font-medium text-slate-700">Status</label>
-                  <select name="status" defaultValue={match.status || 'scheduled'} className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-900 shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25">
+                  <select name="status" defaultValue={match.status || 'scheduled'} className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-900 shadow-sm focus:border-[#0f172a] focus:outline-none focus:ring-2 focus:ring-[#0f172a]/25">
                     <option value="scheduled">Scheduled</option>
                     <option value="tbc">TBC</option>
                     <option value="finished">Finished</option>

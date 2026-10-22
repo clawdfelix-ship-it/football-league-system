@@ -67,7 +67,7 @@ export function LazyPlayerContacts({
         <div className="border-t border-slate-100">
           {loading ? (
             <div className="flex items-center justify-center gap-2 p-6 text-slate-400">
-              <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#1a237e]/20 border-t-[#1a237e]" />
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#0f172a]/20 border-t-[#0f172a]" />
               <span className="text-xs">載入球員中…</span>
             </div>
           ) : (

@@ -36,7 +36,7 @@ export default function TeamsClient(props: { initialTeams: TeamInfo[] }) {
                 key={team.name}
                 className="bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-200 hover:shadow-2xl transition-all hover:-translate-y-1"
               >
-                <div className="bg-[#1a237e] p-6 text-center border-b-4 border-[#283593]">
+                <div className="bg-[#0f172a] p-6 text-center border-b-4 border-[#1e293b]">
                   <div className="mb-4">
                     <div className="w-16 h-16 mx-auto bg-white rounded-full flex items-center justify-center border-2 border-slate-300 shadow-md">
                       <span
@@ -79,7 +79,7 @@ export default function TeamsClient(props: { initialTeams: TeamInfo[] }) {
                   <div className="flex justify-center">
                     <Link
                       href={`/players?team=${encodeURIComponent(team.name)}`}
-                      className="bg-[#1a237e] hover:bg-[#283593] text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors w-full text-center"
+                      className="bg-[#0f172a] hover:bg-[#1e293b] text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors w-full text-center"
                     >
                       {t('查看全部球員', 'View All Players')}
                     </Link>

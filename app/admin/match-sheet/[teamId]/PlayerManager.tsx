@@ -126,7 +126,7 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
       {/* Player List — loaded on demand via the button below */}
       {rosterLoading ? (
         <div className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white p-6 text-slate-400">
-          <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#1a237e]/20 border-t-[#1a237e]" />
+          <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#0f172a]/20 border-t-[#0f172a]" />
           <span className="text-xs">載入球員中…</span>
         </div>
       ) : rosterLoaded && roster.length > 0 ? (
@@ -134,7 +134,7 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
           <div className="bg-slate-50 px-4 py-3 border-b border-slate-200 flex items-center justify-between">
             <h3 className="font-semibold text-sm">Team Roster ({roster.length})</h3>
             <button type="button" onClick={() => { setRosterLoaded(false); void loadRoster(); }}
-              className="text-xs text-[#1a237e] font-medium hover:underline">重新載入</button>
+              className="text-xs text-[#0f172a] font-medium hover:underline">重新載入</button>
           </div>
           <div className="divide-y divide-slate-100 max-h-[400px] overflow-y-auto">
             {roster.map((player) => (
@@ -180,7 +180,7 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
         <button
           type="button"
           onClick={() => void loadRoster()}
-          className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-slate-300 bg-white p-5 text-sm font-medium text-[#1a237e] transition hover:border-[#1a237e] hover:bg-slate-50 print:hidden"
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-slate-300 bg-white p-5 text-sm font-medium text-[#0f172a] transition hover:border-[#0f172a] hover:bg-slate-50 print:hidden"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
@@ -216,7 +216,7 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
                 <input 
                   name="name" 
                   required 
-                  className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e]/30 focus:border-[#1a237e]"
+                  className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0f172a]/30 focus:border-[#0f172a]"
                   placeholder="Player Name"
                 />
               </div>
@@ -230,7 +230,7 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
                     required 
                     min="0"
                     max="99"
-                    className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e]/30 focus:border-[#1a237e]"
+                    className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0f172a]/30 focus:border-[#0f172a]"
                     placeholder="0-99"
                   />
                 </div>
@@ -240,7 +240,7 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
                   <select 
                     name="position" 
                     required 
-                    className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#1a237e]/30 focus:border-[#1a237e] appearance-none"
+                    className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0f172a]/30 focus:border-[#0f172a] appearance-none"
                   >
                     <option value="FW">Forward (FW)</option>
                     <option value="MF">Midfielder (MF)</option>
@@ -256,7 +256,7 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
                   name="identityPrefix"
                   required
                   maxLength={3}
-                  className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e]/30 focus:border-[#1a237e] uppercase"
+                  className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0f172a]/30 focus:border-[#0f172a] uppercase"
                   placeholder="e.g. A12"
                 />
                 <p className="text-xs text-slate-400">Only the first 3 characters are required for verification.</p>
@@ -267,7 +267,7 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
                 <input 
                   name="email"
                   type="email"
-                  className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e]/30 focus:border-[#1a237e]"
+                  className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0f172a]/30 focus:border-[#0f172a]"
                   placeholder="player@example.com"
                 />
               </div>
@@ -337,7 +337,7 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
                 name="name"
                 required
                 defaultValue={editingPlayer.name}
-                className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e]/30 focus:border-[#1a237e]"
+                className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0f172a]/30 focus:border-[#0f172a]"
                 placeholder="Player Name"
               />
             </div>
@@ -352,7 +352,7 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
                   min="0"
                   max="99"
                   defaultValue={editingPlayer.jerseyNumber ?? undefined}
-                  className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e]/30 focus:border-[#1a237e]"
+                  className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0f172a]/30 focus:border-[#0f172a]"
                   placeholder="0-99"
                 />
               </div>
@@ -363,7 +363,7 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
                   name="position"
                   required
                   defaultValue={editingPlayer.position ?? 'FW'}
-                  className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#1a237e]/30 focus:border-[#1a237e] appearance-none"
+                  className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0f172a]/30 focus:border-[#0f172a] appearance-none"
                 >
                   <option value="FW">Forward (FW)</option>
                   <option value="MF">Midfielder (MF)</option>
@@ -380,7 +380,7 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
                 required
                 maxLength={3}
                 defaultValue={editingPlayer.identityPrefix || ''}
-                className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e]/30 focus:border-[#1a237e] uppercase"
+                className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0f172a]/30 focus:border-[#0f172a] uppercase"
                 placeholder="e.g. A12"
               />
               <p className="text-xs text-slate-400">Only the first 3 characters are required for verification.</p>
@@ -392,7 +392,7 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
                 name="email"
                 type="email"
                 defaultValue={editingPlayer.email || ''}
-                className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e]/30 focus:border-[#1a237e]"
+                className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0f172a]/30 focus:border-[#0f172a]"
                 placeholder="player@example.com"
               />
             </div>
@@ -403,7 +403,7 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
                 name="phoneNumber"
                 type="tel"
                 defaultValue={editingPlayer.phoneNumber || ''}
-                className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e]/30 focus:border-[#1a237e]"
+                className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0f172a]/30 focus:border-[#0f172a]"
                 placeholder="+852 XXXX XXXX"
               />
             </div>

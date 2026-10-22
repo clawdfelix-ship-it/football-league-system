@@ -147,7 +147,7 @@ export default function AdminTeamPasswordsPage() {
                 value={team}
                 onChange={(e) => setTeam(e.target.value)}
                 required
-                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25"
+                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-[#0f172a] focus:outline-none focus:ring-2 focus:ring-[#0f172a]/25"
               >
                 <option value="">— select team —</option>
                 {teams.map((t) => (
@@ -166,7 +166,7 @@ export default function AdminTeamPasswordsPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="leave blank to generate"
-                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25"
+                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-[#0f172a] focus:outline-none focus:ring-2 focus:ring-[#0f172a]/25"
               />
             </div>
             <button
@@ -195,7 +195,7 @@ export default function AdminTeamPasswordsPage() {
                 value={resetEmail}
                 onChange={(e) => setResetEmail(e.target.value)}
                 placeholder="manager@example.com"
-                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25"
+                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-[#0f172a] focus:outline-none focus:ring-2 focus:ring-[#0f172a]/25"
               />
             </div>
             <button

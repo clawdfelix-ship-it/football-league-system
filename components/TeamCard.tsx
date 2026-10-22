@@ -14,7 +14,7 @@ interface TeamCardProps {
 function PlayerSpinner() {
   return (
     <div className="flex items-center justify-center gap-2 py-6 text-slate-400">
-      <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#1a237e]/20 border-t-[#1a237e]" />
+      <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#0f172a]/20 border-t-[#0f172a]" />
       <span className="text-xs">載入球員中…</span>
     </div>
   );
@@ -145,7 +145,7 @@ function EditPlayerModal({ player, onClose, onSaved }: { player: Player; onClose
             name="name"
             defaultValue={player.name}
             required
-            className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e]/30 focus:border-[#1a237e]"
+            className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0f172a]/30 focus:border-[#0f172a]"
             placeholder="球員姓名"
           />
         </div>
@@ -160,7 +160,7 @@ function EditPlayerModal({ player, onClose, onSaved }: { player: Player; onClose
               min="0"
               max="99"
               defaultValue={player.jerseyNumber ?? ''}
-              className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e]/30 focus:border-[#1a237e]"
+              className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0f172a]/30 focus:border-[#0f172a]"
               placeholder="0-99"
             />
           </div>
@@ -170,7 +170,7 @@ function EditPlayerModal({ player, onClose, onSaved }: { player: Player; onClose
               name="position"
               required
               defaultValue={player.position ?? ''}
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-[#1a237e] focus:outline-none focus:ring-2 focus:ring-[#1a237e]/25 appearance-none"
+              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-[#0f172a] focus:outline-none focus:ring-2 focus:ring-[#0f172a]/25 appearance-none"
             >
               <option value="GK">守門員 (GK)</option>
               <option value="DF">後衛 (DF)</option>
@@ -186,7 +186,7 @@ function EditPlayerModal({ player, onClose, onSaved }: { player: Player; onClose
             name="identityPrefix"
             maxLength={3}
             defaultValue={player.identityPrefix ?? ''}
-            className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e]/30 focus:border-[#1a237e] uppercase"
+            className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0f172a]/30 focus:border-[#0f172a] uppercase"
             placeholder="例如 A12"
           />
         </div>
@@ -197,7 +197,7 @@ function EditPlayerModal({ player, onClose, onSaved }: { player: Player; onClose
             name="phoneNumber"
             type="tel"
             defaultValue={player.phoneNumber ?? ''}
-            className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e]/30 focus:border-[#1a237e]"
+            className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0f172a]/30 focus:border-[#0f172a]"
             placeholder="電話號碼"
           />
         </div>
@@ -208,7 +208,7 @@ function EditPlayerModal({ player, onClose, onSaved }: { player: Player; onClose
             name="email"
             type="email"
             defaultValue={player.email ?? ''}
-            className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1a237e]/30 focus:border-[#1a237e]"
+            className="w-full border border-slate-300 bg-white rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0f172a]/30 focus:border-[#0f172a]"
             placeholder="電郵地址"
           />
         </div>

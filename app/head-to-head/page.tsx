@@ -43,7 +43,7 @@ export default function HeadToHeadPage() {
     return (
       <HomeLayout>
         <div className="min-h-screen flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1a237e]"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0f172a]"></div>
         </div>
       </HomeLayout>
     );
