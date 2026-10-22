@@ -9,6 +9,7 @@ import { users } from '@/lib/schema';
 import { and, eq } from 'drizzle-orm';
 import { hashPassword } from '@/lib/auth/password';
 import { generateTempPassword } from '@/lib/auth/temp-password';
+import { canManageManagerPassword } from '@/lib/auth/manager-passwords';
 import { audit } from '@/lib/auth/audit-log';
 import { TEAMS } from '@/lib/constants';
 import { sendMail } from '@/lib/mail/mailer';
@@ -100,13 +101,13 @@ export async function POST(request: Request) {
     if (!captain.email) continue;
     const email = captain.email.toLowerCase();
     const [existing] = await db
-      .select({ id: users.id, leagueId: users.leagueId })
+      .select({ id: users.id, role: users.role, leagueId: users.leagueId })
       .from(users)
       .where(eq(users.email, email));
 
     if (existing) {
-      // Global-unique email owned by another league: never overwrite it here.
-      if ((existing.leagueId ?? 1) !== lid) continue;
+      // Never let the manager-password tool overwrite a non-manager account.
+      if (!canManageManagerPassword(existing, lid)) continue;
       await db
         .update(users)
         .set({ passwordHash, mustChangePassword: now, passwordChangedAt: null })
@@ -190,6 +191,9 @@ export async function PUT(request: Request) {
   // Global-unique email owned by another league: do not touch it.
   if ((existing.leagueId ?? 1) !== lid) {
     return fail(404, 'NOT_FOUND', 'No account for that email');
+  }
+  if (!canManageManagerPassword(existing, lid)) {
+    return fail(404, 'NOT_FOUND', 'No manager account for that email');
   }
 
   await db

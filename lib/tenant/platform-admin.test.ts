@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { isPlatformAdminEmail, platformAdminEmails } from './platform-admin';
+import {
+  isPlatformAdminEmail,
+  isPlatformAdminSessionUser,
+  platformAdminEmails,
+} from './platform-admin';
 
 describe('platformAdminEmails', () => {
   it('parses comma/semicolon lists, trims, lowercases, dedupes', () => {
@@ -22,5 +26,34 @@ describe('isPlatformAdminEmail', () => {
     expect(isPlatformAdminEmail('', 'felix@x.com')).toBe(false);
     expect(isPlatformAdminEmail(null, 'felix@x.com')).toBe(false);
     expect(isPlatformAdminEmail('felix@x.com', '')).toBe(false);
+  });
+});
+
+describe('isPlatformAdminSessionUser', () => {
+  it('accepts an allow-listed platform principal', () => {
+    expect(
+      isPlatformAdminSessionUser(
+        { email: 'felix@x.com', isPlatform: true, leagueId: 0 },
+        'felix@x.com'
+      )
+    ).toBe(true);
+  });
+
+  it('rejects an allow-listed league-scoped session', () => {
+    expect(
+      isPlatformAdminSessionUser(
+        { email: 'felix@x.com', isPlatform: false, leagueId: 7 },
+        'felix@x.com'
+      )
+    ).toBe(false);
+  });
+
+  it('rejects a non-allow-listed platform principal', () => {
+    expect(
+      isPlatformAdminSessionUser(
+        { email: 'other@x.com', isPlatform: true, leagueId: 0 },
+        'felix@x.com'
+      )
+    ).toBe(false);
   });
 });

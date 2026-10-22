@@ -34,3 +34,26 @@ export function isPlatformAdminEmail(
   if (!value) return false;
   return platformAdminEmails(raw).has(value);
 }
+
+export type PlatformAdminSessionUser = {
+  email?: unknown;
+  isPlatform?: unknown;
+  leagueId?: unknown;
+};
+
+/**
+ * Platform-console authorization requires both:
+ * - an allow-listed email
+ * - a real platform principal session (leagueId 0 / isPlatform)
+ *
+ * This prevents a same-email league account from inheriting platform-wide
+ * access merely because the email is on the operator allow-list.
+ */
+export function isPlatformAdminSessionUser(
+  user: PlatformAdminSessionUser | null | undefined,
+  raw: string | null | undefined = process.env.PLATFORM_ADMIN_EMAILS
+): user is PlatformAdminSessionUser & { email: string } {
+  const email = typeof user?.email === 'string' ? user.email : null;
+  if (!isPlatformAdminEmail(email, raw)) return false;
+  return user?.isPlatform === true || user?.leagueId === 0;
+}
