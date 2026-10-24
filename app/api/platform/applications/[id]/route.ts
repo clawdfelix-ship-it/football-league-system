@@ -10,6 +10,7 @@ import {
 } from '@/lib/tenant/provisioning.server';
 import { isApplicationStatus } from '@/lib/tenant/provisioning';
 import { notifyApplicantStatus } from '@/lib/tenant/notify.server';
+import { recordPlatformEvent } from '@/lib/tenant/audit.server';
 import { z } from 'zod';
 
 export const dynamic = 'force-dynamic';
@@ -59,6 +60,25 @@ export async function PATCH(request: NextRequest, context: Params) {
         parsed.reviewNotes ?? null
       );
 
+      // Audit — fire-and-forget (recordPlatformEvent swallows failures).
+      void recordPlatformEvent({
+        actorEmail: admin.email,
+        actorUserId: admin.userId,
+        action: `application.${parsed.status}`,
+        targetType: 'application',
+        targetId: applicationId,
+        targetLabel: `${existing.leagueName} (#${applicationId})`,
+        metadata: {
+          from: existing.status,
+          to: parsed.status,
+          leagueName: existing.leagueName,
+          contactEmail: existing.contactEmail,
+          reviewNotes: parsed.reviewNotes ?? null,
+        },
+        ip: request.headers.get('x-forwarded-for') ?? request.headers.get('x-real-ip'),
+        userAgent: request.headers.get('user-agent'),
+      });
+
       // Best-effort applicant email for the forward statuses they care about.
       if (parsed.status === 'in_review' || parsed.status === 'approved' || parsed.status === 'rejected') {
         await notifyApplicantStatus(
@@ -84,6 +104,24 @@ export async function PATCH(request: NextRequest, context: Params) {
     // state machine would be an illegal self-transition).
     if (parsed.reviewNotes !== undefined) {
       const row = await setApplicationReviewNotes(applicationId, parsed.reviewNotes);
+
+      // Audit notes-only updates too.
+      void recordPlatformEvent({
+        actorEmail: admin.email,
+        actorUserId: admin.userId,
+        action: 'application.update_notes',
+        targetType: 'application',
+        targetId: applicationId,
+        targetLabel: `${existing.leagueName} (#${applicationId})`,
+        metadata: {
+          leagueName: existing.leagueName,
+          contactEmail: existing.contactEmail,
+          reviewNotes: parsed.reviewNotes,
+        },
+        ip: request.headers.get('x-forwarded-for') ?? request.headers.get('x-real-ip'),
+        userAgent: request.headers.get('user-agent'),
+      });
+
       return ok({
         id: row.id,
         status: row.status,
