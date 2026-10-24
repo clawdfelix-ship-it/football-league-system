@@ -240,6 +240,25 @@ export const platformAuditEvents = pgTable(
   })
 );
 
+// ============================================================
+// Platform admin allow-list (migration 0014)
+// DB-backed complement to env PLATFORM_ADMIN_EMAILS. Env = bootstrap;
+// this table = runtime add/remove without redeploy.
+// ============================================================
+export const platformAdmins = pgTable(
+  'platform_admins',
+  {
+    id: serial('id').primaryKey(),
+    email: varchar('email', { length: 200 }).notNull(),
+    addedBy: varchar('added_by', { length: 200 }),
+    note: text('note'),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    emailIdx: uniqueIndex('idx_platform_admins_email').on(sql`lower(${table.email})`),
+  })
+);
+
 export type LeagueApplication = typeof leagueApplications.$inferSelect;
 export type NewLeagueApplication = typeof leagueApplications.$inferInsert;
 

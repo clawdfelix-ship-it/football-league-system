@@ -85,8 +85,29 @@ export function getTeamNameFromTeamId(teamId: number | undefined): string | null
 export async function getPlatformAdmin(): Promise<{ email: string; userId: number | null } | null> {
   const session = await getServerSession(authOptions);
   const email = (session?.user as { email?: unknown } | null)?.email;
-  if (typeof email !== 'string' || !isPlatformAdminEmail(email)) return null;
-  // Platform admins are env-based principals; they do not have a users row,
-  // so userId is null. Audit rows identify them by actorEmail.
-  return { email: email.trim().toLowerCase(), userId: null };
+  if (typeof email !== 'string') return null;
+  const normalized = email.trim().toLowerCase();
+
+  // 1. Env allow-list (bootstrap / break-glass)
+  if (isPlatformAdminEmail(normalized)) {
+    return { email: normalized, userId: null };
+  }
+
+  // 2. DB allow-list (runtime-managed via console UI)
+  try {
+    const { db } = await import('@/lib/db');
+    const { platformAdmins } = await import('@/lib/schema');
+    const { eq } = await import('drizzle-orm');
+    const [row] = await db
+      .select({ id: platformAdmins.id })
+      .from(platformAdmins)
+      .where(eq(platformAdmins.email, normalized))
+      .limit(1);
+    if (row) return { email: normalized, userId: null };
+  } catch (e) {
+    // DB failure must not lock out env-based admins; just deny DB-only entries.
+    console.error('[authz] platform_admins lookup failed:', e);
+  }
+
+  return null;
 }
