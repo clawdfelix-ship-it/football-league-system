@@ -17,6 +17,7 @@ import FixDbButton from '@/components/FixDbButton';
 import GenerateManagerAccountsButton from '@/components/GenerateManagerAccountsButton';
 import ChangeManagerPasswordForm from '@/components/ChangeManagerPasswordForm';
 import type { Announcement } from '@/lib/schema';
+import { LeagueSettingsPanel } from '@/components/LeagueSettingsPanel';
 import { AnnouncementManager } from '@/components/AnnouncementManager';
 import { TEAM_CONTACTS } from '@/lib/team-contacts';
 import { TeamCard } from '@/components/TeamCard';
@@ -222,6 +223,9 @@ export default async function AdminPage() {
         {/* Admin Only Sections */}
         {isAdmin && (
           <>
+            {/* League Settings (name / slug / announcement / contact) */}
+            <LeagueSettingsPanel leagueId={tenant.leagueId} />
+
             {/* Team Match Sheets Section for Admin */}
             <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
               <h2 className="text-lg font-semibold mb-4">Squad List</h2>
