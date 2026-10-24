@@ -4,7 +4,7 @@ import { RegisterSchema } from '@/lib/api/schemas';
 import { zodDetails } from '@/lib/api/zod';
 import { getClientIp, rateLimit } from '@/lib/api/rate-limit';
 import { createUser, getUserByEmail } from '@/lib/users-new';
-import { getRequestLeagueId } from '@/lib/tenant/context';
+import { resolveLeagueIdForRequest } from '@/lib/tenant/request-league';
 
 export async function POST(request: NextRequest) {
   try {
@@ -30,8 +30,9 @@ export async function POST(request: NextRequest) {
     const username = input.username;
     const password = input.password;
 
-    // Public registration creates an account in the host's league only.
-    const lid = await getRequestLeagueId();
+    // `/api/auth/*` bypasses middleware, so derive the tenant from the raw
+    // request host instead of the middleware-stamped tenant headers.
+    const lid = await resolveLeagueIdForRequest(request);
     if (lid <= 0) {
       return fail(400, 'NO_TENANT', '無法在此主機註冊聯賽帳號');
     }

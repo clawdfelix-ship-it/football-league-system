@@ -7,7 +7,7 @@ import { createHash, randomBytes } from 'crypto';
 import { passwordResetTokens } from '@/lib/schema';
 import { sendMail, isMailConfigured } from '@/lib/mail/mailer';
 import { passwordResetEmail } from '@/lib/mail/templates';
-import { getRequestLeagueId } from '@/lib/tenant/context';
+import { resolveLeagueIdForRequest } from '@/lib/tenant/request-league';
 
 const EXPIRES_MINUTES = 30;
 
@@ -51,8 +51,9 @@ export async function POST(request: Request) {
     return fail(503, 'MAIL_UNAVAILABLE', 'Password reset is temporarily unavailable. Please contact the administrator.');
   }
 
-  // Tenant scope: only issue a reset for an account in this host's league.
-  const lid = await getRequestLeagueId();
+  // `/api/auth/*` is excluded from middleware, so resolve the tenant from the
+  // raw request host instead of falling back to the founding league.
+  const lid = await resolveLeagueIdForRequest(request);
 
   // 不論帳號存在與否都回傳相同訊息，防被用嚟探測邊個 email 有註冊
   const genericSuccess = ok({ message: 'If the account exists, a reset email has been sent.' });

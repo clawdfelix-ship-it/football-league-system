@@ -5,9 +5,8 @@ import { passwordResetTokens, users } from '@/lib/schema';
 import { and, eq, isNull, ne } from 'drizzle-orm';
 import { createHash } from 'crypto';
 import { hashPassword } from '@/lib/auth/password';
-import { getRequestLeagueId } from '@/lib/tenant/context';
+import { resolveLeagueIdForRequest } from '@/lib/tenant/request-league';
 
-const EXPIRES_MS = 30 * 60 * 1000;
 const MIN_LENGTH = 8;
 const MAX_LENGTH = 128;
 
@@ -45,7 +44,7 @@ export async function POST(request: Request) {
   // The token is strictly single-tenant: the host league must match the
   // league the token was issued for. Platform/unknown host (lid <= 0) is
   // rejected outright (fail-closed; audit F7/P2-1).
-  const lid = await getRequestLeagueId();
+  const lid = await resolveLeagueIdForRequest(request);
   if (lid <= 0) {
     return fail(400, 'INVALID_TOKEN', 'This reset link is invalid. Please request a new one.');
   }

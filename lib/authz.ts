@@ -84,8 +84,20 @@ export function getTeamNameFromTeamId(teamId: number | undefined): string | null
  */
 export async function getPlatformAdmin(): Promise<{ email: string; userId: number | null } | null> {
   const session = await getServerSession(authOptions);
-  const email = (session?.user as { email?: unknown } | null)?.email;
-  if (typeof email !== 'string' || !isPlatformAdminEmail(email)) return null;
+  const user = (session?.user as {
+    email?: unknown;
+    isPlatform?: unknown;
+    leagueId?: unknown;
+  } | null);
+  const email = user?.email;
+  const isPlatformPrincipal = user?.isPlatform === true || user?.leagueId === 0;
+  if (
+    typeof email !== 'string' ||
+    !isPlatformAdminEmail(email) ||
+    !isPlatformPrincipal
+  ) {
+    return null;
+  }
   // Platform admins are env-based principals; they do not have a users row,
   // so userId is null. Audit rows identify them by actorEmail.
   return { email: email.trim().toLowerCase(), userId: null };

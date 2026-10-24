@@ -2,8 +2,6 @@ import { ok, fail } from '@/lib/api/response';
 import { ManagerAccountsSchema } from '@/lib/api/schemas';
 import { zodDetails } from '@/lib/api/zod';
 import { getClientIp, rateLimit } from '@/lib/api/rate-limit';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/lib/auth';
 import { TEAM_CONTACTS } from '@/lib/team-contacts';
 import { db } from '@/lib/db';
 import { users } from '@/lib/schema';
@@ -14,6 +12,7 @@ import { generateTempPassword } from '@/lib/auth/temp-password';
 import { sendMail } from '@/lib/mail/mailer';
 import { accountCreatedEmail } from '@/lib/mail/templates';
 import { getRequestLeagueId } from '@/lib/tenant/context';
+import { getAuthContext } from '@/lib/authz';
 
 function makeUsername(team: string, email: string) {
   const local = email.split('@')[0] || email;
@@ -36,9 +35,9 @@ export async function POST(request: Request) {
   }
 
   try {
-    const session = await getServerSession(authOptions);
+    const auth = await getAuthContext();
 
-    if (!session) {
+    if (!auth) {
       void audit({
         action: 'admin.manager_account.generate',
         actor: { role: 'anonymous' },
@@ -49,11 +48,10 @@ export async function POST(request: Request) {
       return fail(401, 'UNAUTHENTICATED', 'Unauthorized');
     }
 
-    const role = session.user?.role;
-    if (role !== 'admin') {
+    if (auth.role !== 'admin') {
       void audit({
         action: 'admin.manager_account.generate',
-        actor: { role: session.user?.role ?? 'user', email: session.user?.email ?? null, username: session.user?.username ?? null },
+        actor: { role: auth.role, email: auth.email ?? null, username: auth.username ?? null },
         ip,
         result: 'denied',
         detail: 'not admin',
@@ -64,14 +62,14 @@ export async function POST(request: Request) {
     // League accounts are created for the host's league only. On the platform
     // console host (lid 0) there is no league to bind managers to.
     const lid = await getRequestLeagueId();
-    if (lid <= 0) {
+    if (lid <= 0 || auth.leagueId !== lid) {
       return fail(400, 'NO_TENANT', 'No active league on this host');
     }
 
     const actor = {
       role: 'admin' as const,
-      email: session.user?.email ?? null,
-      username: session.user?.username ?? null,
+      email: auth.email ?? null,
+      username: auth.username ?? null,
     };
 
     let input: { regenerate?: boolean; mode?: 'random' | 'shared' } = {};

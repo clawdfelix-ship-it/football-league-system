@@ -2,8 +2,6 @@ import { ok, fail } from '@/lib/api/response';
 import { TeamPasswordSetSchema, TeamPasswordResetSchema } from '@/lib/api/schemas';
 import { zodDetails } from '@/lib/api/zod';
 import { getClientIp, rateLimit } from '@/lib/api/rate-limit';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { users } from '@/lib/schema';
 import { and, eq } from 'drizzle-orm';
@@ -14,6 +12,7 @@ import { TEAMS } from '@/lib/constants';
 import { sendMail } from '@/lib/mail/mailer';
 import { passwordResetByAdminEmail } from '@/lib/mail/templates';
 import { getRequestLeagueId } from '@/lib/tenant/context';
+import { getAuthContext } from '@/lib/authz';
 
 /**
  * Admin-only endpoint to manage per-team manager passwords.
@@ -36,8 +35,8 @@ export async function POST(request: Request) {
     return fail(429, 'RATE_LIMITED', 'Too many requests');
   }
 
-  const session = await getServerSession(authOptions);
-  if (!session?.user) {
+  const auth = await getAuthContext();
+  if (!auth) {
     void audit({
       action: 'admin.manager_account.generate',
       actor: { role: 'anonymous' },
@@ -47,10 +46,10 @@ export async function POST(request: Request) {
     });
     return fail(401, 'UNAUTHENTICATED', 'Unauthorized');
   }
-  if (session.user.role !== 'admin') {
+  if (auth.role !== 'admin') {
     void audit({
       action: 'admin.manager_account.generate',
-      actor: { role: (session.user.role ?? 'user') as 'admin' | 'manager' | 'user', email: session.user.email ?? null },
+      actor: { role: auth.role, email: auth.email ?? null },
       ip,
       result: 'denied',
       detail: 'admin-team-passwords: not admin',
@@ -58,11 +57,11 @@ export async function POST(request: Request) {
     return fail(403, 'FORBIDDEN', 'Admin access required');
   }
 
-  const actor = { role: 'admin' as const, email: session.user.email ?? null, username: null };
+  const actor = { role: 'admin' as const, email: auth.email ?? null, username: auth.username ?? null };
 
   // League manager passwords are managed for the host's league only.
   const lid = await getRequestLeagueId();
-  if (lid <= 0) {
+  if (lid <= 0 || auth.leagueId !== lid) {
     return fail(400, 'NO_TENANT', 'No active league on this host');
   }
 
@@ -154,16 +153,16 @@ export async function PUT(request: Request) {
     return fail(429, 'RATE_LIMITED', 'Too many requests');
   }
 
-  const session = await getServerSession(authOptions);
-  if (!session?.user || session.user.role !== 'admin') {
+  const auth = await getAuthContext();
+  if (!auth || auth.role !== 'admin') {
     return fail(403, 'FORBIDDEN', 'Admin access required');
   }
 
-  const actor = { role: 'admin' as const, email: session.user.email ?? null, username: null };
+  const actor = { role: 'admin' as const, email: auth.email ?? null, username: auth.username ?? null };
 
   // Only reset a manager belonging to the host's league.
   const lid = await getRequestLeagueId();
-  if (lid <= 0) {
+  if (lid <= 0 || auth.leagueId !== lid) {
     return fail(400, 'NO_TENANT', 'No active league on this host');
   }
 
