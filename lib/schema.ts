@@ -1,4 +1,4 @@
-import { pgTable, serial, varchar, integer, timestamp, text, uniqueIndex, jsonb, index } from 'drizzle-orm/pg-core';
+import { pgTable, serial, bigserial, varchar, integer, timestamp, text, uniqueIndex, jsonb, index } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
 
 // ============================================================
@@ -210,6 +210,33 @@ export const leagueApplications = pgTable(
     activeEmailUnique: uniqueIndex('league_applications_active_email_key')
       .on(table.contactEmail)
       .where(sql`status IN ('pending','in_review','approved')`),
+  })
+);
+
+// ============================================================
+// Platform audit events (migration 0013)
+// Append-only log of platform admin mutations. Never UPDATE/DELETE.
+// ============================================================
+export const platformAuditEvents = pgTable(
+  'platform_audit_events',
+  {
+    id: bigserial('id', { mode: 'number' }).primaryKey(),
+    actorEmail: varchar('actor_email', { length: 200 }).notNull(),
+    actorUserId: integer('actor_user_id'),
+    action: varchar('action', { length: 60 }).notNull(),
+    targetType: varchar('target_type', { length: 40 }).notNull(),
+    targetId: integer('target_id'),
+    targetLabel: varchar('target_label', { length: 200 }),
+    metadata: jsonb('metadata').notNull().default({}),
+    ip: varchar('ip', { length: 60 }),
+    userAgent: text('user_agent'),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    createdIdx: index('idx_platform_audit_events_created').on(table.createdAt),
+    actorIdx: index('idx_platform_audit_events_actor').on(table.actorEmail, table.createdAt),
+    targetIdx: index('idx_platform_audit_events_target').on(table.targetType, table.targetId, table.createdAt),
+    actionIdx: index('idx_platform_audit_events_action').on(table.action, table.createdAt),
   })
 );
 

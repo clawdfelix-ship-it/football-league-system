@@ -10,6 +10,7 @@ import {
   notifyApplicantProvisioned,
   notifyLeagueOwnerWelcome,
 } from '@/lib/tenant/notify.server';
+import { recordPlatformEvent } from '@/lib/tenant/audit.server';
 
 export const dynamic = 'force-dynamic';
 
@@ -32,6 +33,26 @@ export async function POST(_request: NextRequest, context: Params) {
 
   try {
     const result = await provisionApprovedApplication(applicationId);
+
+    // Audit — fire-and-forget (recordPlatformEvent swallows failures).
+    void recordPlatformEvent({
+      actorEmail: admin.email,
+      actorUserId: admin.userId,
+      action: 'application.provision',
+      targetType: 'application',
+      targetId: applicationId,
+      targetLabel: result.league.slug,
+      metadata: {
+        leagueId: result.league.id,
+        leagueSlug: result.league.slug,
+        leagueName: result.league.name,
+        created: result.created,
+        ownerEmail: result.owner.email,
+        ownerCreated: result.owner.created,
+      },
+      ip: _request.headers.get('x-forwarded-for') ?? _request.headers.get('x-real-ip'),
+      userAgent: _request.headers.get('user-agent'),
+    });
 
     // Best-effort onboarding email. A freshly minted owner account gets the
     // login credentials email (temp password shown once); an idempotent

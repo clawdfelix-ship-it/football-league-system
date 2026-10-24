@@ -74,7 +74,8 @@ export function suspendedReason(
 
 export function mapResolvedToLeague(
   resolved: ResolvedHost,
-  leagues: Pick<LeagueRecord, 'id' | 'slug' | 'status' | 'trialEndsAt'>[]
+  leagues: Pick<LeagueRecord, 'id' | 'slug' | 'status' | 'trialEndsAt'>[],
+  now?: Date
 ): TenantResolution {
   if (resolved.kind === 'platform') {
     return { status: 'platform' };
@@ -84,13 +85,13 @@ export function mapResolvedToLeague(
   if (resolved.kind === 'default') {
     const fallback = leagues.find((l) => l.id === DEFAULT_LEAGUE_ID);
     if (fallback) {
-      return isLeagueServable(fallback)
+      return isLeagueServable(fallback, now)
         ? { status: 'ok', leagueId: fallback.id, slug: fallback.slug }
         : {
             status: 'suspended',
             leagueId: fallback.id,
             slug: fallback.slug,
-            reason: suspendedReason(fallback),
+            reason: suspendedReason(fallback, now),
           };
     }
     return { status: 'ok', leagueId: DEFAULT_LEAGUE_ID, slug: resolved.slug ?? '' };
@@ -100,12 +101,12 @@ export function mapResolvedToLeague(
   const slug = resolved.slug ?? '';
   const league = leagues.find((l) => l.slug === slug);
   if (!league) return { status: 'unknown_slug', slug };
-  if (!isLeagueServable(league)) {
+  if (!isLeagueServable(league, now)) {
     return {
       status: 'suspended',
       leagueId: league.id,
       slug: league.slug,
-      reason: suspendedReason(league),
+      reason: suspendedReason(league, now),
     };
   }
   return { status: 'ok', leagueId: league.id, slug: league.slug };

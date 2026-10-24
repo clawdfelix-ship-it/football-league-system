@@ -120,7 +120,7 @@ describe('mapResolvedToLeague trial expiry', () => {
 
   it('a fresh-trial tenant host resolves to ok', () => {
     expect(
-      mapResolvedToLeague(host({ kind: 'tenant', slug: 'fresh-trial', leagueId: null }), leagues)
+      mapResolvedToLeague(host({ kind: 'tenant', slug: 'fresh-trial', leagueId: null }), leagues, NOW)
       .status
     ).toBe('ok');
   });

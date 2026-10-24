@@ -82,9 +82,11 @@ export function getTeamNameFromTeamId(teamId: number | undefined): string | null
  * checks the signed-in user's email against PLATFORM_ADMIN_EMAILS. Returns the
  * platform admin's email, or null (unauthenticated / not allow-listed).
  */
-export async function getPlatformAdmin(): Promise<{ email: string } | null> {
+export async function getPlatformAdmin(): Promise<{ email: string; userId: number | null } | null> {
   const session = await getServerSession(authOptions);
   const email = (session?.user as { email?: unknown } | null)?.email;
   if (typeof email !== 'string' || !isPlatformAdminEmail(email)) return null;
-  return { email: email.trim().toLowerCase() };
+  // Platform admins are env-based principals; they do not have a users row,
+  // so userId is null. Audit rows identify them by actorEmail.
+  return { email: email.trim().toLowerCase(), userId: null };
 }
