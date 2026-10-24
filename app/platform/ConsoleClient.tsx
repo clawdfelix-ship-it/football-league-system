@@ -1,6 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import DashboardTab from './DashboardTab';
+import LeagueDetailView from './LeagueDetailView';
 
 type ApplicationRow = {
   id: number;
@@ -90,10 +92,11 @@ const AUDIT_ACTION_LABEL: Record<string, string> = {
   'platform.remove_admin': '移除平台管理員',
 };
 
-type TabKey = 'applications' | 'leagues' | 'users' | 'admins' | 'audit';
+type TabKey = 'dashboard' | 'applications' | 'leagues' | 'users' | 'admins' | 'dns' | 'audit';
 
 export default function ConsoleClient() {
-  const [tab, setTab] = useState<TabKey>('applications');
+  const [tab, setTab] = useState<TabKey>('dashboard');
+  const [selectedLeagueId, setSelectedLeagueId] = useState<number | null>(null);
   const [rows, setRows] = useState<ApplicationRow[]>([]);
   const [leagues, setLeagues] = useState<LeagueRow[]>([]);
   const [auditEvents, setAuditEvents] = useState<AuditEventRow[]>([]);
@@ -146,6 +149,7 @@ export default function ConsoleClient() {
   }, []);
 
   const load = useCallback(async () => {
+    if (tab === 'dashboard') return; // DashboardTab loads itself
     setLoading(true);
     setError('');
     try {
@@ -316,16 +320,21 @@ export default function ConsoleClient() {
         <nav className="mb-6 flex gap-1 rounded-xl bg-slate-100 p-1">
           {(
             [
+              { key: 'dashboard', label: '總覽' },
               { key: 'applications', label: '申請' },
               { key: 'leagues', label: '已開通聯賽' },
               { key: 'users', label: '用戶' },
               { key: 'admins', label: '管理員' },
+              { key: 'dns', label: 'DNS' },
               { key: 'audit', label: '審計日誌' },
             ] as const
           ).map((t) => (
             <button
               key={t.key}
-              onClick={() => setTab(t.key)}
+              onClick={() => {
+                setTab(t.key);
+                setSelectedLeagueId(null);
+              }}
               className={`flex-1 rounded-lg px-4 py-2 text-sm font-medium transition ${
                 tab === t.key
                   ? 'bg-white text-slate-900 shadow-sm'
@@ -343,7 +352,16 @@ export default function ConsoleClient() {
           </div>
         )}
 
-        {loading ? (
+        {tab === 'dashboard' ? (
+          selectedLeagueId != null ? (
+            <LeagueDetailView
+              leagueId={selectedLeagueId}
+              onBack={() => setSelectedLeagueId(null)}
+            />
+          ) : (
+            <DashboardTab onSelectLeague={(id) => setSelectedLeagueId(id)} />
+          )
+        ) : loading ? (
           <p className="text-sm text-slate-500">載入中…</p>
         ) : tab === 'applications' ? (
           <ApplicationsTab
@@ -354,7 +372,12 @@ export default function ConsoleClient() {
             saveNotes={saveNotes}
           />
         ) : tab === 'leagues' ? (
-          <LeaguesTab leagues={leagues} busyId={busyId} leagueAct={leagueAct} />
+          <LeaguesTab
+            leagues={leagues}
+            busyId={busyId}
+            leagueAct={leagueAct}
+            onSelectLeague={(id) => setSelectedLeagueId(id)}
+          />
         ) : tab === 'users' ? (
           <UsersTab
             users={users}
@@ -373,8 +396,20 @@ export default function ConsoleClient() {
             removeAdmin={removeAdmin}
             busyId={busyId}
           />
+        ) : tab === 'dns' ? (
+          <DnsTab />
         ) : (
           <AuditTab events={auditEvents} />
+        )}
+
+        {/* League detail from leagues tab */}
+        {tab === 'leagues' && selectedLeagueId != null && (
+          <div className="mt-6 border-t border-slate-200 pt-6">
+            <LeagueDetailView
+              leagueId={selectedLeagueId}
+              onBack={() => setSelectedLeagueId(null)}
+            />
+          </div>
         )}
       </div>
     </div>
@@ -493,10 +528,12 @@ function LeaguesTab({
   leagues,
   busyId,
   leagueAct,
+  onSelectLeague,
 }: {
   leagues: LeagueRow[];
   busyId: number | null;
   leagueAct: (id: number, action: 'suspend' | 'reactivate' | 'close') => Promise<void>;
+  onSelectLeague: (id: number) => void;
 }) {
   if (leagues.length === 0) {
     return (
@@ -537,6 +574,9 @@ function LeaguesTab({
             </div>
 
             <div className="flex flex-wrap gap-1.5">
+              <Btn tone="indigo" onClick={() => onSelectLeague(l.id)}>
+                詳情 →
+              </Btn>
               {l.status === 'active' && (
                 <>
                   <Btn tone="slate" disabled={busyId === l.id} onClick={() => void leagueAct(l.id, 'suspend')}>
@@ -811,6 +851,110 @@ function NotesEditor({
           </Btn>
         </div>
       )}
+    </div>
+  );
+}
+
+/* ---------- DNS Tab ---------- */
+
+type DnsRow = {
+  leagueId: number;
+  slug: string;
+  name: string;
+  status: string;
+  hostname: string;
+  createdAt: string | Date;
+};
+
+function DnsTab() {
+  const [rows, setRows] = useState<DnsRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    void (async () => {
+      try {
+        const res = await fetch('/api/platform/dns', { cache: 'no-store' });
+        const body = await res.json();
+        if (!body?.ok) throw new Error(body?.error?.message || '載入失敗');
+        setRows(body.data.subdomains);
+      } catch (e) {
+        setError(e instanceof Error ? e.message : '載入失敗');
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  if (loading) return <p className="text-sm text-slate-500">載入中…</p>;
+  if (error) return <div className="alert-error">{error}</div>;
+
+  return (
+    <div>
+      {/* Wildcard info card */}
+      <div className="mb-4 rounded-xl border border-green-200 bg-green-50 p-4">
+        <p className="text-sm font-medium text-green-900">
+          ✅ Wildcard DNS 已啟用：<code className="font-mono">*.zenex-sports.com → cname.vercel-dns.com</code>
+        </p>
+        <p className="mt-1 text-xs text-green-700">
+          任何新聯賽嘅子網域都會自動指向 Vercel，唔使逐個設 DNS record。
+        </p>
+      </div>
+
+      {/* Subdomain table */}
+      {rows.length === 0 ? (
+        <div className="rounded-xl border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-500">
+          暫無子網域
+        </div>
+      ) : (
+        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-slate-200 bg-slate-50 text-left text-xs font-semibold text-slate-500">
+                <th className="px-4 py-3">子網域</th>
+                <th className="px-4 py-3">聯賽</th>
+                <th className="px-4 py-3 text-center">狀態</th>
+                <th className="px-4 py-3 text-right">建立日期</th>
+                <th className="px-4 py-3" />
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r) => (
+                <tr key={r.leagueId} className="border-b border-slate-100 last:border-0">
+                  <td className="px-4 py-3">
+                    <a
+                      href={`https://${r.hostname}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="font-mono text-blue-600 hover:underline"
+                    >
+                      {r.hostname}
+                    </a>
+                  </td>
+                  <td className="px-4 py-3 text-slate-700">{r.name}</td>
+                  <td className="px-4 py-3 text-center">
+                    <span
+                      className={`inline-block rounded-full px-2 py-0.5 text-xs font-semibold ${
+                        LEAGUE_STATUS_STYLE[r.status] ?? 'bg-slate-100 text-slate-700'
+                      }`}
+                    >
+                      {r.status}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-right text-xs text-slate-500">
+                    {new Date(r.createdAt).toLocaleDateString('zh-HK')}
+                  </td>
+                  <td className="px-4 py-3" />
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      <p className="mt-3 text-xs text-slate-500">
+        新增聯賽時會自動建立子網域並 provision TLS 證書。要停用某個子網域，到「已開通聯賽」暫停或關閉該聯賽。
+      </p>
     </div>
   );
 }

@@ -126,6 +126,42 @@ export const authOptions: NextAuthOptions = {
             : null;
         const hostLeagueId = await resolveLeagueIdForHost(rawHost);
 
+        // 0. Impersonate Check — platform admin entering a league via one-time token.
+        // Token comes through the password field; email is the platform admin's own email.
+        // This must run before the platform admin shared-password check so that
+        // an impersonate token can never be mistaken for a real password.
+        if (credentials.password.startsWith('impersonate:')) {
+          const token = credentials.password.slice('impersonate:'.length);
+          try {
+            const { redeemImpersonateToken } = await import('@/lib/tenant/impersonate.server');
+            const { leagueId } = await redeemImpersonateToken(token);
+            // The token is bound to a league; sign in as that league's first admin user.
+            const [adminUser] = await db
+              .select({
+                id: users.id,
+                email: users.email,
+                username: users.username,
+                role: users.role,
+                leagueId: users.leagueId,
+              })
+              .from(users)
+              .where(eq(users.leagueId, leagueId))
+              .orderBy(users.id)
+              .limit(1);
+            if (!adminUser) return null;
+            return {
+              id: String(adminUser.id),
+              email: adminUser.email,
+              username: adminUser.username,
+              role: 'admin',
+              leagueId: adminUser.leagueId ?? leagueId,
+              isPlatform: false,
+            };
+          } catch {
+            return null;
+          }
+        }
+
         // 1. Platform Admin Check — platform-wide principal, valid on every host.
         // Two equivalent identities are accepted:
         //   (a) the legacy single ADMIN_EMAIL env, or

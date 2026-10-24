@@ -259,6 +259,28 @@ export const platformAdmins = pgTable(
   })
 );
 
+// ============================================================
+// Impersonate tokens (migration 0015)
+// Short-lived single-use tokens that let a platform admin enter a league's
+// admin dashboard without knowing the league admin's password.
+// ============================================================
+export const impersonateTokens = pgTable(
+  'impersonate_tokens',
+  {
+    id: serial('id').primaryKey(),
+    tokenHash: varchar('token_hash', { length: 128 }).notNull().unique(),
+    leagueId: integer('league_id').notNull(),
+    platformAdminEmail: varchar('platform_admin_email', { length: 200 }).notNull(),
+    expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+    usedAt: timestamp('used_at', { withTimezone: true }),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    leagueIdx: index('idx_impersonate_tokens_league').on(table.leagueId, table.createdAt),
+    expiresIdx: index('idx_impersonate_tokens_expires').on(table.expiresAt),
+  })
+);
+
 export type LeagueApplication = typeof leagueApplications.$inferSelect;
 export type NewLeagueApplication = typeof leagueApplications.$inferInsert;
 
