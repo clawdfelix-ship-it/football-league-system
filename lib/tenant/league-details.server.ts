@@ -69,8 +69,9 @@ export async function getLeagueDetails(leagueId: number): Promise<LeagueDetails 
   const statsRow = (statsRes.rows ?? [])[0] ?? {};
 
   // 3. Recent matches (last 10 by updated_at)
+  // NB: the matches column is `date`, aliased to match_date for the API shape.
   const matchesRes = await db.execute<Record<string, unknown>>(sql`
-    SELECT id, home_team, away_team, home_score, away_score, match_date, updated_at
+    SELECT id, home_team, away_team, home_score, away_score, date AS match_date, updated_at
     FROM matches
     WHERE league_id = ${leagueId}
     ORDER BY updated_at DESC NULLS LAST
