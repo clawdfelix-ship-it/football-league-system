@@ -356,7 +356,7 @@ export default function HomeClient(props: {
                   type="button"
                   onClick={refresh}
                   disabled={loading}
-                  className="text-xs bg-yellow-500 text-black px-3 py-1.5 rounded font-bold disabled:opacity-70 inline-flex items-center gap-1.5"
+                  className="text-xs bg-yellow-500 text-black px-4 py-2.5 rounded font-bold disabled:opacity-70 inline-flex items-center gap-1.5 min-h-[44px]"
                 >
                   {loading && (
                     <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24" fill="none">
@@ -370,7 +370,7 @@ export default function HomeClient(props: {
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="bg-slate-100 text-slate-700 text-[11px] md:text-sm font-bold uppercase tracking-wider">
+                    <tr className="bg-slate-100 text-slate-700 text-xs md:text-sm font-bold uppercase tracking-wider">
                       <th className="px-2 md:px-6 py-3 md:py-4 text-center w-10 md:w-20">{t('排名', 'Rank')}</th>
                       <th className="px-2 md:px-6 py-3 md:py-4 text-left">{t('球隊', 'Team')}</th>
                       <th className="px-2 md:px-6 py-3 md:py-4 text-center bg-slate-200/50 text-slate-900">{t('分數', 'Points')}</th>
@@ -521,7 +521,7 @@ export default function HomeClient(props: {
                             : 'TBC'}
                         </span>
                         {match.round && (
-                          <span className="rounded-full bg-green-700 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+                          <span className="rounded-full bg-green-700 px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-white">
                             {match.round}
                           </span>
                         )}
@@ -546,19 +546,19 @@ export default function HomeClient(props: {
                       </div>
 
                       {/* 邊度（首頁只顯示核心短名，全名留賽程頁；點擊開地圖）*/}
-                      <div className="text-xs text-slate-500 leading-snug truncate">
+                      <div className="text-xs text-slate-500 leading-snug">
                         {match.venue && !/^tbc$/i.test(match.venue.trim()) ? (
                           <a
                             href={venueMapsUrl(match.venue) || '#'}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-blue-600 hover:underline"
+                            className="flex items-center gap-1 text-blue-600 hover:underline max-w-full min-w-0 py-2.5 -my-2.5"
                           >
                             <span className="flex-shrink-0">📍</span>
-                            <span className="truncate">{shortVenue(match.venue, language)}</span>
+                            <span className="truncate min-w-0">{shortVenue(match.venue, language)}</span>
                           </a>
                         ) : (
-                          <span>📍 {match.venue || 'TBC'}</span>
+                          <span className="block truncate">📍 {match.venue || 'TBC'}</span>
                         )}
                       </div>
                     </div>
@@ -594,7 +594,7 @@ export default function HomeClient(props: {
                             {match.homeScore !== null ? match.homeScore : 0} - {match.awayScore !== null ? match.awayScore : 0}
                           </div>
                           <div className="text-xs text-slate-500">{t('完場', 'Final')}</div>
-                          {match.round && <div className="text-[10px] text-slate-400 mt-1 uppercase">{match.round}</div>}
+                          {match.round && <div className="text-xs text-slate-400 mt-1 uppercase">{match.round}</div>}
                         </div>
                         <div className="text-right w-1/3">
                           <div className="font-bold text-slate-900">{match.awayTeam}</div>

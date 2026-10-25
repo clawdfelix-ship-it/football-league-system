@@ -237,6 +237,29 @@ select:-webkit-autofill {
     @apply inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-[#0f172a]/25 active:scale-[0.98];
   }
 
+  /* =============================================
+     Admin button system — unified style + 44px touch target
+     Usage: <button className="btn-admin">…</button>
+     Variants: .btn-admin-primary / .btn-admin-danger / .btn-admin-ghost
+     Size:     .btn-admin-sm (compact, still ≥44px tall)
+     ============================================= */
+  .btn-admin {
+    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0f172a]/25 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-admin-primary {
+    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg border border-transparent bg-[#0f172a] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#1e293b] focus:outline-none focus:ring-2 focus:ring-[#0f172a]/40 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-admin-danger {
+    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-semibold text-red-700 shadow-sm transition hover:bg-red-100 hover:border-red-300 focus:outline-none focus:ring-2 focus:ring-red-500/25 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-admin-ghost {
+    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg border border-transparent bg-transparent px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0f172a]/15 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  /* Compact variant: same height, tighter padding for inline/table use */
+  .btn-admin-sm {
+    @apply min-h-[44px] px-3 py-2 text-xs font-semibold;
+  }
+
   /* Alerts. */
   .alert-error {
     @apply rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700;

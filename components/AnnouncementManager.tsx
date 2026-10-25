@@ -72,7 +72,7 @@ export function AnnouncementManager({
         <h2 className="text-lg font-semibold text-slate-900">Venue Announcements</h2>
         <button
           onClick={() => setIsAdding(!isAdding)}
-          className="text-xs bg-slate-900 text-white px-3 py-1.5 rounded-lg font-medium hover:opacity-90 transition-opacity"
+          className="btn-admin-primary btn-admin-sm"
         >
           {isAdding ? 'Cancel' : 'Add New'}
         </button>

@@ -62,7 +62,7 @@ export default function MobileTabBar() {
             <li key={tab.href}>
               <Link
                 href={tab.href}
-                className={`flex flex-col items-center justify-center gap-0.5 min-h-[56px] text-[11px] font-semibold transition-colors ${
+                className={`flex flex-col items-center justify-center gap-0.5 min-h-[56px] text-xs font-semibold transition-colors ${
                   active ? 'text-[#0f172a]' : 'text-slate-400'
                 }`}
               >

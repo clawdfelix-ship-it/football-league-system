@@ -189,7 +189,7 @@ export function LeagueSettingsPanel({ leagueId }: { leagueId: number }) {
         <button
           onClick={() => void save()}
           disabled={saving}
-          className="rounded-lg border border-[#0f172a] bg-[#0f172a] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1e293b] disabled:opacity-50"
+          className="btn-admin-primary"
         >
           {saving ? '儲存中…' : '儲存設定'}
         </button>

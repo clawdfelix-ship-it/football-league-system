@@ -224,7 +224,7 @@ export function UpcomingFixtures({
                       setEditingMatch(null);
                     }
                   }}
-                  className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded hover:bg-green-200 flex items-center gap-1"
+                  className="btn-admin btn-admin-sm text-green-700 border-green-300 bg-green-50 hover:bg-green-100"
                 >
                   <span>🎽</span>
                   {editingKitMatch === match.id ? '關閉' : '球衣'}
@@ -238,13 +238,13 @@ export function UpcomingFixtures({
                       setEditingKitMatch(null);
                     }
                   }}
-                  className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded hover:bg-blue-200"
+                  className="btn-admin btn-admin-sm text-blue-700 border-blue-200 bg-blue-50 hover:bg-blue-100"
                 >
                   {editingMatch === match.id ? 'Cancel' : 'Edit'}
                 </button>
                 <button
                   onClick={() => handleDeleteMatch(match.id)}
-                  className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded hover:bg-red-200"
+                  className="btn-admin-danger btn-admin-sm"
                 >
                   Delete
                 </button>
@@ -312,7 +312,7 @@ export function UpcomingFixtures({
                     <option value="finished">Finished</option>
                   </select>
                 </div>
-                <button type="submit" className="btn-primary h-auto rounded px-3 py-1.5 text-xs">Update Result</button>
+                <button type="submit" className="btn-admin-primary btn-admin-sm">Update Result</button>
               </form>
             ) : (
               <div className="text-right font-mono text-sm font-bold text-slate-400">

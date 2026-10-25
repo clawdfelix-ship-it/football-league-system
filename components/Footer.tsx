@@ -74,13 +74,13 @@ export default function Footer() {
           <div className="border-t border-slate-800 pt-6 mt-6 text-xs text-slate-500 flex justify-between items-center">
             <p>&copy; {new Date().getFullYear()} ZENEX-SPORTS LeagueCenter. All rights reserved.</p>
             <div className="flex gap-4">
-              <a href={PLATFORM_APPLY_URL} className="hover:text-white transition-colors">
+              <a href={PLATFORM_APPLY_URL} className="hover:text-white transition-colors py-2 min-h-[44px] inline-flex items-center">
                 {isZh ? '開辦你的聯賽' : 'Run your league'}
               </a>
-              <Link href="/privacy-policy" className="hover:text-white transition-colors">
+              <Link href="/privacy-policy" className="hover:text-white transition-colors py-2 min-h-[44px] inline-flex items-center">
                 {isZh ? '私隱政策' : 'Privacy Policy'}
               </Link>
-              <Link href="/terms-of-service" className="hover:text-white transition-colors">
+              <Link href="/terms-of-service" className="hover:text-white transition-colors py-2 min-h-[44px] inline-flex items-center">
                 {isZh ? '服務條款' : 'Terms of Service'}
               </Link>
             </div>

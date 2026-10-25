@@ -94,13 +94,13 @@ export function MatchList({
                   <div className="flex items-center gap-2">
                     <button 
                       onClick={() => setEditingMatch(editingMatch === match.id ? null : match.id)}
-                      className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded hover:bg-blue-200"
+                      className="btn-admin btn-admin-sm text-blue-700 border-blue-200 bg-blue-50 hover:bg-blue-100"
                     >
                       {editingMatch === match.id ? 'Cancel' : 'Edit'}
                     </button>
                     <button 
                       onClick={() => handleDeleteMatch(match.id)}
-                      className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded hover:bg-red-200"
+                      className="btn-admin-danger btn-admin-sm"
                     >
                       Delete
                     </button>
@@ -154,8 +154,8 @@ export function MatchList({
                       </select>
                     </div>
                     <div className="flex gap-2">
-                      <button type="button" className="btn-secondary h-auto rounded-md px-3 py-1.5 text-xs" onClick={() => setEditingMatch(null)}>Cancel</button>
-                      <button type="submit" className="btn-primary h-auto rounded-md px-3 py-1.5 text-xs">Confirm Update</button>
+                      <button type="button" className="btn-admin btn-admin-sm" onClick={() => setEditingMatch(null)}>Cancel</button>
+                      <button type="submit" className="btn-admin-primary btn-admin-sm">Confirm Update</button>
                     </div>
                   </form>
                 ) : (
@@ -185,13 +185,13 @@ export function MatchList({
                   <div className="flex items-center gap-2">
                     <button 
                       onClick={() => setEditingMatch(editingMatch === match.id ? null : match.id)}
-                      className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded hover:bg-blue-200"
+                      className="btn-admin btn-admin-sm text-blue-700 border-blue-200 bg-blue-50 hover:bg-blue-100"
                     >
                       {editingMatch === match.id ? 'Cancel' : 'Edit'}
                     </button>
                     <button 
                       onClick={() => handleDeleteMatch(match.id)}
-                      className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded hover:bg-red-200"
+                      className="btn-admin-danger btn-admin-sm"
                     >
                       Delete
                     </button>
@@ -245,8 +245,8 @@ export function MatchList({
                       </select>
                     </div>
                     <div className="flex gap-2">
-                      <button type="button" className="btn-secondary h-auto rounded-md px-3 py-1.5 text-xs" onClick={() => setEditingMatch(null)}>Cancel</button>
-                      <button type="submit" className="btn-primary h-auto rounded-md px-3 py-1.5 text-xs">Confirm Update</button>
+                      <button type="button" className="btn-admin btn-admin-sm" onClick={() => setEditingMatch(null)}>Cancel</button>
+                      <button type="submit" className="btn-admin-primary btn-admin-sm">Confirm Update</button>
                     </div>
                   </form>
                 ) : (
@@ -429,7 +429,7 @@ export function ResetButton() {
       <h2 className="text-lg font-semibold text-red-700">Danger Zone</h2>
       <button
         onClick={handleResetSeason}
-        className="mt-4 inline-flex h-auto items-center justify-center rounded-lg bg-red-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-700 transition-colors"
+        className="btn-admin-danger mt-4"
       >
         Reset Season Data
       </button>

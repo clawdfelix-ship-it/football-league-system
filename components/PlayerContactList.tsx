@@ -99,7 +99,7 @@ export function PlayerContactList({ players, showTeamFilter = false }: PlayerCon
                       {team && (
                         <>
                           <span>•</span>
-                          <span className={`bg-gradient-to-br ${team.color} bg-clip-text text-transparent font-bold text-[10px]`}>
+                          <span className={`bg-gradient-to-br ${team.color} bg-clip-text text-transparent font-bold text-xs`}>
                             {team.shortName}
                           </span>
                         </>
@@ -155,7 +155,7 @@ export function PlayerContactList({ players, showTeamFilter = false }: PlayerCon
                         <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
                       </svg>
                       <div className="min-w-0 flex-1">
-                        <div className="text-[10px] text-slate-400 uppercase tracking-wide">電郵</div>
+                        <div className="text-xs text-slate-400 uppercase tracking-wide">電郵</div>
                         {p.email ? (
                           <a
                             href={`mailto:${p.email}`}
@@ -176,7 +176,7 @@ export function PlayerContactList({ players, showTeamFilter = false }: PlayerCon
                         <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
                       </svg>
                       <div className="min-w-0 flex-1">
-                        <div className="text-[10px] text-slate-400 uppercase tracking-wide">電話</div>
+                        <div className="text-xs text-slate-400 uppercase tracking-wide">電話</div>
                         {p.phoneNumber ? (
                           <a
                             href={`tel:${p.phoneNumber}`}

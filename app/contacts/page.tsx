@@ -34,7 +34,10 @@ export default function ContactsPage() {
                       <div key={`${team.name}-${c.email ?? c.name}`} className="flex items-center justify-between gap-3 bg-white border border-slate-200 rounded-md px-3 py-2">
                         <div className="text-sm font-semibold text-slate-800">{c.name}</div>
                         {c.email ? (
-                          <a href={`mailto:${c.email}`} className="text-sm text-blue-700 hover:underline break-all">
+                          <a
+                            href={`mailto:${c.email}`}
+                            className="text-sm text-blue-700 hover:underline break-all inline-flex items-center min-h-[44px] -my-2 py-2"
+                          >
                             {c.email}
                           </a>
                         ) : (

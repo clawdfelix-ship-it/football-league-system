@@ -477,7 +477,7 @@ function TiltMockup({ t }: { t: (zh: string, en: string) => string }) {
           <span className="h-3 w-3 rounded-full bg-[#ff5f57]" />
           <span className="h-3 w-3 rounded-full bg-[#febc2e]" />
           <span className="h-3 w-3 rounded-full bg-[#28c840]" />
-          <span className="ml-3 hidden truncate rounded-md bg-white px-3 py-1 text-[11px] text-slate-400 ring-1 ring-slate-200 sm:block">
+          <span className="ml-3 hidden truncate rounded-md bg-white px-3 py-1 text-xs text-slate-400 ring-1 ring-slate-200 sm:block">
             hkbankleague2026.zenex-sports.com
           </span>
         </div>

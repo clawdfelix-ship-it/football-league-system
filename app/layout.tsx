@@ -62,6 +62,9 @@ export async function generateMetadata(): Promise<Metadata> {
 
 // Next.js 16: colorScheme/themeColor must live in the viewport export.
 export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
   colorScheme: "light",
   themeColor: "#0f172a",
 };

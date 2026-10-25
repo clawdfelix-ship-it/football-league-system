@@ -109,7 +109,7 @@ export default function MatchWeather({
         <span className="opacity-70">· 💧{w.precip}%</span>
       </span>
       {warn && (
-        <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-semibold text-red-600 ring-1 ring-red-200">
+        <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2 py-0.5 text-xs font-semibold text-red-600 ring-1 ring-red-200">
           ⚠️ {storm ? t('雷暴，或需改期', 'Thunderstorm, may be postponed') : t('大雨，注意掛波', 'Heavy rain, match at risk')}
         </span>
       )}

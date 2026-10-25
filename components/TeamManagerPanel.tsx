@@ -236,7 +236,7 @@ export function TeamManagerPanel() {
         <h3 className="text-sm font-semibold text-slate-900">球隊管理（{teams.length} 支）</h3>
         <button
           onClick={openCreate}
-          className="rounded-lg border border-[#0f172a] bg-[#0f172a] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#1e293b]"
+          className="btn-admin-primary"
         >
           + 新增球隊
         </button>
@@ -292,13 +292,13 @@ export function TeamManagerPanel() {
             <button
               onClick={() => void save()}
               disabled={busy}
-              className="rounded-lg border border-[#0f172a] bg-[#0f172a] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1e293b] disabled:opacity-50"
+              className="btn-admin-primary"
             >
               {busy ? '儲存中…' : '儲存'}
             </button>
             <button
               onClick={() => setShowForm(false)}
-              className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+              className="btn-admin"
             >
               取消
             </button>
@@ -327,7 +327,7 @@ export function TeamManagerPanel() {
               <div className="flex gap-1.5">
                 <button
                   onClick={() => openEdit(t)}
-                  className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100"
+                  className="btn-admin btn-admin-sm"
                 >
                   編輯
                 </button>
@@ -335,13 +335,13 @@ export function TeamManagerPanel() {
                   <>
                     <button
                       onClick={() => void archive(t.id, t.name)}
-                      className="rounded-lg border border-amber-600 bg-amber-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-700"
+                      className="btn-admin btn-admin-sm text-amber-700 border-amber-300 bg-amber-50 hover:bg-amber-100"
                     >
                       封存
                     </button>
                     <button
                       onClick={() => void remove(t.id, t.name)}
-                      className="rounded-lg border border-red-600 bg-red-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-red-700"
+                      className="btn-admin-danger btn-admin-sm"
                     >
                       刪除
                     </button>
@@ -349,7 +349,7 @@ export function TeamManagerPanel() {
                 ) : (
                   <button
                     onClick={() => void unarchive(t.id, t.name)}
-                    className="rounded-lg border border-green-600 bg-green-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-green-700"
+                    className="btn-admin btn-admin-sm text-green-700 border-green-300 bg-green-50 hover:bg-green-100"
                   >
                     恢復
                   </button>

@@ -99,7 +99,7 @@ export default function ChangeManagerPasswordForm() {
         <button
           type="submit"
           disabled={status === 'loading'}
-          className="mt-2 btn-primary h-auto rounded-lg py-2.5 disabled:opacity-60"
+          className="mt-2 btn-admin-primary w-full disabled:opacity-60"
         >
           更新密碼
         </button>

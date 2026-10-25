@@ -65,22 +65,22 @@ export default function GenerateManagerAccountsButton() {
 
   if (status === 'idle') {
     return (
-      <div className="flex flex-col items-end gap-1">
+      <div className="flex flex-col items-stretch gap-2 sm:items-end">
         <button
           onClick={() => run(false, 'random')}
-          className="-my-1 py-1 text-xs text-amber-500 hover:text-amber-400 underline underline-offset-2"
+          className="btn-admin-ghost btn-admin-sm text-amber-600 hover:text-amber-700"
         >
           Generate Manager Accounts
         </button>
         <button
           onClick={() => run(true, 'random')}
-          className="-my-1 py-1 text-[11px] text-slate-400 hover:text-slate-300 underline underline-offset-2"
+          className="btn-admin-ghost btn-admin-sm"
         >
           Regenerate Passwords
         </button>
         <button
           onClick={() => run(false, 'shared')}
-          className="text-[11px] text-slate-400 hover:text-slate-300 underline underline-offset-2"
+          className="btn-admin-ghost btn-admin-sm"
         >
           Set Shared Password
         </button>
@@ -102,12 +102,12 @@ export default function GenerateManagerAccountsButton() {
     <div className="text-right">
       <div className="text-xs text-green-500">{message}</div>
       {output ? (
-        <pre className="mt-2 max-w-[520px] whitespace-pre-wrap break-words rounded-lg border border-slate-200 bg-white p-3 text-[11px] text-slate-900">
+        <pre className="mt-2 max-w-[520px] whitespace-pre-wrap break-words rounded-lg border border-slate-200 bg-white p-3 text-xs text-slate-900">
           {output}
         </pre>
       ) : null}
       {created.length > 0 && (
-        <pre className="mt-2 max-w-[520px] whitespace-pre-wrap break-words rounded-lg border border-slate-200 bg-white p-3 text-[11px] text-slate-900">
+        <pre className="mt-2 max-w-[520px] whitespace-pre-wrap break-words rounded-lg border border-slate-200 bg-white p-3 text-xs text-slate-900">
           {lines}
         </pre>
       )}
@@ -115,7 +115,7 @@ export default function GenerateManagerAccountsButton() {
         <div className="mt-2 text-xs text-slate-500">No new accounts created.</div>
       )}
       {skipped.length > 0 && (
-        <div className="mt-2 text-[11px] text-slate-500">
+        <div className="mt-2 text-xs text-slate-500">
           Skipped: {skipped.length}
         </div>
       )}

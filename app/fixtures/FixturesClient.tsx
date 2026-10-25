@@ -173,19 +173,19 @@ export default function FixturesClient(props: {
                             href={venueMapsUrl(match.venue) || '#'}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-blue-600 hover:underline"
+                            className="flex items-center gap-1 text-blue-600 hover:underline max-w-full min-w-0 py-2.5 -my-2.5"
                           >
                             <span className="flex-shrink-0">📍</span>
-                            <span>{bilingualCoreVenue(match.venue)}</span>
+                            <span className="truncate min-w-0">{bilingualCoreVenue(match.venue)}</span>
                           </a>
                         ) : (
-                          <span>📍 {match.venue || 'TBC'}</span>
+                          <span className="block truncate">📍 {match.venue || 'TBC'}</span>
                         )}
                       </div>
 
                       {/* 天氣 + 操作 */}
                       {match.status !== 'finished' && match.date && (
-                        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 pt-3 border-t border-slate-100 text-[11px] text-slate-500">
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 pt-3 border-t border-slate-100 text-xs text-slate-500">
                           <MatchWeather venue={match.venue} date={match.date} />
                           {googleCalendarUrl({
                             homeTeam: match.homeTeam,
@@ -268,7 +268,7 @@ export default function FixturesClient(props: {
                                 href={venueMapsUrl(match.venue) || '#'}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 hover:underline"
+                                className="inline-block text-blue-600 hover:text-blue-800 hover:underline max-w-full truncate py-2.5 -my-2.5 align-middle"
                               >
                                 📍 {bilingualVenue(match.venue)}
                               </a>

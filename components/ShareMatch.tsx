@@ -70,7 +70,7 @@ export default function ShareMatch(props: ShareMatchProps) {
         className={
           props.iconOnly
             ? 'inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-200 text-base text-slate-600 hover:bg-slate-300'
-            : 'inline-flex items-center gap-1 rounded-full bg-emerald-600 px-2.5 py-0.5 text-[11px] font-semibold text-white hover:bg-emerald-700'
+            : 'inline-flex items-center gap-1 rounded-full bg-emerald-600 px-2.5 py-0.5 text-xs font-semibold text-white hover:bg-emerald-700'
         }
       >
         📤{props.iconOnly ? '' : ` ${t('分享', 'Share')}`}

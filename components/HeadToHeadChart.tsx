@@ -116,34 +116,34 @@ export default function HeadToHeadChart({ serverMatches }: { serverMatches: Matc
           return (
             <div key={r.name} className="flex items-center gap-3">
               <div className="w-5 shrink-0 text-xs font-bold text-slate-400 text-right">{i + 1}</div>
-              <div className="w-24 shrink-0 text-[11px] leading-tight font-bold text-slate-800" title={r.name}>
+              <div className="w-24 shrink-0 text-xs leading-tight font-bold text-slate-800" title={r.name}>
                 {label}
               </div>
 
               <div className="flex-1 h-7 bg-slate-100 rounded-md overflow-hidden flex">
                 <div
-                  className="h-full bg-green-600 flex items-center justify-center text-[11px] font-bold text-white transition-[width] duration-500"
+                  className="h-full bg-green-600 flex items-center justify-center text-xs font-bold text-white transition-[width] duration-500"
                   style={{ width: seg(r.wins) }}
                   title={`${tr('勝', 'Wins')} ${r.wins}`}
                 >
                   {r.wins > 0 ? r.wins : ''}
                 </div>
                 <div
-                  className="h-full bg-amber-500 flex items-center justify-center text-[11px] font-bold text-white transition-[width] duration-500"
+                  className="h-full bg-amber-500 flex items-center justify-center text-xs font-bold text-white transition-[width] duration-500"
                   style={{ width: seg(r.draws) }}
                   title={`${tr('和', 'Draws')} ${r.draws}`}
                 >
                   {r.draws > 0 ? r.draws : ''}
                 </div>
                 <div
-                  className="h-full bg-red-600 flex items-center justify-center text-[11px] font-bold text-white transition-[width] duration-500"
+                  className="h-full bg-red-600 flex items-center justify-center text-xs font-bold text-white transition-[width] duration-500"
                   style={{ width: seg(r.losses) }}
                   title={`${tr('負', 'Losses')} ${r.losses}`}
                 >
                   {r.losses > 0 ? r.losses : ''}
                 </div>
                 {!hasGames ? (
-                  <div className="flex-1 flex items-center px-2 text-[11px] text-slate-400">
+                  <div className="flex-1 flex items-center px-2 text-xs text-slate-400">
                     {tr('暫無比賽', 'No matches yet')}
                   </div>
                 ) : null}
@@ -151,9 +151,9 @@ export default function HeadToHeadChart({ serverMatches }: { serverMatches: Matc
 
               <div className="w-14 shrink-0 text-right">
                 <span className="text-sm font-bold text-[#0f172a]">{r.points}</span>
-                <span className="text-[10px] text-slate-400">{tr('分', 'pts')}</span>
+                <span className="text-xs text-slate-400">{tr('分', 'pts')}</span>
               </div>
-              <div className="hidden sm:block w-16 shrink-0 text-right text-[11px] text-slate-500">
+              <div className="hidden sm:block w-16 shrink-0 text-right text-xs text-slate-500">
                 {r.gf}:{r.ga}
               </div>
             </div>

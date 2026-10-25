@@ -182,13 +182,13 @@ export function MatchResults({ matches, allowGoals }: { matches: Match[]; allowG
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setEditingMatch(editingMatch === match.id ? null : match.id)}
-                  className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded hover:bg-blue-200"
+                  className="btn-admin btn-admin-sm text-blue-700 border-blue-200 bg-blue-50 hover:bg-blue-100"
                 >
                   {editingMatch === match.id ? 'Cancel' : 'Edit'}
                 </button>
                 <button
                   onClick={() => handleDeleteMatch(match.id)}
-                  className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded hover:bg-red-200"
+                  className="btn-admin-danger btn-admin-sm"
                 >
                   Delete
                 </button>
@@ -306,7 +306,7 @@ export function MatchResults({ matches, allowGoals }: { matches: Match[]; allowG
                           if (!first) return;
                           setGoals((prev) => [...prev, { playerId: first.id, goals: 1 }]);
                         }}
-                        className="text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded"
+                        className="btn-admin btn-admin-sm"
                       >
                         Add scorer
                       </button>
@@ -361,7 +361,7 @@ export function MatchResults({ matches, allowGoals }: { matches: Match[]; allowG
                           if (!first) return;
                           setGoals((prev) => [...prev, { playerId: first.id, goals: 1 }]);
                         }}
-                        className="text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded"
+                        className="btn-admin btn-admin-sm"
                       >
                         Add scorer
                       </button>
@@ -369,7 +369,7 @@ export function MatchResults({ matches, allowGoals }: { matches: Match[]; allowG
                   </div>
                 </div>
                 ) : null}
-                <button type="submit" className="btn-primary h-auto rounded px-3 py-1.5 text-xs">Update Result</button>
+                <button type="submit" className="btn-admin-primary btn-admin-sm">Update Result</button>
               </form>
             ) : (
               <div className="text-right font-mono text-sm font-bold text-slate-900">
