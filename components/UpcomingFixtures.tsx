@@ -159,7 +159,7 @@ export function UpcomingFixtures({
         <p className="text-sm text-slate-500 py-4 text-center">No upcoming fixtures.</p>
       ) : (
         matches.map((match) => (
-          <div key={match.id} className="flex flex-col gap-3 rounded-xl border border-slate-100 bg-blue-50/50 p-3">
+          <div key={match.id} className="flex flex-col gap-3 rounded-lg border border-slate-100 bg-blue-50/50 p-3">
             <div className="space-y-2">
               {/* Teams with kit colors */}
               <div className="flex items-center justify-between gap-3">

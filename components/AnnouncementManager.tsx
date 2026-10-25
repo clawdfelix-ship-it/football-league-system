@@ -67,7 +67,7 @@ export function AnnouncementManager({
   ];
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+    <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold text-slate-900">Venue Announcements</h2>
         <button
@@ -79,7 +79,7 @@ export function AnnouncementManager({
       </div>
 
       {isAdding && (
-        <form action={handleSubmit} className="mb-6 p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-4">
+        <form action={handleSubmit} className="mb-6 p-4 bg-slate-50 rounded-lg border border-slate-200 space-y-4">
           <div>
             <label className="block text-xs font-medium text-slate-700 mb-1">Title (Optional)</label>
             <input 
@@ -136,13 +136,13 @@ export function AnnouncementManager({
 
       <div className="space-y-3">
         {announcements.length === 0 ? (
-          <p className="text-sm text-slate-500 text-center py-4">No announcements yet.</p>
+          <p className="text-sm text-slate-600 text-center py-4">No announcements yet.</p>
         ) : (
           announcements.map((item) => (
             <div key={item.id} className="flex justify-between items-start p-3 bg-slate-50 rounded-lg border border-slate-100">
               <div>
                 <div className="font-semibold text-sm text-slate-900">{item.title}</div>
-                <div className="text-xs text-slate-500 mt-0.5">
+                <div className="text-xs text-slate-600 mt-0.5">
                   {new Date(item.date).toLocaleDateString()} at {new Date(item.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </div>
                 <div className="text-sm text-slate-700 mt-2 whitespace-pre-wrap">

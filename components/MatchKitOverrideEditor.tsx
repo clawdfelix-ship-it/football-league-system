@@ -128,7 +128,7 @@ export default function MatchKitOverrideEditor({
   }
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-lg">
+    <div className="bg-white rounded-lg border border-slate-200 p-4 shadow-lg">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
           <span className="text-lg">🎽</span>

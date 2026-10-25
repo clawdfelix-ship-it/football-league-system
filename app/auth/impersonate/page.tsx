@@ -45,7 +45,7 @@ export default function ImpersonatePage() {
 
   return (
     <main className="min-h-[70vh] flex items-center justify-center px-4 py-16">
-      <div className="max-w-md w-full text-center bg-white rounded-2xl shadow-lg border border-slate-200 p-8">
+      <div className="max-w-md w-full text-center bg-white rounded-lg shadow-lg border border-slate-200 p-8">
         {error ? (
           <>
             <h1 className="text-xl font-bold text-slate-900">登入失敗</h1>

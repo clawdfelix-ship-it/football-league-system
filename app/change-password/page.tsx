@@ -82,7 +82,7 @@ export default function ChangePasswordPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#0f172a] bg-gradient-to-b from-[#0f172a] to-[#1e293b] px-4 py-12">
-      <div className="auth-container rounded-2xl border border-slate-200 bg-white p-8 shadow-2xl">
+      <div className="auth-container rounded-lg border border-slate-200 bg-white p-8 shadow-2xl">
         <h1 className="text-2xl font-bold text-slate-900">
           {isForced ? 'Set your password' : 'Change password'}
         </h1>

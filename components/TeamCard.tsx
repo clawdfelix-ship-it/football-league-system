@@ -130,7 +130,7 @@ function EditPlayerModal({ player, onClose, onSaved }: { player: Player; onClose
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
       <form
         onSubmit={handleSubmit}
-        className="bg-white border border-slate-200 rounded-2xl p-6 shadow-2xl max-w-md w-full space-y-5 text-slate-900"
+        className="bg-white border border-slate-200 rounded-lg p-6 shadow-2xl max-w-md w-full space-y-5 text-slate-900"
       >
         <div className="flex justify-between items-center border-b border-slate-100 pb-4">
           <h3 className="text-xl font-bold text-slate-900">編輯球員</h3>
@@ -272,7 +272,7 @@ export function TeamCard({ team, players: initialPlayers }: TeamCardProps) {
   }
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden transition-all hover:shadow-md">
+    <div className="rounded-lg border border-slate-200 bg-white overflow-hidden transition-all hover:shadow-md">
       {/* Card Header */}
       <button
         onClick={() => setExpanded(!expanded)}
@@ -305,7 +305,7 @@ export function TeamCard({ team, players: initialPlayers }: TeamCardProps) {
             <div className="flex items-center gap-1.5 mb-2">
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">領隊</span>
             </div>
-            <div className="bg-slate-50 rounded-xl p-3 space-y-2">
+            <div className="bg-slate-50 rounded-lg p-3 space-y-2">
               {team.captains.map((captain, index) => (
                 <div key={index} className="flex items-center gap-2 text-sm">
                   <span className="text-slate-400 w-10 flex-shrink-0 text-xs">{index + 1}.</span>
@@ -322,7 +322,7 @@ export function TeamCard({ team, players: initialPlayers }: TeamCardProps) {
               <div className="flex items-center gap-1.5 mb-2">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">教練</span>
               </div>
-              <div className="bg-slate-50 rounded-xl p-3 space-y-2">
+              <div className="bg-slate-50 rounded-lg p-3 space-y-2">
                 {team.captains.map((captain, index) => (
                   <div key={index}>
                     <div className="flex items-center gap-2 text-sm">
@@ -354,7 +354,7 @@ export function TeamCard({ team, players: initialPlayers }: TeamCardProps) {
           <div>
             <button
               onClick={togglePlayers}
-              className="w-full flex items-center justify-between p-3 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors"
+              className="w-full flex items-center justify-between p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors"
             >
               <div className="flex items-center gap-2">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">球員列表</span>
@@ -362,7 +362,7 @@ export function TeamCard({ team, players: initialPlayers }: TeamCardProps) {
                   <span className="text-[10px] bg-slate-900 text-white px-1.5 py-0.5 rounded-full font-bold">{teamPlayers.length}</span>
                 ) : null}
               </div>
-              <div className={`flex items-center gap-1 text-[10px] text-slate-500 transition-transform duration-200 ${playersExpanded ? 'rotate-180' : ''}`}>
+              <div className={`flex items-center gap-1 text-[10px] text-slate-600 transition-transform duration-200 ${playersExpanded ? 'rotate-180' : ''}`}>
                 <span>{playersExpanded ? '收起' : '展開'}</span>
                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="6 9 12 15 18 9"></polyline>
@@ -376,7 +376,7 @@ export function TeamCard({ team, players: initialPlayers }: TeamCardProps) {
               ) : teamPlayers.length === 0 ? (
                 <div className="text-center py-6 text-sm text-slate-400">暫無球員資料</div>
               ) : (
-                <div className="bg-slate-50 rounded-xl overflow-hidden">
+                <div className="bg-slate-50 rounded-lg overflow-hidden">
                   <div className="flex items-center justify-between gap-2 py-1.5 px-2 border-b border-slate-200 bg-slate-100">
                     <div className="flex items-center gap-2 flex-1 min-w-0">
                       <span className="text-[9px] font-bold text-slate-400 uppercase w-10 flex-shrink-0">號碼</span>

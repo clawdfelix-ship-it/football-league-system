@@ -9,7 +9,7 @@ export default function FixturesLoading() {
       </header>
 
       <main className="page-container -mt-16 pb-20">
-        <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-3 mb-4 flex gap-3">
+        <div className="bg-white rounded-lg shadow-lg border border-slate-200 p-3 mb-4 flex gap-3">
           <div className="h-11 w-24 rounded-full bg-slate-100 animate-pulse" />
           <div className="h-11 w-24 rounded-full bg-slate-100 animate-pulse" />
           <div className="h-11 w-24 rounded-full bg-slate-100 animate-pulse" />
@@ -19,7 +19,7 @@ export default function FixturesLoading() {
           {[0, 1, 2, 3].map((i) => (
             <div
               key={i}
-              className="bg-white rounded-xl shadow-lg p-6 border border-slate-200 animate-pulse"
+              className="bg-white rounded-lg shadow-lg p-6 border border-slate-200 animate-pulse"
             >
               <div className="flex items-center justify-between mb-6">
                 <div className="h-6 w-20 rounded-full bg-blue-50" />

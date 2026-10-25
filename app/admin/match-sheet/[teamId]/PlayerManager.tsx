@@ -125,12 +125,12 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
     <div className="space-y-6">
       {/* Player List — loaded on demand via the button below */}
       {rosterLoading ? (
-        <div className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white p-6 text-slate-400">
+        <div className="flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white p-6 text-slate-400">
           <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#0f172a]/20 border-t-[#0f172a]" />
           <span className="text-xs">載入球員中…</span>
         </div>
       ) : rosterLoaded && roster.length > 0 ? (
-        <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+        <div className="rounded-lg border border-slate-200 bg-white overflow-hidden">
           <div className="bg-slate-50 px-4 py-3 border-b border-slate-200 flex items-center justify-between">
             <h3 className="font-semibold text-sm">Team Roster ({roster.length})</h3>
             <button type="button" onClick={() => { setRosterLoaded(false); void loadRoster(); }}
@@ -180,7 +180,7 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
         <button
           type="button"
           onClick={() => void loadRoster()}
-          className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-slate-300 bg-white p-5 text-sm font-medium text-[#0f172a] transition hover:border-[#0f172a] hover:bg-slate-50 print:hidden"
+          className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-slate-300 bg-white p-5 text-sm font-medium text-[#0f172a] transition hover:border-[#0f172a] hover:bg-slate-50 print:hidden"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
@@ -198,7 +198,7 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
           <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
             <form 
               onSubmit={handleSubmit}
-              className="bg-white border border-slate-200 rounded-2xl p-6 shadow-2xl max-w-md w-full space-y-5 text-slate-900"
+              className="bg-white border border-slate-200 rounded-lg p-6 shadow-2xl max-w-md w-full space-y-5 text-slate-900"
             >
               <div className="flex justify-between items-center border-b border-slate-100 pb-4">
                 <h3 className="text-xl font-bold text-slate-900">Add New Player</h3>
@@ -303,7 +303,7 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
         ) : (
           <button
             onClick={() => setIsAdding(true)}
-            className="w-full btn-primary h-auto rounded-xl py-3 font-bold shadow flex items-center justify-center gap-2"
+            className="w-full btn-primary h-auto rounded-lg py-3 font-bold shadow flex items-center justify-center gap-2"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 5v14M5 12h14"/>
@@ -318,7 +318,7 @@ export function PlayerManager({ teamName, players = [] }: { teamName: string, pl
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
           <form
             onSubmit={handleEditSubmit}
-            className="bg-white border border-slate-200 rounded-2xl p-6 shadow-2xl max-w-md w-full space-y-5 text-slate-900"
+            className="bg-white border border-slate-200 rounded-lg p-6 shadow-2xl max-w-md w-full space-y-5 text-slate-900"
           >
             <div className="flex justify-between items-center border-b border-slate-100 pb-4">
               <h3 className="text-xl font-bold text-slate-900">Edit Player</h3>

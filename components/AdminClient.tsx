@@ -76,18 +76,18 @@ export function MatchList({
 
   return (
     <>
-      <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+      <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
         <h2 className="text-lg font-semibold mb-4 text-slate-900">Upcoming Fixtures</h2>
         <div className="space-y-3 mb-8">
           {scheduledMatches.length === 0 ? (
-            <p className="text-sm text-slate-500">No upcoming fixtures.</p>
+            <p className="text-sm text-slate-600">No upcoming fixtures.</p>
           ) : (
             scheduledMatches.map((match) => (
-              <div key={match.id} className="flex flex-col gap-3 rounded-xl border border-slate-100 bg-blue-50/50 p-3">
+              <div key={match.id} className="flex flex-col gap-3 rounded-lg border border-slate-100 bg-blue-50/50 p-3">
                 <div className="flex items-center justify-between">
                   <div className="text-sm">
                     <div className="font-semibold text-slate-900">{match.homeTeam} vs {match.awayTeam}</div>
-                    <div className="text-xs text-slate-500">
+                    <div className="text-xs text-slate-600">
                       {match.date ? new Date(match.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) + ' (' + new Date(match.date).toLocaleDateString('en-GB', { weekday: 'short' }) + ')' : 'TBC'} {match.date ? new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : ''} • {match.venue || 'TBC'} {match.round ? `• ${match.round}` : ''}
                     </div>
                   </div>
@@ -171,14 +171,14 @@ export function MatchList({
         <h2 className="text-lg font-semibold mb-4 pt-4 border-t border-slate-100 text-slate-900">Match Results</h2>
         <div className="space-y-3">
           {finishedMatches.length === 0 ? (
-            <p className="text-sm text-slate-500">No finished matches.</p>
+            <p className="text-sm text-slate-600">No finished matches.</p>
           ) : (
             finishedMatches.map((match) => (
-              <div key={match.id} className="flex flex-col gap-3 rounded-xl border border-slate-100 bg-slate-50 p-3">
+              <div key={match.id} className="flex flex-col gap-3 rounded-lg border border-slate-100 bg-slate-50 p-3">
                 <div className="flex items-center justify-between">
                   <div className="text-sm">
                     <div className="font-semibold text-slate-900">{match.homeTeam} vs {match.awayTeam}</div>
-                    <div className="text-xs text-slate-500">
+                    <div className="text-xs text-slate-600">
                       {match.date ? new Date(match.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) + ' (' + new Date(match.date).toLocaleDateString('en-GB', { weekday: 'short' }) + ')' : 'TBC'} {match.date ? new Date(match.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : ''} • {match.venue || 'TBC'} {match.round ? `• ${match.round}` : ''}
                     </div>
                   </div>
@@ -307,12 +307,12 @@ export function MatchForm() {
   };
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+    <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
       <h2 className="text-lg font-semibold text-slate-900">Add Match</h2>
       <form action={handleSubmitMatch} className="mt-4 space-y-4">
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1">
-            <label className="text-sm font-medium text-slate-800">Home team</label>
+            <label className="text-sm font-medium text-slate-700">Home team</label>
             <select name="homeTeam" required className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-[#0f172a] focus:outline-none focus:ring-2 focus:ring-[#0f172a]/25">
               <option value="">Select Home Team</option>
               {teams.map(team => (
@@ -321,7 +321,7 @@ export function MatchForm() {
             </select>
           </div>
           <div className="space-y-1">
-            <label className="text-sm font-medium text-slate-800">Away team</label>
+            <label className="text-sm font-medium text-slate-700">Away team</label>
             <select name="awayTeam" required className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-[#0f172a] focus:outline-none focus:ring-2 focus:ring-[#0f172a]/25">
               <option value="">Select Away Team</option>
               {teams.map(team => (
@@ -333,7 +333,7 @@ export function MatchForm() {
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1">
-            <label className="text-sm font-medium text-slate-800">Status</label>
+            <label className="text-sm font-medium text-slate-700">Status</label>
             <select name="status" className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-[#0f172a] focus:outline-none focus:ring-2 focus:ring-[#0f172a]/25">
               <option value="scheduled">Scheduled (Fixture)</option>
               <option value="tbc">TBC</option>
@@ -341,7 +341,7 @@ export function MatchForm() {
             </select>
           </div>
           <div className="space-y-1">
-            <label className="text-sm font-medium text-slate-800">Match date</label>
+            <label className="text-sm font-medium text-slate-700">Match date</label>
             <div className="flex gap-2">
               <input name="date" type="date" className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-[#0f172a] focus:outline-none focus:ring-2 focus:ring-[#0f172a]/25" />
               <input name="time" type="time" className="w-36 shrink-0 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-[#0f172a] focus:outline-none focus:ring-2 focus:ring-[#0f172a]/25" />
@@ -351,7 +351,7 @@ export function MatchForm() {
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1">
-            <label className="text-sm font-medium text-slate-800">Venue</label>
+            <label className="text-sm font-medium text-slate-700">Venue</label>
             {isCustomVenue ? (
               <div className="flex gap-2">
                 <input
@@ -363,7 +363,7 @@ export function MatchForm() {
                 <button
                   type="button"
                   onClick={() => setIsCustomVenue(false)}
-                  className="shrink-0 rounded-xl border border-slate-200 px-3 py-2 text-xs text-slate-600 hover:bg-slate-100 transition-colors"
+                  className="shrink-0 rounded-lg border border-slate-200 px-3 py-2 text-xs text-slate-600 hover:bg-slate-100 transition-colors"
                 >
                   返回清單
                 </button>
@@ -381,7 +381,7 @@ export function MatchForm() {
             )}
           </div>
           <div className="space-y-1">
-            <label className="text-sm font-medium text-slate-800">Round</label>
+            <label className="text-sm font-medium text-slate-700">Round</label>
             <select name="round" className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-[#0f172a] focus:outline-none focus:ring-2 focus:ring-[#0f172a]/25">
               <option value="">Select Round</option>
               {Array.from({ length: 14 }, (_, i) => i + 1).map(num => (
@@ -393,16 +393,16 @@ export function MatchForm() {
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1">
-            <label className="text-sm font-medium text-slate-800">Home score</label>
+            <label className="text-sm font-medium text-slate-700">Home score</label>
             <input name="homeScore" type="number" min="0" className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-[#0f172a] focus:outline-none focus:ring-2 focus:ring-[#0f172a]/25" />
           </div>
           <div className="space-y-1">
-            <label className="text-sm font-medium text-slate-800">Away score</label>
+            <label className="text-sm font-medium text-slate-700">Away score</label>
             <input name="awayScore" type="number" min="0" className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-[#0f172a] focus:outline-none focus:ring-2 focus:ring-[#0f172a]/25" />
           </div>
         </div>
 
-        <button type="submit" className="btn-primary w-full h-auto rounded-xl py-2.5">
+        <button type="submit" className="btn-primary w-full h-auto rounded-lg py-2.5">
           Submit Match
         </button>
       </form>
@@ -425,11 +425,11 @@ export function ResetButton() {
   };
 
   return (
-    <section className="rounded-2xl border border-red-200 bg-red-50 p-4 shadow-sm sm:p-6">
+    <section className="rounded-lg border border-red-200 bg-red-50 p-4 shadow-sm sm:p-6">
       <h2 className="text-lg font-semibold text-red-700">Danger Zone</h2>
       <button
         onClick={handleResetSeason}
-        className="mt-4 inline-flex h-auto items-center justify-center rounded-xl bg-red-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-700 transition-colors"
+        className="mt-4 inline-flex h-auto items-center justify-center rounded-lg bg-red-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-700 transition-colors"
       >
         Reset Season Data
       </button>

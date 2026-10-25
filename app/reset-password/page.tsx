@@ -79,7 +79,7 @@ function ResetPasswordForm() {
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="field h-11 rounded-xl bg-slate-50"
+          className="field h-11 rounded-lg bg-slate-50"
           placeholder={t('最少 8 位，含字母及數字', 'At least 8 chars, with letters and numbers')}
           required
         />
@@ -93,14 +93,14 @@ function ResetPasswordForm() {
           type="password"
           value={confirm}
           onChange={(e) => setConfirm(e.target.value)}
-          className="field h-11 rounded-xl bg-slate-50"
+          className="field h-11 rounded-lg bg-slate-50"
           placeholder={t('再輸入一次', 'Enter it again')}
           required
         />
       </div>
 
       {error && (
-        <div className="alert-error rounded-xl">
+        <div className="alert-error rounded-lg">
           {error}
         </div>
       )}
@@ -108,7 +108,7 @@ function ResetPasswordForm() {
       <button
         type="submit"
         disabled={loading}
-        className="btn-primary w-full h-11 rounded-xl font-bold"
+        className="btn-primary w-full h-11 rounded-lg font-bold"
       >
         {loading ? t('設定中...', 'Setting...') : t('設定新密碼', 'Set new password')}
       </button>

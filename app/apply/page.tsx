@@ -177,7 +177,7 @@ export default function ApplyPage() {
             <button
               type="submit"
               disabled={status === 'submitting'}
-              className="btn-primary w-full h-11 rounded-xl font-bold disabled:opacity-60"
+              className="btn-primary w-full h-11 rounded-lg font-bold disabled:opacity-60"
             >
               {status === 'submitting'
                 ? t('提交中…', 'Submitting…')

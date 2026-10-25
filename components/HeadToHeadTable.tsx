@@ -120,7 +120,7 @@ export default function HeadToHeadTable({ serverMatches }: Props) {
   }
 
   const gdClass = (gd: number) =>
-    gd > 0 ? 'text-green-600' : gd < 0 ? 'text-red-500' : 'text-slate-500';
+    gd > 0 ? 'text-green-600' : gd < 0 ? 'text-red-500' : 'text-slate-600';
 
   const totalFor = (teamName: string) => {
     const td = h2hData[teamName];
@@ -229,7 +229,7 @@ export default function HeadToHeadTable({ serverMatches }: Props) {
         <select
           value={selectedTeam}
           onChange={(e) => setSelectedTeam(e.target.value)}
-          className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm font-medium text-slate-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm font-medium text-slate-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         >
           {teams.map((team) => (
             <option key={team.name} value={team.name}>
@@ -239,7 +239,7 @@ export default function HeadToHeadTable({ serverMatches }: Props) {
         </select>
 
         {selectedRecord && (
-          <div className="mt-4 rounded-2xl border border-slate-200 overflow-hidden">
+          <div className="mt-4 rounded-lg border border-slate-200 overflow-hidden">
             <div className="bg-blue-600 text-white px-4 py-3 flex items-center justify-between">
               <span className="font-bold">{selectedTeam} {tr('對賽成績', 'Head-to-Head')}</span>
               {(() => {

@@ -21,7 +21,7 @@ export default function PdfPage() {
         </header>
 
         <main className="max-w-6xl mx-auto px-6 -mt-6 pb-20">
-          <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200">
+          <div className="bg-white rounded-lg shadow-2xl overflow-hidden border border-slate-200">
             <div className="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
               <div className="font-bold">{t('直接查看', 'View')}</div>
               <a

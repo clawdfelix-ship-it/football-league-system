@@ -115,11 +115,11 @@ export function LeagueSettingsPanel({ leagueId }: { leagueId: number }) {
     }
   }
 
-  if (loading) return <p className="text-sm text-slate-500">載入中…</p>;
-  if (!settings) return <p className="text-sm text-slate-500">找不到聯賽設定</p>;
+  if (loading) return <p className="text-sm text-slate-600">載入中…</p>;
+  if (!settings) return <p className="text-sm text-slate-600">找不到聯賽設定</p>;
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
       <h3 className="mb-4 text-sm font-semibold text-slate-900">聯賽設定</h3>
 
       {error && <div className="alert-error mb-3">{error}</div>}
@@ -145,7 +145,7 @@ export function LeagueSettingsPanel({ leagueId }: { leagueId: number }) {
               onChange={(e) => setSlug(e.target.value)}
               className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm"
             />
-            <span className="text-sm text-slate-500">.zenex-sports.com</span>
+            <span className="text-sm text-slate-600">.zenex-sports.com</span>
           </div>
           {slugWarning && (
             <p className={`mt-1 text-xs ${slugWarning.startsWith('⚠️') ? 'text-amber-600' : 'text-red-600'}`}>

@@ -228,7 +228,7 @@ export function TeamManagerPanel() {
     }
   }
 
-  if (loading) return <p className="text-sm text-slate-500">載入中…</p>;
+  if (loading) return <p className="text-sm text-slate-600">載入中…</p>;
 
   return (
     <div>
@@ -245,7 +245,7 @@ export function TeamManagerPanel() {
       {error && <div className="alert-error mb-3">{error}</div>}
 
       {showForm && (
-        <div className="mb-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
+        <div className="mb-4 rounded-lg border border-slate-200 bg-slate-50 p-4">
           <h4 className="mb-3 text-sm font-semibold text-slate-900">
             {editingId ? '編輯球隊' : '新增球隊'}
           </h4>
@@ -308,12 +308,12 @@ export function TeamManagerPanel() {
 
       <ul className="space-y-2">
         {teams.map((t) => (
-          <li key={t.id} className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+          <li key={t.id} className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="font-semibold text-slate-900">
                   {t.name}
-                  {t.nameZh && <span className="ml-2 text-sm font-normal text-slate-500">{t.nameZh}</span>}
+                  {t.nameZh && <span className="ml-2 text-sm font-normal text-slate-600">{t.nameZh}</span>}
                   {t.status === 'archived' && (
                     <span className="ml-2 rounded-full bg-slate-200 px-2 py-0.5 text-xs font-semibold text-slate-600">
                       已封存

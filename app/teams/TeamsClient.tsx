@@ -34,7 +34,7 @@ export default function TeamsClient(props: { initialTeams: TeamInfo[] }) {
             {teams.map((team) => (
               <div
                 key={team.name}
-                className="bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-200 hover:shadow-2xl transition-all hover:-translate-y-1"
+                className="bg-white rounded-lg shadow-lg overflow-hidden border border-slate-200 hover:shadow-2xl transition-all hover:-translate-y-1"
               >
                 <div className="bg-[#0f172a] p-6 text-center border-b-4 border-[#1e293b]">
                   <div className="mb-4">

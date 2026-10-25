@@ -73,7 +73,7 @@ function PlayersPageInner(props: { initialPlayers: PublicPlayer[]; teams: TeamDi
 
         <main className="page-container -mt-16 pb-20">
           {/* 搜尋框 */}
-          <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-3 mb-3">
+          <div className="bg-white rounded-lg shadow-lg border border-slate-200 p-3 mb-3">
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none">
                 🔍
@@ -84,7 +84,7 @@ function PlayersPageInner(props: { initialPlayers: PublicPlayer[]; teams: TeamDi
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={t('搜尋球員名稱、號碼、位置', 'Search name, number, position')}
-                className="w-full pl-9 pr-9 min-h-[44px] bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition"
+                className="w-full pl-9 pr-9 min-h-[44px] bg-slate-50 border border-slate-200 rounded-lg text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition"
               />
               {query && (
                 <button
@@ -99,7 +99,7 @@ function PlayersPageInner(props: { initialPlayers: PublicPlayer[]; teams: TeamDi
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-200">
+          <div className="bg-white rounded-lg shadow-lg overflow-hidden border border-slate-200">
             {/* 球隊分段（橫向滑動） */}
             <div className="border-b border-slate-100">
               <div className="flex gap-2 overflow-x-auto px-3 py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">

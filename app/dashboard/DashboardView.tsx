@@ -60,7 +60,7 @@ export default function DashboardView({
 
       <main className="page-container -mt-16 pb-20">
         {loadError ? (
-          <div className="bg-white rounded-2xl shadow-lg border border-red-200 p-8 text-center">
+          <div className="bg-white rounded-lg shadow-lg border border-red-200 p-8 text-center">
             <div className="text-lg font-bold text-red-700">
               {t('無法載入球員數據', 'Unable to load player data')}
             </div>
@@ -69,7 +69,7 @@ export default function DashboardView({
             </p>
           </div>
         ) : stats.totalPlayers === 0 ? (
-          <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-8 text-center">
+          <div className="bg-white rounded-lg shadow-lg border border-slate-200 p-8 text-center">
             <div className="text-lg font-bold text-slate-800">
               {t('暫時未有球員數據', 'No player data yet')}
             </div>
@@ -82,7 +82,7 @@ export default function DashboardView({
             {/* summary cards — semantic, not one-color-per-card */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
               {cards.map((c) => (
-                <div key={c.key} className="bg-white rounded-2xl shadow-sm p-6 border border-slate-200">
+                <div key={c.key} className="bg-white rounded-lg shadow-sm p-6 border border-slate-200">
                   <div className={`text-3xl font-bold tabular-nums ${toneText[c.tone]}`}>{c.value}</div>
                   <div className="text-sm text-slate-600 mt-1">{t(c.zh, c.en)}</div>
                 </div>
@@ -169,7 +169,7 @@ export default function DashboardView({
 
 function Panel({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-white rounded-2xl shadow-sm p-6 border border-slate-200">
+    <div className="bg-white rounded-lg shadow-sm p-6 border border-slate-200">
       <h3 className="text-base font-bold text-slate-800 mb-4">{title}</h3>
       {children}
     </div>

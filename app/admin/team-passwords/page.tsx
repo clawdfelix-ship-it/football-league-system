@@ -108,7 +108,7 @@ export default function AdminTeamPasswordsPage() {
   }
 
   if (status === 'loading') {
-    return <div className="p-8 text-slate-500">Loading…</div>;
+    return <div className="p-8 text-slate-600">Loading…</div>;
   }
   if (status === 'unauthenticated' || session?.user?.role !== 'admin') {
     return (
@@ -129,16 +129,16 @@ export default function AdminTeamPasswordsPage() {
         <h1 className="text-2xl font-bold tracking-tight text-slate-900">
           Team Manager Passwords
         </h1>
-        <p className="mt-1 text-sm text-slate-500">
+        <p className="mt-1 text-sm text-slate-600">
           Issue per-team passwords. Each manager will be forced to set a new password on first
           login. Plaintext is wiped from this page after {revealCountdown}s.
         </p>
       </header>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
           <h2 className="text-lg font-medium text-slate-900">Set per-team password</h2>
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="mt-1 text-xs text-slate-600">
             Set the same password for all captain emails of a team. Leave password blank to auto-generate.
           </p>
           <form onSubmit={onSubmit} className="mt-4 space-y-4">
@@ -180,9 +180,9 @@ export default function AdminTeamPasswordsPage() {
           </form>
         </section>
 
-        <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
           <h2 className="text-lg font-medium text-slate-900">Reset single manager</h2>
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="mt-1 text-xs text-slate-600">
             Generate a new password for one manager email.
           </p>
           <form onSubmit={onReset} className="mt-4 space-y-4">
@@ -222,7 +222,7 @@ export default function AdminTeamPasswordsPage() {
       ) : null}
 
       {(issued.length > 0 || resetIssued) && (
-        <section className="mt-8 rounded-xl border border-amber-300 bg-amber-50 p-6 shadow-sm">
+        <section className="mt-8 rounded-lg border border-amber-300 bg-amber-50 p-6 shadow-sm">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-lg font-medium text-amber-900">
               ⚠️ Plaintext passwords — copy NOW

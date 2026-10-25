@@ -99,7 +99,7 @@ export default function FixturesClient(props: {
     return (
       <div
                     key={match.id}
-                    className="bg-white rounded-xl shadow-lg p-6 border border-slate-200 hover:shadow-xl transition-shadow animate-[fixturefade_0.35s_ease_both]"
+                    className="bg-white rounded-lg shadow-lg p-6 border border-slate-200 hover:shadow-xl transition-shadow animate-[fixturefade_0.35s_ease_both]"
                     style={{ animationDelay: `${Math.min(i, 15) * 30}ms` }}
                   >
                     <div className="flex items-center justify-between mb-4">
@@ -344,7 +344,7 @@ export default function FixturesClient(props: {
 
         <main className="page-container -mt-16 pb-20">
           {/* 篩選列 */}
-          <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-3 mb-4 flex flex-col sm:flex-row sm:items-center gap-3">
+          <div className="bg-white rounded-lg shadow-lg border border-slate-200 p-3 mb-4 flex flex-col sm:flex-row sm:items-center gap-3">
             <div className="sm:ml-auto flex items-center gap-2">
               <label htmlFor="round-select" className="text-sm text-slate-500 whitespace-nowrap">
                 {t('輪次', 'Round')}
@@ -353,7 +353,7 @@ export default function FixturesClient(props: {
                 id="round-select"
                 value={round}
                 onChange={(e) => setRound(e.target.value)}
-                className="min-h-[44px] pl-3 pr-8 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition"
+                className="min-h-[44px] pl-3 pr-8 bg-slate-50 border border-slate-200 rounded-lg text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition"
               >
                 <option value="">{t('全部輪次', 'All rounds')}</option>
                 {rounds.map((r) => (
@@ -367,7 +367,7 @@ export default function FixturesClient(props: {
 
           {/* 即將進行 */}
           {upcoming.length === 0 ? (
-            <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-12 text-center text-slate-500">
+            <div className="bg-white rounded-lg shadow-lg border border-slate-200 p-12 text-center text-slate-500">
               {t('暫無即將進行嘅比賽', 'No upcoming matches')}
             </div>
           ) : (
@@ -383,7 +383,7 @@ export default function FixturesClient(props: {
                 type="button"
                 onClick={() => setShowFinished((v) => !v)}
                 aria-expanded={showFinished}
-                className="w-full flex items-center justify-between gap-2 rounded-2xl bg-white border border-slate-200 shadow-lg px-5 py-4 text-left hover:bg-slate-50 transition"
+                className="w-full flex items-center justify-between gap-2 rounded-lg bg-white border border-slate-200 shadow-lg px-5 py-4 text-left hover:bg-slate-50 transition"
               >
                 <span className="font-bold text-slate-800">
                   {t('已完成賽事', 'Finished matches')}

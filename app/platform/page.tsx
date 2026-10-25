@@ -21,7 +21,7 @@ export default async function PlatformConsolePage() {
   if (tenant.resolution?.status !== 'platform') {
     return (
       <main className="min-h-[70vh] flex items-center justify-center px-4 py-16">
-        <div className="max-w-md w-full text-center bg-white rounded-2xl shadow-lg border border-slate-200 p-8">
+        <div className="max-w-md w-full text-center bg-white rounded-lg shadow-lg border border-slate-200 p-8">
           <h1 className="text-xl font-bold text-slate-900">404</h1>
           <p className="mt-2 text-sm text-slate-600">此路徑只在平台主機提供。</p>
         </div>
@@ -33,7 +33,7 @@ export default async function PlatformConsolePage() {
   if (!admin) {
     return (
       <main className="min-h-[70vh] flex items-center justify-center px-4 py-16">
-        <div className="max-w-md w-full text-center bg-white rounded-2xl shadow-lg border border-slate-200 p-8">
+        <div className="max-w-md w-full text-center bg-white rounded-lg shadow-lg border border-slate-200 p-8">
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-50 text-red-600" aria-hidden="true">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
               <rect x="5" y="10.5" width="14" height="9.5" rx="2" />

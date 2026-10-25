@@ -171,7 +171,7 @@ export function MatchResults({ matches, allowGoals }: { matches: Match[]; allowG
         <p className="text-sm text-slate-500 py-4 text-center">No finished matches.</p>
       ) : (
         matches.map((match) => (
-          <div key={match.id} className="flex flex-col gap-3 rounded-xl border border-slate-100 bg-slate-50 p-3">
+          <div key={match.id} className="flex flex-col gap-3 rounded-lg border border-slate-100 bg-slate-50 p-3">
             <div className="flex items-center justify-between">
               <div className="text-sm">
                 <div className="font-semibold text-slate-900">{match.homeTeam} vs {match.awayTeam}</div>

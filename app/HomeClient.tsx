@@ -323,7 +323,7 @@ export default function HomeClient(props: {
           </p>
         </header>
         <main className="page-container -mt-16 pb-20">
-          <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-200 p-8">
+          <div className="bg-white rounded-lg shadow-lg overflow-hidden border border-slate-200 p-8">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
               <p className="text-slate-500">{t('載入中…', 'Loading...')}</p>
@@ -349,7 +349,7 @@ export default function HomeClient(props: {
 
         <div className="page-container -mt-16 pb-20">
           <section id="standings" className="mb-12">
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-200">
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden border border-slate-200">
               <div className="bg-slate-900 text-white px-8 py-5 flex justify-between items-center">
                 <h2 className="text-xl font-bold tracking-tight">{t('積分榜 2026', 'League Table 2026')}</h2>
                 <button
@@ -484,7 +484,7 @@ export default function HomeClient(props: {
           </section>
 
           <section id="matches" className="grid md:grid-cols-2 gap-8">
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-200">
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden border border-slate-200">
               <div className="bg-green-600 text-white px-8 py-5 flex items-center justify-between">
                 <h2 className="text-xl font-bold tracking-tight">{t('近期賽事', 'Upcoming Fixtures')}</h2>
                 {fixturesLastUpdatedAt && (
@@ -508,7 +508,7 @@ export default function HomeClient(props: {
                   upcomingFixtures.map((match) => (
                     <div
                       key={match.id}
-                      className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2.5"
+                      className="p-4 rounded-lg bg-slate-50 border border-slate-200 space-y-2.5"
                     >
                       {/* 幾時 + 圈次 */}
                       <div className="flex items-center justify-between gap-2">
@@ -567,7 +567,7 @@ export default function HomeClient(props: {
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-200">
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden border border-slate-200">
               <div className="bg-red-600 text-white px-8 py-5">
                 <h2 className="text-xl font-bold tracking-tight">{t('最近結果', 'Recent Results')}</h2>
               </div>
@@ -620,7 +620,7 @@ export default function HomeClient(props: {
 
           {announcements.length > 0 && (
             <section id="announcements" className="mt-12">
-              <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-200">
+              <div className="bg-white rounded-lg shadow-lg overflow-hidden border border-slate-200">
                 <div className="bg-slate-900 text-white px-8 py-5 flex items-center justify-between">
                   <h2 className="text-xl font-bold tracking-tight">{t('場地公告', 'Venue Announcements')}</h2>
                   {announcementsLastUpdatedAt && (

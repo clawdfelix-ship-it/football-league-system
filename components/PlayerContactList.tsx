@@ -74,7 +74,7 @@ export function PlayerContactList({ players, showTeamFilter = false }: PlayerCon
           return (
             <div
               key={p.id}
-              className="rounded-xl border border-slate-200 bg-white overflow-hidden transition-all"
+              className="rounded-lg border border-slate-200 bg-white overflow-hidden transition-all"
             >
               {/* Header row - always visible */}
               <div
@@ -94,7 +94,7 @@ export function PlayerContactList({ players, showTeamFilter = false }: PlayerCon
                     <div className="font-semibold text-sm text-slate-900 truncate">
                       {p.name}
                     </div>
-                    <div className="text-xs text-slate-500 flex items-center gap-2">
+                    <div className="text-xs text-slate-600 flex items-center gap-2">
                       <span>{p.position}</span>
                       {team && (
                         <>
@@ -199,7 +199,7 @@ export function PlayerContactList({ players, showTeamFilter = false }: PlayerCon
       </div>
 
       {filteredPlayers.length === 0 && (
-        <div className="text-center py-8 text-slate-500 text-sm">
+        <div className="text-center py-8 text-slate-600 text-sm">
           暫無球員資料
         </div>
       )}

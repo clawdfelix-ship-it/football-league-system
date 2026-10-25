@@ -19,7 +19,7 @@ export default function OverviewPage() {
         <main className="page-container-narrow -mt-16 pb-20 space-y-8 sm:space-y-12">
           
           {/* Mission Statement */}
-          <section className="text-center bg-blue-50 p-8 rounded-2xl border border-blue-100">
+          <section className="text-center bg-blue-50 p-8 rounded-lg border border-blue-100">
             {isZh ? (
               <h2 className="text-2xl font-bold text-blue-900 mb-2">以享受、友誼、聯繫和樂趣為主</h2>
             ) : (
@@ -161,7 +161,7 @@ export default function OverviewPage() {
 
           {/* Forfeits & Postponement */}
           <section className="grid md:grid-cols-2 gap-8">
-            <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
+            <div className="bg-slate-50 p-6 rounded-lg border border-slate-200">
               <h3 className="text-xl font-bold text-slate-900 mb-4 border-b border-slate-300 pb-2">
                 {isZh ? '棄權及缺席' : 'Forfeits & Non-Appearance'}
               </h3>
@@ -187,7 +187,7 @@ export default function OverviewPage() {
               </ul>
             </div>
 
-            <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
+            <div className="bg-slate-50 p-6 rounded-lg border border-slate-200">
               <h3 className="text-xl font-bold text-slate-900 mb-4 border-b border-slate-300 pb-2">
                 {isZh ? '延期比賽' : 'Postponement'}
               </h3>
@@ -203,7 +203,7 @@ export default function OverviewPage() {
           </section>
 
           {/* Discipline */}
-          <section className="bg-red-50 p-8 rounded-2xl border border-red-100">
+          <section className="bg-red-50 p-8 rounded-lg border border-red-100">
             <div className="flex items-center gap-4 mb-6">
               <div className="bg-red-600 w-2 h-8"></div>
               <h2 className="text-2xl font-bold text-slate-900">

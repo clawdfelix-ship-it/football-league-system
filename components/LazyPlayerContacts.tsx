@@ -40,7 +40,7 @@ export function LazyPlayerContacts({
   }
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <div className="rounded-lg border border-slate-200 bg-white shadow-sm">
       <button
         type="button"
         onClick={() => ensureLoaded(!expanded)}

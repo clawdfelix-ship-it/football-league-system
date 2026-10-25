@@ -22,7 +22,7 @@ export default function RegisterPage() {
           </p>
           <Link
             href="/login"
-            className="btn-primary w-full h-11 rounded-xl font-bold"
+            className="btn-primary w-full h-11 rounded-lg font-bold"
           >
             {t('返回登入', 'Back to login')}
           </Link>

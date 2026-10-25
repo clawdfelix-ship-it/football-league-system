@@ -8,7 +8,7 @@ import Link from 'next/link';
 export default function NotFound() {
   return (
     <main className="min-h-[70vh] flex items-center justify-center px-4 py-16">
-      <div className="max-w-md w-full text-center bg-white rounded-2xl shadow-lg border border-slate-200 p-8">
+      <div className="max-w-md w-full text-center bg-white rounded-lg shadow-lg border border-slate-200 p-8">
         <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 text-2xl">
           🔍
         </div>

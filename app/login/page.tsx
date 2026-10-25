@@ -122,7 +122,7 @@ export default function LoginPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="field h-11 rounded-xl bg-slate-50"
+                  className="field h-11 rounded-lg bg-slate-50"
                   placeholder="you@example.com"
                   required
                 />
@@ -150,14 +150,14 @@ export default function LoginPage() {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="field h-11 rounded-xl bg-slate-50"
+                  className="field h-11 rounded-lg bg-slate-50"
                   placeholder="••••••••"
                   required
                 />
               </div>
 
               {error && (
-                <div className="alert-error rounded-xl">
+                <div className="alert-error rounded-lg">
                   {error}
                 </div>
               )}
@@ -165,7 +165,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="btn-primary w-full h-11 rounded-xl font-bold"
+                className="btn-primary w-full h-11 rounded-lg font-bold"
               >
                 {loading ? t('登入中...', 'Signing in...') : t('登入', 'Login')}
               </button>
@@ -184,19 +184,19 @@ export default function LoginPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="field h-11 rounded-xl bg-slate-50"
+                  className="field h-11 rounded-lg bg-slate-50"
                   placeholder="you@example.com"
                   required
                 />
               </div>
 
               {error && (
-                <div className="alert-error rounded-xl">
+                <div className="alert-error rounded-lg">
                   {error}
                 </div>
               )}
               {notice && (
-                <div className="alert-success rounded-xl">
+                <div className="alert-success rounded-lg">
                   {notice}
                 </div>
               )}
@@ -204,7 +204,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="btn-primary w-full h-11 rounded-xl font-bold"
+                className="btn-primary w-full h-11 rounded-lg font-bold"
               >
                 {loading ? t('發送中...', 'Sending...') : t('發送重設連結', 'Send reset link')}
               </button>
