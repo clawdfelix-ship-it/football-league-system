@@ -137,6 +137,8 @@ export const teams = pgTable(
     captains: jsonb('captains'),
     color: varchar('color', { length: 50 }),
     sortOrder: integer('sort_order'),
+    // active | archived. Archived teams keep history but are hidden from new matches (migration 0018).
+    status: varchar('status', { length: 20 }).notNull().default('active'),
     leagueId: integer('league_id').notNull().default(1),
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at').defaultNow(),

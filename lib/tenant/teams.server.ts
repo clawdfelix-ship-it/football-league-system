@@ -3,6 +3,11 @@
  *
  * Replaces the hardcoded TEAMS / TEAM_CONTACTS constants as the source of
  * truth for team data. All operations are scoped to a single league.
+ *
+ * Deletion policy (migration 0018):
+ *   - No players + no matches → hard delete
+ *   - Players only            → release players (team_id=NULL) or cascade delete
+ *   - Has matches             → refuse; archive instead (keeps history)
  */
 
 import { and, eq, or, asc, sql } from 'drizzle-orm';
@@ -32,12 +37,128 @@ export type TeamInput = {
   sortOrder?: number;
 };
 
+export type TeamAssociations = {
+  playerCount: number;
+  matchCount: number;
+};
+
+/** Count players + matches referencing this team. Throws NOT_FOUND if team not in league. */
+export async function getTeamAssociations(leagueId: number, teamId: number): Promise<TeamAssociations> {
+  const [team] = await db
+    .select({ id: teams.id })
+    .from(teams)
+    .where(and(eq(teams.id, teamId), eq(teams.leagueId, leagueId)))
+    .limit(1);
+
+  if (!team) {
+    throw new TeamError('NOT_FOUND', `Team ${teamId} not found in league ${leagueId}`);
+  }
+
+  const [playerRow] = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(players)
+    .where(and(eq(players.leagueId, leagueId), eq(players.teamId, teamId)));
+
+  const [matchRow] = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(matches)
+    .where(
+      and(
+        eq(matches.leagueId, leagueId),
+        or(eq(matches.homeTeamId, teamId), eq(matches.awayTeamId, teamId))
+      )
+    );
+
+  return {
+    playerCount: Number(playerRow?.count ?? 0),
+    matchCount: Number(matchRow?.count ?? 0),
+  };
+}
+
+/**
+ * Delete a team, handling associated players.
+ *
+ * mode='release': players become free agents (team_id=NULL), team deleted.
+ * mode='delete':  players are deleted first, then team deleted.
+ *
+ * Throws HAS_MATCHES if the team has any match records — archive instead.
+ */
+export async function deleteTeamCascade(
+  leagueId: number,
+  teamId: number,
+  mode: 'release' | 'delete'
+): Promise<void> {
+  const assoc = await getTeamAssociations(leagueId, teamId);
+
+  if (assoc.matchCount > 0) {
+    throw new TeamError(
+      'HAS_MATCHES',
+      `Cannot delete — team has ${assoc.matchCount} match record(s). Archive instead.`
+    );
+  }
+
+  if (mode === 'release') {
+    await db
+      .update(players)
+      .set({ teamId: null, updatedAt: new Date() })
+      .where(and(eq(players.leagueId, leagueId), eq(players.teamId, teamId)));
+  } else {
+    await db
+      .delete(players)
+      .where(and(eq(players.leagueId, leagueId), eq(players.teamId, teamId)));
+  }
+
+  await db.delete(teams).where(eq(teams.id, teamId));
+}
+
+/** Archive a team (hide from new matches + listings, keep history). */
+export async function archiveTeam(leagueId: number, teamId: number): Promise<void> {
+  const [team] = await db
+    .select({ id: teams.id, status: teams.status })
+    .from(teams)
+    .where(and(eq(teams.id, teamId), eq(teams.leagueId, leagueId)))
+    .limit(1);
+
+  if (!team) {
+    throw new TeamError('NOT_FOUND', `Team ${teamId} not found in league ${leagueId}`);
+  }
+  if (team.status === 'archived') return;
+
+  await db
+    .update(teams)
+    .set({ status: 'archived', updatedAt: new Date() })
+    .where(eq(teams.id, teamId));
+}
+
+/** Un-archive a team back to active. */
+export async function unarchiveTeam(leagueId: number, teamId: number): Promise<void> {
+  const [team] = await db
+    .select({ id: teams.id, status: teams.status })
+    .from(teams)
+    .where(and(eq(teams.id, teamId), eq(teams.leagueId, leagueId)))
+    .limit(1);
+
+  if (!team) {
+    throw new TeamError('NOT_FOUND', `Team ${teamId} not found in league ${leagueId}`);
+  }
+  if (team.status === 'active') return;
+
+  await db
+    .update(teams)
+    .set({ status: 'active', updatedAt: new Date() })
+    .where(eq(teams.id, teamId));
+}
+
 /** List all teams for a league, ordered by sort_order then id. */
-export async function listTeamsForLeague(leagueId: number): Promise<TeamRow[]> {
+export async function listTeamsForLeague(leagueId: number, opts?: { includeArchived?: boolean }): Promise<TeamRow[]> {
+  const conditions = [eq(teams.leagueId, leagueId)];
+  if (!opts?.includeArchived) {
+    conditions.push(eq(teams.status, 'active'));
+  }
   return db
     .select()
     .from(teams)
-    .where(eq(teams.leagueId, leagueId))
+    .where(and(...conditions))
     .orderBy(asc(teams.sortOrder), asc(teams.id));
 }
 

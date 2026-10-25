@@ -9,6 +9,7 @@ type TeamRow = {
   nameZh: string | null;
   color: string | null;
   venue: string | null;
+  status: string;
   coach: { name: string; email?: string; phone?: string } | null;
   manager: { name: string; email?: string; phone?: string } | null;
   captains: Array<{ name: string; email?: string; phone?: string }> | null;
@@ -149,16 +150,79 @@ export function TeamManagerPanel() {
   }
 
   async function remove(id: number, name: string) {
-    if (!confirm(`確定要刪除球隊「${name}」？\n\n如果該隊有比賽或球員記錄，系統會拒絕刪除。`)) return;
+    // First, check associations
     setBusy(true);
     setError('');
     try {
-      const res = await fetch(`/api/teams/${id}`, { method: 'DELETE' });
-      const body = await res.json();
-      if (!body?.ok) throw new Error(body?.error?.message || '刪除失敗');
+      const assocRes = await fetch(`/api/teams/${id}`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ dryRun: true }) });
+      const assocBody = await assocRes.json();
+      
+      if (assocBody?.error?.code === 'HAS_MATCHES') {
+        // Has matches — suggest archive
+        if (confirm(`「${name}」有 ${assocBody.error.data?.matchCount ?? 0} 場比賽記錄，唔可以刪除。\n\n要唔要改為「封存」？封存後唔會喺新比賽出現，但歷史記錄會保留。`)) {
+          const archiveRes = await fetch(`/api/teams/${id}/archive`, { method: 'POST' });
+          const archiveBody = await archiveRes.json();
+          if (!archiveBody?.ok) throw new Error(archiveBody?.error?.message || '封存失敗');
+          await load();
+        }
+        return;
+      }
+
+      const playerCount = assocBody?.error?.data?.playerCount ?? 0;
+      if (playerCount > 0) {
+        // Has players — choose release or delete
+        const choice = confirm(
+          `「${name}」有 ${playerCount} 個球員。\n\n點處理球員？\nOK = 轉做「自由球員」（保留資料）\nCancel = 一併刪除`
+        );
+        const mode = choice ? 'release' : 'delete';
+        if (!confirm(`確定要${choice ? '釋放' : '刪除'} ${playerCount} 個球員並刪除「${name}」？`)) return;
+        
+        const res = await fetch(`/api/teams/${id}?mode=${mode}`, { method: 'DELETE' });
+        const body = await res.json();
+        if (!body?.ok) throw new Error(body?.error?.message || '刪除失敗');
+      } else {
+        // No associations — direct delete
+        if (!confirm(`確定要刪除球隊「${name}」？`)) return;
+        const res = await fetch(`/api/teams/${id}`, { method: 'DELETE' });
+        const body = await res.json();
+        if (!body?.ok) throw new Error(body?.error?.message || '刪除失敗');
+      }
+      
       await load();
     } catch (e) {
       setError(e instanceof Error ? e.message : '刪除失敗');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function archive(id: number, name: string) {
+    if (!confirm(`確定要封存「${name}」？封存後唔會喺新比賽出現，但歷史記錄會保留。`)) return;
+    setBusy(true);
+    setError('');
+    try {
+      const res = await fetch(`/api/teams/${id}/archive`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'archive' }) });
+      const body = await res.json();
+      if (!body?.ok) throw new Error(body?.error?.message || '封存失敗');
+      await load();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : '封存失敗');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function unarchive(id: number, name: string) {
+    if (!confirm(`確定要恢復「${name}」？`)) return;
+    setBusy(true);
+    setError('');
+    try {
+      const res = await fetch(`/api/teams/${id}/archive`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'unarchive' }) });
+      const body = await res.json();
+      if (!body?.ok) throw new Error(body?.error?.message || '恢復失敗');
+      await load();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : '恢復失敗');
     } finally {
       setBusy(false);
     }
@@ -250,6 +314,11 @@ export function TeamManagerPanel() {
                 <p className="font-semibold text-slate-900">
                   {t.name}
                   {t.nameZh && <span className="ml-2 text-sm font-normal text-slate-500">{t.nameZh}</span>}
+                  {t.status === 'archived' && (
+                    <span className="ml-2 rounded-full bg-slate-200 px-2 py-0.5 text-xs font-semibold text-slate-600">
+                      已封存
+                    </span>
+                  )}
                 </p>
                 <p className="mt-0.5 text-xs text-slate-400">
                   {t.shortName} · {t.venue ?? '—'} · 排序 {t.sortOrder ?? '—'}
@@ -262,12 +331,29 @@ export function TeamManagerPanel() {
                 >
                   編輯
                 </button>
-                <button
-                  onClick={() => void remove(t.id, t.name)}
-                  className="rounded-lg border border-red-600 bg-red-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-red-700"
-                >
-                  刪除
-                </button>
+                {t.status === 'active' ? (
+                  <>
+                    <button
+                      onClick={() => void archive(t.id, t.name)}
+                      className="rounded-lg border border-amber-600 bg-amber-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-700"
+                    >
+                      封存
+                    </button>
+                    <button
+                      onClick={() => void remove(t.id, t.name)}
+                      className="rounded-lg border border-red-600 bg-red-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-red-700"
+                    >
+                      刪除
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => void unarchive(t.id, t.name)}
+                    className="rounded-lg border border-green-600 bg-green-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-green-700"
+                  >
+                    恢復
+                  </button>
+                )}
               </div>
             </div>
           </li>

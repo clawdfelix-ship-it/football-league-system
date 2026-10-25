@@ -2,7 +2,13 @@ import { NextRequest } from 'next/server';
 import { ok, fail } from '@/lib/api/response';
 import { getAuthContext } from '@/lib/authz';
 import { getRequestLeagueId } from '@/lib/tenant/context';
-import { updateTeam, deleteTeam, TeamError } from '@/lib/tenant/teams.server';
+import {
+  updateTeam,
+  deleteTeam,
+  deleteTeamCascade,
+  getTeamAssociations,
+  TeamError,
+} from '@/lib/tenant/teams.server';
 import { z } from 'zod';
 import { zodDetails } from '@/lib/api/zod';
 
@@ -65,8 +71,11 @@ export async function PATCH(request: NextRequest, context: Params) {
   }
 }
 
-/** DELETE: delete a team (league admin only). Refused when the team has matches or players. */
-export async function DELETE(_request: NextRequest, context: Params) {
+/** DELETE: delete a team (league admin only).
+ * Query param `mode`: 'release' (players → free agents) or 'delete' (cascade delete players).
+ * If the team has matches, deletion is refused — use POST /archive instead.
+ */
+export async function DELETE(request: NextRequest, context: Params) {
   const auth = await getAuthContext();
   if (!auth) return fail(401, 'UNAUTHENTICATED', 'Unauthorized');
   if (auth.role !== 'admin') return fail(403, 'FORBIDDEN', 'League admin access required');
@@ -82,14 +91,24 @@ export async function DELETE(_request: NextRequest, context: Params) {
     return fail(400, 'VALIDATION_ERROR', 'Invalid team id');
   }
 
+  // Check associations first
+  const assoc = await getTeamAssociations(leagueId, teamId);
+  if (assoc.matchCount > 0) {
+    return fail(409, 'HAS_MATCHES', `球隊有 ${assoc.matchCount} 場比賽記錄，唔可以刪除。建議封存。`, {
+      playerCount: assoc.playerCount,
+      matchCount: assoc.matchCount,
+      suggestion: 'archive',
+    });
+  }
+
+  const mode = request.nextUrl.searchParams.get('mode') === 'delete' ? 'delete' : 'release';
+
   try {
-    await deleteTeam(leagueId, teamId);
-    return ok({ teamId });
+    await deleteTeamCascade(leagueId, teamId, mode);
+    return ok({ teamId, mode, releasedPlayers: mode === 'release' ? assoc.playerCount : 0, deletedPlayers: mode === 'delete' ? assoc.playerCount : 0 });
   } catch (e) {
     if (e instanceof TeamError) {
-      const status =
-        e.code === 'NOT_FOUND' ? 404 : e.code === 'HAS_MATCHES' || e.code === 'HAS_PLAYERS' ? 409 : 400;
-      return fail(status, e.code, e.message);
+      return fail(400, e.code, e.message);
     }
     console.error('[teams] delete failed:', e);
     return fail(500, 'INTERNAL_ERROR', 'Failed to delete team');
