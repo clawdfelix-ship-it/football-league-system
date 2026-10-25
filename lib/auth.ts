@@ -4,7 +4,7 @@ import { TEAMS } from '@/lib/constants';
 import { DEFAULT_LEAGUE_ID } from '@/lib/tenant/config';
 import { db } from '@/lib/db';
 import { users } from '@/lib/schema';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
 import { timingSafeEqual } from 'crypto';
 import { getManagerMapping } from '@/lib/auth/load-manager-mapping';
@@ -144,7 +144,11 @@ export const authOptions: NextAuthOptions = {
           try {
             const { redeemImpersonateToken } = await import('@/lib/tenant/impersonate.server');
             const { leagueId } = await redeemImpersonateToken(token);
-            // The token is bound to a league; sign in as that league's first admin user.
+            // The token is bound to a league; sign in as that league's first ADMIN user.
+            // IMPORTANT: filter role='admin' — without it, .orderBy(users.id).limit(1)
+            // can return a *manager* row (whichever user row has the smallest id for
+            // the league), which made the platform admin land on a team manager account
+            // instead of the league admin console (2026-10-26 Felix report).
             const [adminUser] = await db
               .select({
                 id: users.id,
@@ -154,7 +158,7 @@ export const authOptions: NextAuthOptions = {
                 leagueId: users.leagueId,
               })
               .from(users)
-              .where(eq(users.leagueId, leagueId))
+              .where(and(eq(users.leagueId, leagueId), eq(users.role, 'admin')))
               .orderBy(users.id)
               .limit(1);
             if (!adminUser) return null;
