@@ -193,7 +193,7 @@ export default function OverviewPage() {
               </h3>
               <div className="space-y-2">
                 <p className="font-bold text-slate-800">{isZh ? '提前通知' : 'Advance Notice'}</p>
-                <p className="text-sm text-slate-700 leading-relaxed">
+                <p className="text-sm text-slate-700 leading-normal">
                   {isZh 
                     ? '球隊應該在不少於 30 日前聯絡會方有關申請休假事宜，該賽周將不會安排任何比賽。' 
                     : 'Teams are requested to advise the fixtures officer as early as possible (and at least 30 days before the event) if a special event that involves a majority of the team is planned (e.g., company dinner, weddings), the team will not be required to play a fixture on that week.'}
