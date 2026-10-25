@@ -154,7 +154,7 @@ function PlayersPageInner(props: { initialPlayers: PublicPlayer[]; teams: TeamDi
                     style={{ animationDelay: `${Math.min(i, 20) * 20}ms` }}
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <span className="shrink-0 bg-slate-900 text-white px-2 py-1 rounded-md text-xs font-black">
+                      <span className="shrink-0 bg-slate-900 text-white px-2 py-1 rounded-md text-xs font-bold">
                         #{p.jerseyNumber ?? '-'}
                       </span>
                       <div className="min-w-0">

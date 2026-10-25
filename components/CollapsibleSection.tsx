@@ -20,7 +20,7 @@ export function CollapsibleSection({
   const [expanded, setExpanded] = useState(defaultExpanded);
 
   return (
-    <div className={`rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm ${className}`}>
+    <div className={`rounded-lg border border-slate-200 bg-white overflow-hidden shadow-sm ${className}`}>
       <button
         onClick={() => setExpanded(!expanded)}
         className="w-full flex items-center justify-between gap-3 p-4 sm:p-6 text-left hover:bg-slate-50 transition-colors"
@@ -28,7 +28,7 @@ export function CollapsibleSection({
         <div className="flex items-center gap-3">
           <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
           {badge !== undefined && (
-            <span className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-medium">
+            <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-medium">
               {badge}
             </span>
           )}

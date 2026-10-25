@@ -72,7 +72,7 @@ function PlayerRow({ player, onEdit }: { player: Player; onEdit: (player: Player
     <div className="flex items-center justify-between gap-2 py-1.5 px-2 rounded-md hover:bg-slate-100 transition-colors">
       <div className="flex items-center gap-2 min-w-0 flex-1">
         <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0">
-          <span className="text-[10px] font-black text-slate-700">#{player.jerseyNumber ?? '—'}</span>
+          <span className="text-[10px] font-bold text-slate-700">#{player.jerseyNumber ?? '—'}</span>
         </div>
         <span className="text-xs font-medium text-slate-800 truncate">{player.name}</span>
       </div>
@@ -282,7 +282,7 @@ export function TeamCard({ team, players: initialPlayers }: TeamCardProps) {
           <div className={`w-3.5 h-3.5 rounded-full bg-gradient-to-br ${team.color} flex-shrink-0`} />
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <span className="font-black text-slate-900 text-base">{team.shortName}</span>
+              <span className="font-bold text-slate-900 text-base">{team.shortName}</span>
               <span className="text-xs text-slate-400">({team.teamZh})</span>
             </div>
             <div className="text-xs text-slate-400 mt-0.5">

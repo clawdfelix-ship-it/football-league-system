@@ -50,10 +50,10 @@ export default function DashboardView({
   return (
     <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans">
       <header className="bg-[#0f172a] bg-gradient-to-b from-[#0f172a] to-[#1e293b] text-white pt-14 pb-20 sm:pt-16 sm:pb-24 px-4 sm:px-6 text-center">
-        <h2 className="font-black mb-2 tracking-[-0.02em] leading-[1.05] text-balance text-[clamp(1.9rem,7vw,3.75rem)]">
+        <h2 className="font-bold mb-2 tracking-[-0.02em] leading-[1.05] text-balance text-[clamp(1.9rem,7vw,3.75rem)]">
           {t('數據總覽', 'DASHBOARD')}
         </h2>
-        <p className="text-slate-300 font-light tracking-widest uppercase text-[clamp(0.7rem,2.6vw,1.125rem)]">
+        <p className="text-slate-300 font-normal tracking-widest uppercase text-[clamp(0.7rem,2.6vw,1.125rem)]">
           {t('聯賽統計', 'League Statistics')}
         </p>
       </header>

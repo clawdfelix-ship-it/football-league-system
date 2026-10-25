@@ -28,7 +28,7 @@ export default function ContactsPage() {
             <div className="p-6 grid gap-4">
               {teams.map((team) => (
                 <div key={team.name} className="p-4 bg-slate-50 rounded-lg border border-slate-200">
-                  <div className="font-black text-slate-900 mb-2">{team.name}</div>
+                  <div className="font-bold text-slate-900 mb-2">{team.name}</div>
                   <div className="grid md:grid-cols-2 gap-2">
                     {(team.captains ?? []).map((c) => (
                       <div key={`${team.name}-${c.email ?? c.name}`} className="flex items-center justify-between gap-3 bg-white border border-slate-200 rounded-md px-3 py-2">

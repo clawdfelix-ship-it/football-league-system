@@ -136,7 +136,7 @@ export default function FixturesClient(props: {
                             : 'TBC'}
                         </span>
                         {match.status === 'finished' ? (
-                          <span className="text-2xl font-black text-slate-900">
+                          <span className="text-2xl font-bold text-slate-900">
                             {match.homeScore ?? 0}-{match.awayScore ?? 0}
                           </span>
                         ) : (
@@ -242,7 +242,7 @@ export default function FixturesClient(props: {
                       {/* VS / Score */}
                       <div className="flex flex-col items-center px-2 sm:px-6">
                         {match.status === 'finished' ? (
-                          <div className="text-3xl font-black text-slate-900">
+                          <div className="text-3xl font-bold text-slate-900">
                             {match.homeScore ?? 0} - {match.awayScore ?? 0}
                           </div>
                         ) : (

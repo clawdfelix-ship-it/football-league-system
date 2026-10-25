@@ -236,7 +236,7 @@ export default async function AdminPage() {
                     className="flex flex-col items-center justify-center gap-2 rounded-xl border border-slate-100 bg-slate-50 p-4 text-center transition hover:bg-slate-100 hover:shadow-sm"
                     target="_blank"
                   >
-                    <div className="text-lg font-black px-4 py-2 rounded-lg bg-slate-700 text-white">
+                    <div className="text-lg font-bold px-4 py-2 rounded-lg bg-slate-700 text-white">
                       {team.shortName}
                     </div>
                     <div className="text-xs text-slate-500">
@@ -249,7 +249,7 @@ export default async function AdminPage() {
                   className="flex flex-col items-center justify-center gap-2 rounded-xl border border-slate-100 bg-slate-50 p-4 text-center transition hover:bg-slate-100 hover:shadow-sm"
                   target="_blank"
                 >
-                  <div className="text-lg font-black px-4 py-2 rounded-lg bg-slate-700 text-white">DEMO</div>
+                  <div className="text-lg font-bold px-4 py-2 rounded-lg bg-slate-700 text-white">DEMO</div>
                   <div className="text-xs text-slate-500">Real Madrid</div>
                 </Link>
               </div>

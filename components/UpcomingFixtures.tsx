@@ -181,7 +181,7 @@ export function UpcomingFixtures({
                 {/* VS / Score */}
                 <div className="flex flex-col items-center px-2 min-w-[60px]">
                   {match.status === 'finished' ? (
-                    <div className="text-lg font-black text-slate-900">
+                    <div className="text-lg font-bold text-slate-900">
                       {match.homeScore ?? 0} - {match.awayScore ?? 0}
                     </div>
                   ) : (

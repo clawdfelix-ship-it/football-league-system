@@ -34,7 +34,7 @@ export default function PageHero({
         {title}
       </h1>
       {subtitle ? (
-        <p className="max-w-2xl text-balance font-light tracking-widest uppercase text-blue-200 text-[clamp(0.7rem,2.6vw,1.125rem)]">
+        <p className="max-w-2xl text-balance font-normal tracking-widest uppercase text-blue-200 text-[clamp(0.7rem,2.6vw,1.125rem)]">
           {subtitle}
         </p>
       ) : null}

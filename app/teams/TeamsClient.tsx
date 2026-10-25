@@ -40,7 +40,7 @@ export default function TeamsClient(props: { initialTeams: TeamInfo[] }) {
                   <div className="mb-4">
                     <div className="w-16 h-16 mx-auto bg-white rounded-full flex items-center justify-center border-2 border-slate-300 shadow-md">
                       <span
-                        className={`text-2xl font-black bg-gradient-to-br ${team.color} bg-clip-text text-transparent`}
+                        className={`text-2xl font-bold bg-gradient-to-br ${team.color} bg-clip-text text-transparent`}
                       >
                         {team.shortName.substring(0, 2)}
                       </span>

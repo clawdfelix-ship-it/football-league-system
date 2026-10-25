@@ -84,7 +84,7 @@ export function PlayerContactList({ players, showTeamFilter = false }: PlayerCon
                 <div className="flex items-center gap-3 min-w-0 flex-1">
                   {/* Jersey badge */}
                   <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0">
-                    <span className="text-xs font-black text-slate-700">
+                    <span className="text-xs font-bold text-slate-700">
                       #{p.jerseyNumber ?? '—'}
                     </span>
                   </div>
@@ -99,7 +99,7 @@ export function PlayerContactList({ players, showTeamFilter = false }: PlayerCon
                       {team && (
                         <>
                           <span>•</span>
-                          <span className={`bg-gradient-to-br ${team.color} bg-clip-text text-transparent font-black text-[10px]`}>
+                          <span className={`bg-gradient-to-br ${team.color} bg-clip-text text-transparent font-bold text-[10px]`}>
                             {team.shortName}
                           </span>
                         </>

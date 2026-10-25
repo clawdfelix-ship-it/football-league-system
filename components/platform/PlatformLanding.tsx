@@ -867,7 +867,7 @@ export default function PlatformLanding() {
                 </span>
               </Reveal>
               <Reveal delay={70}>
-                <h1 className="mt-5 text-balance text-4xl font-extrabold leading-[1.08] tracking-tight text-white [text-shadow:0_2px_24px_rgba(2,6,23,0.65)] sm:text-5xl">
+                <h1 className="mt-5 text-balance text-4xl font-bold leading-[1.08] tracking-tight text-white [text-shadow:0_2px_24px_rgba(2,6,23,0.65)] sm:text-5xl">
                   {t(HERO.titleZh, HERO.titleEn)}
                 </h1>
               </Reveal>
@@ -897,7 +897,7 @@ export default function PlatformLanding() {
                 <dl className="mt-10 grid max-w-md grid-cols-3 gap-6">
                   {STATS.map((s) => (
                     <div key={s.n + s.labelEn}>
-                      <dt className="text-2xl font-extrabold tracking-tight text-white">{s.n}</dt>
+                      <dt className="text-2xl font-bold tracking-tight text-white">{s.n}</dt>
                       <dd className="mt-1 text-xs leading-snug text-blue-50/90">{t(s.labelZh, s.labelEn)}</dd>
                     </div>
                   ))}
@@ -1053,7 +1053,7 @@ export default function PlatformLanding() {
                           <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#0f172a]/10 text-[#0f172a]">
                             <StepIcon className="h-6 w-6" />
                           </span>
-                          <span className="text-2xl font-extrabold tracking-tight text-slate-200">0{i + 1}</span>
+                          <span className="text-2xl font-bold tracking-tight text-slate-200">0{i + 1}</span>
                         </div>
                         <p className="text-[15px] font-medium leading-snug text-slate-900">{t(s.zh, s.en)}</p>
                       </div>

@@ -59,12 +59,12 @@ export default function HeadToHeadPage() {
         <main className="page-container -mt-16 pb-20">
           <div className="card overflow-hidden">
             <div className="p-5 sm:p-6">
-              <h2 className="text-lg font-black text-slate-800 mb-1">{t('全隊總覽', 'All Teams Overview')}</h2>
+              <h2 className="text-lg font-bold text-slate-800 mb-1">{t('全隊總覽', 'All Teams Overview')}</h2>
               <p className="text-xs text-slate-400 mb-4">{t('各隊勝 / 和 / 負總覽', 'All Teams — Win / Draw / Loss Overview')}</p>
               <HeadToHeadChart serverMatches={matches} />
             </div>
             <div className="border-t border-slate-100 p-5 sm:p-6">
-              <h2 className="text-lg font-black text-slate-800 mb-4">{t('對戰矩陣', 'Head-to-Head Matrix')}</h2>
+              <h2 className="text-lg font-bold text-slate-800 mb-4">{t('對戰矩陣', 'Head-to-Head Matrix')}</h2>
               <HeadToHeadTable serverMatches={matches} />
             </div>
           </div>

@@ -317,8 +317,8 @@ export default function HomeClient(props: {
           <div className="mb-5 sm:mb-6 h-24 w-24 sm:h-32 sm:w-32">
             <Logo className="h-full w-full drop-shadow-lg" />
           </div>
-          <h1 className="font-black mb-2 tracking-[-0.02em] leading-[1.05] text-balance text-[clamp(1.9rem,7vw,3.75rem)]">Hong Kong Bank League 2026</h1>
-          <p className="text-blue-200 font-light tracking-widest uppercase text-[clamp(0.7rem,2.6vw,1.125rem)] text-balance">
+          <h1 className="font-bold mb-2 tracking-[-0.02em] leading-[1.05] text-balance text-[clamp(1.9rem,7vw,3.75rem)]">Hong Kong Bank League 2026</h1>
+          <p className="text-blue-200 font-normal tracking-widest uppercase text-[clamp(0.7rem,2.6vw,1.125rem)] text-balance">
             Partnered with ZENEX SPORTS | {t('香港銀行足球聯賽2026', 'Hong Kong Bank Football League 2026')}
           </p>
         </header>
@@ -341,8 +341,8 @@ export default function HomeClient(props: {
           <div className="mb-5 sm:mb-6 h-24 w-24 sm:h-32 sm:w-32">
             <Logo className="h-full w-full drop-shadow-lg" />
           </div>
-          <h1 className="font-black mb-2 tracking-[-0.02em] leading-[1.05] text-balance text-[clamp(1.9rem,7vw,3.75rem)]">Hong Kong Bank League 2026</h1>
-          <p className="text-blue-200 font-light tracking-widest uppercase text-[clamp(0.7rem,2.6vw,1.125rem)] text-balance">
+          <h1 className="font-bold mb-2 tracking-[-0.02em] leading-[1.05] text-balance text-[clamp(1.9rem,7vw,3.75rem)]">Hong Kong Bank League 2026</h1>
+          <p className="text-blue-200 font-normal tracking-widest uppercase text-[clamp(0.7rem,2.6vw,1.125rem)] text-balance">
             Partnered with ZENEX SPORTS | {t('香港銀行足球聯賽2026', 'Hong Kong Bank Football League 2026')}
           </p>
         </header>
@@ -356,7 +356,7 @@ export default function HomeClient(props: {
                   type="button"
                   onClick={refresh}
                   disabled={loading}
-                  className="text-xs bg-yellow-500 text-black px-3 py-1.5 rounded font-black disabled:opacity-70 inline-flex items-center gap-1.5"
+                  className="text-xs bg-yellow-500 text-black px-3 py-1.5 rounded font-bold disabled:opacity-70 inline-flex items-center gap-1.5"
                 >
                   {loading && (
                     <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24" fill="none">
@@ -411,7 +411,7 @@ export default function HomeClient(props: {
                               : 'hover:bg-slate-50'
                           }`}
                         >
-                          <td className="px-2 md:px-6 py-2.5 md:py-4 font-black text-base md:text-xl text-center text-slate-900">
+                          <td className="px-2 md:px-6 py-2.5 md:py-4 font-bold text-base md:text-xl text-center text-slate-900">
                             <span className="inline-flex items-center gap-0.5 md:gap-1">
                               {index === 0 && <span title={t('冠軍', 'Champion')}>🥇</span>}
                               {index === 1 && <span title={t('亞軍', 'Runner-up')}>🥈</span>}
@@ -441,7 +441,7 @@ export default function HomeClient(props: {
                               {team.teamName}
                             </span>
                           </td>
-                          <td className="px-2 md:px-6 py-2.5 md:py-4 text-center bg-slate-50 text-slate-900 font-black text-lg md:text-2xl border-x border-slate-100">
+                          <td className="px-2 md:px-6 py-2.5 md:py-4 text-center bg-slate-50 text-slate-900 font-bold text-lg md:text-2xl border-x border-slate-100">
                             {team.points}
                           </td>
                           <td className="px-2 md:px-6 py-2.5 md:py-4 text-center text-slate-400 text-sm md:text-base">{team.played}</td>
@@ -590,7 +590,7 @@ export default function HomeClient(props: {
                           </div>
                         </div>
                         <div className="text-center w-1/3">
-                          <div className="font-black text-lg text-slate-900">
+                          <div className="font-bold text-lg text-slate-900">
                             {match.homeScore !== null ? match.homeScore : 0} - {match.awayScore !== null ? match.awayScore : 0}
                           </div>
                           <div className="text-xs text-slate-500">{t('完場', 'Final')}</div>

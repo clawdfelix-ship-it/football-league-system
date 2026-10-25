@@ -12,10 +12,10 @@ export default function PdfPage() {
     <HomeLayout>
       <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans">
         <header className="bg-[#0f172a] bg-gradient-to-b from-[#0f172a] to-[#1e293b] text-white pt-10 pb-12 px-6 text-center">
-          <h2 className="text-4xl md:text-5xl font-black italic mb-2 tracking-tight">
+          <h2 className="text-4xl md:text-5xl font-bold italic mb-2 tracking-tight">
             {t('PDF 文件', 'PDF')}
           </h2>
-          <p className="text-blue-200 text-base font-light tracking-widest uppercase">
+          <p className="text-blue-200 text-base font-normal tracking-widest uppercase">
             HKBL2026-ZENEX.pdf
           </p>
         </header>
@@ -28,7 +28,7 @@ export default function PdfPage() {
                 href="/HKBL2026-ZENEX.pdf"
                 target="_blank"
                 rel="noreferrer"
-                className="text-xs bg-yellow-500 text-black px-3 py-2 rounded font-black hover:opacity-90 transition-opacity"
+                className="text-xs bg-yellow-500 text-black px-3 py-2 rounded font-bold hover:opacity-90 transition-opacity"
               >
                 {t('新分頁打開', 'Open in new tab')}
               </a>
