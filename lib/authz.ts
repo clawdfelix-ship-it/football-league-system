@@ -5,6 +5,7 @@ import { ROLES, normalizeRole, type Role } from '@/lib/auth/roles';
 import { isPlatformAdminEmail } from '@/lib/tenant/platform-admin';
 import { getRequestLeagueId } from '@/lib/tenant/context';
 import { DEFAULT_LEAGUE_ID } from '@/lib/tenant/config';
+import { getTeamNameFromDbId, resolveManagerTeamDbId } from '@/lib/tenant/team-auth.server';
 
 export type { Role } from '@/lib/auth/roles';
 
@@ -56,9 +57,21 @@ export async function getAuthContext(): Promise<AuthContext | null> {
     return null;
   }
 
+  // ---- Team identity migration (Phase B) ----
+  // Convert array-index teamId to DB id when possible.
+  let resolvedTeamId = typeof user?.teamId === 'number' ? user.teamId : undefined;
+  if (role === ROLES.MANAGER && resolvedTeamId !== undefined && user?.email) {
+    // Check if this is a legacy array index by seeing if the user already has team_id set
+    const dbTeamId = await resolveManagerTeamDbId(user.email as string);
+    if (dbTeamId !== null && dbTeamId !== resolvedTeamId) {
+      // Session holds array index; upgrade to DB id
+      resolvedTeamId = dbTeamId;
+    }
+  }
+
   return {
     role,
-    teamId: typeof user?.teamId === 'number' ? user.teamId : undefined,
+    teamId: resolvedTeamId,
     username:
       (typeof user?.username === 'string' ? user.username : undefined) ??
       (typeof user?.name === 'string' ? user.name : undefined),
@@ -68,12 +81,24 @@ export async function getAuthContext(): Promise<AuthContext | null> {
   };
 }
 
-export function getTeamNameFromTeamId(teamId: number | undefined): string | null {
+export async function getTeamNameFromTeamId(teamId: number | undefined): Promise<string | null> {
   if (teamId === undefined) return null;
+  // First try DB id lookup (source of truth)
+  const dbName = await getTeamNameFromDbId(teamId);
+  if (dbName) return dbName;
+  // Fallback: legacy array index (for sessions that haven't been upgraded)
   const team = TEAMS[teamId];
   if (!team) return null;
   if (team.name === 'DEMO') return null;
   return team.name;
+}
+
+/**
+ * Async version: resolves DB id to team name. Use this for new code.
+ */
+export async function getTeamNameFromDbIdAsync(teamId: number | undefined): Promise<string | null> {
+  if (teamId === undefined) return null;
+  return getTeamNameFromDbId(teamId);
 }
 
 /**

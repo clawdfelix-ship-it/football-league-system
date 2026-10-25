@@ -22,7 +22,7 @@ export async function DELETE(
     const playerId = parsed.id;
 
     if (auth.role === 'manager') {
-      const teamName = getTeamNameFromTeamId(auth.teamId);
+      const teamName = await getTeamNameFromTeamId(auth.teamId);
       if (!teamName) {
         return fail(403, 'FORBIDDEN', 'Forbidden');
       }

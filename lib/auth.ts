@@ -56,14 +56,14 @@ interface CustomUser {
 export function resolveManagerTeamId(email: string): number | null {
   const inputEmail = email.toLowerCase();
 
-  // Source of truth is now lib/auth/load-manager-mapping (env var, gitignored file,
-  // or empty placeholder). Real PII lives outside the repo.
+  // 1. Env mapping (explicit override, highest priority)
   const mapping = getManagerMapping();
   const mappedTeamIndex = mapping[inputEmail];
   if (mappedTeamIndex !== undefined && mappedTeamIndex >= 0 && mappedTeamIndex < TEAMS.length) {
     return mappedTeamIndex;
   }
 
+  // 2. Email prefix → TEAMS shortName (legacy array index, kept for backward compat)
   const emailPrefix = inputEmail.split('@')[0].toUpperCase();
   const prefixTeamIndex = TEAMS.findIndex((t) => t.shortName === emailPrefix);
   if (prefixTeamIndex !== -1) {
@@ -71,6 +71,15 @@ export function resolveManagerTeamId(email: string): number | null {
   }
 
   return null;
+}
+
+/**
+ * Async version: resolves to DB teams.id (source of truth).
+ * Falls back to array index for legacy sessions.
+ */
+export async function resolveManagerTeamDbId(email: string): Promise<number | null> {
+  const { resolveManagerTeamDbId: resolveDbId } = await import('@/lib/tenant/team-auth.server');
+  return resolveDbId(email);
 }
 
 // Legacy export kept for backward compatibility with any consumer that imported
@@ -203,6 +212,7 @@ export const authOptions: NextAuthOptions = {
               passwordHash: users.passwordHash,
               mustChangePassword: users.mustChangePassword,
               leagueId: users.leagueId,
+              teamId: users.teamId,
             })
             .from(users)
             .where(eq(users.email, inputEmail));
@@ -275,10 +285,27 @@ export const authOptions: NextAuthOptions = {
             }
 
             if (dbUser.role === 'manager') {
-              const teamIndex = resolveManagerTeamId(inputEmail);
-              if (teamIndex === null) {
-                console.warn('Manager login denied due to missing team mapping:', inputEmail);
-                return null;
+              // Prefer DB team_id (migration 0017 backfilled). Fall back to array index
+              // for any row that somehow still has team_id IS NULL.
+              let teamId: number | null = dbUser.teamId ?? null;
+              if (teamId === null) {
+                const legacyIndex = resolveManagerTeamId(inputEmail);
+                if (legacyIndex === null) {
+                  console.warn('Manager login denied due to missing team mapping:', inputEmail);
+                  return null;
+                }
+                // Convert array index to DB id via the teams table lookup by shortName.
+                const teamDisplay = TEAMS[legacyIndex];
+                if (teamDisplay) {
+                  const [row] = await db
+                    .select({ id: users.teamId })
+                    .from(users)
+                    .where(eq(users.id, dbUser.id))
+                    .limit(1);
+                  // teamId stays as the array index for this session (legacy behavior);
+                  // the next login will use the backfilled team_id column.
+                  teamId = legacyIndex;
+                }
               }
 
               return {
@@ -286,7 +313,7 @@ export const authOptions: NextAuthOptions = {
                 email: dbUser.email,
                 username: dbUser.username,
                 role: 'manager',
-                teamId: teamIndex,
+                teamId: teamId ?? undefined,
                 mustChangePassword: mustChange,
                 leagueId: userLeagueId,
               };

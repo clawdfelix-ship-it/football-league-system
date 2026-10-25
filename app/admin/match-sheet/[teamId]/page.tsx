@@ -23,7 +23,7 @@ export default async function MatchSheet({ params }: { params: Promise<{ teamId:
   }
 
   if (auth.role === 'manager') {
-    const managerTeamName = getTeamNameFromTeamId(auth.teamId);
+    const managerTeamName = await getTeamNameFromTeamId(auth.teamId);
     if (!managerTeamName || managerTeamName !== team.name) {
       redirect('/admin');
     }

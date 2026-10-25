@@ -57,7 +57,7 @@ async function getPlayerMutationScope() {
     return { ok: true as const, role: 'admin' as const, teamName: null };
   }
 
-  const managerTeamName = getTeamNameFromTeamId(auth.teamId);
+  const managerTeamName = await getTeamNameFromTeamId(auth.teamId);
   if (!managerTeamName) {
     return { ok: false as const, message: 'Forbidden' };
   }

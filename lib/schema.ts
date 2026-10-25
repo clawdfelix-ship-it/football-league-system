@@ -73,6 +73,8 @@ export const users = pgTable('users', {
   // Platform admin rows carry NULL; league users are scoped. Default keeps the
   // current single-tenant inserts working until Phase 5 sets it explicitly.
   leagueId: integer('league_id'),
+  // DB id of the team this user manages (migration 0017). NULL = legacy array-index session.
+  teamId: integer('team_id'),
   createdAt: timestamp('created_at').defaultNow(),
 });
 

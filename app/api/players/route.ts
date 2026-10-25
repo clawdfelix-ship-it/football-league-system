@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     const body = CreatePlayerSchema.parse(await request.json());
     
     let teamName: string | null =
-      auth.role === 'manager' ? getTeamNameFromTeamId(auth.teamId) : body.team ?? null;
+      auth.role === 'manager' ? await getTeamNameFromTeamId(auth.teamId) : body.team ?? null;
 
     if (teamName) {
       teamName = teamName.trim().toUpperCase();

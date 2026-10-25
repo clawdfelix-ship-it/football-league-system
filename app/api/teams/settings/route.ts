@@ -35,7 +35,7 @@ export async function PUT(request: NextRequest) {
     const record =
       body && typeof body === 'object' && !Array.isArray(body) ? (body as Record<string, unknown>) : {};
     const managerTeamName =
-      auth.role === 'manager' ? (getTeamNameFromTeamId(auth.teamId) ?? null) : null;
+      auth.role === 'manager' ? (await getTeamNameFromTeamId(auth.teamId)) ?? null : null;
     if (auth.role === 'manager' && !managerTeamName) {
       return fail(403, 'FORBIDDEN', 'Manager team is not configured');
     }

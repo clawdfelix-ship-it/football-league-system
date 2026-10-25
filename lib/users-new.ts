@@ -16,6 +16,7 @@ export async function getUserByEmail(email: string): Promise<User | undefined> {
         mustChangePassword: users.mustChangePassword,
         passwordChangedAt: users.passwordChangedAt,
         leagueId: users.leagueId,
+        teamId: users.teamId,
         createdAt: users.createdAt,
       })
       .from(users)
@@ -40,6 +41,7 @@ export async function getUserById(id: number): Promise<User | undefined> {
         mustChangePassword: users.mustChangePassword,
         passwordChangedAt: users.passwordChangedAt,
         leagueId: users.leagueId,
+        teamId: users.teamId,
         createdAt: users.createdAt,
       })
       .from(users)
@@ -161,6 +163,7 @@ export async function getAllUsers(): Promise<User[]> {
       mustChangePassword: users.mustChangePassword,
       passwordChangedAt: users.passwordChangedAt,
       leagueId: users.leagueId,
+      teamId: users.teamId,
       createdAt: users.createdAt,
     }).from(users);
     return allUsers;
