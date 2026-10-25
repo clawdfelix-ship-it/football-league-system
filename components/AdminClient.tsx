@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { updateMatch, deleteMatch, resetSeason, addMatch } from '@/lib/actions';
-import { TEAMS } from '@/lib/constants';
+import { useTeams } from '@/lib/teams/use-teams';
 
 interface Match {
   id: number;
@@ -265,6 +265,7 @@ export function MatchList({
 
 export function MatchForm() {
   const [isCustomVenue, setIsCustomVenue] = useState(false);
+  const { teams } = useTeams();
 
   const handleSubmitMatch = async (formData: FormData) => {
     const homeTeam = formData.get('homeTeam')?.toString().trim() ?? '';
@@ -314,7 +315,7 @@ export function MatchForm() {
             <label className="text-sm font-medium text-slate-800">Home team</label>
             <select name="homeTeam" required className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-[#0f172a] focus:outline-none focus:ring-2 focus:ring-[#0f172a]/25">
               <option value="">Select Home Team</option>
-              {TEAMS.map(team => (
+              {teams.map(team => (
                 <option key={team.name} value={team.name}>{team.name}</option>
               ))}
             </select>
@@ -323,7 +324,7 @@ export function MatchForm() {
             <label className="text-sm font-medium text-slate-800">Away team</label>
             <select name="awayTeam" required className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-[#0f172a] focus:outline-none focus:ring-2 focus:ring-[#0f172a]/25">
               <option value="">Select Away Team</option>
-              {TEAMS.map(team => (
+              {teams.map(team => (
                 <option key={team.name} value={team.name}>{team.name}</option>
               ))}
             </select>

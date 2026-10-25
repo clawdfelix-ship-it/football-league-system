@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import HomeClient from '@/app/HomeClient';
+import { getTeamsForCurrentLeague } from '@/lib/teams/load';
 import PlatformLanding from '@/components/platform/PlatformLanding';
 import { getRequestTenant } from '@/lib/tenant/context';
 import { shouldRenderPlatformLanding } from '@/lib/tenant/landing';
@@ -68,6 +69,9 @@ export default async function Home() {
     announcements: PublicAnnouncement[];
   } = { teamSettings: [], fixtures: [], results: [], announcements: [] };
 
+  // Load teams from DB (source of truth since migration 0016)
+  const teams = await getTeamsForCurrentLeague();
+
   try {
     const [teamSettingsRows, fixturesRows, resultsRows, announcementsRows] = await Promise.all([
       listTeamSettings(),
@@ -120,5 +124,5 @@ export default async function Home() {
   } catch {
   }
 
-  return <HomeClient initial={initial} />;
+  return <HomeClient initial={{ ...initial, teams }} />;
 }

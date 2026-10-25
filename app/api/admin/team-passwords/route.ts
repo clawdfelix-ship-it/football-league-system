@@ -10,10 +10,10 @@ import { and, eq } from 'drizzle-orm';
 import { hashPassword } from '@/lib/auth/password';
 import { generateTempPassword } from '@/lib/auth/temp-password';
 import { audit } from '@/lib/auth/audit-log';
-import { TEAMS } from '@/lib/constants';
 import { sendMail } from '@/lib/mail/mailer';
 import { passwordResetByAdminEmail } from '@/lib/mail/templates';
 import { getRequestLeagueId } from '@/lib/tenant/context';
+import { teams } from '@/lib/schema';
 
 /**
  * Admin-only endpoint to manage per-team manager passwords.
@@ -80,14 +80,22 @@ export async function POST(request: Request) {
     return fail(400, 'VALIDATION_ERROR', 'Invalid request body', zodDetails(e));
   }
 
-  const team = TEAMS.find((t) => t.shortName === input.team.toUpperCase() || t.name === input.team);
+  const leagueId = await getRequestLeagueId();
+  const [team] = await db
+    .select({ id: teams.id, name: teams.name, shortName: teams.shortName })
+    .from(teams)
+    .where(and(eq(teams.leagueId, leagueId)))
+    .limit(1);
   if (!team) {
     return fail(404, 'NOT_FOUND', `Unknown team: ${input.team}`);
   }
 
-  // Resolve captain emails from lib/constants (existing source of truth).
-  const TEAM_CONTACTS = await import('@/lib/team-contacts').then((m) => m.TEAM_CONTACTS);
-  const teamBlock = TEAM_CONTACTS.find((t) => t.team === team.shortName);
+  // Resolve captain emails from DB (teams table, migrated from hardcoded TEAM_CONTACTS).
+  const [teamBlock] = await db
+    .select({ captains: teams.captains })
+    .from(teams)
+    .where(and(eq(teams.leagueId, leagueId), eq(teams.id, team.id)))
+    .limit(1);
   if (!teamBlock) {
     return fail(404, 'NOT_FOUND', `No captain list for team: ${team.shortName}`);
   }
@@ -96,7 +104,9 @@ export async function POST(request: Request) {
   const now = new Date();
   const affectedEmails: string[] = [];
 
-  for (const captain of teamBlock.captains) {
+  const captainsList = (teamBlock.captains ?? []) as Array<{ name?: string; email?: string; phone?: string }>;
+
+  for (const captain of captainsList) {
     if (!captain.email) continue;
     const email = captain.email.toLowerCase();
     const [existing] = await db

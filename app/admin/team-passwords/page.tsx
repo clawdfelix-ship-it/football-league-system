@@ -2,7 +2,7 @@
 
 import { useState, useEffect, FormEvent } from 'react';
 import { useSession } from 'next-auth/react';
-import { TEAMS } from '@/lib/constants';
+import { useTeams } from '@/lib/teams/use-teams';
 
 type Issued = {
   team: string;
@@ -120,7 +120,8 @@ export default function AdminTeamPasswordsPage() {
     );
   }
 
-  const teams = TEAMS.filter((t) => t.name !== 'DEMO');
+  const { teams: allTeams } = useTeams();
+  const teams = allTeams.filter((t) => t.name !== 'DEMO');
 
   return (
     <div className="page-container-narrow py-10">

@@ -1,5 +1,5 @@
 import TeamsClient from '@/app/teams/TeamsClient';
-import { TEAMS } from '@/lib/constants';
+import { getTeamsForCurrentLeague } from '@/lib/teams/load';
 import { listPublicPlayers } from '@/lib/queries';
 
 export const dynamic = 'force-dynamic';
@@ -11,7 +11,8 @@ export default async function TeamsPage() {
   } catch {
     players = [];
   }
-  const teamList = TEAMS.filter((t) => t.name !== 'DEMO').map((team) => {
+  const teams = await getTeamsForCurrentLeague();
+  const teamList = teams.filter((t) => t.name !== 'DEMO').map((team) => {
     const teamPlayers = players.filter((p) => p.team === team.name);
     return {
       ...team,

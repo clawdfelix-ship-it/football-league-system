@@ -3,12 +3,14 @@
 import HomeLayout from '@/components/HomeLayout';
 import PageHero from '@/components/PageHero';
 import { useLanguage } from '@/context/LanguageContext';
-import { TEAM_CONTACTS } from '@/lib/team-contacts';
+import { useTeams } from '@/lib/teams/use-teams';
 
 export const dynamic = 'force-dynamic';
 
 export default function ContactsPage() {
   const { t } = useLanguage();
+  const { teams: allTeams, loading } = useTeams();
+  const teams = allTeams.filter((t) => t.name !== 'DEMO');
 
   return (
     <HomeLayout>
@@ -24,12 +26,12 @@ export default function ContactsPage() {
               <div className="font-bold">{t('官方聯絡電郵', 'Official Emails')}</div>
             </div>
             <div className="p-6 grid gap-4">
-              {TEAM_CONTACTS.filter((block) => block.team !== 'DEMO').map((block) => (
-                <div key={block.team} className="p-4 bg-slate-50 rounded-lg border border-slate-200">
-                  <div className="font-black text-slate-900 mb-2">{block.team}</div>
+              {teams.map((team) => (
+                <div key={team.name} className="p-4 bg-slate-50 rounded-lg border border-slate-200">
+                  <div className="font-black text-slate-900 mb-2">{team.name}</div>
                   <div className="grid md:grid-cols-2 gap-2">
-                    {block.captains.map((c) => (
-                      <div key={`${block.team}-${c.email ?? c.name}`} className="flex items-center justify-between gap-3 bg-white border border-slate-200 rounded-md px-3 py-2">
+                    {(team.captains ?? []).map((c) => (
+                      <div key={`${team.name}-${c.email ?? c.name}`} className="flex items-center justify-between gap-3 bg-white border border-slate-200 rounded-md px-3 py-2">
                         <div className="text-sm font-semibold text-slate-800">{c.name}</div>
                         {c.email ? (
                           <a href={`mailto:${c.email}`} className="text-sm text-blue-700 hover:underline break-all">

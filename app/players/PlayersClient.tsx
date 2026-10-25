@@ -6,9 +6,9 @@ import HomeLayout from '@/components/HomeLayout';
 import PageHero from '@/components/PageHero';
 import { useLanguage } from '@/context/LanguageContext';
 import type { PublicPlayer } from '@/lib/public-types';
-import { TEAMS } from '@/lib/constants';
+import type { TeamDisplay } from '@/lib/teams/load';
 
-function PlayersPageInner(props: { initialPlayers: PublicPlayer[] }) {
+function PlayersPageInner(props: { initialPlayers: PublicPlayer[]; teams: TeamDisplay[] }) {
   const { t, language } = useLanguage();
   const searchParams = useSearchParams();
   const teamParam = searchParams.get('team');
@@ -19,7 +19,7 @@ function PlayersPageInner(props: { initialPlayers: PublicPlayer[] }) {
   );
   const [query, setQuery] = useState('');
 
-  const realTeams = useMemo(() => TEAMS.filter((x) => x.name !== 'DEMO'), []);
+  const realTeams = useMemo(() => props.teams.filter((x) => x.name !== 'DEMO'), [props.teams]);
   const validTeams = useMemo(() => new Set(realTeams.map((x) => x.name)), [realTeams]);
   const activeTeam = validTeams.has(selectedTeam) ? selectedTeam : '';
 
@@ -222,10 +222,10 @@ function TeamChip(props: {
   );
 }
 
-export default function PlayersClient(props: { initialPlayers: PublicPlayer[] }) {
+export default function PlayersClient(props: { initialPlayers: PublicPlayer[]; teams: TeamDisplay[] }) {
   return (
     <Suspense fallback={<div className="p-10 text-center text-slate-500">Loading...</div>}>
-      <PlayersPageInner initialPlayers={props.initialPlayers} />
+      <PlayersPageInner initialPlayers={props.initialPlayers} teams={props.teams} />
     </Suspense>
   );
 }

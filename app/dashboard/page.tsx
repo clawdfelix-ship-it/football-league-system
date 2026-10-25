@@ -1,5 +1,5 @@
 import HomeLayout from '@/components/HomeLayout';
-import { TEAMS } from '@/lib/constants';
+import { getTeamsForCurrentLeague } from '@/lib/teams/load';
 import type { Player } from '@/lib/schema';
 import { listPlayers } from '@/lib/queries';
 import DashboardView from './DashboardView';
@@ -27,7 +27,8 @@ export default async function DashboardPage() {
   const suspendedPlayers = players.filter((p) => p.status === 'suspended').length;
   const inactivePlayers = players.filter((p) => p.status === 'inactive').length;
 
-  const teamStats = TEAMS.filter((team) => team.name !== 'DEMO')
+  const teams = await getTeamsForCurrentLeague();
+  const teamStats = teams.filter((team) => team.name !== 'DEMO')
     .map((team) => {
       const teamPlayers = players.filter((p) => p.team === team.name);
       return {

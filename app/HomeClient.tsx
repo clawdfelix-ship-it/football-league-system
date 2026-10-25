@@ -9,6 +9,7 @@ import { venueMapsUrl } from '@/lib/weather';
 import { bilingualCoreVenue } from '@/lib/venues';
 import { googleCalendarUrl } from '@/lib/calendar';
 import { useLanguage } from '@/context/LanguageContext';
+import { TeamDisplay } from '@/lib/teams/load';
 import { TEAMS } from '@/lib/constants';
 import { getKitColorInfo } from '@/lib/kitColors';
 import { getMatchKitOverrideColorValueClient, getMatchKitOverridesLocal } from '@/lib/matchKitOverrides';
@@ -79,7 +80,7 @@ function sortMatches(matches: Match[], direction: 'asc' | 'desc') {
   return sorted;
 }
 
-function computeStandings(results: Match[]) {
+function computeStandings(results: Match[], allTeams: TeamDisplay[]) {
   const table = new Map<string, TeamStanding>();
   const ensureTeam = (name: string) => {
     if (!table.has(name)) {
@@ -98,7 +99,8 @@ function computeStandings(results: Match[]) {
     return table.get(name)!;
   };
 
-  TEAMS.filter((team) => team.name !== 'DEMO').forEach((team) => ensureTeam(team.name));
+  const realTeams = allTeams.filter((t) => t.name !== 'DEMO');
+  realTeams.forEach((team) => ensureTeam(team.name));
 
   for (const match of results) {
     if (match.status !== 'finished') continue;
@@ -155,6 +157,7 @@ export default function HomeClient(props: {
     fixtures: Match[];
     results: Match[];
     announcements: PublicAnnouncement[];
+    teams: TeamDisplay[];
   };
 }) {
   const { t, language } = useLanguage();
@@ -196,7 +199,7 @@ export default function HomeClient(props: {
   const [announcements, setAnnouncements] = useState<PublicAnnouncement[]>(props.initial.announcements);
   const [loading, setLoading] = useState(false);
 
-  const standings = useMemo(() => computeStandings(recentResults), [recentResults]);
+  const standings = useMemo(() => computeStandings(recentResults, props.initial.teams), [recentResults, props.initial.teams]);
   const fixturesLastUpdatedAt = useMemo(() => maxDate(upcomingFixtures, ['updatedAt', 'createdAt']), [upcomingFixtures]);
   const announcementsLastUpdatedAt = useMemo(
     () => maxDate(announcements, ['updatedAt', 'createdAt']),

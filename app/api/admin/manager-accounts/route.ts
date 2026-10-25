@@ -4,9 +4,8 @@ import { zodDetails } from '@/lib/api/zod';
 import { getClientIp, rateLimit } from '@/lib/api/rate-limit';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
-import { TEAM_CONTACTS } from '@/lib/team-contacts';
 import { db } from '@/lib/db';
-import { users } from '@/lib/schema';
+import { users, teams } from '@/lib/schema';
 import { and, eq } from 'drizzle-orm';
 import { audit } from '@/lib/auth/audit-log';
 import { hashPassword } from '@/lib/auth/password';
@@ -101,11 +100,16 @@ export async function POST(request: Request) {
       const updatedEmails: string[] = [];
       const createdEmails: string[] = [];
 
-      for (const teamBlock of TEAM_CONTACTS) {
-        for (const captain of teamBlock.captains) {
+      const dbTeams = await db
+        .select({ name: teams.name, captains: teams.captains })
+        .from(teams)
+        .where(eq(teams.leagueId, lid));
+
+      for (const teamBlock of dbTeams) {
+        for (const captain of (teamBlock.captains as Array<{ email?: string }> ?? [])) {
           if (!captain.email) continue;
           const email = captain.email.toLowerCase().trim();
-          const team = teamBlock.team;
+          const team = teamBlock.name;
 
           const [existing] = await db
             .select({ email: users.email, username: users.username, leagueId: users.leagueId })
@@ -159,12 +163,17 @@ export async function POST(request: Request) {
     const created: Array<{ team: string; name: string; email: string; password: string }> = [];
     const skipped: Array<{ team: string; name: string; email: string }> = [];
 
-    for (const teamBlock of TEAM_CONTACTS) {
-      for (const captain of teamBlock.captains) {
+    const dbTeams = await db
+      .select({ name: teams.name, captains: teams.captains })
+      .from(teams)
+      .where(eq(teams.leagueId, lid));
+
+    for (const teamBlock of dbTeams) {
+      for (const captain of (teamBlock.captains as Array<{ email?: string; name?: string }> ?? [])) {
         if (!captain.email) continue;
         const email = captain.email.toLowerCase().trim();
-        const team = teamBlock.team;
-        const name = captain.name;
+        const team = teamBlock.name;
+        const name = captain.name ?? '';
 
       const [existing] = await db
         .select({ email: users.email, username: users.username, leagueId: users.leagueId })

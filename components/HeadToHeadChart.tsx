@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import { TEAMS } from '@/lib/constants';
+import { useTeams } from '@/lib/teams/use-teams';
 import { useLanguage } from '@/context/LanguageContext';
 
 interface MatchSummary {
@@ -39,8 +39,10 @@ export default function HeadToHeadChart({ serverMatches }: { serverMatches: Matc
   const { language } = useLanguage();
   const tr = (zh: string, en: string) => (language === 'zh' ? zh : en);
 
+  const { teams: allTeams } = useTeams();
+
   const { rows, maxPlayed } = useMemo(() => {
-    const teams = TEAMS.filter((t) => t.name !== 'DEMO');
+    const teams = allTeams.filter((t) => t.name !== 'DEMO');
     const map = new Map<string, TeamTotals>();
     for (const t of teams) {
       map.set(t.name, { name: t.name, shortName: t.shortName, nameZh: t.nameZh, ...EMPTY });
@@ -84,7 +86,7 @@ export default function HeadToHeadChart({ serverMatches }: { serverMatches: Matc
     });
 
     return { rows: list, maxPlayed: Math.max(1, ...list.map((r) => r.played)) };
-  }, [serverMatches]);
+  }, [serverMatches, allTeams]);
 
   const seg = (n: number) => `${(n / maxPlayed) * 100}%`;
 

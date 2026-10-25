@@ -4,7 +4,7 @@ import { notFound, redirect } from 'next/navigation';
 import QRCode from 'qrcode';
 import { getTeamPlayers } from '@/lib/actions';
 import { getAuthContext, getTeamNameFromTeamId } from '@/lib/authz';
-import { TEAMS } from '@/lib/constants';
+import { getTeamsForCurrentLeague } from '@/lib/teams/load';
 import { PrintButton } from './PrintButton';
 import { UploadPhotoButton } from './PlayerManager';
 import type { Player } from '@/lib/schema';
@@ -12,7 +12,8 @@ import type { Player } from '@/lib/schema';
 export default async function MatchSheet({ params }: { params: Promise<{ teamId: string }> }) {
   const { teamId } = await params;
   const teamIndex = parseInt(teamId);
-  const team = TEAMS[teamIndex];
+  const teams = await getTeamsForCurrentLeague();
+  const team = teams[teamIndex];
 
   if (!team) return notFound();
 

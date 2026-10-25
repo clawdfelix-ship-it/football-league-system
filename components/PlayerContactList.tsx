@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import type { Player } from '@/lib/schema';
-import { TEAMS } from '@/lib/constants';
+import { useTeams } from '@/lib/teams/use-teams';
 
 interface PlayerContactListProps {
   players: Player[];
@@ -12,6 +12,8 @@ interface PlayerContactListProps {
 export function PlayerContactList({ players, showTeamFilter = false }: PlayerContactListProps) {
   const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set());
   const [filterTeam, setFilterTeam] = useState<string>('all');
+  const { teams: allTeams } = useTeams();
+  const teams = allTeams.filter(t => t.name !== 'DEMO');
 
   const togglePlayer = (id: number) => {
     setExpandedIds(prev => {
@@ -43,7 +45,7 @@ export function PlayerContactList({ players, showTeamFilter = false }: PlayerCon
           >
             All ({players.length})
           </button>
-          {TEAMS.map((team) => {
+          {teams.map((team) => {
             const count = players.filter(p => p.team === team.name).length;
             if (count === 0) return null;
             return (
@@ -67,7 +69,7 @@ export function PlayerContactList({ players, showTeamFilter = false }: PlayerCon
       <div className="space-y-3">
         {filteredPlayers.map((p) => {
           const isExpanded = expandedIds.has(p.id);
-          const team = TEAMS.find(t => t.name === p.team);
+          const team = teams.find(t => t.name === p.team);
 
           return (
             <div

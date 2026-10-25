@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { TEAMS } from '@/lib/constants';
+import { useTeams } from '@/lib/teams/use-teams';
 import { useLanguage } from '@/context/LanguageContext';
 
 interface MatchRecord {
@@ -50,7 +50,8 @@ export default function HeadToHeadTable({ serverMatches }: Props) {
   const [loading, setLoading] = useState(true);
   const [selectedTeam, setSelectedTeam] = useState<string>('');
 
-  const teams = TEAMS.filter(t => t.name !== 'DEMO');
+  const { teams: allTeams } = useTeams();
+  const teams = allTeams.filter(t => t.name !== 'DEMO');
 
   useEffect(() => {
     function loadH2H() {
@@ -108,7 +109,7 @@ export default function HeadToHeadTable({ serverMatches }: Props) {
 
     loadH2H();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [serverMatches]);
+  }, [serverMatches, allTeams]);
 
   if (loading) {
     return (

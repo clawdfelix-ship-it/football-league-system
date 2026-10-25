@@ -1,6 +1,7 @@
 import type { PublicPlayer } from '@/lib/public-types';
 import PlayersClient from '@/app/players/PlayersClient';
 import { listPublicPlayers } from '@/lib/queries';
+import { getTeamsForCurrentLeague } from '@/lib/teams/load';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,5 +12,6 @@ export default async function PlayersPage() {
   } catch {
     players = [];
   }
-  return <PlayersClient initialPlayers={players} />;
+  const teams = await getTeamsForCurrentLeague();
+  return <PlayersClient initialPlayers={players} teams={teams} />;
 }
