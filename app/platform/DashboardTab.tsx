@@ -64,14 +64,14 @@ export default function DashboardTab({
     void load();
   }, [load]);
 
-  if (loading) return <p className="text-sm text-slate-500">載入中…</p>;
+  if (loading) return <p className="text-sm text-slate-600">載入中…</p>;
   if (error) return <div className="alert-error">{error}</div>;
   if (!data) return null;
 
   return (
     <div>
       {/* Totals cards */}
-      <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <StatCard label="活躍聯賽" value={data.totals.activeLeagues} />
         <StatCard label="總隊數" value={data.totals.totalTeams} />
         <StatCard label="總球員" value={data.totals.totalPlayers} />
@@ -80,14 +80,14 @@ export default function DashboardTab({
 
       {/* League table */}
       {data.leagues.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-500">
+        <div className="rounded-lg border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-600">
           暫無聯賽
         </div>
       ) : (
-        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-slate-200 bg-slate-50 text-left text-xs font-semibold text-slate-500">
+              <tr className="border-b border-slate-200 bg-slate-50 text-left text-xs font-semibold text-slate-600">
                 <th className="px-4 py-3">聯賽</th>
                 <th className="px-4 py-3 text-center">狀態</th>
                 <th className="px-4 py-3 text-right">隊</th>
@@ -106,7 +106,7 @@ export default function DashboardTab({
                   <td className="px-4 py-3">
                     <div>
                       <p className="font-medium text-slate-900">{l.slug}</p>
-                      <p className="text-xs text-slate-500">{l.name}</p>
+                      <p className="text-xs text-slate-600">{l.name}</p>
                     </div>
                   </td>
                   <td className="px-4 py-3 text-center">
@@ -121,7 +121,7 @@ export default function DashboardTab({
                   <td className="px-4 py-3 text-right">{l.teamCount}</td>
                   <td className="px-4 py-3 text-right">{l.playerCount}</td>
                   <td className="px-4 py-3 text-right">{l.matchCount}</td>
-                  <td className="px-4 py-3 text-right text-xs text-slate-500">
+                  <td className="px-4 py-3 text-right text-xs text-slate-600">
                     {l.lastActivityAt
                       ? new Date(l.lastActivityAt).toLocaleDateString('zh-HK')
                       : '—'}
@@ -146,8 +146,8 @@ export default function DashboardTab({
 
 function StatCard({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <p className="text-xs font-medium text-slate-500">{label}</p>
+    <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+      <p className="text-xs font-medium text-slate-600">{label}</p>
       <p className="mt-1 text-2xl font-bold text-slate-900">{value}</p>
     </div>
   );

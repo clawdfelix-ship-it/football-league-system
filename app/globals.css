@@ -97,6 +97,76 @@
   --brand-gradient-from: #0f172a;
   --brand-gradient-to: #1e293b;
 
+  /* =============================================
+     Design Tokens — Refactoring UI constrained scales
+     (prefixed --mk- to avoid colliding with Tailwind theme vars)
+     ============================================= */
+
+  /* Spacing scale (base 16px, ~25% apart) */
+  --mk-space-1: 4px;
+  --mk-space-2: 8px;
+  --mk-space-3: 12px;
+  --mk-space-4: 16px;
+  --mk-space-5: 24px;
+  --mk-space-6: 32px;
+  --mk-space-7: 48px;
+  --mk-space-8: 64px;
+
+  /* Type scale (px) */
+  --mk-text-xs: 12px;
+  --mk-text-sm: 14px;
+  --mk-text-base: 16px;
+  --mk-text-lg: 18px;
+  --mk-text-xl: 20px;
+  --mk-text-2xl: 24px;
+  --mk-text-3xl: 30px;
+  --mk-text-4xl: 36px;
+  --mk-text-5xl: 48px;
+
+  /* Font weights (400/500 body · 600/700 emphasis) */
+  --mk-font-normal: 400;
+  --mk-font-medium: 500;
+  --mk-font-semibold: 600;
+  --mk-font-bold: 700;
+
+  /* Grey ramp (HSL) — 9 shades, cool hue matches brand navy */
+  --mk-grey-50: hsl(210, 20%, 98%);
+  --mk-grey-100: hsl(210, 16%, 93%);
+  --mk-grey-200: hsl(214, 13%, 84%);
+  --mk-grey-300: hsl(212, 12%, 68%);
+  --mk-grey-400: hsl(213, 10%, 52%);
+  --mk-grey-500: hsl(215, 9%, 40%);
+  --mk-grey-600: hsl(217, 12%, 32%);
+  --mk-grey-700: hsl(218, 15%, 25%);
+  --mk-grey-800: hsl(220, 18%, 18%);
+  --mk-grey-900: hsl(222, 24%, 11%);
+
+  /* Semantic roles — reference these in components, not raw ramps */
+  --mk-surface: var(--mk-grey-50);
+  --mk-surface-raised: #ffffff;
+  --mk-surface-sunken: var(--mk-grey-100);
+  --mk-text-primary: var(--mk-grey-900);
+  --mk-text-secondary: var(--mk-grey-600);
+  --mk-text-tertiary: var(--mk-grey-400);
+  --mk-border: var(--mk-grey-200);
+  --mk-border-strong: var(--mk-grey-300);
+  --mk-action: var(--brand-900);
+  --mk-action-hover: var(--brand-800);
+
+  /* Shadows — 5 elevations, pick by z-axis position */
+  --mk-shadow-1: 0 1px 3px hsla(0, 0%, 0%, 0.12);
+  --mk-shadow-2: 0 4px 6px hsla(0, 0%, 0%, 0.1);
+  --mk-shadow-3: 0 5px 15px hsla(0, 0%, 0%, 0.1);
+  --mk-shadow-4: 0 10px 24px hsla(0, 0%, 0%, 0.12);
+  --mk-shadow-5: 0 15px 35px hsla(0, 0%, 0%, 0.15);
+
+  /* Border radius — pick one per component family, stay consistent */
+  --mk-radius-sm: 4px;
+  --mk-radius-md: 8px;
+  --mk-radius-lg: 12px;
+  --mk-radius-xl: 16px;
+  --mk-radius-full: 9999px;
+
   /* This is a fixed LIGHT-only product. Pin the UA color scheme so a device in
      dark mode never inverts form controls, autofill, scrollbars or the default
      canvas (which previously made white-background inputs show light text). */

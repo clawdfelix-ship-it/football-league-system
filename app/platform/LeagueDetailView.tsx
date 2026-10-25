@@ -123,7 +123,7 @@ export default function LeagueDetailView({
     }
   }
 
-  if (loading) return <p className="text-sm text-slate-500">載入中…</p>;
+  if (loading) return <p className="text-sm text-slate-600">載入中…</p>;
   if (error) return <div className="alert-error">{error}</div>;
   if (!data) return null;
 
@@ -132,7 +132,7 @@ export default function LeagueDetailView({
   return (
     <div>
       {/* Header */}
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+      <div className="mb-8 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <button
             onClick={onBack}
@@ -156,7 +156,7 @@ export default function LeagueDetailView({
                 </span>
               )}
             </div>
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-slate-600">
               {league.name} · 開通於 {new Date(league.createdAt).toLocaleDateString('zh-HK')}
             </p>
           </div>
@@ -186,7 +186,7 @@ export default function LeagueDetailView({
       </div>
 
       {/* Stats */}
-      <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <StatCard label="球隊" value={stats.teamCount} />
         <StatCard label="球員" value={stats.playerCount} />
         <StatCard label="比賽" value={stats.matchCount} />
@@ -267,8 +267,8 @@ export default function LeagueDetailView({
 
 function StatCard({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <p className="text-xs font-medium text-slate-500">{label}</p>
+    <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+      <p className="text-xs font-medium text-slate-600">{label}</p>
       <p className="mt-1 text-2xl font-bold text-slate-900">{value}</p>
     </div>
   );
@@ -276,7 +276,7 @@ function StatCard({ label, value }: { label: string; value: number }) {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
       <h3 className="mb-3 text-sm font-semibold text-slate-900">{title}</h3>
       {children}
     </div>
