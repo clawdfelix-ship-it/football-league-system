@@ -36,38 +36,45 @@ type Params = { params: Promise<{ id: string }> };
 
 /** PATCH: update a team (league admin only). */
 export async function PATCH(request: NextRequest, context: Params) {
-  const auth = await getAuthContext();
-  if (!auth) return fail(401, 'UNAUTHENTICATED', 'Unauthorized');
-  if (auth.role !== 'admin') return fail(403, 'FORBIDDEN', 'League admin access required');
-
-  const leagueId = await getRequestLeagueId();
-  if (auth.leagueId !== leagueId) {
-    return fail(403, 'FORBIDDEN', 'Cannot manage teams for another league');
-  }
-
-  const { id } = await context.params;
-  const teamId = Number(id);
-  if (!Number.isInteger(teamId) || teamId <= 0) {
-    return fail(400, 'VALIDATION_ERROR', 'Invalid team id');
-  }
-
-  let parsed;
+  // Outer try/catch — same reason as DELETE: never return an empty 500 body,
+  // otherwise the client's res.json() crashes with 'Unexpected end of JSON input'.
   try {
-    parsed = UpdateSchema.parse(await request.json());
-  } catch (e) {
-    return fail(400, 'VALIDATION_ERROR', 'Invalid request body', zodDetails(e));
-  }
+    const auth = await getAuthContext();
+    if (!auth) return fail(401, 'UNAUTHENTICATED', 'Unauthorized');
+    if (auth.role !== 'admin') return fail(403, 'FORBIDDEN', 'League admin access required');
 
-  try {
-    await updateTeam(leagueId, teamId, parsed);
-    return ok({ teamId });
-  } catch (e) {
-    if (e instanceof TeamError) {
-      const status = e.code === 'NOT_FOUND' ? 404 : e.code === 'NAME_TAKEN' ? 409 : 400;
-      return fail(status, e.code, e.message);
+    const leagueId = await getRequestLeagueId();
+    if (auth.leagueId !== leagueId) {
+      return fail(403, 'FORBIDDEN', 'Cannot manage teams for another league');
     }
-    console.error('[teams] update failed:', e);
-    return fail(500, 'INTERNAL_ERROR', 'Failed to update team');
+
+    const { id } = await context.params;
+    const teamId = Number(id);
+    if (!Number.isInteger(teamId) || teamId <= 0) {
+      return fail(400, 'VALIDATION_ERROR', 'Invalid team id');
+    }
+
+    let parsed;
+    try {
+      parsed = UpdateSchema.parse(await request.json());
+    } catch (e) {
+      return fail(400, 'VALIDATION_ERROR', 'Invalid request body', zodDetails(e));
+    }
+
+    try {
+      await updateTeam(leagueId, teamId, parsed);
+      return ok({ teamId });
+    } catch (e) {
+      if (e instanceof TeamError) {
+        const status = e.code === 'NOT_FOUND' ? 404 : e.code === 'NAME_TAKEN' ? 409 : 400;
+        return fail(status, e.code, e.message);
+      }
+      console.error('[teams] update failed:', e);
+      return fail(500, 'INTERNAL_ERROR', 'Failed to update team');
+    }
+  } catch (e) {
+    console.error('[teams] PATCH unexpected error:', e);
+    return fail(500, 'INTERNAL_ERROR', 'Unexpected server error');
   }
 }
 
@@ -76,41 +83,50 @@ export async function PATCH(request: NextRequest, context: Params) {
  * If the team has matches, deletion is refused — use POST /archive instead.
  */
 export async function DELETE(request: NextRequest, context: Params) {
-  const auth = await getAuthContext();
-  if (!auth) return fail(401, 'UNAUTHENTICATED', 'Unauthorized');
-  if (auth.role !== 'admin') return fail(403, 'FORBIDDEN', 'League admin access required');
-
-  const leagueId = await getRequestLeagueId();
-  if (auth.leagueId !== leagueId) {
-    return fail(403, 'FORBIDDEN', 'Cannot manage teams for another league');
-  }
-
-  const { id } = await context.params;
-  const teamId = Number(id);
-  if (!Number.isInteger(teamId) || teamId <= 0) {
-    return fail(400, 'VALIDATION_ERROR', 'Invalid team id');
-  }
-
-  // Check associations first
-  const assoc = await getTeamAssociations(leagueId, teamId);
-  if (assoc.matchCount > 0) {
-    return fail(409, 'HAS_MATCHES', `球隊有 ${assoc.matchCount} 場比賽記錄，唔可以刪除。建議封存。`, {
-      playerCount: assoc.playerCount,
-      matchCount: assoc.matchCount,
-      suggestion: 'archive',
-    });
-  }
-
-  const mode = request.nextUrl.searchParams.get('mode') === 'delete' ? 'delete' : 'release';
-
+  // Wrap entire handler — any unexpected throw (auth context, tenant resolution,
+  // DB query, etc.) must return JSON, never an empty 500 page, otherwise the
+  // client's `res.json()` hits "Unexpected end of JSON input" and masks the
+  // real error. (2026-10-26 Felix report: delete team gave empty body.)
   try {
-    await deleteTeamCascade(leagueId, teamId, mode);
-    return ok({ teamId, mode, releasedPlayers: mode === 'release' ? assoc.playerCount : 0, deletedPlayers: mode === 'delete' ? assoc.playerCount : 0 });
-  } catch (e) {
-    if (e instanceof TeamError) {
-      return fail(400, e.code, e.message);
+    const auth = await getAuthContext();
+    if (!auth) return fail(401, 'UNAUTHENTICATED', 'Unauthorized');
+    if (auth.role !== 'admin') return fail(403, 'FORBIDDEN', 'League admin access required');
+
+    const leagueId = await getRequestLeagueId();
+    if (auth.leagueId !== leagueId) {
+      return fail(403, 'FORBIDDEN', 'Cannot manage teams for another league');
     }
-    console.error('[teams] delete failed:', e);
-    return fail(500, 'INTERNAL_ERROR', 'Failed to delete team');
+
+    const { id } = await context.params;
+    const teamId = Number(id);
+    if (!Number.isInteger(teamId) || teamId <= 0) {
+      return fail(400, 'VALIDATION_ERROR', 'Invalid team id');
+    }
+
+    // Check associations first
+    const assoc = await getTeamAssociations(leagueId, teamId);
+    if (assoc.matchCount > 0) {
+      return fail(409, 'HAS_MATCHES', `球隊有 ${assoc.matchCount} 場比賽記錄，唔可以刪除。建議封存。`, {
+        playerCount: assoc.playerCount,
+        matchCount: assoc.matchCount,
+        suggestion: 'archive',
+      });
+    }
+
+    const mode = request.nextUrl.searchParams.get('mode') === 'delete' ? 'delete' : 'release';
+
+    try {
+      await deleteTeamCascade(leagueId, teamId, mode);
+      return ok({ teamId, mode, releasedPlayers: mode === 'release' ? assoc.playerCount : 0, deletedPlayers: mode === 'delete' ? assoc.playerCount : 0 });
+    } catch (e) {
+      if (e instanceof TeamError) {
+        return fail(400, e.code, e.message);
+      }
+      console.error('[teams] delete failed:', e);
+      return fail(500, 'INTERNAL_ERROR', 'Failed to delete team');
+    }
+  } catch (e) {
+    console.error('[teams] DELETE unexpected error:', e);
+    return fail(500, 'INTERNAL_ERROR', 'Unexpected server error');
   }
 }

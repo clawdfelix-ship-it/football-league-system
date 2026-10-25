@@ -34,6 +34,26 @@ const EMPTY_FORM = {
 };
 
 /**
+ * Safely parse a fetch Response as JSON.
+ *
+ * Why: `res.json()` throws "Unexpected end of JSON input" when the server
+ * returns an empty body (e.g. an uncaught 500 in a route handler), which
+ * completely masks the real server error. Read the raw text first; if it's
+ * empty or not JSON, surface the HTTP status instead. (2026-10-26 bug report)
+ */
+async function readJsonSafe(res: Response): Promise<any> {
+  const text = await res.text();
+  if (!text) {
+    throw new Error(`伺服器回應為空 (HTTP ${res.status})。請再試一次，或聯絡管理員。`);
+  }
+  try {
+    return JSON.parse(text);
+  } catch {
+    throw new Error(`伺服器回應格式錯誤 (HTTP ${res.status})`);
+  }
+}
+
+/**
  * Admin panel section for managing teams (add / edit / delete).
  * Replaces the read-only TEAM_CONTACTS list with a DB-backed CRUD UI.
  */
@@ -51,7 +71,7 @@ export function TeamManagerPanel() {
     setError('');
     try {
       const res = await fetch('/api/teams', { cache: 'no-store' });
-      const body = await res.json();
+      const body = await readJsonSafe(res);
       if (!body?.ok) throw new Error(body?.error?.message || '載入失敗');
       setTeams(body.data.teams);
     } catch (e) {
@@ -137,7 +157,7 @@ export function TeamManagerPanel() {
             body: JSON.stringify(payload),
           });
 
-      const body = await res.json();
+      const body = await readJsonSafe(res);
       if (!body?.ok) throw new Error(body?.error?.message || '儲存失敗');
 
       setShowForm(false);
@@ -155,13 +175,13 @@ export function TeamManagerPanel() {
     setError('');
     try {
       const assocRes = await fetch(`/api/teams/${id}`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ dryRun: true }) });
-      const assocBody = await assocRes.json();
+      const assocBody = await readJsonSafe(assocRes);
       
       if (assocBody?.error?.code === 'HAS_MATCHES') {
         // Has matches — suggest archive
         if (confirm(`「${name}」有 ${assocBody.error.data?.matchCount ?? 0} 場比賽記錄，唔可以刪除。\n\n要唔要改為「封存」？封存後唔會喺新比賽出現，但歷史記錄會保留。`)) {
           const archiveRes = await fetch(`/api/teams/${id}/archive`, { method: 'POST' });
-          const archiveBody = await archiveRes.json();
+          const archiveBody = await readJsonSafe(archiveRes);
           if (!archiveBody?.ok) throw new Error(archiveBody?.error?.message || '封存失敗');
           await load();
         }
@@ -178,13 +198,13 @@ export function TeamManagerPanel() {
         if (!confirm(`確定要${choice ? '釋放' : '刪除'} ${playerCount} 個球員並刪除「${name}」？`)) return;
         
         const res = await fetch(`/api/teams/${id}?mode=${mode}`, { method: 'DELETE' });
-        const body = await res.json();
+        const body = await readJsonSafe(res);
         if (!body?.ok) throw new Error(body?.error?.message || '刪除失敗');
       } else {
         // No associations — direct delete
         if (!confirm(`確定要刪除球隊「${name}」？`)) return;
         const res = await fetch(`/api/teams/${id}`, { method: 'DELETE' });
-        const body = await res.json();
+        const body = await readJsonSafe(res);
         if (!body?.ok) throw new Error(body?.error?.message || '刪除失敗');
       }
       
@@ -202,7 +222,7 @@ export function TeamManagerPanel() {
     setError('');
     try {
       const res = await fetch(`/api/teams/${id}/archive`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'archive' }) });
-      const body = await res.json();
+      const body = await readJsonSafe(res);
       if (!body?.ok) throw new Error(body?.error?.message || '封存失敗');
       await load();
     } catch (e) {
@@ -218,7 +238,7 @@ export function TeamManagerPanel() {
     setError('');
     try {
       const res = await fetch(`/api/teams/${id}/archive`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'unarchive' }) });
-      const body = await res.json();
+      const body = await readJsonSafe(res);
       if (!body?.ok) throw new Error(body?.error?.message || '恢復失敗');
       await load();
     } catch (e) {

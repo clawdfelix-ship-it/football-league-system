@@ -15,36 +15,43 @@ type Params = { params: Promise<{ id: string }> };
 
 /** POST: archive or unarchive a team (league admin only). */
 export async function POST(request: NextRequest, context: Params) {
-  const auth = await getAuthContext();
-  if (!auth) return fail(401, 'UNAUTHENTICATED', 'Unauthorized');
-  if (auth.role !== 'admin') return fail(403, 'FORBIDDEN', 'League admin access required');
-
-  const leagueId = await getRequestLeagueId();
-  if (auth.leagueId !== leagueId) {
-    return fail(403, 'FORBIDDEN', 'Cannot manage teams for another league');
-  }
-
-  const { id } = await context.params;
-  const teamId = Number(id);
-  if (!Number.isInteger(teamId) || teamId <= 0) {
-    return fail(400, 'VALIDATION_ERROR', 'Invalid team id');
-  }
-
-  const body = await request.json().catch(() => ({}));
-  const action = body.action === 'unarchive' ? 'unarchive' : 'archive';
-
+  // Wrap entire handler — unexpected throws (auth context, tenant resolution,
+  // DB queries) must return JSON so the client's res.json() never sees an empty body.
   try {
-    if (action === 'archive') {
-      await archiveTeam(leagueId, teamId);
-    } else {
-      await unarchiveTeam(leagueId, teamId);
+    const auth = await getAuthContext();
+    if (!auth) return fail(401, 'UNAUTHENTICATED', 'Unauthorized');
+    if (auth.role !== 'admin') return fail(403, 'FORBIDDEN', 'League admin access required');
+
+    const leagueId = await getRequestLeagueId();
+    if (auth.leagueId !== leagueId) {
+      return fail(403, 'FORBIDDEN', 'Cannot manage teams for another league');
     }
-    return ok({ teamId, action });
+
+    const { id } = await context.params;
+    const teamId = Number(id);
+    if (!Number.isInteger(teamId) || teamId <= 0) {
+      return fail(400, 'VALIDATION_ERROR', 'Invalid team id');
+    }
+
+    const body = await request.json().catch(() => ({}));
+    const action = body.action === 'unarchive' ? 'unarchive' : 'archive';
+
+    try {
+      if (action === 'archive') {
+        await archiveTeam(leagueId, teamId);
+      } else {
+        await unarchiveTeam(leagueId, teamId);
+      }
+      return ok({ teamId, action });
+    } catch (e) {
+      if (e instanceof TeamError) {
+        return fail(404, e.code, e.message);
+      }
+      console.error('[teams] archive failed:', e);
+      return fail(500, 'INTERNAL_ERROR', 'Failed to archive team');
+    }
   } catch (e) {
-    if (e instanceof TeamError) {
-      return fail(404, e.code, e.message);
-    }
-    console.error('[teams] archive failed:', e);
-    return fail(500, 'INTERNAL_ERROR', 'Failed to archive team');
+    console.error('[teams] archive POST unexpected error:', e);
+    return fail(500, 'INTERNAL_ERROR', 'Unexpected server error');
   }
 }
