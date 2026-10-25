@@ -81,13 +81,14 @@ export async function POST(request: Request) {
   }
 
   const leagueId = await getRequestLeagueId();
+  const requestedTeam = input.team.trim();
   const [team] = await db
     .select({ id: teams.id, name: teams.name, shortName: teams.shortName })
     .from(teams)
-    .where(and(eq(teams.leagueId, leagueId)))
+    .where(and(eq(teams.leagueId, leagueId), eq(teams.shortName, requestedTeam)))
     .limit(1);
-  if (!team) {
-    return fail(404, 'NOT_FOUND', `Unknown team: ${input.team}`);
+  if (!team || team.shortName !== requestedTeam) {
+    return fail(404, 'NOT_FOUND', `Unknown team: ${requestedTeam}`);
   }
 
   // Resolve captain emails from DB (teams table, migrated from hardcoded TEAM_CONTACTS).

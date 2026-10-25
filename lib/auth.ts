@@ -4,7 +4,7 @@ import { TEAMS } from '@/lib/constants';
 import { DEFAULT_LEAGUE_ID } from '@/lib/tenant/config';
 import { db } from '@/lib/db';
 import { users } from '@/lib/schema';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
 import { timingSafeEqual } from 'crypto';
 import { getManagerMapping } from '@/lib/auth/load-manager-mapping';
@@ -51,6 +51,23 @@ interface CustomUser {
   // >0 = bound to one league; 0 = platform-wide principal.
   leagueId?: number;
   isPlatform?: boolean;
+}
+
+export async function findLeagueAdminForImpersonation(leagueId: number) {
+  const [adminUser] = await db
+    .select({
+      id: users.id,
+      email: users.email,
+      username: users.username,
+      role: users.role,
+      leagueId: users.leagueId,
+    })
+    .from(users)
+    .where(and(eq(users.leagueId, leagueId), eq(users.role, 'admin')))
+    .orderBy(users.id)
+    .limit(1);
+
+  return adminUser?.role === 'admin' ? adminUser : null;
 }
 
 export function resolveManagerTeamId(email: string): number | null {
@@ -145,18 +162,7 @@ export const authOptions: NextAuthOptions = {
             const { redeemImpersonateToken } = await import('@/lib/tenant/impersonate.server');
             const { leagueId } = await redeemImpersonateToken(token);
             // The token is bound to a league; sign in as that league's first admin user.
-            const [adminUser] = await db
-              .select({
-                id: users.id,
-                email: users.email,
-                username: users.username,
-                role: users.role,
-                leagueId: users.leagueId,
-              })
-              .from(users)
-              .where(eq(users.leagueId, leagueId))
-              .orderBy(users.id)
-              .limit(1);
+            const adminUser = await findLeagueAdminForImpersonation(leagueId);
             if (!adminUser) return null;
             return {
               id: String(adminUser.id),

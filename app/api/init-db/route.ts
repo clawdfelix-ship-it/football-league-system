@@ -8,6 +8,14 @@ import { sql } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
 
+export function hasTableRegistration(
+  result: { rows?: Array<Record<string, unknown>> },
+  key: string
+): boolean {
+  const value = result.rows?.[0]?.[key];
+  return typeof value === 'string' ? value.length > 0 : value != null;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const ip = getClientIp(request);
@@ -28,6 +36,18 @@ export async function POST(request: NextRequest) {
     if (!platformAdmin && !isSecretOk) {
       return fail(401, 'UNAUTHENTICATED', 'Unauthorized');
     }
+
+    const tableCheck = await db.execute(
+      sql`SELECT to_regclass('public.leagues') AS leagues`
+    );
+    if (!hasTableRegistration(tableCheck, 'leagues')) {
+      return fail(
+        409,
+        'LEGACY_BOOTSTRAP_DISABLED',
+        'Database bootstrap now requires the Drizzle migrations. Run the SQL migrations before calling /api/init-db.'
+      );
+    }
+
     // 1. 初始化資料庫表結構
     await initializeDatabase();
     

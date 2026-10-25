@@ -34,6 +34,24 @@ const UpdateSchema = z.object({
 
 type Params = { params: Promise<{ id: string }> };
 
+async function readDeleteOptions(request: NextRequest): Promise<{ dryRun: boolean; mode: 'release' | 'delete' }> {
+  const mode = request.nextUrl.searchParams.get('mode') === 'delete' ? 'delete' : 'release';
+  const dryRunParam = request.nextUrl.searchParams.get('dryRun');
+  if (dryRunParam === 'true') {
+    return { dryRun: true, mode };
+  }
+  if (!request.headers.get('content-type')?.includes('application/json')) {
+    return { dryRun: false, mode };
+  }
+
+  try {
+    const body = (await request.json()) as { dryRun?: boolean } | null;
+    return { dryRun: body?.dryRun === true, mode };
+  } catch {
+    return { dryRun: false, mode };
+  }
+}
+
 /** PATCH: update a team (league admin only). */
 export async function PATCH(request: NextRequest, context: Params) {
   const auth = await getAuthContext();
@@ -101,7 +119,16 @@ export async function DELETE(request: NextRequest, context: Params) {
     });
   }
 
-  const mode = request.nextUrl.searchParams.get('mode') === 'delete' ? 'delete' : 'release';
+  const { dryRun, mode } = await readDeleteOptions(request);
+  if (dryRun) {
+    return ok({
+      teamId,
+      mode,
+      playerCount: assoc.playerCount,
+      matchCount: assoc.matchCount,
+      dryRun: true,
+    });
+  }
 
   try {
     await deleteTeamCascade(leagueId, teamId, mode);

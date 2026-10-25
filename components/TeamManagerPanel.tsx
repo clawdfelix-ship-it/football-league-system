@@ -154,7 +154,7 @@ export function TeamManagerPanel() {
     setBusy(true);
     setError('');
     try {
-      const assocRes = await fetch(`/api/teams/${id}`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ dryRun: true }) });
+      const assocRes = await fetch(`/api/teams/${id}?dryRun=true`, { method: 'DELETE' });
       const assocBody = await assocRes.json();
       
       if (assocBody?.error?.code === 'HAS_MATCHES') {
@@ -168,7 +168,7 @@ export function TeamManagerPanel() {
         return;
       }
 
-      const playerCount = assocBody?.error?.data?.playerCount ?? 0;
+      const playerCount = assocBody?.data?.playerCount ?? assocBody?.error?.data?.playerCount ?? 0;
       if (playerCount > 0) {
         // Has players — choose release or delete
         const choice = confirm(

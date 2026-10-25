@@ -73,11 +73,23 @@ export async function POST(request: Request) {
   const now = new Date();
   const passwordHash = await hashPassword(password);
 
-  // NOTE: drizzle-orm/neon-http has no interactive db.transaction() (it throws
-  // "No transactions support in neon-http driver"). These two updates are
-  // independent one-row statements; the token is single-use and verified above,
-  // so run them sequentially. Worst case (crash between them) the same token can
-  // be replayed once, which simply re-applies the caller's own new password.
+  const [claimed] = await db
+    .update(passwordResetTokens)
+    .set({ usedAt: now })
+    .where(and(eq(passwordResetTokens.id, row.id), isNull(passwordResetTokens.usedAt)))
+    .returning({
+      id: passwordResetTokens.id,
+      userId: passwordResetTokens.userId,
+      leagueId: passwordResetTokens.leagueId,
+    });
+
+  if (!claimed) {
+    return fail(400, 'TOKEN_USED', 'This reset link has already been used. Please request a new one.');
+  }
+
+  // neon-http does not support interactive transactions, so claim the token
+  // first with an atomic UPDATE ... WHERE used_at IS NULL. This closes the
+  // replay window even if two requests race the same reset link.
   await db
     .update(users)
     .set({
@@ -85,12 +97,7 @@ export async function POST(request: Request) {
       passwordChangedAt: now,
       mustChangePassword: null,
     })
-    .where(and(eq(users.id, row.userId), eq(users.leagueId, row.leagueId ?? lid)));
-
-  await db
-    .update(passwordResetTokens)
-    .set({ usedAt: now })
-    .where(eq(passwordResetTokens.id, row.id));
+    .where(and(eq(users.id, claimed.userId), eq(users.leagueId, claimed.leagueId ?? lid)));
 
   // Invalidate any other unused tokens for the same user so an older reset
   // email can't be replayed after the password was changed (audit F7).
@@ -99,8 +106,8 @@ export async function POST(request: Request) {
     .set({ usedAt: now })
     .where(
       and(
-        eq(passwordResetTokens.userId, row.userId),
-        ne(passwordResetTokens.id, row.id),
+        eq(passwordResetTokens.userId, claimed.userId),
+        ne(passwordResetTokens.id, claimed.id),
         isNull(passwordResetTokens.usedAt)
       )
     );

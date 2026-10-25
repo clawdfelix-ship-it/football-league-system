@@ -8,6 +8,7 @@ import { passwordResetTokens } from '@/lib/schema';
 import { sendMail, isMailConfigured } from '@/lib/mail/mailer';
 import { passwordResetEmail } from '@/lib/mail/templates';
 import { getRequestLeagueId } from '@/lib/tenant/context';
+import { resolveHost } from '@/lib/tenant/resolve-host';
 
 const EXPIRES_MINUTES = 30;
 
@@ -15,14 +16,20 @@ function hashToken(raw: string): string {
   return createHash('sha256').update(raw).digest('hex');
 }
 
-function buildResetUrl(rawToken: string, requestHost?: string | null): string {
-  // Prefer the requesting host so the link lands on the same tenant. Only
-  // accept https-capable public hosts; fall back to the configured base url.
-  const host = (requestHost || '').trim().toLowerCase();
-  const origin =
-    host && !/^localhost|127\.0\.0\.1|\.local(:|$)/.test(host)
-      ? `https://${host.split(',')[0].trim()}`
-      : (process.env.APP_BASE_URL || 'https://football-league-system-zenex.vercel.app').replace(/\/$/, '');
+function fallbackResetOrigin(): string {
+  return (process.env.APP_BASE_URL || 'https://football-league-system-zenex.vercel.app').replace(/\/$/, '');
+}
+
+function trustedResetOrigin(requestHost?: string | null): string | null {
+  const resolved = resolveHost(requestHost);
+  if (resolved.kind === 'tenant' || resolved.kind === 'platform') {
+    return `https://${resolved.host}`;
+  }
+  return null;
+}
+
+export function buildResetUrl(rawToken: string, requestHost?: string | null): string {
+  const origin = trustedResetOrigin(requestHost) || fallbackResetOrigin();
   return `${origin}/reset-password?token=${encodeURIComponent(rawToken)}`;
 }
 
