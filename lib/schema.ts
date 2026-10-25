@@ -128,6 +128,13 @@ export const teams = pgTable(
     shortName: varchar('short_name', { length: 20 }),
     nameZh: varchar('name_zh', { length: 200 }),
     colorGradient: varchar('color_gradient', { length: 100 }),
+    // Contact metadata (migration 0016): migrated from hardcoded TEAM_CONTACTS.
+    venue: varchar('venue', { length: 200 }),
+    coach: jsonb('coach'),
+    manager: jsonb('manager'),
+    captains: jsonb('captains'),
+    color: varchar('color', { length: 50 }),
+    sortOrder: integer('sort_order'),
     leagueId: integer('league_id').notNull().default(1),
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at').defaultNow(),

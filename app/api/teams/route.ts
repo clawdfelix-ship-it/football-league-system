@@ -1,78 +1,70 @@
-import { TEAMS } from '@/lib/constants';
+import { NextRequest } from 'next/server';
 import { ok, fail } from '@/lib/api/response';
-import { getClientIp, rateLimit } from '@/lib/api/rate-limit';
 import { getAuthContext } from '@/lib/authz';
-import { deleteAllMatches } from '@/lib/queries';
-import { audit } from '@/lib/auth/audit-log';
+import { getRequestLeagueId } from '@/lib/tenant/context';
+import { listTeamsForLeague, createTeam, TeamError } from '@/lib/tenant/teams.server';
+import { z } from 'zod';
+import { zodDetails } from '@/lib/api/zod';
 
-export const revalidate = 3600;
+export const dynamic = 'force-dynamic';
 
+const ContactSchema = z.object({
+  name: z.string().min(1).max(100),
+  email: z.string().email().max(200).optional(),
+  phone: z.string().max(50).optional(),
+});
+
+const CreateSchema = z.object({
+  name: z.string().min(1).max(100),
+  shortName: z.string().max(20).optional(),
+  nameZh: z.string().max(200).optional(),
+  color: z.string().max(50).optional(),
+  venue: z.string().max(200).optional(),
+  coach: ContactSchema.nullable().optional(),
+  manager: ContactSchema.nullable().optional(),
+  captains: z.array(ContactSchema).nullable().optional(),
+  sortOrder: z.number().int().optional(),
+});
+
+/** GET: list teams for the current league (public read; league-scoped). */
 export async function GET() {
   try {
-    return ok({
-      teams: TEAMS.filter((t) => t.name !== 'DEMO').map((t) => t.name),
-    });
-  } catch {
+    const leagueId = await getRequestLeagueId();
+    const rows = await listTeamsForLeague(leagueId);
+    return ok({ teams: rows });
+  } catch (e) {
+    console.error('[teams] list failed:', e);
     return fail(500, 'INTERNAL_ERROR', 'Failed to list teams');
   }
 }
 
-export async function POST(request: Request) {
-  const ip = getClientIp(request);
-  const rl = rateLimit(`reset-season:${ip}`, { limit: 3, windowMs: 10 * 60 * 1000 });
-  if (!rl.allowed) {
-    void audit({
-      action: 'match.reset_season',
-      actor: { role: 'anonymous' },
-      ip,
-      result: 'denied',
-      detail: 'rate limited',
-    });
-    return fail(429, 'RATE_LIMITED', 'Too many requests');
+/** POST: create a new team (league admin only). */
+export async function POST(request: NextRequest) {
+  const auth = await getAuthContext();
+  if (!auth) return fail(401, 'UNAUTHENTICATED', 'Unauthorized');
+  if (auth.role !== 'admin') return fail(403, 'FORBIDDEN', 'League admin access required');
+
+  const leagueId = await getRequestLeagueId();
+  if (auth.leagueId !== leagueId) {
+    return fail(403, 'FORBIDDEN', 'Cannot manage teams for another league');
+  }
+
+  let parsed;
+  try {
+    parsed = CreateSchema.parse(await request.json());
+  } catch (e) {
+    return fail(400, 'VALIDATION_ERROR', 'Invalid request body', zodDetails(e));
   }
 
   try {
-    const auth = await getAuthContext();
-    if (!auth) {
-      void audit({
-        action: 'match.reset_season',
-        actor: { role: 'anonymous' },
-        ip,
-        result: 'denied',
-        detail: 'no session',
-      });
-      return fail(401, 'UNAUTHENTICATED', 'Unauthorized');
-    }
-    if (auth.role !== 'admin') {
-      void audit({
-        action: 'match.reset_season',
-        actor: { role: auth.role, email: auth.email, username: auth.username, teamId: auth.teamId },
-        ip,
-        result: 'denied',
-        detail: 'not admin',
-      });
-      return fail(403, 'FORBIDDEN', 'Admin access required');
-    }
-
-    await deleteAllMatches();
-
-    void audit({
-      action: 'match.reset_season',
-      actor: { role: auth.role, email: auth.email, username: auth.username, teamId: auth.teamId },
-      ip,
-      result: 'success',
-      detail: 'all matches deleted',
-    });
-
-    return ok({ message: '數據已清除' });
+    const team = await createTeam(leagueId, parsed);
+    return ok({ team }, { status: 201 });
   } catch (e) {
-    void audit({
-      action: 'match.reset_season',
-      actor: { role: 'admin', email: null, username: null },
-      ip,
-      result: 'error',
-      detail: e instanceof Error ? e.message : 'unknown',
-    });
-    return fail(500, 'INTERNAL_ERROR', 'Failed to reset matches');
+    if (e instanceof TeamError) {
+      const status = e.code === 'NAME_TAKEN' ? 409 : 400;
+      return fail(status, e.code, e.message);
+    }
+    console.error('[teams] create failed:', e);
+    return fail(500, 'INTERNAL_ERROR', 'Failed to create team');
   }
 }

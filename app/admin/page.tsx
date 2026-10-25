@@ -17,10 +17,9 @@ import FixDbButton from '@/components/FixDbButton';
 import GenerateManagerAccountsButton from '@/components/GenerateManagerAccountsButton';
 import ChangeManagerPasswordForm from '@/components/ChangeManagerPasswordForm';
 import type { Announcement } from '@/lib/schema';
+import { TeamManagerPanel } from '@/components/TeamManagerPanel';
 import { LeagueSettingsPanel } from '@/components/LeagueSettingsPanel';
 import { AnnouncementManager } from '@/components/AnnouncementManager';
-import { TEAM_CONTACTS } from '@/lib/team-contacts';
-import { TeamCard } from '@/components/TeamCard';
 
 // Type from Database (Drizzle returns Date object for timestamp)
 interface DbMatch {
@@ -258,13 +257,7 @@ export default async function AdminPage() {
 
             {/* ── 球隊管理 Card ── */}
             <section className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold">⚽ 球隊管理</h2>
-                <div className="text-xs text-slate-500">{TEAM_CONTACTS.length} 支球隊</div>
-              </div>
-              {TEAM_CONTACTS.map((team) => (
-                <TeamCard key={team.team} team={team} />
-              ))}
+              <TeamManagerPanel />
             </section>
 
             <LazyPlayerContacts title="Player Contacts" defaultExpanded={false} />
