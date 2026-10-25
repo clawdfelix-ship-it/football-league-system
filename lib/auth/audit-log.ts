@@ -28,6 +28,9 @@ export type AuditAction =
   | 'announcement.create'
   | 'announcement.delete'
   | 'admin.manager_account.generate'
+  | 'admin.manager.create'
+  | 'admin.manager.reset_password'
+  | 'admin.manager.delete'
   | 'admin.db_init';
 
 export type AuditActor = {

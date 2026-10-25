@@ -18,6 +18,7 @@ import GenerateManagerAccountsButton from '@/components/GenerateManagerAccountsB
 import ChangeManagerPasswordForm from '@/components/ChangeManagerPasswordForm';
 import type { Announcement } from '@/lib/schema';
 import { TeamManagerPanel } from '@/components/TeamManagerPanel';
+import { ManagerAccountsPanel } from '@/components/ManagerAccountsPanel';
 import { LeagueSettingsPanel } from '@/components/LeagueSettingsPanel';
 import { AnnouncementManager } from '@/components/AnnouncementManager';
 
@@ -230,19 +231,26 @@ export default async function AdminPage() {
               <h2 className="text-lg font-semibold mb-4">Squad List</h2>
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 {TEAMS.map((team, index) => (
-                  <Link 
-                    key={team.name}
-                    href={`/admin/match-sheet/${index}`}
-                    className="flex flex-col items-center justify-center gap-2 rounded-lg border border-slate-100 bg-slate-50 p-4 text-center transition hover:bg-slate-100 hover:shadow-sm"
-                    target="_blank"
-                  >
-                    <div className="text-lg font-bold px-4 py-2 rounded-lg bg-slate-700 text-white">
-                      {team.shortName}
-                    </div>
-                    <div className="text-xs text-slate-600">
-                      {team.nameZh}
-                    </div>
-                  </Link>
+                  <div key={team.name} className="flex flex-col gap-1.5">
+                    <Link 
+                      href={`/admin/match-sheet/${index}`}
+                      className="flex flex-col items-center justify-center gap-2 rounded-lg border border-slate-100 bg-slate-50 p-4 text-center transition hover:bg-slate-100 hover:shadow-sm"
+                      target="_blank"
+                    >
+                      <div className="text-lg font-bold px-4 py-2 rounded-lg bg-slate-700 text-white">
+                        {team.shortName}
+                      </div>
+                      <div className="text-xs text-slate-600">
+                        {team.nameZh}
+                      </div>
+                    </Link>
+                    <Link
+                      href={`/admin/manager-view/${index}`}
+                      className="btn-admin btn-admin-sm justify-center text-center"
+                    >
+                      Manager 視角
+                    </Link>
+                  </div>
                 ))}
                 <Link
                   href="/admin/match-sheet/demo"
@@ -258,6 +266,12 @@ export default async function AdminPage() {
             {/* ── 球隊管理 Card ── */}
             <section className="space-y-3">
               <TeamManagerPanel />
+            </section>
+
+            {/* ── Manager 帳號管理 Card ── */}
+            <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+              <h2 className="text-lg font-semibold mb-4">Manager 帳號管理</h2>
+              <ManagerAccountsPanel />
             </section>
 
             <LazyPlayerContacts title="Player Contacts" defaultExpanded={false} />
