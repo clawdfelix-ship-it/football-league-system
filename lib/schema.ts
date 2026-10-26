@@ -26,6 +26,10 @@ export const leagues = pgTable('leagues', {
   contactEmail: varchar('contact_email', { length: 200 }),
   contactPhone: varchar('contact_phone', { length: 50 }),
   customNav: jsonb('custom_nav').notNull().default([]),
+  // 2026-10-26: JSON bag for site-level settings admin can control.
+  // Shape: { heroTitle?: string, heroSubtitle?: string, venues?: string[],
+  //          navbarLinks?: Array<{href, zh, en}>, footerLinks?: Array<{href, label}> }
+  siteSettings: jsonb('site_settings').notNull().default({}),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 });

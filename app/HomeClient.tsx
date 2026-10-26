@@ -158,9 +158,18 @@ export default function HomeClient(props: {
     results: Match[];
     announcements: PublicAnnouncement[];
     teams: TeamDisplay[];
+    siteSettings?: Record<string, unknown>;
   };
 }) {
   const { t, language } = useLanguage();
+
+  // Site settings: admin-controlled hero title / subtitle (2026-10-26)
+  const siteSettings = (props.initial.siteSettings ?? {}) as {
+    heroTitle?: string;
+    heroSubtitle?: string;
+  };
+  const heroTitle = siteSettings.heroTitle || 'Hong Kong Bank League 2026';
+  const heroSubtitle = siteSettings.heroSubtitle || null;
 
   const initialTeams = useMemo(() => {
     const teamMap: Record<string, { homeKitColor: string; awayKitColor: string }> = {};
@@ -317,9 +326,9 @@ export default function HomeClient(props: {
           <div className="mb-5 sm:mb-6 h-24 w-24 sm:h-32 sm:w-32">
             <Logo className="h-full w-full drop-shadow-lg" />
           </div>
-          <h1 className="font-bold mb-2 tracking-[-0.02em] leading-[1.05] text-balance text-[clamp(1.9rem,7vw,3.75rem)]">Hong Kong Bank League 2026</h1>
+          <h1 className="font-bold mb-2 tracking-[-0.02em] leading-[1.05] text-balance text-[clamp(1.9rem,7vw,3.75rem)]">{heroTitle}</h1>
           <p className="text-blue-200 font-normal tracking-widest uppercase text-[clamp(0.7rem,2.6vw,1.125rem)] text-balance">
-            Partnered with ZENEX SPORTS | {t('香港銀行足球聯賽2026', 'Hong Kong Bank Football League 2026')}
+            {heroSubtitle ?? <>Partnered with ZENEX SPORTS | {t('香港銀行足球聯賽2026', 'Hong Kong Bank Football League 2026')}</>}
           </p>
         </header>
         <main className="page-container -mt-16 pb-20">
@@ -341,9 +350,9 @@ export default function HomeClient(props: {
           <div className="mb-5 sm:mb-6 h-24 w-24 sm:h-32 sm:w-32">
             <Logo className="h-full w-full drop-shadow-lg" />
           </div>
-          <h1 className="font-bold mb-2 tracking-[-0.02em] leading-[1.05] text-balance text-[clamp(1.9rem,7vw,3.75rem)]">Hong Kong Bank League 2026</h1>
+          <h1 className="font-bold mb-2 tracking-[-0.02em] leading-[1.05] text-balance text-[clamp(1.9rem,7vw,3.75rem)]">{heroTitle}</h1>
           <p className="text-blue-200 font-normal tracking-widest uppercase text-[clamp(0.7rem,2.6vw,1.125rem)] text-balance">
-            Partnered with ZENEX SPORTS | {t('香港銀行足球聯賽2026', 'Hong Kong Bank Football League 2026')}
+            {heroSubtitle ?? <>Partnered with ZENEX SPORTS | {t('香港銀行足球聯賽2026', 'Hong Kong Bank Football League 2026')}</>}
           </p>
         </header>
 

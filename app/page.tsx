@@ -6,6 +6,9 @@ import { getRequestTenant } from '@/lib/tenant/context';
 import { shouldRenderPlatformLanding } from '@/lib/tenant/landing';
 import { PLATFORM_PUBLIC_URL } from '@/lib/tenant/config';
 import { listAnnouncements, listMatches, listTeamSettings } from '@/lib/queries';
+import { db } from '@/lib/db';
+import { leagues } from '@/lib/schema';
+import { eq } from 'drizzle-orm';
 import { iso } from '@/lib/serialize';
 import type { PublicAnnouncement } from '@/lib/public-types';
 
@@ -124,5 +127,18 @@ export default async function Home() {
   } catch {
   }
 
-  return <HomeClient initial={{ ...initial, teams }} />;
+  // Load siteSettings from league record (hero title, venues, navbar, footer)
+  let siteSettings: Record<string, unknown> = {};
+  try {
+    const [league] = await db
+      .select({ siteSettings: leagues.siteSettings })
+      .from(leagues)
+      .where(eq(leagues.id, tenant.leagueId))
+      .limit(1);
+    siteSettings = (league?.siteSettings as Record<string, unknown>) ?? {};
+  } catch {
+    // fall back to empty — front page will use hardcoded defaults
+  }
+
+  return <HomeClient initial={{ ...initial, teams, siteSettings }} />;
 }

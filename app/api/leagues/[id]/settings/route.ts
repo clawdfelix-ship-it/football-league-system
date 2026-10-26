@@ -13,12 +13,28 @@ import { recordPlatformEvent } from '@/lib/tenant/audit.server';
 
 export const dynamic = 'force-dynamic';
 
+const SiteSettingsSchema = z.object({
+  heroTitle: z.string().max(200).optional(),
+  heroSubtitle: z.string().max(500).optional(),
+  venues: z.array(z.string().max(200)).max(20).optional(),
+  navbarLinks: z.array(z.object({
+    href: z.string().max(200),
+    zh: z.string().max(50),
+    en: z.string().max(50),
+  })).max(20).optional(),
+  footerLinks: z.array(z.object({
+    href: z.string().max(200),
+    label: z.string().max(50),
+  })).max(20).optional(),
+});
+
 const UpdateSchema = z.object({
   name: z.string().min(1).max(200).optional(),
   slug: z.string().min(1).max(80).optional(),
   announcement: z.string().max(2000).optional(),
   contactEmail: z.string().email().max(200).optional().or(z.literal('')),
   contactPhone: z.string().max(50).optional(),
+  siteSettings: SiteSettingsSchema.optional(),
 });
 
 type Params = { params: Promise<{ id: string }> };
@@ -47,6 +63,7 @@ export async function GET(_request: NextRequest, context: Params) {
         announcement: leagues.announcement,
         contactEmail: leagues.contactEmail,
         contactPhone: leagues.contactPhone,
+        siteSettings: leagues.siteSettings,
       })
       .from(leagues)
       .where(eq(leagues.id, leagueId))
@@ -131,6 +148,17 @@ export async function PATCH(request: NextRequest, context: Params) {
       }
     }
 
+    // If siteSettings provided, merge with existing (partial update)
+    let mergedSiteSettings: Record<string, unknown> | undefined;
+    if (parsed.siteSettings !== undefined) {
+      const [current] = await db
+        .select({ siteSettings: leagues.siteSettings })
+        .from(leagues)
+        .where(eq(leagues.id, leagueId))
+        .limit(1);
+      mergedSiteSettings = { ...(current?.siteSettings as Record<string, unknown> ?? {}), ...parsed.siteSettings };
+    }
+
     const [updated] = await db
       .update(leagues)
       .set({
@@ -139,6 +167,7 @@ export async function PATCH(request: NextRequest, context: Params) {
         ...(parsed.announcement !== undefined && { announcement: parsed.announcement }),
         ...(parsed.contactEmail !== undefined && { contactEmail: parsed.contactEmail || null }),
         ...(parsed.contactPhone !== undefined && { contactPhone: parsed.contactPhone || null }),
+        ...(mergedSiteSettings !== undefined && { siteSettings: mergedSiteSettings }),
         updatedAt: new Date(),
       })
       .where(eq(leagues.id, leagueId))

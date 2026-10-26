@@ -18,6 +18,7 @@ import { ManagerAnnouncements } from '@/components/ManagerAnnouncements';
 import type { Announcement } from '@/lib/schema';
 import { TeamManagerPanel } from '@/components/TeamManagerPanel';
 import { ManagerAccountsPanel } from '@/components/ManagerAccountsPanel';
+import { SiteSettingsPanel } from '@/components/SiteSettingsPanel';
 import { LeagueSettingsPanel } from '@/components/LeagueSettingsPanel';
 import { AnnouncementManager } from '@/components/AnnouncementManager';
 
@@ -276,6 +277,12 @@ export default async function AdminPage() {
                   <div className="text-xs text-slate-600">Real Madrid</div>
                 </Link>
               </div>
+            </section>
+
+            {/* ── 前台設定 Card ── */}
+            <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+              <h2 className="text-lg font-semibold mb-4">前台設定</h2>
+              <SiteSettingsPanel leagueId={tenant.leagueId} />
             </section>
 
             {/* ── 球隊管理 Card ── */}
