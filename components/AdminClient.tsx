@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { updateMatch, deleteMatch, resetSeason, addMatch } from '@/lib/actions';
 import { useTeams } from '@/lib/teams/use-teams';
 
@@ -16,13 +16,32 @@ interface Match {
   round?: string | null;
 }
 
-const VENUES = [
+const DEFAULT_VENUES = [
   '跑馬地遊樂場 3 號場 (Happy Valley Recreation Ground No. 3)',
   '跑馬地遊樂場 8 號場 (Happy Valley Recreation Ground No. 8)',
   '中山紀念公園 (Sun Yat Sen Memorial Park)',
   '鰂魚涌公園 1 號場 (Quarry Bay Park No. 1, near Taikoo Shing)',
   '鰂魚涌公園 2 號場 (Quarry Bay Park No. 2, near Quarry Bay Station)'
 ];
+
+// Custom hook: fetch admin-controlled venue list from league siteSettings.
+// Falls back to DEFAULT_VENUES if the admin hasn't configured any.
+function useVenues() {
+  const [venues, setVenues] = useState<string[]>(DEFAULT_VENUES);
+  useEffect(() => {
+    // League id is embedded in the current admin session; fetch from the
+    // league-settings endpoint which is league-scoped.
+    fetch('/api/leagues/current/settings', { cache: 'no-store' })
+      .then((res) => res.json())
+      .then((body) => {
+        if (body?.ok && body.data?.siteSettings?.venues?.length) {
+          setVenues(body.data.siteSettings.venues);
+        }
+      })
+      .catch(() => {});
+  }, []);
+  return venues;
+}
 
 export function MatchList({ 
   scheduledMatches, 
@@ -33,6 +52,7 @@ export function MatchList({
 }) {
   const [editingMatch, setEditingMatch] = useState<number | null>(null);
   const [teamFilter, setTeamFilter] = useState<string>('');
+  const venues = useVenues();
 
   const handleUpdateMatch = async (matchId: number, formData: FormData) => {
     const homeScoreRaw = formData.get('homeScore')?.toString();
@@ -165,7 +185,7 @@ export function MatchList({
                       <label className="text-xs font-medium text-slate-700">Venue</label>
                       <input name="venue" list="venues" defaultValue={match.venue || ''} className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-900 shadow-sm focus:border-[#0f172a] focus:outline-none focus:ring-2 focus:ring-[#0f172a]/25" />
                       <datalist id="venues">
-                        {VENUES.map(v => <option key={v} value={v} />)}
+                        {venues.map((v: string) => <option key={v} value={v} />)}
                       </datalist>
                     </div>
                     <div>
@@ -256,7 +276,7 @@ export function MatchList({
                       <label className="text-xs font-medium text-slate-700">Venue</label>
                       <input name="venue" list="venues" defaultValue={match.venue || ''} className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-900 shadow-sm focus:border-[#0f172a] focus:outline-none focus:ring-2 focus:ring-[#0f172a]/25" />
                       <datalist id="venues">
-                        {VENUES.map(v => <option key={v} value={v} />)}
+                        {venues.map((v: string) => <option key={v} value={v} />)}
                       </datalist>
                     </div>
                     <div>
@@ -298,6 +318,7 @@ export function MatchList({
 export function MatchForm() {
   const [isCustomVenue, setIsCustomVenue] = useState(false);
   const { teams } = useTeams();
+  const venues = useVenues();
 
   const handleSubmitMatch = async (formData: FormData) => {
     const homeTeam = formData.get('homeTeam')?.toString().trim() ?? '';
@@ -407,7 +428,7 @@ export function MatchForm() {
                 className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-[#0f172a] focus:outline-none focus:ring-2 focus:ring-[#0f172a]/25"
               >
                 <option value="">Select Venue</option>
-                {VENUES.map(v => <option key={v} value={v}>{v}</option>)}
+                {venues.map((v: string) => <option key={v} value={v}>{v}</option>)}
                 <option value="__custom__">自定義… (Custom venue)</option>
               </select>
             )}

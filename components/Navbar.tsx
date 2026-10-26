@@ -26,6 +26,22 @@ export default function Navbar() {
   const [hash, setHash] = useState('');
   const [isAdminMenuOpen, setIsAdminMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [navItems, setNavItems] = useState<NavItem[]>(NAV_ITEMS);
+
+  // 2026-10-26: fetch admin-controlled navbar links from siteSettings
+  useEffect(() => {
+    fetch('/api/leagues/current/settings', { cache: 'no-store' })
+      .then((res) => res.json())
+      .then((body) => {
+        if (body?.ok && body.data?.siteSettings?.navbarLinks?.length) {
+          const custom = body.data.siteSettings.navbarLinks
+            .filter((l: { href: string; zh: string; en: string }) => l.href && (l.zh || l.en))
+            .map((l: { href: string; zh: string; en: string }) => ({ href: l.href, zh: l.zh || l.en, en: l.en || l.zh }));
+          if (custom.length) setNavItems(custom);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     const sync = () => setHash(window.location.hash);
@@ -68,7 +84,7 @@ export default function Navbar() {
             </span>
           </Link>
           <div className="hidden md:flex items-center gap-2">
-            {NAV_ITEMS.map((item) => (
+            {navItems.map((item) => (
               <Link key={item.href} href={item.href} className={linkClass(item)}>
                 {t(item.zh, item.en)}
               </Link>
@@ -129,7 +145,7 @@ export default function Navbar() {
       </div>
       {isMobileMenuOpen && (
         <div className="page-container mt-3 md:hidden space-y-1">
-          {NAV_ITEMS.map((item) => (
+          {navItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}

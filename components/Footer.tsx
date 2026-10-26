@@ -1,13 +1,32 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 import { PLATFORM_APPLY_URL } from '@/lib/tenant/platform-url';
 
+type FooterLink = { href: string; label: string };
+
 export default function Footer() {
   const { language } = useLanguage();
   const isZh = language === 'zh';
+  const [footerLinks, setFooterLinks] = useState<FooterLink[]>([]);
+
+  // 2026-10-26: fetch admin-controlled footer links from siteSettings
+  useEffect(() => {
+    fetch('/api/leagues/current/settings', { cache: 'no-store' })
+      .then((res) => res.json())
+      .then((body) => {
+        if (body?.ok && body.data?.siteSettings?.footerLinks?.length) {
+          const custom = body.data.siteSettings.footerLinks
+            .filter((l: any) => l.href && l.label)
+            .map((l: any) => ({ href: l.href, label: l.label }));
+          if (custom.length) setFooterLinks(custom);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   return (
     <footer className="bg-slate-900 text-slate-300 py-12 mt-auto">
@@ -77,12 +96,22 @@ export default function Footer() {
               <a href={PLATFORM_APPLY_URL} className="hover:text-white transition-colors py-2 min-h-[44px] inline-flex items-center">
                 {isZh ? '開辦你的聯賽' : 'Run your league'}
               </a>
-              <Link href="/privacy-policy" className="hover:text-white transition-colors py-2 min-h-[44px] inline-flex items-center">
-                {isZh ? '私隱政策' : 'Privacy Policy'}
-              </Link>
-              <Link href="/terms-of-service" className="hover:text-white transition-colors py-2 min-h-[44px] inline-flex items-center">
-                {isZh ? '服務條款' : 'Terms of Service'}
-              </Link>
+              {footerLinks.length > 0 ? (
+                footerLinks.map((l) => (
+                  <Link key={l.href} href={l.href} className="hover:text-white transition-colors py-2 min-h-[44px] inline-flex items-center">
+                    {l.label}
+                  </Link>
+                ))
+              ) : (
+                <>
+                  <Link href="/privacy-policy" className="hover:text-white transition-colors py-2 min-h-[44px] inline-flex items-center">
+                    {isZh ? '私隱政策' : 'Privacy Policy'}
+                  </Link>
+                  <Link href="/terms-of-service" className="hover:text-white transition-colors py-2 min-h-[44px] inline-flex items-center">
+                    {isZh ? '服務條款' : 'Terms of Service'}
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
