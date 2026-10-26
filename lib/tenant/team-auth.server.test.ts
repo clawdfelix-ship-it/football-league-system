@@ -30,7 +30,7 @@ describe('resolveManagerTeamDbId', () => {
   });
 
   it('returns DB id when user has team_id set', async () => {
-    const limitSpy = vi.fn().mockResolvedValue([{ teamId: 42 }]);
+    const limitSpy = vi.fn().mockResolvedValue([{ teamId: 42, leagueId: 2 }]);
     const whereSpy = vi.fn().mockReturnValue({ limit: limitSpy });
     const fromSpy = vi.fn().mockReturnValue({ where: whereSpy });
     selectSpy.mockReturnValue({ from: fromSpy });
@@ -39,14 +39,14 @@ describe('resolveManagerTeamDbId', () => {
     expect(result).toBe(42);
   });
 
-  it('falls back to array index mapping when team_id is NULL', async () => {
-    // First call: user lookup returns teamId=null
-    const userLimitSpy = vi.fn().mockResolvedValue([{ teamId: null }]);
+  it('falls back to the user league when team_id is NULL', async () => {
+    // First call: user lookup returns teamId=null in league 2
+    const userLimitSpy = vi.fn().mockResolvedValue([{ teamId: null, leagueId: 2 }]);
     const userWhereSpy = vi.fn().mockReturnValue({ limit: userLimitSpy });
     const userFromSpy = vi.fn().mockReturnValue({ where: userWhereSpy });
 
-    // Second call: team lookup by shortName prefix "BBVA"
-    const teamLimitSpy = vi.fn().mockResolvedValue([{ id: 2 }]);
+    // Second call: team lookup by shortName prefix "BBVA" scoped to that league
+    const teamLimitSpy = vi.fn().mockResolvedValue([{ id: 22 }]);
     const teamWhereSpy = vi.fn().mockReturnValue({ limit: teamLimitSpy });
     const teamFromSpy = vi.fn().mockReturnValue({ where: teamWhereSpy });
 
@@ -55,7 +55,7 @@ describe('resolveManagerTeamDbId', () => {
       .mockReturnValueOnce({ from: teamFromSpy });
 
     const result = await resolveManagerTeamDbId('bbva-ibai@example.com');
-    expect(result).toBe(2);
+    expect(result).toBe(22);
   });
 
   it('returns null for unknown email', async () => {
@@ -101,12 +101,12 @@ describe('migrateSessionTeamId', () => {
 
   it('converts array index to DB id and persists to user row', async () => {
     // 1. Find user by email
-    const userLimitSpy = vi.fn().mockResolvedValue([{ id: 5, teamId: null, email: 'nomura-terrence@example.com' }]);
+    const userLimitSpy = vi.fn().mockResolvedValue([{ id: 5, teamId: null, email: 'nomura-terrence@example.com', leagueId: 3 }]);
     const userWhereSpy = vi.fn().mockReturnValue({ limit: userLimitSpy });
     const userFromSpy = vi.fn().mockReturnValue({ where: userWhereSpy });
 
-    // 2. Find team by shortName prefix "NOMURA"
-    const teamLimitSpy = vi.fn().mockResolvedValue([{ id: 1 }]);
+    // 2. Find team by shortName prefix "NOMURA" in the same league
+    const teamLimitSpy = vi.fn().mockResolvedValue([{ id: 31 }]);
     const teamWhereSpy = vi.fn().mockReturnValue({ limit: teamLimitSpy });
     const teamFromSpy = vi.fn().mockReturnValue({ where: teamWhereSpy });
 
@@ -118,12 +118,12 @@ describe('migrateSessionTeamId', () => {
     updateSpy.mockReturnValue({ set: setSpy });
 
     const result = await migrateSessionTeamId('nomura-terrence@example.com', 0); // array index 0 = NOMURA
-    expect(result).toBe(1); // DB id 1
+    expect(result).toBe(31); // DB id in the same league
     expect(updateSpy).toHaveBeenCalled();
   });
 
   it('returns existing team_id if already migrated', async () => {
-    const limitSpy = vi.fn().mockResolvedValue([{ id: 5, teamId: 42, email: 'x@example.com' }]);
+    const limitSpy = vi.fn().mockResolvedValue([{ id: 5, teamId: 42, email: 'x@example.com', leagueId: 2 }]);
     const whereSpy = vi.fn().mockReturnValue({ limit: limitSpy });
     const fromSpy = vi.fn().mockReturnValue({ where: whereSpy });
     selectSpy.mockReturnValue({ from: fromSpy });
@@ -134,7 +134,7 @@ describe('migrateSessionTeamId', () => {
   });
 
   it('throws MIGRATION_FAILED when team not found for array index', async () => {
-    const userLimitSpy = vi.fn().mockResolvedValue([{ id: 5, teamId: null, email: 'x@example.com' }]);
+    const userLimitSpy = vi.fn().mockResolvedValue([{ id: 5, teamId: null, email: 'x@example.com', leagueId: 2 }]);
     const userWhereSpy = vi.fn().mockReturnValue({ limit: userLimitSpy });
     const userFromSpy = vi.fn().mockReturnValue({ where: userWhereSpy });
 

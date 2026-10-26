@@ -10,6 +10,7 @@ import { eq, and, asc } from 'drizzle-orm';
 import { db } from '@/lib/db';
 import { users, teams } from '@/lib/schema';
 import { TEAMS } from '@/lib/constants';
+import { DEFAULT_LEAGUE_ID } from '@/lib/tenant/config';
 
 export class TeamAuthError extends Error {
   code: string;
@@ -33,10 +34,14 @@ export async function resolveManagerTeamDbId(email: string): Promise<number | nu
 
   // 1. Check if user already has team_id set
   const [user] = await db
-    .select({ teamId: users.teamId })
+    .select({ teamId: users.teamId, leagueId: users.leagueId })
     .from(users)
     .where(eq(users.email, inputEmail))
     .limit(1);
+
+  if (!user) {
+    return null;
+  }
 
   if (user?.teamId != null) {
     return user.teamId;
@@ -45,11 +50,15 @@ export async function resolveManagerTeamDbId(email: string): Promise<number | nu
   // 2. Fallback: email prefix → shortName lookup
   const emailPrefix = inputEmail.split('@')[0].toUpperCase();
   if (!emailPrefix) return null;
+  const leagueId =
+    typeof user.leagueId === 'number' && user.leagueId > 0
+      ? user.leagueId
+      : DEFAULT_LEAGUE_ID;
 
   const [team] = await db
     .select({ id: teams.id })
     .from(teams)
-    .where(eq(teams.shortName, emailPrefix))
+    .where(and(eq(teams.shortName, emailPrefix), eq(teams.leagueId, leagueId)))
     .limit(1);
 
   return team?.id ?? null;
@@ -82,7 +91,7 @@ export async function migrateSessionTeamId(
 
   // Check if already migrated
   const [user] = await db
-    .select({ id: users.id, teamId: users.teamId, email: users.email })
+    .select({ id: users.id, teamId: users.teamId, email: users.email, leagueId: users.leagueId })
     .from(users)
     .where(eq(users.email, inputEmail))
     .limit(1);
@@ -101,10 +110,15 @@ export async function migrateSessionTeamId(
     throw new TeamAuthError('MIGRATION_FAILED', `Invalid array index ${arrayIndex}`);
   }
 
+  const leagueId =
+    typeof user.leagueId === 'number' && user.leagueId > 0
+      ? user.leagueId
+      : DEFAULT_LEAGUE_ID;
+
   const [team] = await db
     .select({ id: teams.id })
     .from(teams)
-    .where(eq(teams.shortName, teamDisplay.shortName))
+    .where(and(eq(teams.shortName, teamDisplay.shortName), eq(teams.leagueId, leagueId)))
     .limit(1);
 
   if (!team) {

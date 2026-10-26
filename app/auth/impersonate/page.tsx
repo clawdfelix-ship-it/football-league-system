@@ -1,15 +1,16 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
+import { extractImpersonateToken } from '@/lib/tenant/impersonate';
 
 /**
  * League-side impersonate landing page.
  *
  * A platform admin clicks "進入聯賽後台" in the platform console, which mints
  * a one-time token and redirects here:
- *   https://<slug>.zenex-sports.com/auth/impersonate?token=<hex>
+ *   https://<slug>.zenex-sports.com/auth/impersonate#token=<hex>
  *
  * This page signs in via the credentials provider using the special
  * 'impersonate:<token>' password (handled in lib/auth.ts authorize step 0),
@@ -17,11 +18,13 @@ import { signIn } from 'next-auth/react';
  */
 export default function ImpersonatePage() {
   const router = useRouter();
-  const params = useSearchParams();
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const token = params.get('token');
+    const token = extractImpersonateToken({
+      hash: window.location.hash,
+      search: window.location.search,
+    });
     if (!token) {
       setError('缺少 token');
       return;
@@ -41,7 +44,7 @@ export default function ImpersonatePage() {
         setError('Impersonate 失敗：token 無效、已用過或已過期。');
       }
     })();
-  }, [params, router]);
+  }, [router]);
 
   return (
     <main className="min-h-[70vh] flex items-center justify-center px-4 py-16">

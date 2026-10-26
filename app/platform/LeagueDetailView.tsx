@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { buildImpersonateUrl } from '@/lib/tenant/impersonate';
 
 type LeagueDetails = {
   league: {
@@ -115,7 +116,8 @@ export default function LeagueDetailView({
       if (!body?.ok) throw new Error(body?.error?.message || 'Impersonate 失敗');
       const token = body.data.token;
       const slug = data?.league.slug;
-      window.open(`https://${slug}.zenex-sports.com/auth/impersonate?token=${token}`, '_blank');
+      if (!slug) throw new Error('缺少聯賽 slug');
+      window.open(buildImpersonateUrl(slug, token), '_blank');
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Impersonate 失敗');
     } finally {

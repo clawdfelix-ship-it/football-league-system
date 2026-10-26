@@ -8,22 +8,12 @@ import { passwordResetTokens } from '@/lib/schema';
 import { sendMail, isMailConfigured } from '@/lib/mail/mailer';
 import { passwordResetEmail } from '@/lib/mail/templates';
 import { getRequestLeagueId } from '@/lib/tenant/context';
+import { buildResetUrl } from '@/lib/auth/password-reset';
 
 const EXPIRES_MINUTES = 30;
 
 function hashToken(raw: string): string {
   return createHash('sha256').update(raw).digest('hex');
-}
-
-function buildResetUrl(rawToken: string, requestHost?: string | null): string {
-  // Prefer the requesting host so the link lands on the same tenant. Only
-  // accept https-capable public hosts; fall back to the configured base url.
-  const host = (requestHost || '').trim().toLowerCase();
-  const origin =
-    host && !/^localhost|127\.0\.0\.1|\.local(:|$)/.test(host)
-      ? `https://${host.split(',')[0].trim()}`
-      : (process.env.APP_BASE_URL || 'https://football-league-system-zenex.vercel.app').replace(/\/$/, '');
-  return `${origin}/reset-password?token=${encodeURIComponent(rawToken)}`;
 }
 
 export async function POST(request: Request) {
@@ -85,8 +75,7 @@ export async function POST(request: Request) {
       leagueId: lid,
     });
 
-    const requestHost = request.headers.get('host');
-    const url = buildResetUrl(rawToken, requestHost);
+    const url = await buildResetUrl(rawToken, lid);
     const msg = passwordResetEmail({
       name: null,
       url,
