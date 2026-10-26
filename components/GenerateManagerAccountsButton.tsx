@@ -65,22 +65,22 @@ export default function GenerateManagerAccountsButton() {
 
   if (status === 'idle') {
     return (
-      <div className="flex flex-col items-stretch gap-2 sm:items-end">
+      <div className="flex w-full flex-col items-stretch gap-2 sm:w-auto sm:items-end">
         <button
           onClick={() => run(false, 'random')}
-          className="btn-admin-ghost btn-admin-sm text-amber-600 hover:text-amber-700"
+          className="btn-admin"
         >
           Generate Manager Accounts
         </button>
         <button
           onClick={() => run(true, 'random')}
-          className="btn-admin-ghost btn-admin-sm"
+          className="btn-admin"
         >
           Regenerate Passwords
         </button>
         <button
           onClick={() => run(false, 'shared')}
-          className="btn-admin-ghost btn-admin-sm"
+          className="btn-admin"
         >
           Set Shared Password
         </button>

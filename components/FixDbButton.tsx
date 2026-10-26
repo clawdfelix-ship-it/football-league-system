@@ -32,7 +32,7 @@ export default function FixDbButton() {
     return (
       <button
         onClick={handleFixDb}
-        className="btn-admin-ghost btn-admin-sm text-amber-600 hover:text-amber-700"
+        className="btn-admin w-full sm:w-auto"
       >
         Fix Database Schema
       </button>
