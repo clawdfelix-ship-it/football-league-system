@@ -78,14 +78,70 @@ export default function DashboardTab({
         <StatCard label="總比賽" value={data.totals.totalMatches} />
       </div>
 
-      {/* League table */}
+      {/* League list — mobile: dark stat tiles (v4 prototype, Felix picked 2026-10-26);
+          desktop (md+): classic table. Two renders share the same data. */}
       {data.leagues.length === 0 ? (
         <div className="rounded-lg border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-600">
           暫無聯賽
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm">
-          <table className="w-full text-sm">
+        <>
+          {/* Mobile tiles (<md) */}
+          <div className="space-y-3 md:hidden">
+            {data.leagues.map((l) => (
+              <button
+                key={l.leagueId}
+                onClick={() => onSelectLeague(l.leagueId)}
+                className="block w-full rounded-2xl bg-gradient-to-br from-[#0f172a] to-[#1e293b] p-4 text-left text-white shadow-md transition active:scale-[0.98]"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="truncate text-xs text-white/60">{l.slug}.zenex-sports.com</p>
+                    <h3 className="mt-1 text-base font-bold leading-snug">{l.name}</h3>
+                  </div>
+                  <span
+                    className={`inline-block flex-none rounded-full px-2.5 py-1 text-xs font-semibold ${
+                      l.status === 'active'
+                        ? 'bg-green-400/20 text-green-300'
+                        : l.status === 'trial'
+                          ? 'bg-blue-400/20 text-blue-300'
+                          : l.status === 'suspended'
+                            ? 'bg-amber-400/20 text-amber-300'
+                            : 'bg-white/15 text-white/80'
+                    }`}
+                  >
+                    {l.status}
+                  </span>
+                </div>
+                <div className="mt-4 grid grid-cols-3 gap-2">
+                  <div>
+                    <div className="text-2xl font-bold">{l.teamCount}</div>
+                    <div className="text-[11px] text-white/60">球隊</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold">{l.playerCount}</div>
+                    <div className="text-[11px] text-white/60">球員</div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold">{l.matchCount}</div>
+                    <div className="text-[11px] text-white/60">比賽</div>
+                  </div>
+                </div>
+                <div className="mt-3 flex items-center justify-between text-xs text-white/60">
+                  <span>
+                    {l.lastActivityAt
+                      ? `最新活動 ${new Date(l.lastActivityAt).toLocaleDateString('zh-HK')}`
+                      : '未有活動'}
+                  </span>
+                  <span className="font-semibold text-white">詳情 →</span>
+                </div>
+              </button>
+            ))}
+          </div>
+
+          {/* Desktop table (md+) */}
+          <div className="hidden overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm md:block">
+            <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-slate-200 bg-slate-50 text-left text-xs font-semibold text-slate-600">
                 <th className="px-4 py-3">聯賽</th>
@@ -138,7 +194,8 @@ export default function DashboardTab({
               ))}
             </tbody>
           </table>
-        </div>
+          </div>
+        </>
       )}
     </div>
   );
