@@ -12,9 +12,6 @@ import { TEAMS } from '@/lib/constants';
 import { KitColorManager } from '@/components/KitColorManager';
 import { PlayerManager } from '@/app/admin/match-sheet/[teamId]/PlayerManager';
 import { LazyPlayerContacts } from '@/components/LazyPlayerContacts';
-import SignOutButton from '@/components/SignOutButton';
-import FixDbButton from '@/components/FixDbButton';
-import GenerateManagerAccountsButton from '@/components/GenerateManagerAccountsButton';
 import ChangeManagerPasswordForm from '@/components/ChangeManagerPasswordForm';
 import type { Announcement } from '@/lib/schema';
 import { TeamManagerPanel } from '@/components/TeamManagerPanel';
@@ -166,11 +163,6 @@ export default async function AdminPage() {
             <div className="flex flex-col items-start gap-1 sm:items-end">
               <div className="text-sm text-slate-600">
                 Logged in as {username}
-              </div>
-              <div className="flex flex-wrap items-center justify-start gap-2 sm:justify-end sm:gap-3">
-                {isAdmin && <GenerateManagerAccountsButton />}
-                <FixDbButton />
-                <SignOutButton />
               </div>
             </div>
           </div>
