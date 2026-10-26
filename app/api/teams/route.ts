@@ -5,6 +5,7 @@ import { getRequestLeagueId } from '@/lib/tenant/context';
 import { listTeamsForLeague, createTeam, TeamError } from '@/lib/tenant/teams.server';
 import { z } from 'zod';
 import { zodDetails } from '@/lib/api/zod';
+import { getClientIp, rateLimit } from '@/lib/api/rate-limit';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,7 +28,12 @@ const CreateSchema = z.object({
 });
 
 /** GET: list teams for the current league (public read; league-scoped). */
-export async function GET() {
+export async function GET(request: NextRequest) {
+  // 2026-10-26 audit: public read — rate limit per IP (60 req / 10 min)
+  const ip = getClientIp(request);
+  const rl = rateLimit(`teams-list:${ip}`, { limit: 60, windowMs: 10 * 60 * 1000 });
+  if (!rl.allowed) return fail(429, 'RATE_LIMITED', 'Too many requests');
+
   try {
     const leagueId = await getRequestLeagueId();
     const rows = await listTeamsForLeague(leagueId);

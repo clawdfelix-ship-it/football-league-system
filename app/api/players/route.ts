@@ -4,6 +4,7 @@ import { createPlayer, listPublicPlayers } from '@/lib/queries';
 import { fail, ok } from '@/lib/api/response';
 import { CreatePlayerSchema } from '@/lib/api/schemas';
 import { zodDetails } from '@/lib/api/zod';
+import { getClientIp, rateLimit } from '@/lib/api/rate-limit';
 
 export const revalidate = 10;
 

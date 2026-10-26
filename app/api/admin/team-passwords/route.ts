@@ -81,10 +81,17 @@ export async function POST(request: Request) {
   }
 
   const leagueId = await getRequestLeagueId();
+  // CRITICAL FIX: actually filter by the requested team short name (or name).
+  // Previously this only filtered by leagueId and took the first team, so
+  // setting a password for "HSBC" silently overwrote whichever team sorted
+  // first. (Found in 2026-10-26 API audit.)
   const [team] = await db
     .select({ id: teams.id, name: teams.name, shortName: teams.shortName })
     .from(teams)
-    .where(and(eq(teams.leagueId, leagueId)))
+    .where(and(
+      eq(teams.leagueId, leagueId),
+      eq(teams.shortName, input.team)
+    ))
     .limit(1);
   if (!team) {
     return fail(404, 'NOT_FOUND', `Unknown team: ${input.team}`);

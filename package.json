@@ -24,7 +24,7 @@
     "drizzle-orm": "^0.45.1",
     "jsonwebtoken": "^9.0.0",
     "multer": "^2.0.2",
-    "next": "16.1.6",
+    "next": "^16.2.6",
     "next-auth": "^4.24.0",
     "nodemailer": "^7.0.13",
     "postcss": "^8.5.6",

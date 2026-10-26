@@ -24,7 +24,12 @@ export function rateLimit(key: string, opts: { limit: number; windowMs: number }
 
 export function getClientIp(request: Request) {
   const xff = request.headers.get('x-forwarded-for');
-  if (xff) return xff.split(',')[0]?.trim() || 'unknown';
+  if (xff) {
+    // Rightmost = closest to Vercel edge = real client. Leftmost is attacker-
+    // controllable (spoofable). 2026-10-26 audit fix.
+    const parts = xff.split(',').map(s => s.trim()).filter(Boolean);
+    return parts[parts.length - 1] || 'unknown';
+  }
   return request.headers.get('x-real-ip') ?? 'unknown';
 }
 
