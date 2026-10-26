@@ -66,7 +66,11 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  // Public read — rate limit per IP (60 req / 10 min). 2026-10-26 audit.
+  const ip = getClientIp(request);
+  const rl = rateLimit(`players-list:${ip}`, { limit: 60, windowMs: 10 * 60 * 1000 });
+  if (!rl.allowed) return fail(429, 'RATE_LIMITED', 'Too many requests');
   try {
     const players = await listPublicPlayers();
     return ok({ players });
