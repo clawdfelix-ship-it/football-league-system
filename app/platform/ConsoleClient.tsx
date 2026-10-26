@@ -680,7 +680,7 @@ function UsersTab({
           value={userQuery}
           onChange={(e) => setUserQuery(e.target.value)}
           placeholder="搜尋 email 或 username…"
-          className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          className="min-h-[44px] flex-1 rounded-lg border border-slate-300 px-3 py-2.5 text-sm"
         />
         <Btn tone="indigo" onClick={() => void searchUsers(userQuery)}>
           搜尋
@@ -764,7 +764,7 @@ function AdminsTab({
             value={newAdminEmail}
             onChange={(e) => setNewAdminEmail(e.target.value)}
             placeholder="admin@example.com"
-            className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="min-h-[44px] flex-1 rounded-lg border border-slate-300 px-3 py-2.5 text-sm"
           />
           <Btn tone="indigo" onClick={() => void addAdmin()}>
             新增
@@ -926,7 +926,7 @@ function DnsTab() {
                       href={`https://${r.hostname}`}
                       target="_blank"
                       rel="noreferrer"
-                      className="font-mono text-blue-600 hover:underline"
+                      className="inline-flex min-h-[44px] items-center font-mono text-blue-600 hover:underline"
                     >
                       {r.hostname}
                     </a>
@@ -982,7 +982,7 @@ function Btn({
     <button
       disabled={disabled}
       onClick={onClick}
-      className={`rounded-lg border px-3 py-1.5 text-xs font-semibold transition disabled:opacity-50 ${tones[tone]}`}
+      className={`min-h-[44px] rounded-lg border px-4 py-2.5 text-sm font-semibold transition disabled:opacity-50 ${tones[tone]}`}
     >
       {children}
     </button>
