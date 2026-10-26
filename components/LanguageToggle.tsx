@@ -8,7 +8,7 @@ export default function LanguageToggle() {
   return (
     <button
       onClick={() => setLanguage(language === 'zh' ? 'en' : 'zh')}
-      className="text-sm font-medium bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1"
+      className="text-sm font-medium bg-slate-700 hover:bg-slate-600 px-4 py-2.5 min-h-[44px] rounded-lg transition-colors flex items-center gap-1"
     >
       <span className={language === 'zh' ? 'text-yellow-400' : 'text-slate-400'}>中文</span>
       <span className="text-slate-500">|</span>

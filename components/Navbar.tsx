@@ -79,7 +79,7 @@ export default function Navbar() {
           <div className="flex items-center gap-3">
             <button
               onClick={() => setIsMobileMenuOpen((v) => !v)}
-              className="md:hidden p-2 rounded hover:bg-slate-800 transition-colors"
+              className="md:hidden flex h-11 w-11 items-center justify-center rounded hover:bg-slate-800 transition-colors"
               aria-label="Toggle menu"
               aria-expanded={isMobileMenuOpen}
             >
@@ -96,7 +96,7 @@ export default function Navbar() {
               <button 
                 onClick={() => setIsAdminMenuOpen(!isAdminMenuOpen)}
                 onBlur={() => setTimeout(() => setIsAdminMenuOpen(false), 200)}
-                className="text-sm font-medium bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
+                className="text-sm font-medium bg-slate-800 hover:bg-slate-700 px-4 py-2.5 min-h-[44px] rounded-lg transition-colors flex items-center gap-2"
               >
                 {t('登入', 'Login')}
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform ${isAdminMenuOpen ? 'rotate-180' : ''}`}>
