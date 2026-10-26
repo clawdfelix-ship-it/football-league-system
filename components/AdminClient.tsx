@@ -32,6 +32,7 @@ export function MatchList({
   finishedMatches: Match[] 
 }) {
   const [editingMatch, setEditingMatch] = useState<number | null>(null);
+  const [teamFilter, setTeamFilter] = useState<string>('');
 
   const handleUpdateMatch = async (matchId: number, formData: FormData) => {
     const homeScoreRaw = formData.get('homeScore')?.toString();
@@ -74,15 +75,46 @@ export function MatchList({
     }
   };
 
+  const teams = [...new Set([...scheduledMatches, ...finishedMatches].flatMap(m => [m.homeTeam, m.awayTeam]))].sort();
+
+  const filteredScheduled = teamFilter
+    ? scheduledMatches.filter(m => m.homeTeam === teamFilter || m.awayTeam === teamFilter)
+    : scheduledMatches;
+  const filteredFinished = teamFilter
+    ? finishedMatches.filter(m => m.homeTeam === teamFilter || m.awayTeam === teamFilter)
+    : finishedMatches;
+
   return (
     <>
+      {/* Team filter */}
+      <div className="mb-4 flex items-center gap-2">
+        <label htmlFor="team-filter" className="text-sm font-medium text-slate-700">篩選球隊：</label>
+        <select
+          id="team-filter"
+          value={teamFilter}
+          onChange={(e) => setTeamFilter(e.target.value)}
+          className="min-h-[44px] rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
+        >
+          <option value="">全部球隊</option>
+          {teams.map(t => <option key={t} value={t}>{t}</option>)}
+        </select>
+        {teamFilter && (
+          <button
+            onClick={() => setTeamFilter('')}
+            className="btn-admin btn-admin-sm"
+          >
+            清除
+          </button>
+        )}
+      </div>
+
       <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
         <h2 className="text-lg font-semibold mb-4 text-slate-900">Upcoming Fixtures</h2>
         <div className="space-y-3 mb-8">
-          {scheduledMatches.length === 0 ? (
+          {filteredScheduled.length === 0 ? (
             <p className="text-sm text-slate-600">No upcoming fixtures.</p>
           ) : (
-            scheduledMatches.map((match) => (
+            filteredScheduled.map((match) => (
               <div key={match.id} className="flex flex-col gap-3 rounded-lg border border-slate-100 bg-blue-50/50 p-3">
                 <div className="flex items-center justify-between">
                   <div className="text-sm">
@@ -170,10 +202,10 @@ export function MatchList({
 
         <h2 className="text-lg font-semibold mb-4 pt-4 border-t border-slate-100 text-slate-900">Match Results</h2>
         <div className="space-y-3">
-          {finishedMatches.length === 0 ? (
+          {filteredFinished.length === 0 ? (
             <p className="text-sm text-slate-600">No finished matches.</p>
           ) : (
-            finishedMatches.map((match) => (
+            filteredFinished.map((match) => (
               <div key={match.id} className="flex flex-col gap-3 rounded-lg border border-slate-100 bg-slate-50 p-3">
                 <div className="flex items-center justify-between">
                   <div className="text-sm">
