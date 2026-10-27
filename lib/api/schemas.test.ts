@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ChangePasswordSchema, CreateMatchSchema, RegisterSchema } from '@/lib/api/schemas';
+import { ChangePasswordSchema, CreateMatchSchema, MatchGoalsSchema, RegisterSchema } from '@/lib/api/schemas';
 
 describe('CreateMatchSchema', () => {
   it('requires date when status is scheduled/finished', () => {
@@ -42,5 +42,28 @@ describe('ChangePasswordSchema', () => {
         newPassword: 'short',
       })
     ).toThrow();
+  });
+});
+
+describe('MatchGoalsSchema', () => {
+  it('rejects duplicate player ids to avoid destructive replace collisions', () => {
+    expect(() =>
+      MatchGoalsSchema.parse({
+        entries: [
+          { playerId: 12, goals: 1 },
+          { playerId: 12, goals: 2 },
+        ],
+      })
+    ).toThrow(/Duplicate playerId/);
+  });
+
+  it('accepts unique player ids', () => {
+    const value = MatchGoalsSchema.parse({
+      entries: [
+        { playerId: 12, goals: 1 },
+        { playerId: 13, goals: 2 },
+      ],
+    });
+    expect(value.entries).toHaveLength(2);
   });
 });

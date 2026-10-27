@@ -450,6 +450,13 @@ export async function replaceMatchGoalEntries(
   leagueId?: number
 ) {
   const lid = await resolveLeagueId(leagueId);
+  const seen = new Set<number>();
+  for (const entry of entries) {
+    if (seen.has(entry.playerId)) {
+      throw new Error(`Duplicate playerId in match goals payload: ${entry.playerId}`);
+    }
+    seen.add(entry.playerId);
+  }
   await db.delete(matchPlayerGoals)
     .where(and(eq(matchPlayerGoals.matchId, matchId), eq(matchPlayerGoals.leagueId, lid)));
   const filtered = entries.filter((e) => Number.isFinite(e.goals) && e.goals > 0);

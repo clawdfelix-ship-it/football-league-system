@@ -108,6 +108,20 @@ export const MatchGoalsSchema = z.object({
         goals: z.coerce.number().int().min(0).max(20),
       })
     )
+    .superRefine((entries, ctx) => {
+      const seen = new Set<number>();
+      for (let index = 0; index < entries.length; index += 1) {
+        const playerId = entries[index]?.playerId;
+        if (seen.has(playerId)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Duplicate playerId in match goals payload',
+            path: [index, 'playerId'],
+          });
+        }
+        seen.add(playerId);
+      }
+    })
     .default([]),
 });
 

@@ -101,6 +101,19 @@ export async function getTeamNameFromDbIdAsync(teamId: number | undefined): Prom
   return getTeamNameFromDbId(teamId);
 }
 
+type PlatformSessionUser = {
+  role?: unknown;
+  leagueId?: unknown;
+  isPlatform?: unknown;
+};
+
+export function hasPlatformPrincipalClaims(user: PlatformSessionUser | null | undefined): boolean {
+  return (
+    user?.role === ROLES.ADMIN &&
+    (user?.isPlatform === true || user?.leagueId === 0)
+  );
+}
+
 /**
  * Platform-admin guard for the SaaS console / provisioning routes. Unlike the
  * league-scoped getAuthContext() (an 'admin' who manages ONE league), this
@@ -109,7 +122,11 @@ export async function getTeamNameFromDbIdAsync(teamId: number | undefined): Prom
  */
 export async function getPlatformAdmin(): Promise<{ email: string; userId: number | null } | null> {
   const session = await getServerSession(authOptions);
-  const email = (session?.user as { email?: unknown } | null)?.email;
+  const user = (session?.user as ({
+    email?: unknown;
+  } & PlatformSessionUser) | null);
+  if (!hasPlatformPrincipalClaims(user)) return null;
+  const email = user?.email;
   if (typeof email !== 'string') return null;
   const normalized = email.trim().toLowerCase();
 
