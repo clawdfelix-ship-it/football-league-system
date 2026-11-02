@@ -9,6 +9,7 @@ import { KIT_COLORS } from '@/lib/kitColors';
 import { venueMapsUrl } from '@/lib/weather';
 import { bilingualVenue, bilingualCoreVenue } from '@/lib/venues';
 import { googleCalendarUrl } from '@/lib/calendar';
+import { byDateDesc, byUpcomingDate } from '@/lib/fixture-ordering';
 import { useLanguage } from '@/context/LanguageContext';
 
 export type Team = { name: string; homeKitColor: string; awayKitColor: string };
@@ -26,16 +27,6 @@ export type Match = {
 };
 
 type FilterMode = 'all' | 'upcoming' | 'finished';
-
-// Pure comparator hoisted to module scope so the React Compiler treats it as
-// stable. Defining it inside the component made the upcoming/finished useMemos
-// reference a component-scope value absent from their dep array, which tripped
-// react-hooks/preserve-manual-memoization ("memoization could not be preserved").
-function byDateDesc(a: Match, b: Match) {
-  const ta = a.date ? new Date(a.date).getTime() : 0;
-  const tb = b.date ? new Date(b.date).getTime() : 0;
-  return tb - ta;
-}
 
 export default function FixturesClient(props: {
   matches: Match[];
@@ -73,7 +64,7 @@ export default function FixturesClient(props: {
     return matches
       .filter((m) => m.status !== 'finished' && (!round || m.round === round))
       .slice()
-      .sort(byDateDesc);
+      .sort(byUpcomingDate);
   }, [matches, round]);
 
   const finished = useMemo(() => {
@@ -125,7 +116,7 @@ export default function FixturesClient(props: {
 
                     {/* ===== 手機：豎向佈局 ===== */}
                     <div className="md:hidden space-y-3">
-                      {/* 日期 + VS/比分 */}
+                      {/* 日期 */}
                       <div className="flex items-center justify-between gap-2">
                         <span className="text-sm font-bold text-slate-700">
                           {match.date
@@ -135,13 +126,7 @@ export default function FixturesClient(props: {
                               })
                             : 'TBC'}
                         </span>
-                        {match.status === 'finished' ? (
-                          <span className="text-2xl font-bold text-slate-900">
-                            {match.homeScore ?? 0}-{match.awayScore ?? 0}
-                          </span>
-                        ) : (
-                          <span className="text-sm font-bold text-slate-400">VS</span>
-                        )}
+                        {match.status !== 'finished' && <span className="text-sm font-bold text-slate-400">VS</span>}
                       </div>
 
                       {/* 主隊 */}
@@ -152,7 +137,9 @@ export default function FixturesClient(props: {
                           title={`${t('主場球衣', 'Home kit')}：${homeColor.label}`}
                         />
                         <span className="flex-1 min-w-0 text-base font-bold text-slate-800 truncate">{match.homeTeam}</span>
-                        <span className="text-xs text-slate-400">{t('主場', 'Home')}</span>
+                        {match.status === 'finished'
+                          ? <span className="text-xl font-bold tabular-nums text-slate-900">{match.homeScore ?? 0}</span>
+                          : <span className="text-xs text-slate-400">{t('主場', 'Home')}</span>}
                       </div>
 
                       {/* 客隊 */}
@@ -163,7 +150,9 @@ export default function FixturesClient(props: {
                           title={`${t('客場球衣', 'Away kit')}：${awayColor.label}`}
                         />
                         <span className="flex-1 min-w-0 text-base font-bold text-slate-800 truncate">{match.awayTeam}</span>
-                        <span className="text-xs text-slate-400">{t('客場', 'Away')}</span>
+                        {match.status === 'finished'
+                          ? <span className="text-xl font-bold tabular-nums text-slate-900">{match.awayScore ?? 0}</span>
+                          : <span className="text-xs text-slate-400">{t('客場', 'Away')}</span>}
                       </div>
 
                       {/* 場地：核心短名一行，點擊開地圖 */}
@@ -205,7 +194,7 @@ export default function FixturesClient(props: {
                               target="_blank"
                               rel="noopener noreferrer"
                               aria-label={t('加入日曆', 'Calendar')}
-                              className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-800 text-sm text-white hover:bg-slate-700"
+                              className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-slate-800 text-sm text-white hover:bg-slate-700"
                             >
                               📅
                             </a>

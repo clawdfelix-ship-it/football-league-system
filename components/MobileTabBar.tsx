@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
 
 const TABS = [
@@ -46,9 +47,9 @@ const TABS = [
 export default function MobileTabBar() {
   const { t } = useLanguage();
   const pathname = usePathname() ?? '/';
+  const [hash, setHash] = useState('');
 
-  const isActive = (href: string) =>
-    href === '/' ? pathname === '/' : pathname.startsWith(href);
+  useEffect(() => subscribeToHashChanges(() => setHash(window.location.hash)), [pathname]);
 
   return (
     <nav
@@ -57,11 +58,12 @@ export default function MobileTabBar() {
     >
       <ul className="grid grid-cols-3">
         {TABS.map((tab) => {
-          const active = isActive(tab.href);
+          const active = isTabActive(tab.href, pathname, hash);
           return (
             <li key={tab.href}>
               <Link
                 href={tab.href}
+                aria-current={active ? 'page' : undefined}
                 className={`flex flex-col items-center justify-center gap-0.5 min-h-[56px] text-xs font-semibold transition-colors ${
                   active ? 'text-[#0f172a]' : 'text-slate-400'
                 }`}
@@ -80,4 +82,16 @@ export default function MobileTabBar() {
       </ul>
     </nav>
   );
+}
+
+export function isTabActive(href: string, pathname: string, hash: string) {
+  if (href === '/#standings') return pathname === '/' && hash === '#standings';
+  if (href === '/') return pathname === '/' && hash !== '#standings';
+  return pathname.startsWith(href);
+}
+
+export function subscribeToHashChanges(sync: () => void) {
+  sync();
+  window.addEventListener('hashchange', sync);
+  return () => window.removeEventListener('hashchange', sync);
 }

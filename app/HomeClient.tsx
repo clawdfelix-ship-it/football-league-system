@@ -384,9 +384,9 @@ export default function HomeClient(props: {
                       <th className="px-2 md:px-6 py-3 md:py-4 text-left">{t('球隊', 'Team')}</th>
                       <th className="px-2 md:px-6 py-3 md:py-4 text-center bg-slate-200/50 text-slate-900">{t('分數', 'Points')}</th>
                       <th className="px-2 md:px-6 py-3 md:py-4 text-center text-slate-500 font-normal">{t('踢咗', 'Played')}</th>
-                      {/* 手機：勝-和-負 合併一欄；入球:失球 合併一欄（桌面用返獨立欄） */}
+                      {/* 手機保留勝-和-負；入球:失球只在桌面顯示 */}
                       <th className="px-1.5 py-3 text-center text-slate-500 font-normal md:hidden">{t('勝和負', 'W-D-L')}</th>
-                      <th className="px-1.5 py-3 text-center text-slate-500 font-normal md:hidden">{t('入失', 'GF:GA')}</th>
+                      <th className="px-6 py-4 text-center text-slate-500 font-normal hidden md:table-cell">{t('入失', 'GF:GA')}</th>
                       <th className="px-6 py-4 text-center text-slate-500 font-normal hidden md:table-cell">{t('贏', 'Won')}</th>
                       <th className="px-6 py-4 text-center text-slate-500 font-normal hidden md:table-cell">{t('和', 'Drawn')}</th>
                       <th className="px-6 py-4 text-center text-slate-500 font-normal hidden md:table-cell">{t('輸', 'Lost')}</th>
@@ -462,8 +462,8 @@ export default function HomeClient(props: {
                             <span className="text-slate-300">-</span>
                             <span>{team.losses}</span>
                           </td>
-                          {/* 手機合併欄：入球:失球 */}
-                          <td className="px-1.5 py-2.5 text-center text-xs tabular-nums text-slate-500 whitespace-nowrap md:hidden">
+                          {/* 入球:失球只在桌面顯示 */}
+                          <td className="px-6 py-4 text-center text-slate-400 hidden md:table-cell">
                             {team.goalsFor}:{team.goalsAgainst}
                           </td>
                           <td className="px-6 py-4 text-center text-slate-400 hidden md:table-cell">{team.wins}</td>

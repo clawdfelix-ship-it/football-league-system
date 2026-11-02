@@ -65,11 +65,14 @@ export default function ShareMatch(props: ShareMatchProps) {
     <div className={`relative inline-block ${props.className ?? ''}`}>
       <button
         type="button"
+        aria-label={props.iconOnly
+          ? t(`分享 ${props.homeTeam} 對 ${props.awayTeam}`, `Share ${props.homeTeam} vs ${props.awayTeam}`)
+          : undefined}
         onClick={() => setOpen((v) => !v)}
         onBlur={() => setTimeout(() => setOpen(false), 200)}
         className={
           props.iconOnly
-            ? 'inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-200 text-base text-slate-600 hover:bg-slate-300'
+            ? 'inline-flex h-11 w-11 items-center justify-center rounded-full bg-slate-200 text-base text-slate-600 hover:bg-slate-300'
             : 'inline-flex items-center gap-1 rounded-full bg-emerald-600 px-2.5 py-0.5 text-xs font-semibold text-white hover:bg-emerald-700'
         }
       >
