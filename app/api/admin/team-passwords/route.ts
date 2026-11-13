@@ -2,8 +2,6 @@ import { ok, fail } from '@/lib/api/response';
 import { TeamPasswordSetSchema, TeamPasswordResetSchema } from '@/lib/api/schemas';
 import { zodDetails } from '@/lib/api/zod';
 import { getClientIp, rateLimit } from '@/lib/api/rate-limit';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { users } from '@/lib/schema';
 import { and, eq } from 'drizzle-orm';
@@ -12,7 +10,7 @@ import { generateTempPassword } from '@/lib/auth/temp-password';
 import { audit } from '@/lib/auth/audit-log';
 import { sendMail } from '@/lib/mail/mailer';
 import { passwordResetByAdminEmail } from '@/lib/mail/templates';
-import { getRequestLeagueId } from '@/lib/tenant/context';
+import { requireLeagueAdmin } from '@/lib/authz-league-admin';
 import { teams } from '@/lib/schema';
 
 /**
@@ -36,35 +34,12 @@ export async function POST(request: Request) {
     return fail(429, 'RATE_LIMITED', 'Too many requests');
   }
 
-  const session = await getServerSession(authOptions);
-  if (!session?.user) {
-    void audit({
-      action: 'admin.manager_account.generate',
-      actor: { role: 'anonymous' },
-      ip,
-      result: 'denied',
-      detail: 'admin-team-passwords: no session',
-    });
-    return fail(401, 'UNAUTHENTICATED', 'Unauthorized');
-  }
-  if (session.user.role !== 'admin') {
-    void audit({
-      action: 'admin.manager_account.generate',
-      actor: { role: (session.user.role ?? 'user') as 'admin' | 'manager' | 'user', email: session.user.email ?? null },
-      ip,
-      result: 'denied',
-      detail: 'admin-team-passwords: not admin',
-    });
-    return fail(403, 'FORBIDDEN', 'Admin access required');
-  }
-
-  const actor = { role: 'admin' as const, email: session.user.email ?? null, username: null };
-
-  // League manager passwords are managed for the host's league only.
-  const lid = await getRequestLeagueId();
-  if (lid <= 0) {
-    return fail(400, 'NO_TENANT', 'No active league on this host');
-  }
+  // Cross-tenant guard: must fire before ANY db read/mutation so a league-A
+  // admin cannot probe or overwrite league-B accounts via a different host.
+  const guard = await requireLeagueAdmin();
+  if (guard instanceof Response) return guard;
+  const actor = guard.actor;
+  const lid = guard.leagueId;
 
   let raw: unknown;
   try {
@@ -80,7 +55,7 @@ export async function POST(request: Request) {
     return fail(400, 'VALIDATION_ERROR', 'Invalid request body', zodDetails(e));
   }
 
-  const leagueId = await getRequestLeagueId();
+  const leagueId = lid;
   // CRITICAL FIX: actually filter by the requested team short name (or name).
   // Previously this only filtered by leagueId and took the first team, so
   // setting a password for "HSBC" silently overwrote whichever team sorted
@@ -171,18 +146,12 @@ export async function PUT(request: Request) {
     return fail(429, 'RATE_LIMITED', 'Too many requests');
   }
 
-  const session = await getServerSession(authOptions);
-  if (!session?.user || session.user.role !== 'admin') {
-    return fail(403, 'FORBIDDEN', 'Admin access required');
-  }
-
-  const actor = { role: 'admin' as const, email: session.user.email ?? null, username: null };
-
-  // Only reset a manager belonging to the host's league.
-  const lid = await getRequestLeagueId();
-  if (lid <= 0) {
-    return fail(400, 'NO_TENANT', 'No active league on this host');
-  }
+  // Cross-tenant guard (before any DB read so the target email cannot be
+  // enumerated across tenants).
+  const guard = await requireLeagueAdmin();
+  if (guard instanceof Response) return guard;
+  const actor = guard.actor;
+  const lid = guard.leagueId;
 
   let input: { email: string };
   try {
